@@ -1,0 +1,5 @@
+{
+  "name": "PharmIA",
+  "description": "PharmIA is a dynamic learning ecosystem for pharmacy professionals, transforming theoretical knowledge into practical skills. It features role-based access, a comprehensive library of 'MemoFiches', and an AI-powered content generator using Google Gemini to support continuous education at the pharmacy counter.",
+  "requestFramePermissions": []
+}

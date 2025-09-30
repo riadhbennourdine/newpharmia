@@ -1,0 +1,276 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
+import { useData } from '../context/DataContext';
+import { useAuth } from '../hooks/useAuth';
+import { CaseStudy, UserRole } from '../types';
+import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner } from '../components/Icons';
+import CustomChatBot from '../components/CustomChatBot';
+import FlashcardDeck from '../components/FlashcardDeck';
+
+const AccordionSection: React.FC<{
+    title: string;
+    icon: React.ReactNode;
+    children: React.ReactNode;
+    isAlert?: boolean;
+    isOpen: boolean;
+    onToggle: () => void;
+    contentClassName?: string;
+}> = ({ title, icon, children, isAlert = false, isOpen, onToggle, contentClassName = '' }) => (
+    <div className="mb-2 bg-white rounded-lg shadow-sm border border-slate-200/80 overflow-hidden transition-all duration-300">
+        <button
+            onClick={onToggle}
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
+            aria-expanded={isOpen}
+        >
+            <div className="flex items-center">
+                {icon}
+                <h3 className={`text-lg font-bold ${isAlert ? 'text-red-600' : 'text-slate-800'}`}>{title}</h3>
+            </div>
+            <svg
+                className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`}
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+            >
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+            </svg>
+        </button>
+        <div
+            className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
+            <div className={`p-4 pt-0 pl-12 space-y-2 prose max-w-none ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`} dangerouslySetInnerHTML={{ __html: children as string }}>
+            </div>
+        </div>
+    </div>
+);
+
+interface DetailedMemoFicheViewProps {
+  caseStudy: CaseStudy;
+  onBack?: () => void;
+  onStartQuiz?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isPreview?: boolean;
+}
+
+type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot';
+
+
+export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ caseStudy, onBack, onStartQuiz, onEdit, onDelete, isPreview = false }) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const { user } = useAuth();
+  const isAuthorized = user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR;
+  const canEdit = isAuthorized && !isPreview;
+  const canDelete = user?.role === UserRole.ADMIN && !isPreview;
+
+  const [openSection, setOpenSection] = useState<string | null>('patientSituation');
+  const [activeTab, setActiveTab] = useState<TabName>('memo');
+  const [isYoutubeModalOpen, setYoutubeModalOpen] = useState(false);
+
+  const handleToggle = (title: string) => setOpenSection(openSection === title ? null : title);
+  
+  const handleDelete = () => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette mémofiche ? Cette action est irréversible.")) {
+        onDelete?.();
+    }
+  };
+
+  const getYoutubeEmbedUrl = (url: string | undefined): string | null => {
+    if (!url) return null;
+    let videoId = '';
+    try {
+        const urlObj = new URL(url);
+        if (urlObj.hostname === 'youtu.be') videoId = urlObj.pathname.slice(1);
+        else if (urlObj.hostname.includes('youtube.com')) videoId = urlObj.searchParams.get('v') || '';
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    } catch (error) {
+        console.error("Invalid YouTube URL:", error);
+        return null;
+    }
+  };
+
+  const youtubeEmbedUrl = getYoutubeEmbedUrl(caseStudy.youtubeUrl);
+  const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
+    if (!content) return '';
+    const text = Array.isArray(content) ? content.join('\n') : content;
+    let html = text;
+    
+    const keywordClass = isRedKeywordSection ? 'font-bold text-red-600' : 'font-bold text-teal-600';
+    html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+    
+    const lines = html.split('\n');
+    let inList = false;
+    const processedLines = lines.map(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+            const listItem = `<li>${trimmedLine.substring(2)}</li>`;
+            if (!inList) {
+                inList = true;
+                return `<ul>${listItem}`;
+            }
+            return listItem;
+        } else {
+            if (inList) {
+                inList = false;
+                return `</ul><p>${line}</p>`;
+            }
+            return line ? `<p>${line}</p>` : '';
+        }
+    });
+    if (inList) {
+        processedLines.push('</ul>');
+    }
+    return processedLines.join('');
+  };
+
+  const memoContent = [
+    { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)},
+    { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)},
+    { id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)},
+    { id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)},
+    { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, content: renderContentWithKeywords(caseStudy.recommendations.mainTreatment)},
+    { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, content: renderContentWithKeywords(caseStudy.recommendations.associatedProducts)},
+    { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.recommendations.lifestyleAdvice)},
+    { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, content: renderContentWithKeywords(caseStudy.recommendations.dietaryAdvice)},
+    { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+    // Custom Sections
+    ...(caseStudy.customSections && caseStudy.customSections.length > 0 ? [{
+      id: "customSections",
+      title: "Sections Personnalisées",
+      icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt="Sections Personnalisées" />, // Placeholder icon
+      content: caseStudy.customSections.map(s => `<h4>${s.title}</h4>${renderContentWithKeywords(s.content)}`).join(''),
+    }] : []),
+  ];
+
+  const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = [
+      { id: 'memo', label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
+      { id: 'flashcards', label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
+      ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
+      ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
+      { id: 'glossary', label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
+      { id: 'media', label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }
+  ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+        case 'memo': return memoContent.map(section => <AccordionSection key={section.id} {...section} isOpen={openSection === section.id} onToggle={() => handleToggle(section.id)}>{section.content}</AccordionSection>);
+        case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} />;
+        case 'glossary': return <div className="bg-white p-6 rounded-lg shadow-md space-y-4">{caseStudy.glossary.map((item, i) => <div key={i} className="border-b border-slate-200 pb-2"><h4 className="font-bold text-slate-800">{item.term}</h4><p className="text-slate-600">{item.definition}</p></div>)}</div>;
+        case 'media': return youtubeEmbedUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Vidéo associée</h4><div className="w-full"><iframe src={youtubeEmbedUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div></div> : <div className="text-center text-slate-500">Aucun média disponible.</div>;
+        case 'quiz': return <div className="text-center bg-white p-8 rounded-lg shadow-md"><h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances !</h3><button onClick={onStartQuiz} className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700"><CheckCircleIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz</button></div>;
+        case 'kahoot': return caseStudy.kahootUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Jeu Kahoot!</h4><iframe src={caseStudy.kahootUrl} title="Kahoot! Game" frameBorder="0" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div> : <div className="text-center text-slate-600">Aucun lien Kahoot! disponible.</div>;
+    }
+  };
+
+  return (
+    <div className="animate-fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {caseStudy.coverImageUrl ? (
+          <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-64 flex items-end p-8 text-white bg-slate-800">
+              <img src={caseStudy.coverImageUrl} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
+              <div className="relative z-20">
+                  <h2 className="text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>
+                  <div className="mt-2 text-sm font-medium opacity-90">
+                      <span>{caseStudy.theme}</span><span className="mx-2">&bull;</span><span>{caseStudy.system}</span><span className="mx-2">&bull;</span><span>{`Créé le ${formattedDate}`}</span>
+                  </div>
+              </div>
+          </div>
+      ) : (
+           <div className="text-center mb-8">
+              <div className="flex items-center justify-center">
+                  <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">{caseStudy.title}</h2>
+                  {youtubeEmbedUrl && <button onClick={() => setYoutubeModalOpen(true)} className="ml-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"><VideoCameraIcon className="h-5 w-5 mr-2" /> Voir la vidéo</button>}
+              </div>
+           </div>
+      )}
+
+      {isYoutubeModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={() => setYoutubeModalOpen(false)}>
+              <div className="bg-white p-4 rounded-lg shadow-lg relative w-full max-w-3xl" onClick={e => e.stopPropagation()}>
+                  <button onClick={() => setYoutubeModalOpen(false)} className="absolute -top-2 -right-2 bg-white rounded-full p-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                  <div className="aspect-w-16 aspect-h-9"><iframe src={youtubeEmbedUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full rounded-md"></iframe></div>
+              </div>
+          </div>
+      )}
+      
+      {caseStudy.keyPoints && caseStudy.keyPoints.length > 0 && (
+          <div className="mb-8 p-6 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg shadow-sm">
+              <h3 className="text-xl font-bold text-teal-800 mb-3 flex items-center"><KeyIcon className="h-6 w-6 mr-3" />Points Clés à Retenir</h3>
+              <ul className="space-y-2 pl-5 list-disc text-teal-900">{caseStudy.keyPoints.map((point, i) => <li key={i} className="text-base">{point}</li>)}</ul>
+          </div>
+      )}
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+              <div className="mb-6 border-b border-slate-200 flex space-x-0.5 sm:space-x-1 overflow-x-auto pb-px">
+                 {menuItems.map(item => {
+                    const isActive = activeTab === item.id;
+                    const baseTabClass = 'flex flex-col items-center px-2 sm:px-3 py-2 text-sm sm:text-base font-medium rounded-t-md transition-all duration-300 border-b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500';
+                    const activeTabClass = 'bg-white text-teal-600 border-teal-600 shadow-sm';
+                    const inactiveTabClass = 'border-transparent text-slate-500 hover:text-teal-500 hover:bg-slate-50';
+                    return (
+                        <button key={item.id} onClick={() => setActiveTab(item.id)} className={`${baseTabClass} ${isActive ? activeTabClass : inactiveTabClass}`}>
+                            {item.icon}
+                            <span className="text-xs mt-1 text-center">{item.label}</span>
+                        </button>
+                    );
+                 })}
+              </div>
+              <div key={activeTab} className="min-h-[300px] animate-fade-in">{renderContent()}</div>
+               <div className="mt-8 flex items-center justify-center space-x-4"> 
+                  {onBack && <button onClick={onBack} className="px-6 py-3 text-base font-bold text-slate-700 bg-slate-200 rounded-lg hover:bg-slate-300">Retour</button>}
+                  {canEdit && onEdit && <button onClick={onEdit} className="px-6 py-3 text-base font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 flex items-center"><PencilIcon className="h-5 w-5 mr-2" /> Modifier</button>}
+                  {canDelete && onDelete && <button onClick={handleDelete} className="px-6 py-3 text-base font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center"><TrashIcon className="h-5 w-5 mr-2" /> Supprimer</button>}
+              </div>
+          </div>
+          <aside className="lg:col-span-1 z-10"><div className="sticky top-24"><CustomChatBot title={caseStudy.title} context={JSON.stringify(caseStudy)} /></div></aside>
+      </div>
+    </div>
+  );
+};
+
+const MemoFichePage = () => {
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const { getCaseStudyById, startQuiz, editCaseStudy, deleteCaseStudy } = useData();
+    const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            getCaseStudyById(id).then(data => {
+                if (data) {
+                    setCaseStudy(data);
+                }
+                setLoading(false);
+            }).catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
+        }
+    }, [id, getCaseStudyById]);
+
+    const handleDeleteAndRedirect = async () => {
+        if(caseStudy) {
+            await deleteCaseStudy(caseStudy._id);
+            alert('Mémofiche supprimée avec succès.');
+            navigate('/dashboard');
+        }
+    }
+
+    if (loading) return <div className="flex justify-center items-center h-screen"><Spinner className="h-12 w-12 text-teal-600" /></div>;
+    if (!caseStudy) return <Navigate to="/dashboard" replace />;
+    
+    return <DetailedMemoFicheView 
+        caseStudy={caseStudy}
+        onBack={() => navigate('/dashboard')}
+        onStartQuiz={() => startQuiz(caseStudy._id)}
+        onEdit={() => editCaseStudy(caseStudy._id)}
+        onDelete={handleDeleteAndRedirect}
+    />;
+};
+
+export default MemoFichePage;
