@@ -6,21 +6,37 @@ import AppLayout from './Layout';
 
 // Protects routes for ANY logged-in user
 export const LoggedInRoute: React.FC = () => {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, isLoading } = useAuth();
     const location = useLocation();
 
-    if (!isAuthenticated) return <Navigate to="/login" replace />;
+    if (isLoading) {
+        // Display a loading indicator while auth state is being determined
+        return <div className="flex items-center justify-center h-screen">Chargement...</div>;
+    }
 
-    // If profile is incomplete and we are not already on the completion page, redirect
-    if (user?.profileIncomplete && location.pathname !== '/complete-profile') {
+    if (!isAuthenticated) {
+        // If not authenticated, redirect to the login page
+        return <Navigate to="/login" replace />;
+    }
+
+    // If authentication is confirmed, but we don't have user data yet, show loading.
+    // This prevents race conditions on initial load or after login.
+    if (!user) {
+        return <div className="flex items-center justify-center h-screen">Chargement des données utilisateur...</div>;
+    }
+
+    // --- Redirection Logic ---
+    // If profile is incomplete and the user is NOT on the completion page, redirect them there.
+    if (user.profileIncomplete && location.pathname !== '/complete-profile') {
         return <Navigate to="/complete-profile" replace />;
     }
 
-    // If the profile is complete, but the user tries to access /complete-profile, redirect to dashboard
-    if (!user?.profileIncomplete && location.pathname === '/complete-profile') {
+    // If profile is complete and the user tries to access the completion page, redirect to the dashboard.
+    if (!user.profileIncomplete && location.pathname === '/complete-profile') {
         return <Navigate to="/dashboard" replace />;
     }
 
+    // If all checks pass, render the main application layout which contains the requested page.
     return <AppLayout />;
 };
 
