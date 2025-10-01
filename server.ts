@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService';
 import { User, UserRole, CaseStudy } from './types';
+import bcrypt from 'bcryptjs';
 
 import clientPromise from './server/mongo';
 
@@ -39,14 +40,16 @@ const mockUsers: User[] = [
 // AUTH ROUTES
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { identifier } = req.body;
-        // TODO: Add password validation
-        
+        const { identifier, password } = req.body;
+
+        if (!identifier || !password) {
+            return res.status(400).json({ message: 'L\'identifiant et le mot de passe sont requis.' });
+        }
+
         const client = await clientPromise;
-        const db = client.db('pharmia'); // Assuming 'pharmia' is the database name
+        const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
-        
-        // Find user by either email or username
+
         const user = await usersCollection.findOne({
             $or: [
                 { email: identifier },
@@ -54,10 +57,20 @@ app.post('/api/auth/login', async (req, res) => {
             ]
         });
 
-        if (user) {
-            // In a real app, you'd check the password here
-            res.json({ token: 'mock-jwt-token', user });
+        if (user && user.passwordHash) {
+            const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+            if (isMatch) {
+                // Passwords match, generate a token (using a mock for now)
+                // TODO: Replace with a real JWT implementation
+                const token = 'mock-jwt-token'; 
+                res.json({ token, user });
+            } else {
+                // Passwords do not match
+                res.status(401).json({ message: 'Identifiants invalides.' });
+            }
         } else {
+            // User not found
             res.status(401).json({ message: 'Identifiants invalides.' });
         }
     } catch (error) {
@@ -66,9 +79,53 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-app.post('/api/auth/register', (req, res) => {
-    console.log('Registering user (mock):', req.body);
-    res.status(201).json({ message: 'Inscription réussie.' });
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { email, username, password, role, pharmacistId, firstName, lastName, city } = req.body;
+
+        // Basic validation
+        if (!email || !username || !password || !role || !firstName || !lastName) {
+            return res.status(400).json({ message: 'Veuillez remplir tous les champs obligatoires.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        // Check if user already exists
+        const existingUser = await usersCollection.findOne({ $or: [{ email }, { username }] });
+        if (existingUser) {
+            return res.status(409).json({ message: 'Un utilisateur avec cet email ou nom d\'utilisateur existe déjà.' });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        // Create new user
+        const newUser: User = {
+            _id: new (await import('mongodb')).ObjectId().toHexString(),
+            email,
+            username,
+            passwordHash,
+            role,
+            pharmacistId: role === 'PREPARATEUR' ? pharmacistId : undefined,
+            firstName,
+            lastName,
+            city,
+            createdAt: new Date(),
+            hasActiveSubscription: false, // Default value
+            profileIncomplete: true, // Default value
+        };
+
+        await usersCollection.insertOne(newUser);
+
+        res.status(201).json({ message: 'Inscription réussie. Vous pouvez maintenant vous connecter.' });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
 });
 
 app.post('/api/auth/forgot-password', (req, res) => {
