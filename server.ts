@@ -312,7 +312,7 @@ app.post('/api/unsubscribe', handleUnsubscription);
 
 // Serve React App - This should be after all API routes
 if (process.env.NODE_ENV === 'production') {
-    app.get('*', (req, res) => {
+    app.get('/*', (req, res) => {
         res.sendFile(path.join(__dirname, '../dist', 'index.html'));
     });
 }
