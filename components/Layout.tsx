@@ -34,6 +34,11 @@ const Header: React.FC = () => {
                 <NavLink to="/dashboard" className={navLinkClass}>
                   Tableau de bord
                 </NavLink>
+                {user?.role !== UserRole.PREPARATEUR && (
+                  <NavLink to="/tarifs" className={navLinkClass}>
+                    Tarifs
+                  </NavLink>
+                )}
                 {/* FIX: Corrected condition to only show "Générateur" link to Admins to match routing rules. */}
                 {user?.role === UserRole.ADMIN && (
                    <NavLink to="/generateur" className={navLinkClass}>
