@@ -113,7 +113,7 @@ app.post('/api/auth/register', async (req, res) => {
             city,
             createdAt: new Date(),
             hasActiveSubscription: false, 
-            profileIncomplete: true, 
+            profileIncomplete: false, 
         };
 
         const result = await usersCollection.insertOne(newUserDocument as User);
