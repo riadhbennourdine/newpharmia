@@ -102,9 +102,7 @@ app.post('/api/auth/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Create new user
-        const newUser: User = {
-            _id: new (await import('mongodb')).ObjectId().toHexString(),
+        const newUserDocument = {
             email,
             username,
             passwordHash,
@@ -114,13 +112,17 @@ app.post('/api/auth/register', async (req, res) => {
             lastName,
             city,
             createdAt: new Date(),
-            hasActiveSubscription: false, // Default value
-            profileIncomplete: true, // Default value
+            hasActiveSubscription: false, 
+            profileIncomplete: true, 
         };
 
-        await usersCollection.insertOne(newUser);
+        const result = await usersCollection.insertOne(newUserDocument as User);
 
-        res.status(201).json({ message: 'Inscription réussie. Vous pouvez maintenant vous connecter.' });
+        if (result.acknowledged) {
+            res.status(201).json({ message: 'Inscription réussie. Vous pouvez maintenant vous connecter.' });
+        } else {
+            res.status(500).json({ message: 'Échec de la création de l\'utilisateur.' });
+        }
 
     } catch (error) {
         console.error('Registration error:', error);
