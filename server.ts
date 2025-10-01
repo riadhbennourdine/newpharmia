@@ -23,7 +23,7 @@ app.use(express.json());
 
 // In production, serve static files from the build directory
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../dist')));
+    app.use(express.static(path.join(__dirname, 'dist')));
 }
 
 
@@ -313,7 +313,7 @@ app.post('/api/unsubscribe', handleUnsubscription);
 // Serve React App - This should be after all API routes
 if (process.env.NODE_ENV === 'production') {
     app.get(/.*/, (req, res) => {
-        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 }
 

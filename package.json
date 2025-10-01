@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "NODE_ENV=production tsx --env-file .env server.ts",
+    "start": "npm run build && NODE_ENV=production tsx --env-file .env server.ts",
     "dev": "concurrently \"vite\" \"tsx --watch --env-file .env server.ts\"",
     "build": "vite build",
     "preview": "vite preview"
