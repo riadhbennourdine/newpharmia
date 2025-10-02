@@ -14,7 +14,7 @@ interface DataContextType {
   pagination: Pagination | null;
   isLoading: boolean;
   error: string | null;
-  fetchFiches: (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string; sortBy?: string; }) => Promise<void>;
+  fetchFiches: (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; }) => Promise<void>;
   getCaseStudyById: (id: string) => Promise<CaseStudy | undefined>;
   saveCaseStudy: (caseStudy: CaseStudy) => Promise<CaseStudy>;
   deleteCaseStudy: (id: string) => Promise<void>;
@@ -31,7 +31,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string; sortBy?: string }) => {
+  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string }) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -39,8 +39,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (params.page) queryParams.append('page', String(params.page));
       if (params.limit) queryParams.append('limit', String(params.limit));
       if (params.search) queryParams.append('search', params.search);
-      if (params.category) queryParams.append('category', params.category);
-      if (params.topic) queryParams.append('topic', params.topic);
+      if (params.theme) queryParams.append('theme', params.theme);
+      if (params.system) queryParams.append('system', params.system);
       if (params.sortBy) queryParams.append('sortBy', params.sortBy);
 
       const response = await fetch(`/api/memofiches?${queryParams.toString()}`);

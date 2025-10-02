@@ -193,8 +193,8 @@ app.get('/api/memofiches', async (req, res) => {
             page = '1',
             limit = '9',
             search = '',
-            category = 'all', // 'pedagogical' or 'clinical'
-            topic = 'all',
+            theme = 'all',
+            system = 'all',
             sortBy = 'default' // 'newest'
         } = req.query as { [key: string]: string };
 
@@ -215,12 +215,11 @@ app.get('/api/memofiches', async (req, res) => {
             ];
         }
 
-        if (category !== 'all' && topic !== 'all') {
-            if (category === 'pedagogical') {
-                query.theme = topic;
-            } else if (category === 'clinical') {
-                query.system = topic;
-            }
+        if (theme !== 'all') {
+            query.theme = theme;
+        }
+        if (system !== 'all') {
+            query.system = system;
         }
 
         const total = await memofichesCollection.countDocuments(query);
