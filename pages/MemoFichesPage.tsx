@@ -171,20 +171,22 @@ const MemoFichesPage: React.FC = () => {
                         onChange={handleCategoryChange}
                         className="md:col-span-1 w-full border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
                     >
-                        <option value="all">Toutes les catégories</option>
+                        <option value="all">1. Choisir un thème</option>
                         <option value="pedagogical">Thèmes Pédagogiques</option>
                         <option value="clinical">Systèmes et Organes</option>
                     </select>
-                    <select
-                        value={selectedTopic}
-                        onChange={handleTopicChange}
-                        disabled={selectedCategory === 'all'}
-                        className="md:col-span-1 w-full border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 disabled:bg-slate-100"
-                    >
-                        <option value="all">Tous les sujets</option>
-                        {selectedCategory === 'pedagogical' && TOPIC_CATEGORIES[0].topics.map(t => <option key={t} value={t}>{t}</option>)}
-                        {selectedCategory === 'clinical' && TOPIC_CATEGORIES[1].topics.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    
+                    {selectedCategory !== 'all' && (
+                        <select
+                            value={selectedTopic}
+                            onChange={handleTopicChange}
+                            className="md:col-span-1 w-full border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 animate-fade-in"
+                        >
+                            <option value="all">2. Affiner le sujet</option>
+                            {selectedCategory === 'pedagogical' && TOPIC_CATEGORIES[0].topics.map(t => <option key={t} value={t}>{t}</option>)}
+                            {selectedCategory === 'clinical' && TOPIC_CATEGORIES[1].topics.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    )}
                 </div>
             </div>
 
