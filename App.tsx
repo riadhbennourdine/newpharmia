@@ -26,6 +26,7 @@ import {
 
 // Authenticated Pages
 import Dashboard from './pages/Dashboard';
+import MemoFichesPage from './pages/MemoFichesPage';
 import MemoFichePage from './pages/MemoFicheView';
 import QuizPage from './pages/QuizView';
 
@@ -63,6 +64,7 @@ const App: React.FC = () => (
                     <Route element={<LoggedInRoute />}>
                         {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
                         <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/memofiches" element={<MemoFichesPage />} />
                         <Route path="/memofiche/:id" element={<MemoFichePage />} />
                         <Route path="/quiz/:id" element={<QuizPage />} />
                         <Route path="/complete-profile" element={<ProfileCompletionView />} />
