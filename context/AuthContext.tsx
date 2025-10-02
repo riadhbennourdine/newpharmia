@@ -12,6 +12,7 @@ interface AuthContextType {
   isLoading: boolean;
   authError: string | null;
   setUser: (user: User) => void;
+  markFicheAsRead: (ficheId: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,6 +102,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
+  const markFicheAsRead = useCallback(async (ficheId: string) => {
+    if (!user || user.readFicheIds?.includes(ficheId)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/${user._id}/read-fiches`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ficheId }),
+      });
+      const updatedUser = await response.json();
+      if (!response.ok) {
+        throw new Error(updatedUser.message || 'Failed to mark as read');
+      }
+      handleSetUser(updatedUser);
+    } catch (error) {
+      console.error('Error marking fiche as read:', error);
+    }
+  }, [user]);
+
   const value = { 
     isAuthenticated: !!token, 
     user, 
@@ -111,7 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isLoading, 
     authError,
     setUser: handleSetUser,
+    markFicheAsRead,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};

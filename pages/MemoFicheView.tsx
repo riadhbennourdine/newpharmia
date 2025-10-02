@@ -235,6 +235,7 @@ const MemoFichePage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { getCaseStudyById, startQuiz, editCaseStudy, deleteCaseStudy } = useData();
+    const { markFicheAsRead } = useAuth(); // Get the new function
     const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -252,6 +253,13 @@ const MemoFichePage = () => {
             });
         }
     }, [id, getCaseStudyById]);
+
+    // Effect to mark the fiche as read
+    useEffect(() => {
+        if (id) {
+            markFicheAsRead(id);
+        }
+    }, [id, markFicheAsRead]);
 
     const handleDeleteAndRedirect = async () => {
         if(caseStudy) {

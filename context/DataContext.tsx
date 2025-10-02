@@ -14,7 +14,7 @@ interface DataContextType {
   pagination: Pagination | null;
   isLoading: boolean;
   error: string | null;
-  fetchFiches: (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string }) => Promise<void>;
+  fetchFiches: (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string; sortBy?: string; }) => Promise<void>;
   getCaseStudyById: (id: string) => Promise<CaseStudy | undefined>;
   saveCaseStudy: (caseStudy: CaseStudy) => Promise<CaseStudy>;
   deleteCaseStudy: (id: string) => Promise<void>;
@@ -31,7 +31,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string }) => {
+  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; category?: string; topic?: string; sortBy?: string }) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -41,6 +41,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (params.search) queryParams.append('search', params.search);
       if (params.category) queryParams.append('category', params.category);
       if (params.topic) queryParams.append('topic', params.topic);
+      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
 
       const response = await fetch(`/api/memofiches?${queryParams.toString()}`);
       if (!response.ok) throw new Error('Échec de la récupération des mémofiches.');
@@ -53,6 +54,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(false);
     }
   }, []);
+
 
   const getCaseStudyById = async (id: string): Promise<CaseStudy | undefined> => {
     try {

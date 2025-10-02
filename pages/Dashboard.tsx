@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
 
     // Fetch latest 3 fiches on component mount
     useEffect(() => {
-        fetchFiches({ page: 1, limit: 3 });
+        fetchFiches({ page: 1, limit: 3, sortBy: 'newest' });
     }, [fetchFiches]);
 
     // Calculate user stats

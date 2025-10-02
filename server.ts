@@ -140,6 +140,44 @@ app.post('/api/auth/reset-password', (req, res) => {
     res.json({ message: 'Mot de passe réinitialisé avec succès.' });
 });
 
+// USER ROUTES
+app.post('/api/users/:userId/read-fiches', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { ficheId } = req.body;
+
+        if (!ficheId) {
+            return res.status(400).json({ message: 'ficheId is required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any }, // Cast to any to satisfy TS if _id is string in type
+            { $addToSet: { readFicheIds: ficheId } as any } // Cast to any for the same reason
+        );
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found after update.' });
+        }
+
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error marking fiche as read:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 // USER ROUTES (MOCKED)
 app.get('/api/users/pharmacists', (req, res) => {
     const pharmacists = mockUsers.filter(u => u.role === UserRole.PHARMACIEN);
@@ -156,7 +194,8 @@ app.get('/api/memofiches', async (req, res) => {
             limit = '9',
             search = '',
             category = 'all', // 'pedagogical' or 'clinical'
-            topic = 'all'
+            topic = 'all',
+            sortBy = 'default' // 'newest'
         } = req.query as { [key: string]: string };
 
         const pageNum = parseInt(page, 10);
@@ -187,7 +226,13 @@ app.get('/api/memofiches', async (req, res) => {
         const total = await memofichesCollection.countDocuments(query);
         const totalPages = Math.ceil(total / limitNum);
 
+        let sortOptions: any = {};
+        if (sortBy === 'newest') {
+            sortOptions.creationDate = -1;
+        }
+
         const fiches = await memofichesCollection.find(query)
+            .sort(sortOptions)
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum)
             .toArray();
