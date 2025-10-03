@@ -10,7 +10,7 @@ export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<Ca
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
   const fullPrompt = `
-    Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${prompt}".
+    ${prompt}
     La réponse doit être un objet JSON valide avec la structure suivante :
     {
       "title": "string",
