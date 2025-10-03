@@ -54,33 +54,36 @@ const Dashboard: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* --- Stats Section --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {/* Bloc 1: Mémofiches lues */}
-                <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                    <p className="text-7xl font-bold text-teal-600 my-2 animated-gradient-text">
-                        {memofichesLues}
-                    </p>
-                    <h1 className="text-xl text-slate-600 font-medium">Mémofiches lues</h1>
-                </div>
+            <div>
+                <h2 className="text-2xl font-bold text-teal-600 mb-4">Statistiques d'apprentissage</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    {/* Bloc 1: Mémofiches lues */}
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                        <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
+                            {memofichesLues}
+                        </p>
+                        <h1 className="text-lg text-slate-600 font-medium">Mémofiches lues</h1>
+                    </div>
 
-                {/* Bloc 2: Autres statistiques */}
-                <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                    <div className="flex justify-around items-center h-full">
-                        <div className="text-center">
-                            <CheckCircleIcon className="h-8 w-8 mx-auto text-teal-500 mb-1" />
-                            <p className="text-3xl font-bold text-slate-700">{quizRealises}</p>
-                            <p className="text-sm font-medium text-slate-500">Quiz réalisés</p>
-                        </div>
-                        <div className="text-center">
-                            <TrendingUpIcon className="h-8 w-8 mx-auto text-teal-500 mb-1" />
-                            <p className="text-3xl font-bold text-slate-700">{averageScore}%</p>
-                            <p className="text-sm font-medium text-slate-500">Score moyen</p>
-                        </div>
+                    {/* Bloc 2: Quiz réalisés */}
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                        <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
+                            {quizRealises}
+                        </p>
+                        <h1 className="text-lg text-slate-600 font-medium">Quiz réalisés</h1>
+                    </div>
+
+                    {/* Bloc 3: Score moyen */}
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                        <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
+                            {averageScore}%
+                        </p>
+                        <h1 className="text-lg text-slate-600 font-medium">Score moyen</h1>
                     </div>
                 </div>
             </div>
 
-            {/* Bloc 3: Encouragement et CTA */}
+            {/* Bloc 4: Encouragement et CTA */}
             <div className="bg-white rounded-xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                 <p className="text-teal-700 font-semibold text-base">
                     "{encouragement}"
@@ -96,7 +99,7 @@ const Dashboard: React.FC = () => {
 
             {/* --- Latest MemoFiches Preview --- */}
             <div className="mt-8">
-                <h2 className="text-2xl font-bold text-slate-800 mb-6">Dernières mémofiches ajoutées</h2>
+                <h2 className="text-2xl font-bold text-teal-600 mb-6">Dernières mémofiches ajoutées</h2>
                 {isLoading ? (
                     <div className="flex justify-center items-center h-40"><Spinner className="h-10 w-10 text-teal-600" /></div>
                 ) : fiches.length > 0 ? (
