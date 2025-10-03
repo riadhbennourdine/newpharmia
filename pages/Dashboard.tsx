@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
 
                     {/* Bloc 2: Quiz réalisés */}
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                        <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
+                        <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
                             {quizRealises}
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Quiz réalisés</h1>
@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
 
                     {/* Bloc 3: Score moyen */}
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                        <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
+                        <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
                             {averageScore}%
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Score moyen</h1>
