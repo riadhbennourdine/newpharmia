@@ -59,7 +59,7 @@ Instructions spécifiques par section :
     } else if (memoFicheType === 'pharmacologie') {
         prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${formattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
-        prompt = `Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
+        prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else { // exhaustive
         prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
     }
