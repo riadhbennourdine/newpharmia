@@ -28,6 +28,8 @@ export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<Ca
     }
   `;
     
+  console.log("Prompt envoyé à Gemini :", fullPrompt);
+
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
