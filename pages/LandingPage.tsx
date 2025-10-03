@@ -78,7 +78,7 @@ const LandingPage: React.FC = () => {
     }
 
     return (
-        <div className="w-full bg-slate-50 font-sans text-slate-800">
+        <div className="w-full bg-slate-50 text-slate-800">
             {/* Hero Section */}
             <section className="bg-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
