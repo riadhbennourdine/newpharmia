@@ -54,30 +54,40 @@ const Dashboard: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* --- Stats Section --- */}
-            <div className="bg-white rounded-xl shadow-lg p-8 mb-12 text-center">
-                <p className="text-8xl font-bold text-teal-600 my-4 animated-gradient-text">
-                    {memofichesLues}
-                </p>
-                <h1 className="text-2xl text-slate-600 font-medium">Mémofiches lues</h1>
-                
-                <div className="flex justify-center items-center gap-8 md:gap-16 text-slate-700 mt-8">
-                    <div className="text-center">
-                        <CheckCircleIcon className="h-10 w-10 mx-auto text-slate-400 mb-2" />
-                        <p className="text-4xl font-bold">{quizRealises}</p>
-                        <p className="text-sm font-medium text-slate-500">Quiz réalisés</p>
-                    </div>
-                    <div className="text-center">
-                        <TrendingUpIcon className="h-10 w-10 mx-auto text-slate-400 mb-2" />
-                        <p className="text-4xl font-bold">{averageScore}%</p>
-                        <p className="text-sm font-medium text-slate-500">Score moyen</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Bloc 1: Mémofiches lues */}
+                <div className="bg-white rounded-xl shadow-lg p-8 text-center flex flex-col justify-center items-center">
+                    <p className="text-8xl font-bold text-teal-600 my-4 animated-gradient-text">
+                        {memofichesLues}
+                    </p>
+                    <h1 className="text-2xl text-slate-600 font-medium">Mémofiches lues</h1>
+                </div>
+
+                {/* Bloc 2: Autres statistiques */}
+                <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col justify-center">
+                    <div className="flex justify-around items-center h-full">
+                        <div className="text-center">
+                            <CheckCircleIcon className="h-10 w-10 mx-auto text-teal-500 mb-2" />
+                            <p className="text-4xl font-bold text-slate-700">{quizRealises}</p>
+                            <p className="text-sm font-medium text-slate-500">Quiz réalisés</p>
+                        </div>
+                        <div className="text-center">
+                            <TrendingUpIcon className="h-10 w-10 mx-auto text-teal-500 mb-2" />
+                            <p className="text-4xl font-bold text-slate-700">{averageScore}%</p>
+                            <p className="text-sm font-medium text-slate-500">Score moyen</p>
+                        </div>
                     </div>
                 </div>
-                <p className="text-teal-700 font-semibold text-lg mt-10">
+            </div>
+
+            {/* Bloc 3: Encouragement et CTA */}
+            <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+                <p className="text-teal-700 font-semibold text-lg">
                     "{encouragement}"
                 </p>
                 <Link 
                     to="/memofiches" 
-                    className="mt-8 inline-flex items-center gap-2 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                    className="mt-6 inline-flex items-center gap-2 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                     Explorer les mémofiches
                     <ArrowRightIcon className="h-5 w-5" />
