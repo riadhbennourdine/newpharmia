@@ -52,13 +52,14 @@ const Dashboard: React.FC = () => {
     const encouragement = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* --- Stats Section --- */}
             <div className="bg-white rounded-xl shadow-lg p-8 mb-12 text-center">
-                <h1 className="text-2xl text-slate-600 font-medium">Mémofiches lues</h1>
                 <p className="text-8xl font-bold text-teal-600 my-4 animated-gradient-text">
                     {memofichesLues}
                 </p>
+                <h1 className="text-2xl text-slate-600 font-medium">Mémofiches lues</h1>
+                
                 <div className="flex justify-center items-center gap-8 md:gap-16 text-slate-700 mt-8">
                     <div className="text-center">
                         <CheckCircleIcon className="h-10 w-10 mx-auto text-slate-400 mb-2" />
@@ -71,7 +72,7 @@ const Dashboard: React.FC = () => {
                         <p className="text-sm font-medium text-slate-500">Score moyen</p>
                     </div>
                 </div>
-                <p className="text-slate-500 italic mt-10">
+                <p className="text-teal-700 font-semibold text-lg mt-10">
                     "{encouragement}"
                 </p>
                 <Link 
