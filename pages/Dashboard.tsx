@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
@@ -26,6 +26,7 @@ const MemoFichePreviewCard: React.FC<{ caseStudy: CaseStudy }> = ({ caseStudy })
 const Dashboard: React.FC = () => {
     const { user } = useAuth();
     const { fiches, isLoading, fetchFiches } = useData();
+    const [selectedMenu, setSelectedMenu] = useState('parcours');
 
     // Fetch latest 3 fiches on component mount
     useEffect(() => {
@@ -51,8 +52,63 @@ const Dashboard: React.FC = () => {
     ];
     const encouragement = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
 
-    return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    const renderPharmacienDashboard = () => {
+        const { team, getPharmacistTeam } = useData();
+
+        useEffect(() => {
+            if (selectedMenu === 'equipe' && user?._id) {
+                getPharmacistTeam(user._id);
+            }
+        }, [selectedMenu, user?._id, getPharmacistTeam]);
+
+        return (
+            <div>
+                <div className="flex justify-center mb-8">
+                    <button 
+                        className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                        onClick={() => setSelectedMenu('parcours')}
+                    >
+                        Parcours d'apprentissage
+                    </button>
+                    <button 
+                        className={`px-4 py-2 font-semibold rounded-r-lg ${selectedMenu === 'equipe' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                        onClick={() => setSelectedMenu('equipe')}
+                    >
+                        Gestion de l'équipe
+                    </button>
+                </div>
+
+                {selectedMenu === 'parcours' && renderLearnerDashboard()}
+                {selectedMenu === 'equipe' && (
+                    <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {team.map(preparateur => (
+                                <div key={preparateur._id} className="bg-white rounded-xl shadow-lg p-6 text-center">
+                                    <h3 className="text-xl font-bold text-slate-800">{preparateur.firstName} {preparateur.lastName}</h3>
+                                    <div className="mt-4">
+                                        <p>Mémofiches lues: {preparateur.readFicheIds?.length || 0}</p>
+                                        <p>Quiz réalisés: {preparateur.quizHistory?.length || 0}</p>
+                                        <p>Score moyen: {preparateur.quizHistory && preparateur.quizHistory.length > 0 ? Math.round(preparateur.quizHistory.reduce((acc, quiz) => acc + (quiz.score || 0), 0) / preparateur.quizHistory.length) : 0}%</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-8">
+                            <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne du Pharmacien à l'équipe</h2>
+                            <textarea
+                                rows={4}
+                                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                                placeholder="Écrivez vos consignes ici..."
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const renderLearnerDashboard = () => (
+        <>
             {/* --- Stats Section --- */}
             <div>
                 <h2 className="text-2xl font-bold text-teal-600 mb-4">Statistiques d'apprentissage</h2>
@@ -121,8 +177,15 @@ const Dashboard: React.FC = () => {
                     </div>
                 )}
             </div>
+        </>
+    );
+
+    return (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {user?.role === UserRole.PHARMACIEN ? renderPharmacienDashboard() : renderLearnerDashboard()}
         </div>
     );
+};
 };
 
 export default Dashboard;

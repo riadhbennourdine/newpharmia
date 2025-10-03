@@ -223,6 +223,21 @@ app.get('/api/users/pharmacists', (req, res) => {
     res.json(pharmacists);
 });
 
+app.get('/api/users/pharmacists/:pharmacistId/team', async (req, res) => {
+    try {
+        const { pharmacistId } = req.params;
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const team = await usersCollection.find({ role: UserRole.PREPARATEUR, pharmacistId }).toArray();
+        res.json(team);
+    } catch (error) {
+        console.error('Error fetching pharmacist team:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de l\'équipe.' });
+    }
+});
+
 // ===============================================
 // MEMOFICHES API
 // ===============================================

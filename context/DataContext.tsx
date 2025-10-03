@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CaseStudy } from '../types';
+import { CaseStudy, User } from '../types';
 
 interface Pagination {
   total: number;
@@ -14,10 +14,12 @@ interface DataContextType {
   pagination: Pagination | null;
   isLoading: boolean;
   error: string | null;
+  team: User[];
   fetchFiches: (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; }) => Promise<void>;
   getCaseStudyById: (id: string) => Promise<CaseStudy | undefined>;
   saveCaseStudy: (caseStudy: CaseStudy) => Promise<CaseStudy>;
   deleteCaseStudy: (id: string) => Promise<void>;
+  getPharmacistTeam: (pharmacistId: string) => Promise<void>;
   startQuiz: (id: string) => void;
   editCaseStudy: (id: string) => void;
 }
@@ -26,6 +28,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [fiches, setFiches] = useState<CaseStudy[]>([]);
+  const [team, setTeam] = useState<User[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +51,21 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const data = await response.json();
       setFiches(data.data);
       setPagination(data.pagination);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getPharmacistTeam = useCallback(async (pharmacistId: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/users/pharmacists/${pharmacistId}/team`);
+      if (!response.ok) throw new Error('Échec de la récupération de l\'équipe.');
+      const data = await response.json();
+      setTeam(data);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -118,10 +136,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     pagination,
     isLoading,
     error,
+    team,
     fetchFiches,
     getCaseStudyById,
     saveCaseStudy,
     deleteCaseStudy,
+    getPharmacistTeam,
     startQuiz,
     editCaseStudy
   };
