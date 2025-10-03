@@ -54,21 +54,26 @@ const Dashboard: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* --- Stats Section --- */}
-            <div className="bg-white rounded-xl shadow-lg p-8 mb-12 text-center">
-                <p className="text-8xl font-bold text-teal-600 my-4 animated-gradient-text">
-                    {memofichesLues}
-                </p>
-                <h1 className="text-2xl text-slate-600 font-medium">Mémofiches lues</h1>
-                
-                <div className="flex justify-center items-center gap-8 md:gap-16 text-slate-700 mt-8">
-                    <div className="text-center">
-                        <CheckCircleIcon className="h-10 w-10 mx-auto text-slate-400 mb-2" />
-                        <p className="text-4xl font-bold">{quizRealises}</p>
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    {/* Stat: Mémofiches lues */}
+                    <div className="flex flex-col justify-center items-center">
+                        <BookOpenIcon className="h-10 w-10 mx-auto text-teal-600 mb-2" />
+                        <p className="text-4xl font-bold text-teal-600">{memofichesLues}</p>
+                        <p className="text-sm font-medium text-slate-500">Mémofiches lues</p>
+                    </div>
+                    
+                    {/* Stat: Quiz réalisés */}
+                    <div className="flex flex-col justify-center items-center">
+                        <CheckCircleIcon className="h-10 w-10 mx-auto text-teal-600 mb-2" />
+                        <p className="text-4xl font-bold text-slate-700">{quizRealises}</p>
                         <p className="text-sm font-medium text-slate-500">Quiz réalisés</p>
                     </div>
-                    <div className="text-center">
-                        <TrendingUpIcon className="h-10 w-10 mx-auto text-slate-400 mb-2" />
-                        <p className="text-4xl font-bold">{averageScore}%</p>
+
+                    {/* Stat: Score moyen */}
+                    <div className="flex flex-col justify-center items-center">
+                        <TrendingUpIcon className="h-10 w-10 mx-auto text-teal-600 mb-2" />
+                        <p className="text-4xl font-bold text-slate-700">{averageScore}%</p>
                         <p className="text-sm font-medium text-slate-500">Score moyen</p>
                     </div>
                 </div>
