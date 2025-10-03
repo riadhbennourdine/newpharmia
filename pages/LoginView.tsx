@@ -99,6 +99,15 @@ const LoginView: React.FC = () => {
                             Pas encore de compte ? S'inscrire
                         </button>
                     </div>
+                    <div className="text-sm text-center mt-5 border-t pt-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/')}
+                            className="font-medium text-slate-500 hover:text-slate-700"
+                        >
+                            &larr; Retour à l'accueil
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
