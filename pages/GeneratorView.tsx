@@ -53,13 +53,32 @@ Instructions spécifiques par section :
 - Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
 `;
 
+    const dermocosmetiqueFormattingInstructions = `
+
+Instructions de formatage impératives pour chaque section :
+- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
+- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+
+Instructions spécifiques par section :
+- **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
+- **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
+- **Etat et besoin de la peau**: Analyser les informations collectées pour définir le besoin principal.
+- **Conseiller une consultation dermatologique**: Identifier les signaux d'alerte nécessitant un avis médical.
+- **Produit principal**: Proposer un ou deux produits principaux répondant directement au besoin identifié.
+- **Produits associés**: Construire une routine complète et personnalisée.
+- **Hygiène de vie**: Conseils généraux pour soutenir la santé globale.
+- **Conseils alimentaires**: Conseiller sur les régimes alimentaires spécifiques.
+- **Références bibliographiques**: Lister les références utilisées.
+- Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
+`;
+
     let prompt = '';
     if (memoFicheType === 'maladie') {
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
         prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${formattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
-        prompt = `Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
+        prompt = `Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${dermocosmetiqueFormattingInstructions}`;
     } else { // exhaustive
         prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
     }
