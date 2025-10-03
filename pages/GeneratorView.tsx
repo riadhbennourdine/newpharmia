@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'exhaustive'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const GeneratorView: React.FC = () => {
   const handleGenerate = async () => {
     if (memoFicheType === 'maladie' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
     if (memoFicheType === 'pharmacologie' && (!sourceText.trim() || !pharmaTheme.trim() || !pharmaPathology.trim())) return;
+    if (memoFicheType === 'dermocosmetique' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
     if (memoFicheType === 'exhaustive' && !sourceText.trim()) return;
 
     setIsLoading(true);
@@ -43,6 +44,12 @@ Instructions spécifiques par section :
 - **Aperçu pathologie**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
 - **Signaux d'alerte**: Doit être une liste à puces (commençant par "- "). Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
 - **Produits associés**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
+- **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
+- **Etat et besoin de la peau**: Analyser les informations collectées pour définir le besoin principal.
+- **Conseiller une consultation dermatologique**: Identifier les signaux d'alerte nécessitant un avis médical.
+- **Produit principal**: Proposer un ou deux produits principaux répondant directement au besoin identifié.
+- **Hygiène de vie**: Conseils généraux pour soutenir la santé globale.
+- **Conseils alimentaires**: Conseiller sur les régimes alimentaires spécifiques.
 - Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
 `;
 
@@ -51,6 +58,8 @@ Instructions spécifiques par section :
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
         prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${formattingInstructions}`;
+    } else if (memoFicheType === 'dermocosmetique') {
+        prompt = `Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else { // exhaustive
         prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
     }
@@ -249,6 +258,7 @@ Instructions spécifiques par section :
             >
             <option value="maladie">Maladie courante</option>
             <option value="pharmacologie">Pharmacologie</option>
+            <option value="dermocosmetique">Dermocosmétique</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>
@@ -325,6 +335,45 @@ Instructions spécifiques par section :
             </div>
         )}
 
+        {memoFicheType === 'dermocosmetique' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                 <div>
+                    <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
+                    Thème Pédagogique
+                    </label>
+                    <select
+                    id="theme-select"
+                    value={selectedTheme}
+                    onChange={(e) => setSelectedTheme(e.target.value)}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                    disabled={isLoading}
+                    >
+                    <option value="">Sélectionnez un thème</option>
+                    {TOPIC_CATEGORIES[0].topics.map(topic => (
+                        <option key={topic} value={topic}>{topic}</option>
+                    ))}
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="system-select" className="block text-lg font-medium text-slate-700 mb-2">
+                    Système/Organe
+                    </label>
+                    <select
+                    id="system-select"
+                    value={selectedSystem}
+                    onChange={(e) => setSelectedSystem(e.target.value)}
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                    disabled={isLoading}
+                    >
+                    <option value="">Sélectionnez un système/organe</option>
+                    {TOPIC_CATEGORIES[1].topics.map(topic => (
+                        <option key={topic} value={topic}>{topic}</option>
+                    ))}
+                    </select>
+                </div>
+            </div>
+        )}
+
         <div className="mb-6">
             <label htmlFor="source-text" className="block text-lg font-medium text-slate-700 mb-2">
             Sujet détaillé de la mémofiche
@@ -376,7 +425,7 @@ Instructions spécifiques par section :
       <div className="mt-6 text-center">
         <button
           onClick={handleGenerate}
-          disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim()))}
+          disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem))}
           className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
         >
           {isLoading ? (
