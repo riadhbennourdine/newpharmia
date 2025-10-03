@@ -15,7 +15,7 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
   const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(Array(questions.length).fill(null));
   const [showResults, setShowResults] = useState(false);
   const [submittedAnswer, setSubmittedAnswer] = useState<number | null>(null);
-  const { user } = useAuth();
+  const { user, saveQuizResult } = useAuth();
 
   if (!questions || questions.length === 0) {
     return (
@@ -46,12 +46,11 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
       if (user && quizId) {
         const rawScore = calculateScore();
         const percentageScore = Math.round((rawScore / questions.length) * 100);
-        try {
-          // This is a mock API call for demonstration as there's no backend.
-          console.log('Tracking quiz completion (mock):', { quizId, score: percentageScore, ficheId: quizId });
-        } catch (error) {
-          console.error('Error tracking quiz completion:', error);
-        }
+        saveQuizResult({ 
+          quizId, 
+          score: percentageScore, 
+          completedAt: new Date() 
+        });
       }
     }
   };

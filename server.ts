@@ -178,6 +178,45 @@ app.post('/api/users/:userId/read-fiches', async (req, res) => {
     }
 });
 
+app.post('/api/users/:userId/quiz-history', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { quizId, score, completedAt } = req.body;
+
+        if (quizId === undefined || score === undefined || completedAt === undefined) {
+            return res.status(400).json({ message: 'quizId, score, and completedAt are required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const quizResult = { quizId, score, completedAt: new Date(completedAt) };
+
+        await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any },
+            { $push: { quizHistory: quizResult } as any }
+        );
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found after update.' });
+        }
+
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error saving quiz history:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 // USER ROUTES (MOCKED)
 app.get('/api/users/pharmacists', (req, res) => {
     const pharmacists = mockUsers.filter(u => u.role === UserRole.PHARMACIEN);

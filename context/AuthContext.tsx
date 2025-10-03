@@ -13,6 +13,7 @@ interface AuthContextType {
   authError: string | null;
   setUser: (user: User) => void;
   markFicheAsRead: (ficheId: string) => Promise<void>;
+  saveQuizResult: (result: { quizId: string; score: number; completedAt: Date }) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -123,6 +124,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [user]);
 
+  const saveQuizResult = useCallback(async (result: { quizId: string; score: number; completedAt: Date }) => {
+    if (!user) return;
+    try {
+      const response = await fetch(`/api/users/${user._id}/quiz-history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result),
+      });
+      const updatedUser = await response.json();
+      if (!response.ok) {
+        throw new Error(updatedUser.message || 'Failed to save quiz result');
+      }
+      handleSetUser(updatedUser);
+    } catch (error) {
+      console.error('Error saving quiz result:', error);
+    }
+  }, [user]);
+
   const value = { 
     isAuthenticated: !!token, 
     user, 
@@ -134,6 +153,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     authError,
     setUser: handleSetUser,
     markFicheAsRead,
+    saveQuizResult,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
