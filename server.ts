@@ -279,6 +279,7 @@ app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, 
 app.get('/api/users/pharmacists/:pharmacistId/team', async (req, res) => {
     try {
         const { pharmacistId } = req.params;
+        console.log('Fetching team for pharmacistId:', pharmacistId);
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
