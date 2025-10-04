@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {team.map(preparateur => (
                                 <div key={preparateur._id} className="bg-white rounded-xl shadow-lg p-6 text-center">
-                                    <h3 className="text-xl font-bold text-slate-800">{preparateur.firstName} {preparateur.lastName}</h3>
+                                    <h3 className="text-xl font-bold text-teal-600">{preparateur.firstName} {preparateur.lastName}</h3>
                                     <div className="mt-4">
                                         <p>Mémofiches lues: {preparateur.readFicheIds?.length || 0}</p>
                                         <p>Quiz réalisés: {preparateur.quizHistory?.length || 0}</p>
