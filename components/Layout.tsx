@@ -35,10 +35,12 @@ const Header: React.FC = () => {
                 <NavLink to="/memofiches" className={navLinkClass}>
                   Mémofiches
                 </NavLink>
-                <NavLink to="/contact" className={navLinkClass}>
-                  Contact
-                </NavLink>
-                {user?.role !== UserRole.PREPARATEUR && (
+                {user?.role !== UserRole.ADMIN && (
+                  <NavLink to="/contact" className={navLinkClass}>
+                    Contact
+                  </NavLink>
+                )}
+                {user?.role !== UserRole.ADMIN && user?.role !== UserRole.PREPARATEUR && (
                   <NavLink to="/tarifs" className={navLinkClass}>
                     Tarifs
                   </NavLink>

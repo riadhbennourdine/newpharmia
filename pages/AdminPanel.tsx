@@ -3,19 +3,6 @@ import { User, UserRole } from '../types';
 import SubscriberManager from './admin/SubscriberManager';
 import Newsletter from './admin/Newsletter';
 
-// Mock data since there's no backend
-const mockPharmacists: User[] = [
-    { _id: 'pharm1', name: 'Dr. John Doe', firstName: 'John', lastName: 'Doe', email: 'john.doe@pharmacy.com', role: UserRole.PHARMACIEN },
-    { _id: 'pharm2', name: 'Dr. Jane Roe', firstName: 'Jane', lastName: 'Roe', email: 'jane.roe@pharmacy.com', role: UserRole.PHARMACIEN },
-].map(u => ({...u, id: u._id})); // Temp compatibility
-
-const mockPreparateurs: User[] = [
-    { _id: 'prep1', name: 'Alice Smith', firstName: 'Alice', lastName: 'Smith', email: 'alice.smith@pharmacy.com', role: UserRole.PREPARATEUR, pharmacistId: 'pharm1' },
-    { _id: 'prep2', name: 'Bob Johnson', firstName: 'Bob', lastName: 'Johnson', email: 'bob.johnson@pharmacy.com', role: UserRole.PREPARATEUR },
-    { _id: 'prep3', name: 'Charlie Brown', firstName: 'Charlie', lastName: 'Brown', email: 'charlie.brown@pharmacy.com', role: UserRole.PREPARATEUR },
-].map(u => ({...u, id: u._id})); // Temp compatibility
-
-
 const AdminPanel: React.FC = () => {
   const [assignmentLoading, setAssignmentLoading] = useState(false);
   const [assignmentFeedback, setAssignmentFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -24,15 +11,32 @@ const AdminPanel: React.FC = () => {
   const [preparateurs, setPreparateurs] = useState<User[]>([]);
   const [pharmacists, setPharmacists] = useState<User[]>([]);
 
-  const fetchUsers = async () => {
-    setAssignmentLoading(true);
-    await new Promise(res => setTimeout(res, 300)); // Simulate async fetch
-    setPharmacists(mockPharmacists);
-    setPreparateurs(mockPreparateurs);
-    setAssignmentLoading(false);
-  };
-
   useEffect(() => {
+    const fetchUsers = async () => {
+      setAssignmentLoading(true);
+      try {
+        const [preparateursRes, pharmacistsRes] = await Promise.all([
+          fetch('/api/users/preparateurs'),
+          fetch('/api/users/pharmacists'),
+        ]);
+
+        if (!preparateursRes.ok || !pharmacistsRes.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const preparateursData = await preparateursRes.json();
+        const pharmacistsData = await pharmacistsRes.json();
+
+        setPreparateurs(preparateursData);
+        setPharmacists(pharmacistsData);
+      } catch (error) {
+        console.error(error);
+        setAssignmentFeedback({ message: 'Erreur lors du chargement des utilisateurs.', type: 'error' });
+      } finally {
+        setAssignmentLoading(false);
+      }
+    };
+
     if (activeTab === 'assignment') {
       fetchUsers();
     }
@@ -42,16 +46,29 @@ const AdminPanel: React.FC = () => {
     setAssignmentLoading(true);
     setAssignmentFeedback(null);
 
-    // Mocking API call
-    console.log(`Assigning pharmacist ${newPharmacistId} to preparateur ${preparateurId}`);
-    await new Promise(res => setTimeout(res, 500));
+    try {
+      const response = await fetch(`/api/users/preparateurs/${preparateurId}/assign-pharmacist`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pharmacistId: newPharmacistId }),
+      });
 
-    setPreparateurs(prev => prev.map(p => p._id === preparateurId ? { ...p, pharmacistId: newPharmacistId || undefined } : p));
-    
-    setAssignmentFeedback({ message: 'Attribution mise à jour avec succès (simulation).', type: 'success' });
-    // Clear feedback after a few seconds
-    setTimeout(() => setAssignmentFeedback(null), 3000);
-    setAssignmentLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to assign pharmacist');
+      }
+
+      setPreparateurs(prev => prev.map(p => p._id === preparateurId ? { ...p, pharmacistId: newPharmacistId || undefined } : p));
+      setAssignmentFeedback({ message: 'Attribution mise à jour avec succès.', type: 'success' });
+    } catch (error) {
+      console.error(error);
+      setAssignmentFeedback({ message: 'Erreur lors de l\'attribution du pharmacien.', type: 'error' });
+    } finally {
+      // Clear feedback after a few seconds
+      setTimeout(() => setAssignmentFeedback(null), 3000);
+      setAssignmentLoading(false);
+    }
   };
 
   return (

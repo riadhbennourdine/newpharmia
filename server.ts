@@ -217,10 +217,63 @@ app.post('/api/users/:userId/quiz-history', async (req, res) => {
     }
 });
 
-// USER ROUTES (MOCKED)
-app.get('/api/users/pharmacists', (req, res) => {
-    const pharmacists = mockUsers.filter(u => u.role === UserRole.PHARMACIEN);
-    res.json(pharmacists);
+// USER ROUTES
+app.get('/api/users/pharmacists', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const pharmacists = await usersCollection.find({ role: UserRole.PHARMACIEN }).toArray();
+        res.json(pharmacists);
+    } catch (error) {
+        console.error('Error fetching pharmacists:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des pharmaciens.' });
+    }
+});
+
+app.get('/api/users/preparateurs', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const preparateurs = await usersCollection.find({ role: UserRole.PREPARATEUR }).toArray();
+        res.json(preparateurs);
+    } catch (error) {
+        console.error('Error fetching preparateurs:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des préparateurs.' });
+    }
+});
+
+app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
+    try {
+        const { preparateurId } = req.params;
+        const { pharmacistId } = req.body;
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(preparateurId)) {
+            return res.status(400).json({ message: 'Invalid preparateurId.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(preparateurId) as any },
+            { $set: { pharmacistId } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Preparateur not found.' });
+        }
+
+        res.json({ message: 'Pharmacist assigned successfully.' });
+    } catch (error) {
+        console.error('Error assigning pharmacist:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'assignation du pharmacien.' });
+    }
 });
 
 app.get('/api/users/pharmacists/:pharmacistId/team', async (req, res) => {
