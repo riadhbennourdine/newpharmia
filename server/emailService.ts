@@ -34,11 +34,11 @@ export const sendBrevoEmail = async ({ to, subject, htmlContent }: SendEmailOpti
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Brevo API error:", data);
+      console.error("Brevo API error:", response.status, data);
       throw new Error(data.message || 'Failed to send email via Brevo.');
     }
 
-    console.log("Email sent successfully via Brevo:", data);
+    console.log("Email sent successfully via Brevo:", response.status, data);
     return data;
   } catch (error) {
     console.error("Error sending email via Brevo:", error);
