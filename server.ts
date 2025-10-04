@@ -144,7 +144,12 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        const user = await usersCollection.findOne({ email: identifier });
+        const user = await usersCollection.findOne({
+            $or: [
+                { email: identifier },
+                { username: identifier }
+            ]
+        });
 
         if (!user) {
             // Send a generic message to prevent email enumeration
