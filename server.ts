@@ -37,6 +37,9 @@ const mockUsers: User[] = [
     { _id: 'pharmacien1', email: 'pharmacien@pharmia.com', role: UserRole.PHARMACIEN, firstName: 'Pharmacien', lastName: 'User', passwordHash: 'hashedpassword' },
 ];
 
+import crypto from 'crypto';
+import { sendBrevoEmail } from './server/emailService';
+
 // AUTH ROUTES
 app.post('/api/auth/login', async (req, res) => {
     try {
@@ -130,14 +133,91 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-app.post('/api/auth/forgot-password', (req, res) => {
-    console.log('Forgot password for (mock):', req.body.identifier);
-    res.json({ message: 'Si un compte existe, un email a été envoyé.' });
+app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+        const { identifier } = req.body;
+        if (!identifier) {
+            return res.status(400).json({ message: 'L\'identifiant est requis.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const user = await usersCollection.findOne({ email: identifier });
+
+        if (!user) {
+            // Send a generic message to prevent email enumeration
+            return res.json({ message: 'Si un compte existe, un email de réinitialisation a été envoyé.' });
+        }
+
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour from now
+
+        await usersCollection.updateOne(
+            { _id: user._id },
+            { $set: { resetPasswordToken: resetToken, resetPasswordExpires: resetTokenExpires } }
+        );
+
+        // Send email with reset link
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+        const htmlContent = `
+            <p>Vous avez demandé une réinitialisation de mot de passe.</p>
+            <p>Veuillez cliquer sur ce lien pour réinitialiser votre mot de passe : <a href="${resetUrl}">${resetUrl}</a></p>
+            <p>Ce lien expirera dans une heure.</p>
+            <p>Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail.</p>
+        `;
+
+        await sendBrevoEmail({
+            to: user.email,
+            subject: 'Réinitialisation de mot de passe PharmIA',
+            htmlContent,
+        });
+
+        res.json({ message: 'Si un compte existe, un email de réinitialisation a été envoyé.' });
+
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la demande de réinitialisation de mot de passe.' });
+    }
 });
 
-app.post('/api/auth/reset-password', (req, res) => {
-    console.log('Resetting password with token (mock):', req.body.token);
-    res.json({ message: 'Mot de passe réinitialisé avec succès.' });
+app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) {
+            return res.status(400).json({ message: 'Le jeton et le nouveau mot de passe sont requis.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const user = await usersCollection.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: new Date() } // Token not expired
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Le jeton de réinitialisation est invalide ou a expiré.' });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(newPassword, salt);
+
+        await usersCollection.updateOne(
+            { _id: user._id },
+            { $set: { passwordHash, resetPasswordToken: undefined, resetPasswordExpires: undefined } }
+        );
+
+        res.json({ message: 'Mot de passe réinitialisé avec succès.' });
+
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la réinitialisation du mot de passe.' });
+    }
 });
 
 // USER ROUTES
