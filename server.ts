@@ -279,12 +279,16 @@ app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, 
 app.get('/api/users/pharmacists/:pharmacistId/team', async (req, res) => {
     try {
         const { pharmacistId } = req.params;
-        console.log('Fetching team for pharmacistId:', pharmacistId);
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(pharmacistId)) {
+            return res.status(400).json({ message: 'Invalid pharmacistId.' });
+        }
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        const team = await usersCollection.find({ role: UserRole.PREPARATEUR, pharmacistId }).toArray();
+        const team = await usersCollection.find({ role: UserRole.PREPARATEUR, pharmacistId: new ObjectId(pharmacistId) as any }).toArray();
         res.json(team);
     } catch (error) {
         console.error('Error fetching pharmacist team:', error);
