@@ -38,23 +38,23 @@ const getYoutubeEmbedUrl = (url: string) => {
 // Template 1: Simple avec image (Table-based layout)
 const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
     const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
+    const CLIENT_URL = process.env.CLIENT_URL || '#';
+
     return (
-      // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
-      <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
+      <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#F8FAFC' }}>
         <tbody>
         <tr>
-          <td align="center" style={{ padding: '20px' }}>
-            {/* FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error. */}
-            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '600px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+          <td align="center" style={{ padding: '20px 10px' }}>
+            <table cellPadding="0" cellSpacing="0" border={0} style={{ maxWidth: '600px', width: '100%', margin: 'auto', backgroundColor: '#FFFFFF', borderRadius: '0.5rem', border: '1px solid #CBD5E1', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)' }}>
               <tbody>
               {/* Header */}
               <tr>
-                <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-                  {/* FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error. */}
+                <td style={{ padding: '24px', borderBottom: '1px solid #E5E7EB' }}>
                   <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%' }}>
                     <tbody>
                     <tr>
-                      <td><img src="https://pharmaconseilbmb.com/photos/site/logo-pharmia.png" alt="PharmIA Logo" width={120} /></td>
+                      <td style={{ textAlign: 'left' }}><img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" width="40" height="40" style={{ display: 'block', border: 0 }} /></td>
+                      <td style={{ textAlign: 'right' }}><span style={{ fontSize: '24px', fontWeight: 'bold', color: '#0D9488' }}>PharmIA</span></td>
                     </tr>
                     </tbody>
                   </table>
@@ -62,34 +62,30 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               </tr>
               {/* Main Content */}
               <tr>
-                <td style={{ padding: '24px 32px', fontFamily: 'Arial, sans-serif', color: '#111827' }}>
-                  {/* FIX: Changed marginBottom from a string to a number to resolve TypeScript error. */}
-                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Arial, sans-serif', color: '#111827' }}>Bonjour {recipientName},</h2>
-                  <p style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></p>
-                  {videoDetails && (
-                    // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
-                    // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
-                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
+                <td style={{ padding: '30px', fontFamily: 'Arial, sans-serif', color: '#1E293B' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: '16px', fontFamily: 'Arial, sans-serif', color: '#1E293B' }}>Bonjour ${recipientName},</h2>
+                  <p style={{ lineHeight: 1.6, color: '#475569', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></p>
+                  ${videoDetails ? `
+                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: '24px' }}>
                      <tbody>
                       <tr>
                         <td align="center">
-                          <a href={youtubeUrl} style={{ display: 'block' }}>
-                            {/* FIX: Changed border from a string to a number to resolve TypeScript error. */}
-                            <img src={videoDetails.thumbnailUrl} alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
+                          <a href="${youtubeUrl}" style={{ display: 'block' }}>
+                            <img src="${videoDetails.thumbnailUrl}" alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
                           </a>
                         </td>
                       </tr>
                       </tbody>
                     </table>
-                  )}
+                  ` : ''}
+                  <p style="text-align: center; margin-top: 20px;"><a href="${CLIENT_URL}" style="display: inline-block; padding: 10px 20px; background-color: #0D9488; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: bold;">Visiter PharmIA</a></p>
                 </td>
               </tr>
               {/* Footer */}
               <tr>
-                <td style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6b7280', fontFamily: 'Arial, sans-serif' }}>
-                  <p style={{ marginTop: 0, marginBottom: 8 }}>PharmIA | 123 Rue de la Pharmacie, 75001 Paris</p>
-                  {/* FIX: Changed margin from a string to a number to resolve TypeScript error. */}
-                  <p style={{ margin: 0 }}><a href={`/#/unsubscribe?email=${recipientName}`} style={{ color: '#0d9488', textDecoration: 'none' }}>Se désinscrire</a> | <a href="#" style={{ color: '#0d9488', textDecoration: 'none' }}>Voir dans le navigateur</a></p>
+                <td style={{ backgroundColor: '#F3F4F6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6B7280', fontFamily: 'Arial, sans-serif', borderTop: '1px solid #E5E7EB' }}>
+                  <p style={{ marginTop: 0, marginBottom: '8px' }}>${SENDER_NAME} | Tous droits réservés.</p>
+                  <p style={{ margin: 0 }}><a href="${CLIENT_URL}#/unsubscribe" style={{ color: '#0D9488', textDecoration: 'none' }}>Se désinscrire</a></p>
                 </td>
               </tr>
               </tbody>
