@@ -11,6 +11,7 @@ interface TemplateProps {
   recipientName: string;
   content: string;
   youtubeUrl?: string;
+  SENDER_NAME: string;
 }
 
 const getYoutubeEmbedUrl = (url: string) => {
@@ -36,7 +37,7 @@ const getYoutubeEmbedUrl = (url: string) => {
 
 
 // Template 1: Simple avec image (Table-based layout)
-const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
+const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl, SENDER_NAME }) => {
     const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
     const CLIENT_URL = process.env.CLIENT_URL || '#';
 
@@ -177,6 +178,7 @@ const Newsletter: React.FC = () => {
   };
 
   const PreviewComponent = SimpleTemplate;
+  const SENDER_NAME = process.env.SENDER_NAME || 'PharmIA';
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
@@ -227,7 +229,7 @@ const Newsletter: React.FC = () => {
               <p className="text-sm text-gray-600">Sujet: {subject}</p>
             </div>
             <div ref={previewRef}>
-              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
+              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} SENDER_NAME={SENDER_NAME} />
             </div>
           </div>
         </div>
