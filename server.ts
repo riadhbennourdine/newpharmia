@@ -256,13 +256,17 @@ app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, 
             return res.status(400).json({ message: 'Invalid preparateurId.' });
         }
 
+        if (pharmacistId && !ObjectId.isValid(pharmacistId)) {
+            return res.status(400).json({ message: 'Invalid pharmacistId.' });
+        }
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
         const result = await usersCollection.updateOne(
             { _id: new ObjectId(preparateurId) as any },
-            { $set: { pharmacistId } }
+            { $set: { pharmacistId: pharmacistId ? new ObjectId(pharmacistId) : undefined } }
         );
 
         if (result.matchedCount === 0) {
