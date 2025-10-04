@@ -161,7 +161,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         );
 
         // Send email with reset link
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+        const resetUrl = `${process.env.CLIENT_URL}reset-password?token=${resetToken}`;
         const htmlContent = `
             <p>Vous avez demandé une réinitialisation de mot de passe.</p>
             <p>Veuillez cliquer sur ce lien pour réinitialiser votre mot de passe : <a href="${resetUrl}">${resetUrl}</a></p>
