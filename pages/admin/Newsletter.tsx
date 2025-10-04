@@ -152,15 +152,27 @@ const Newsletter: React.FC = () => {
       setSendStatus('Erreur: Impossible de récupérer le contenu de la prévisualisation.');
       return;
     }
-    const htmlContent = previewRef.current.innerHTML;
+    const htmlContentToSend = previewRef.current.innerHTML;
     setSendStatus('Envoi en cours...');
 
     try {
-      console.log("Sending newsletter (mock):", { subject, htmlContent, groups: selectedGroups });
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSendStatus("Newsletter envoyée avec succès (simulation).");
-    } catch (error) {
-      setSendStatus('Impossible de se connecter au serveur (simulation).');
+      const response = await fetch('/api/newsletter/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, groups: selectedGroups }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Échec de l\'envoi de la newsletter.');
+      }
+      setSendStatus(data.message || "Newsletter envoyée avec succès.");
+    } catch (error: any) {
+      console.error("Error sending newsletter:", error);
+      setSendStatus(error.message || 'Erreur lors de l\'envoi de la newsletter.');
+    } finally {
+      setTimeout(() => setSendStatus(''), 5000);
     }
   };
 

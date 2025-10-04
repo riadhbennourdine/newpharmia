@@ -609,6 +609,53 @@ app.post('/api/gemini/chat', async (req, res) => {
     }
 });
 
+app.post('/api/newsletter/send', async (req, res) => {
+    try {
+        const { subject, htmlContent, groups } = req.body;
+
+        if (!subject || !htmlContent) {
+            return res.status(400).json({ message: 'Le sujet et le contenu HTML sont requis.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        let query: any = {};
+        if (groups && groups.length > 0) {
+            // Assuming 'groups' in User model is an array of strings, or a single string field
+            // For now, let's assume a simple 'group' field for filtering
+            // This part might need adjustment based on actual user group implementation
+            query.groups = { $in: groups }; 
+        }
+        // For newsletter, we target users who have an email and are not unsubscribed
+        query.email = { $exists: true, $ne: null };
+
+        const subscribers = await usersCollection.find(query).toArray();
+
+        if (subscribers.length === 0) {
+            return res.status(404).json({ message: 'Aucun abonné trouvé pour les critères spécifiés.' });
+        }
+
+        const sendPromises = subscribers.map(async (subscriber) => {
+            const personalizedHtmlContent = htmlContent.replace(/\{\{NOM_DESTINATAIRE\}\}/g, subscriber.firstName || subscriber.email);
+            return sendBrevoEmail({
+                to: subscriber.email,
+                subject,
+                htmlContent: personalizedHtmlContent,
+            });
+        });
+
+        await Promise.all(sendPromises);
+
+        res.json({ message: `Newsletter envoyée à ${subscribers.length} abonnés.` });
+
+    } catch (error) {
+        console.error('Error sending newsletter:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi de la newsletter.' });
+    }
+});
+
 
 // SUBSCRIPTION ROUTES
 app.post('/api/subscribe', handleSubscription);
