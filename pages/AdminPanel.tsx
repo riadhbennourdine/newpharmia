@@ -106,7 +106,16 @@ const AdminPanel: React.FC = () => {
 
         {activeTab === 'assignment' && (
           <div className="animate-fade-in"> 
-            <h3 className="text-xl font-bold text-gray-800 mb-3">Gestion des Attributions Préparateur-Pharmacien</h3>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-xl font-bold text-gray-800">Gestion des Attributions Préparateur-Pharmacien</h3>
+              <button
+                onClick={fetchUsers}
+                className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
+                disabled={assignmentLoading}
+              >
+                Actualiser
+              </button>
+            </div>
             <p className="text-gray-600 mb-4">Attribuez un pharmacien référent à chaque préparateur.</p>
             {assignmentFeedback && (
               <p className={`mb-4 text-sm font-semibold ${assignmentFeedback.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>

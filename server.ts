@@ -107,7 +107,7 @@ app.post('/api/auth/register', async (req, res) => {
             username,
             passwordHash,
             role,
-            pharmacistId: role === 'PREPARATEUR' ? pharmacistId : undefined,
+            pharmacistId: role === UserRole.PREPARATEUR && pharmacistId ? new ObjectId(pharmacistId) : undefined,
             firstName,
             lastName,
             city,
