@@ -11,6 +11,7 @@ interface TemplateProps {
   recipientName: string;
   content: string;
   youtubeUrl?: string;
+  imageUrl?: string;
 }
 
 const getYoutubeEmbedUrl = (url: string) => {
@@ -38,9 +39,48 @@ const getYoutubeEmbedUrl = (url: string) => {
 // Template 1: Simple avec image (Table-based layout)
 
 
-const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
+const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl, imageUrl }) => {
     const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
-    
+
+    const videoEmbedCode = videoDetails ? `
+        <table cellPadding="0" cellSpacing="0" border="0" style="width: 100%; margin-top: 24px;">
+            <tbody>
+                <tr>
+                    <td align="center">
+                        <a href="${youtubeUrl}" style="display: block;">
+                            <img src="${videoDetails.thumbnailUrl}" alt="YouTube video thumbnail" style="display: block; border: 0; max-width: 536px; width: 100%;" />
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    ` : '';
+
+    const imageEmbedCode = imageUrl ? `
+        <table cellPadding="0" cellSpacing="0" border="0" style="width: 100%; margin-top: 24px;">
+            <tbody>
+                <tr>
+                    <td align="center">
+                        <img src="${imageUrl}" alt="Embedded Image" style="display: block; border: 0; max-width: 536px; width: 100%; height: auto;" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    ` : '';
+
+    let finalContent = content;
+    if (finalContent.includes('{{YOUTUBE_VIDEO}}')) {
+        finalContent = finalContent.replace('{{YOUTUBE_VIDEO}}', videoEmbedCode);
+    } else {
+        finalContent += videoEmbedCode;
+    }
+
+    if (finalContent.includes('{{IMAGE_URL}}')) {
+        finalContent = finalContent.replace('{{IMAGE_URL}}', imageEmbedCode);
+    } else {
+        finalContent += imageEmbedCode;
+    }
+
     return (
       // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
       <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
@@ -62,24 +102,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               <tr>
                 <td style={{ padding: '24px 32px', fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }}>
                   <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }} dangerouslySetInnerHTML={{ __html: `Bonjour ${recipientName},` }}></h2>
-                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
-                  {videoDetails && (
-                    // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
-                    // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
-                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
-                     <tbody>
-                      <tr>
-                        <td align="center">
-                          <a href={youtubeUrl} style={{ display: 'block' }}>
-                            {/* FIX: Changed border from a string to a number to resolve TypeScript error. */}
-                            <img src={videoDetails.thumbnailUrl} alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
-                          </a>
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  )}
-                  
+                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: finalContent }}></div>
                 </td>
               </tr>
               {/* Footer */}
@@ -108,6 +131,7 @@ const Newsletter: React.FC = () => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [sendStatus, setSendStatus] = useState('');
@@ -284,6 +308,8 @@ const Newsletter: React.FC = () => {
             <label htmlFor="content" className="block text-sm font-medium text-gray-700">Contenu de la newsletter</label>
             <div className="mt-1 mb-2 flex flex-wrap gap-2">
               <button onClick={() => insertTag('NOM_DESTINATAIRE')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Nom du destinataire</button>
+              <button onClick={() => insertTag('YOUTUBE_VIDEO')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Vidéo YouTube</button>
+              <button onClick={() => insertTag('IMAGE_URL')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Image URL</button>
             </div>
             <textarea ref={contentRef} id="content" rows={10} value={content} onChange={(e) => setContent(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="Écrivez votre contenu ici..." />
           </div>
@@ -291,6 +317,11 @@ const Newsletter: React.FC = () => {
           <div className="mb-4">
             <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700">URL de la vidéo YouTube (Optionnel)</label>
             <input type="text" id="youtubeUrl" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="https://www.youtube.com/watch?v=..." />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">URL de l'image (Optionnel)</label>
+            <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="https://example.com/image.jpg" />
           </div>
 
           <div className="mb-4 p-4 border border-gray-200 rounded-lg">
@@ -313,7 +344,7 @@ const Newsletter: React.FC = () => {
               <p className="text-sm text-gray-600">Sujet: {subject}</p>
             </div>
             <div ref={previewRef}>
-              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
+              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} imageUrl={imageUrl} />
             </div>
           </div>
         </div>
