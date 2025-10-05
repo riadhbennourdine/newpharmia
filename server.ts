@@ -653,7 +653,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         const sendPromises = subscribers.map(async (subscriber) => {
             const personalizedHtmlContent = htmlContent
-                .replace('{{NOM_DESTINATAIRE}}', 'TEST')
+                .replace('{{NOM_DESTINATAIRE}}', subscriber.firstName || subscriber.email)
                 .replace('{{EMAIL_DESTINATAIRE}}', subscriber.email);
             return sendBrevoEmail({
                 to: subscriber.email,
