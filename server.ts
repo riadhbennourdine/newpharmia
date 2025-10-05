@@ -675,7 +675,7 @@ app.post('/api/newsletter/send-test', async (req, res) => {
 
         await sendBrevoEmail({
             to: testEmail,
-            subject: `[TEST] ${subject}`,
+            subject: subject,
             htmlContent,
         });
 
