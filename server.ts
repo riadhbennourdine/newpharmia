@@ -645,9 +645,7 @@ app.post('/api/newsletter/send', async (req, res) => {
             query.city = { $in: cities };
         }
 
-        console.log('Query:', JSON.stringify(query, null, 2));
         const subscribers = await usersCollection.find(query).toArray();
-        console.log('Subscribers found:', subscribers.length);
 
         if (subscribers.length === 0) {
             return res.status(404).json({ message: 'Aucun abonné trouvé pour les critères spécifiés.' });
