@@ -313,7 +313,7 @@ const Newsletter: React.FC = () => {
               <p className="text-sm text-gray-600">Sujet: {subject}</p>
             </div>
             <div ref={previewRef}>
-              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
+              <PreviewComponent recipientName="TEST" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
             </div>
           </div>
         </div>
