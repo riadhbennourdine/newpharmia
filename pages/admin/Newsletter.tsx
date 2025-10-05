@@ -36,10 +36,10 @@ const getYoutubeEmbedUrl = (url: string) => {
 
 
 // Template 1: Simple avec image (Table-based layout)
-import logo from '/assets/logo-pharmia.png';
+
 
 const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
-    const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
+    
     return (
       // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
       <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
@@ -52,7 +52,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               {/* Header */}
               <tr>
                 <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>
-                  <img src={logo} alt="PharmIA Logo" width={150} style={{ marginBottom: '10px' }} />
+                  <img src="/assets/logo-pharmia.png" alt="PharmIA Logo" width={150} style={{ marginBottom: '10px' }} />
                   <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Votre newsletter pour rester à la pointe de l'actualité pharmaceutique.</p>
                 </td>
               </tr>
@@ -61,22 +61,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                 <td style={{ padding: '24px 32px', fontFamily: 'Arial, sans-serif', color: '#111827' }}>
                   <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Arial, sans-serif', color: '#111827' }}>Bonjour {recipientName},</h2>
                   <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
-                  {videoDetails && (
-                    // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
-                    // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
-                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
-                     <tbody>
-                      <tr>
-                        <td align="center">
-                          <a href={youtubeUrl} style={{ display: 'block' }}>
-                            {/* FIX: Changed border from a string to a number to resolve TypeScript error. */}
-                            <img src={videoDetails.thumbnailUrl} alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
-                          </a>
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  )}
+                  
                 </td>
               </tr>
               {/* Footer */}
