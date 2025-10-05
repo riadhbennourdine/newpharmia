@@ -11,7 +11,6 @@ interface TemplateProps {
   recipientName: string;
   content: string;
   youtubeUrl?: string;
-  SENDER_NAME: string;
 }
 
 const getYoutubeEmbedUrl = (url: string) => {
@@ -37,56 +36,55 @@ const getYoutubeEmbedUrl = (url: string) => {
 
 
 // Template 1: Simple avec image (Table-based layout)
-const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl, SENDER_NAME }) => {
-    const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
-    const CLIENT_URL = process.env.CLIENT_URL || '#';
+import logo from '/assets/logo-pharmia.png';
 
+const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
+    const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
     return (
-      <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#F8FAFC' }}>
+      // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
+      <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
         <tbody>
         <tr>
-          <td align="center" style={{ padding: '20px 10px' }}>
-            <table cellPadding="0" cellSpacing="0" border={0} style={{ maxWidth: '600px', width: '100%', margin: 'auto', backgroundColor: '#FFFFFF', borderRadius: '0.5rem', border: '1px solid #CBD5E1', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)' }}>
+          <td align="center" style={{ padding: '20px' }}>
+            {/* FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error. */}
+            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '600px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
               <tbody>
               {/* Header */}
               <tr>
-                <td style={{ padding: '24px', borderBottom: '1px solid #E5E7EB' }}>
-                  <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%' }}>
-                    <tbody>
-                    <tr>
-                      <td style={{ textAlign: 'left' }}><img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" width="40" height="40" style={{ display: 'block', border: 0 }} /></td>
-                      <td style={{ textAlign: 'right' }}><span style={{ fontSize: '24px', fontWeight: 'bold', color: '#0D9488' }}>PharmIA</span></td>
-                    </tr>
-                    </tbody>
-                  </table>
+                <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>
+                  <img src={logo} alt="PharmIA Logo" width={150} style={{ marginBottom: '10px' }} />
+                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Votre newsletter pour rester à la pointe de l'actualité pharmaceutique.</p>
                 </td>
               </tr>
               {/* Main Content */}
               <tr>
-                <td style={{ padding: '30px', fontFamily: 'Arial, sans-serif', color: '#1E293B' }}>
-                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: '16px', fontFamily: 'Arial, sans-serif', color: '#1E293B' }}>Bonjour ${recipientName},</h2>
-                  <p style={{ lineHeight: 1.6, color: '#475569', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></p>
-                  ${videoDetails ? `
-                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: '24px' }}>
+                <td style={{ padding: '24px 32px', fontFamily: 'Arial, sans-serif', color: '#111827' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Arial, sans-serif', color: '#111827' }}>Bonjour {recipientName},</h2>
+                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                  {videoDetails && (
+                    // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
+                    // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
+                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
                      <tbody>
                       <tr>
                         <td align="center">
-                          <a href="${youtubeUrl}" style={{ display: 'block' }}>
-                            <img src="${videoDetails.thumbnailUrl}" alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
+                          <a href={youtubeUrl} style={{ display: 'block' }}>
+                            {/* FIX: Changed border from a string to a number to resolve TypeScript error. */}
+                            <img src={videoDetails.thumbnailUrl} alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
                           </a>
                         </td>
                       </tr>
                       </tbody>
                     </table>
-                  ` : ''}
-                  <p style="text-align: center; margin-top: 20px;"><a href="${CLIENT_URL}" style="display: inline-block; padding: 10px 20px; background-color: #0D9488; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: bold;">Visiter PharmIA</a></p>
+                  )}
                 </td>
               </tr>
               {/* Footer */}
               <tr>
-                <td style={{ backgroundColor: '#F3F4F6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6B7280', fontFamily: 'Arial, sans-serif', borderTop: '1px solid #E5E7EB' }}>
-                  <p style={{ marginTop: 0, marginBottom: '8px' }}>${SENDER_NAME} | Tous droits réservés.</p>
-                  <p style={{ margin: 0 }}><a href="${CLIENT_URL}#/unsubscribe" style={{ color: '#0D9488', textDecoration: 'none' }}>Se désinscrire</a></p>
+                <td style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6b7280', fontFamily: 'Arial, sans-serif' }}>
+                  <p style={{ marginTop: 0, marginBottom: 8 }}>PharmIA | 123 Rue de la Pharmacie, 75001 Paris</p>
+                  {/* FIX: Changed margin from a string to a number to resolve TypeScript error. */}
+                  <p style={{ margin: 0 }}><a href={`/#/unsubscribe?email=${recipientName}`} style={{ color: '#0d9488', textDecoration: 'none' }}>Se désinscrire</a> | <a href="#" style={{ color: '#0d9488', textDecoration: 'none' }}>Voir dans le navigateur</a></p>
                 </td>
               </tr>
               </tbody>
@@ -105,27 +103,73 @@ const Newsletter: React.FC = () => {
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [sendStatus, setSendStatus] = useState('');
-  const [allGroups, setAllGroups] = useState<string[]>([]);
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [testEmail, setTestEmail] = useState('');
 
   useEffect(() => {
-    const fetchGroups = async () => {
+    const fetchSubscriberGroups = async () => {
       try {
-        console.log("Fetching subscriber groups (mock)");
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const mockGroups = ["Early Adopters", "New Signups", "Pharmacists", "Students"];
-        setAllGroups(mockGroups);
+        const response = await fetch('/api/newsletter/subscriber-groups');
+        if (!response.ok) {
+          throw new Error('Failed to fetch subscriber groups');
+        }
+        const { roles, cities } = await response.json();
+        setRoles(roles);
+        setCities(cities);
       } catch (err: any) {
         console.error(err);
       }
     };
-    fetchGroups();
+    fetchSubscriberGroups();
   }, []);
 
-  const handleGroupToggle = (group: string) => {
-    setSelectedGroups(prev => 
-        prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]
+  const handleRoleToggle = (role: string) => {
+    setSelectedRoles(prev => 
+        prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
     );
+  };
+
+  const handleCityToggle = (city: string) => {
+    setSelectedCities(prev => 
+        prev.includes(city) ? prev.filter(c => c !== city) : [...prev, city]
+    );
+  };
+
+  const handleSendTest = async () => {
+    if (!previewRef.current) {
+      setSendStatus('Erreur: Impossible de récupérer le contenu de la prévisualisation.');
+      return;
+    }
+    if (!testEmail || !/\S+@\S+\.\S+/.test(testEmail)) {
+      setSendStatus('Veuillez entrer une adresse e-mail de test valide.');
+      return;
+    }
+
+    const htmlContentToSend = previewRef.current.innerHTML;
+    setSendStatus(`Envoi d'un test à ${testEmail}...`);
+
+    try {
+      const response = await fetch('/api/newsletter/send-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, testEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Échec de l\'envoi de l\'e-mail de test.');
+      }
+      setSendStatus(data.message || 'E-mail de test envoyé avec succès.');
+    } catch (error: any) {
+      console.error("Error sending test newsletter:", error);
+      setSendStatus(error.message || 'Erreur lors de l\'envoi de l\'e-mail de test.');
+    } finally {
+      setTimeout(() => setSendStatus(''), 5000);
+    }
   };
 
   const insertTag = (tag: string) => {
@@ -156,7 +200,7 @@ const Newsletter: React.FC = () => {
       const response = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, groups: selectedGroups }),
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities }),
       });
 
       const data = await response.json();
@@ -174,11 +218,15 @@ const Newsletter: React.FC = () => {
   };
 
   const formatContentForHtml = (text: string) => {
-    return text.split('\n').join('<br />');
+    return `
+      ${text.split('\n').join('<br />')}
+      <br /><br />
+      Cordialement,<br />
+      L\'équipe PharmIA
+    `;
   };
 
   const PreviewComponent = SimpleTemplate;
-  const SENDER_NAME = process.env.SENDER_NAME || 'PharmIA';
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
@@ -192,12 +240,24 @@ const Newsletter: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Envoyer aux groupes</label>
+            <label className="block text-sm font-medium text-gray-700">Envoyer aux rôles</label>
             <div className="mt-2 flex flex-wrap gap-2">
-                {allGroups.map(group => (
-                    <div key={group} className="flex items-center">
-                        <input type="checkbox" id={`group-select-${group}`} checked={selectedGroups.includes(group)} onChange={() => handleGroupToggle(group)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                        <label htmlFor={`group-select-${group}`} className="ml-2 text-sm text-gray-700">{group}</label>
+                {roles.map(role => (
+                    <div key={role} className="flex items-center">
+                        <input type="checkbox" id={`role-select-${role}`} checked={selectedRoles.includes(role)} onChange={() => handleRoleToggle(role)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`role-select-${role}`} className="ml-2 text-sm text-gray-700">{role}</label>
+                    </div>
+                ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Envoyer aux villes</label>
+            <div className="mt-2 flex flex-wrap gap-2">
+                {cities.map(city => (
+                    <div key={city} className="flex items-center">
+                        <input type="checkbox" id={`city-select-${city}`} checked={selectedCities.includes(city)} onChange={() => handleCityToggle(city)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`city-select-${city}`} className="ml-2 text-sm text-gray-700">{city}</label>
                     </div>
                 ))}
             </div>
@@ -217,7 +277,15 @@ const Newsletter: React.FC = () => {
             <input type="text" id="youtubeUrl" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="https://www.youtube.com/watch?v=..." />
           </div>
 
-          <button onClick={handleSend} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Envoyer la Newsletter</button>
+          <div className="mb-4 p-4 border border-gray-200 rounded-lg">
+            <label htmlFor="testEmail" className="block text-sm font-medium text-gray-700">Adresse e-mail de test</label>
+            <div className="mt-1 flex gap-2">
+              <input type="email" id="testEmail" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-grow p-2 border border-gray-300 rounded-md" placeholder="test@example.com" />
+              <button onClick={handleSendTest} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Envoyer un test</button>
+            </div>
+          </div>
+
+          <button onClick={handleSend} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors w-full">Envoyer la Newsletter</button>
           {sendStatus && <p className="mt-4 text-sm text-gray-600">{sendStatus}</p>}
         </div>
 
@@ -229,7 +297,7 @@ const Newsletter: React.FC = () => {
               <p className="text-sm text-gray-600">Sujet: {subject}</p>
             </div>
             <div ref={previewRef}>
-              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} SENDER_NAME={SENDER_NAME} />
+              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
             </div>
           </div>
         </div>
