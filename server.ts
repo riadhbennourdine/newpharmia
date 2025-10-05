@@ -628,8 +628,17 @@ app.post('/api/newsletter/send', async (req, res) => {
             email: { $exists: true, $ne: null }
         };
 
+        const finalRoles = [];
         if (roles && roles.length > 0) {
-            query.role = { $in: roles };
+            if (roles.includes('Staff PharmIA')) {
+                finalRoles.push(UserRole.ADMIN, UserRole.FORMATEUR);
+            }
+            const otherRoles = roles.filter(r => r !== 'Staff PharmIA');
+            finalRoles.push(...otherRoles);
+        }
+
+        if (finalRoles.length > 0) {
+            query.role = { $in: finalRoles };
         }
 
         if (cities && cities.length > 0) {
@@ -695,14 +704,25 @@ app.get('/api/newsletter/subscriber-groups', async (req, res) => {
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        const users = await usersCollection.find({
-            role: { $in: [UserRole.PHARMACIEN, UserRole.PREPARATEUR] }
-        }).toArray();
+        const rolesWithCounts = await usersCollection.aggregate([
+            { $match: { role: { $in: [UserRole.PHARMACIEN, UserRole.PREPARATEUR] } } },
+            { $group: { _id: '$role', count: { $sum: 1 } } },
+            { $project: { _id: 0, name: '$_id', count: 1 } }
+        ]).toArray();
 
-        const roles = [...new Set(users.map(u => u.role))];
-        const cities = [...new Set(users.map(u => u.city).filter(c => c))]; // Filter out null/undefined cities
+        const citiesWithCounts = await usersCollection.aggregate([
+            { $match: { city: { $exists: true, $ne: null } } },
+            { $group: { _id: '$city', count: { $sum: 1 } } },
+            { $project: { _id: 0, name: '$_id', count: 1 } }
+        ]).toArray();
 
-        res.json({ roles, cities });
+        const staffCount = await usersCollection.countDocuments({
+            role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] }
+        });
+
+        const staffGroup = { name: 'Staff PharmIA', count: staffCount };
+
+        res.json({ roles: rolesWithCounts, cities: citiesWithCounts, staff: staffGroup });
     } catch (error) {
         console.error('Error fetching subscriber groups:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des groupes d\'abonnés.' });

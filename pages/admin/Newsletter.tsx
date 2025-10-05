@@ -101,6 +101,11 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
     );
 };
 
+interface Group {
+  name: string;
+  count: number;
+}
+
 const Newsletter: React.FC = () => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
@@ -108,8 +113,9 @@ const Newsletter: React.FC = () => {
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [sendStatus, setSendStatus] = useState('');
-  const [roles, setRoles] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
+  const [roles, setRoles] = useState<Group[]>([]);
+  const [cities, setCities] = useState<Group[]>([]);
+  const [staff, setStaff] = useState<Group | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [testEmail, setTestEmail] = useState('');
@@ -121,9 +127,10 @@ const Newsletter: React.FC = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch subscriber groups');
         }
-        const { roles, cities } = await response.json();
+        const { roles, cities, staff } = await response.json();
         setRoles(roles);
         setCities(cities);
+        setStaff(staff);
       } catch (err: any) {
         console.error(err);
       }
@@ -247,10 +254,16 @@ const Newsletter: React.FC = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Envoyer aux rôles</label>
             <div className="mt-2 flex flex-wrap gap-2">
+                {staff && (
+                    <div key={staff.name} className="flex items-center">
+                        <input type="checkbox" id={`role-select-${staff.name}`} checked={selectedRoles.includes(staff.name)} onChange={() => handleRoleToggle(staff.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`role-select-${staff.name}`} className="ml-2 text-sm text-gray-700">{staff.name} ({staff.count})</label>
+                    </div>
+                )}
                 {roles.map(role => (
-                    <div key={role} className="flex items-center">
-                        <input type="checkbox" id={`role-select-${role}`} checked={selectedRoles.includes(role)} onChange={() => handleRoleToggle(role)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                        <label htmlFor={`role-select-${role}`} className="ml-2 text-sm text-gray-700">{role}</label>
+                    <div key={role.name} className="flex items-center">
+                        <input type="checkbox" id={`role-select-${role.name}`} checked={selectedRoles.includes(role.name)} onChange={() => handleRoleToggle(role.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`role-select-${role.name}`} className="ml-2 text-sm text-gray-700">{role.name} ({role.count})</label>
                     </div>
                 ))}
             </div>
@@ -260,9 +273,9 @@ const Newsletter: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">Envoyer aux villes</label>
             <div className="mt-2 flex flex-wrap gap-2">
                 {cities.map(city => (
-                    <div key={city} className="flex items-center">
-                        <input type="checkbox" id={`city-select-${city}`} checked={selectedCities.includes(city)} onChange={() => handleCityToggle(city)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                        <label htmlFor={`city-select-${city}`} className="ml-2 text-sm text-gray-700">{city}</label>
+                    <div key={city.name} className="flex items-center">
+                        <input type="checkbox" id={`city-select-${city.name}`} checked={selectedCities.includes(city.name)} onChange={() => handleCityToggle(city.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`city-select-${city.name}`} className="ml-2 text-sm text-gray-700">{city.name} ({city.count})</label>
                     </div>
                 ))}
             </div>
