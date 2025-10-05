@@ -53,11 +53,9 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               {/* Header */}
               <tr>
                 <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                    <img src="https://pharmaconseilbmb.com/photos/site/23.png" alt="Favicon" width={30} style={{ marginRight: '10px' }} />
-                    <img src="https://pharmaconseilbmb.com/photos/site/logo-pharmia.png" alt="PharmIA Logo" width={150} />
-                  </div>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Devenez un expert du conseil à l'officine.</p>
+                  <img src="https://pharmaconseilbmb.com/photos/site/23.png" alt="Favicon" width={30} style={{ marginRight: '10px', verticalAlign: 'middle' }} />
+                  <img src="https://pharmaconseilbmb.com/photos/site/logo-pharmia.png" alt="PharmIA Logo" width={150} style={{ verticalAlign: 'middle' }} />
+                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0, marginTop: '10px' }}>Devenez un expert du conseil à l'officine.</p>
                 </td>
               </tr>
               {/* Main Content */}
