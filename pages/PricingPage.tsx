@@ -12,7 +12,7 @@ const PricingPage: React.FC = () => {
   const [showAnnual, setShowAnnual] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [selectedPlanDetails, setSelectedPlanDetails] = useState<SelectedPlanDetails | null>(null);
@@ -68,7 +68,7 @@ const PricingPage: React.FC = () => {
   };
 
   const confirmAndInitiatePayment = async (totalAmount: number) => {
-    if (!selectedPlanDetails) return;
+    if (!selectedPlanDetails || !user) return; // Ensure user is available
 
     const { planName, isAnnual } = selectedPlanDetails;
 
@@ -77,23 +77,33 @@ const PricingPage: React.FC = () => {
     setShowConfirmationModal(false); // Close the modal
 
     try {
-      // MOCK API CALL - In a real app, this would be a real fetch call.
-      console.log('Initiating payment with:', {
-        planName,
-        amount: totalAmount,
-        isAnnual,
-        token: 'mock_token_for_demo'
+      const response = await fetch('/api/konnect/initiate-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          planName: planName,
+          isAnnual: isAnnual,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber, // Assuming phoneNumber is available in user object
+          orderId: user._id // Use user ID as order ID for now
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to initiate payment.');
+      }
+
+      // Redirect to Konnect payment page
+      window.location.href = data.payUrl;
       
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-      
-      // Simulate success and redirection
-      alert(`Redirection vers la page de paiement pour le plan ${planName}...`);
-      // In a real scenario: window.location.href = data.payUrl;
-      
-    } catch (err) {
-      console.error('Network error during payment initiation:', err);
-      setError('Une erreur réseau est survenue lors de l\'initialisation du paiement.');
+    } catch (err: any) {
+      console.error('Error initiating Konnect payment:', err);
+      setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement Konnect.');
     } finally {
       setLoadingPlan(null);
       setSelectedPlanDetails(null);

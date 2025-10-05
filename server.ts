@@ -612,6 +612,137 @@ app.post('/api/gemini/chat', async (req, res) => {
     }
 });
 
+// KONNECT PAYMENT ROUTES
+app.post('/api/konnect/initiate-payment', async (req, res) => {
+    try {
+        const { amount, planName, isAnnual, firstName, lastName, email, phoneNumber, orderId } = req.body;
+
+        if (!amount || !planName || !email) {
+            return res.status(400).json({ message: 'Missing required payment details.' });
+        }
+
+        const KONNECT_API_KEY = process.env.KONNECT_API_KEY;
+        const KONNECT_RECEIVER_WALLET_ID = process.env.KONNECT_RECEIVER_WALLET_ID;
+        const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000'; // Base URL of your frontend
+
+        if (!KONNECT_API_KEY || !KONNECT_RECEIVER_WALLET_ID) {
+            console.error("Konnect API key or Receiver Wallet ID not configured.");
+            return res.status(500).json({ message: "Konnect payment not configured." });
+        }
+
+        const konnectApiUrl = process.env.KONNECT_API_URL || 'https://api.konnect.network/api/v2/payments/init-payment';
+        const webhookUrl = `${CLIENT_URL}/api/konnect/webhook`; // Our webhook endpoint
+        const successUrl = `${CLIENT_URL}/#/pricing?status=success`;
+        const failUrl = `${CLIENT_URL}/#/pricing?status=failed`;
+
+        const konnectRequestBody = {
+            receiverWalletId: KONNECT_RECEIVER_WALLET_ID,
+            token: "TND", // Assuming TND as currency
+            amount: Math.round(amount * 1000), // Convert to millimes
+            type: "immediate",
+            description: `Payment for ${planName} plan`,
+            acceptedPaymentMethods: ["bank_card", "e-DINAR"], // Only bank card and e-DINAR
+            lifespan: 15, // 15 minutes
+            checkoutForm: true,
+            addPaymentFeesToAmount: true,
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phoneNumber,
+            email: email,
+            orderId: orderId, // Use the orderId from the client
+            webhook: webhookUrl,
+            successUrl: successUrl,
+            failUrl: failUrl,
+            theme: "light"
+        };
+
+        const konnectHeaders = {
+            'x-api-key': KONNECT_API_KEY,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        };
+
+        console.log('Initiating Konnect payment with:', JSON.stringify(konnectRequestBody, null, 2));
+
+        const konnectResponse = await fetch(konnectApiUrl, {
+            method: 'POST',
+            headers: konnectHeaders,
+            body: JSON.stringify(konnectRequestBody)
+        });
+
+        const konnectData = await konnectResponse.json();
+
+        if (!konnectResponse.ok) {
+            console.error("Konnect API error:", konnectResponse.status, konnectData);
+            return res.status(konnectResponse.status).json({ message: konnectData.message || 'Failed to initiate payment with Konnect.' });
+        }
+
+        res.json({ payUrl: konnectData.payUrl, paymentRef: konnectData.paymentRef });
+
+    } catch (error) {
+        console.error('Error initiating Konnect payment:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'initialisation du paiement Konnect.' });
+    }
+});
+
+app.get('/api/konnect/webhook', async (req, res) => {
+    try {
+        const paymentRef = req.query.payment_ref as string;
+
+        if (!paymentRef) {
+            return res.status(400).json({ message: 'Missing payment_ref in webhook request.' });
+        }
+
+        const KONNECT_API_KEY = process.env.KONNECT_API_KEY;
+        if (!KONNECT_API_KEY) {
+            console.error("Konnect API key not configured for webhook.");
+            return res.status(500).json({ message: "Konnect payment not configured." });
+        }
+
+        const konnectApiUrl = process.env.KONNECT_API_URL || 'https://api.konnect.network/api/v2';
+        const getPaymentDetailsUrl = `${konnectApiUrl}/payments/${paymentRef}`;
+
+        const konnectHeaders = {
+            'x-api-key': KONNECT_API_KEY,
+            'Accept': 'application/json'
+        };
+
+        console.log('Fetching Konnect payment details for paymentRef:', paymentRef);
+
+        const konnectResponse = await fetch(getPaymentDetailsUrl, {
+            method: 'GET',
+            headers: konnectHeaders
+        });
+
+        const konnectData = await konnectResponse.json();
+
+        if (!konnectResponse.ok) {
+            console.error("Konnect API error fetching payment details:", konnectResponse.status, konnectData);
+            return res.status(konnectResponse.status).json({ message: konnectData.message || 'Failed to fetch payment details from Konnect.' });
+        }
+
+        const paymentStatus = konnectData.payment.status;
+        const orderId = konnectData.payment.orderId; // Assuming orderId is passed in init-payment
+
+        console.log(`Payment ${paymentRef} status: ${paymentStatus} for orderId: ${orderId}`);
+
+        // TODO: Update user's subscription status in the database based on paymentStatus and orderId
+        // For example:
+        // if (paymentStatus === 'completed') {
+        //   const client = await clientPromise;
+        //   const db = client.db('pharmia');
+        //   const usersCollection = db.collection<User>('users');
+        //   await usersCollection.updateOne({ _id: new ObjectId(orderId) }, { $set: { hasActiveSubscription: true, planName: konnectData.payment.description } });
+        // }
+
+        res.status(200).json({ message: 'Webhook received and processed.' });
+
+    } catch (error) {
+        console.error('Error processing Konnect webhook:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors du traitement du webhook Konnect.' });
+    }
+});
+
 app.post('/api/newsletter/send', async (req, res) => {
     try {
         const { subject, htmlContent, roles, cities } = req.body;
