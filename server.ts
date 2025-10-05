@@ -9,6 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService';
 import { User, UserRole, CaseStudy } from './types';
 import bcrypt from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 
 import clientPromise from './server/mongo';
 
@@ -59,6 +60,8 @@ app.post('/api/auth/login', async (req, res) => {
                 { username: identifier }
             ]
         });
+
+        console.log('User found:', user);
 
         if (user && user.passwordHash) {
             const isMatch = await bcrypt.compare(password, user.passwordHash);
@@ -611,7 +614,7 @@ app.post('/api/gemini/chat', async (req, res) => {
 
 app.post('/api/newsletter/send', async (req, res) => {
     try {
-        const { subject, htmlContent, groups } = req.body;
+        const { subject, htmlContent, roles, cities } = req.body;
 
         if (!subject || !htmlContent) {
             return res.status(400).json({ message: 'Le sujet et le contenu HTML sont requis.' });
@@ -621,15 +624,17 @@ app.post('/api/newsletter/send', async (req, res) => {
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        let query: any = {};
-        if (groups && groups.length > 0) {
-            // Assuming 'groups' in User model is an array of strings, or a single string field
-            // For now, let's assume a simple 'group' field for filtering
-            // This part might need adjustment based on actual user group implementation
-            query.groups = { $in: groups }; 
+        let query: any = {
+            email: { $exists: true, $ne: null }
+        };
+
+        if (roles && roles.length > 0) {
+            query.role = { $in: roles };
         }
-        // For newsletter, we target users who have an email and are not unsubscribed
-        query.email = { $exists: true, $ne: null };
+
+        if (cities && cities.length > 0) {
+            query.city = { $in: cities };
+        }
 
         const subscribers = await usersCollection.find(query).toArray();
 
@@ -656,8 +661,53 @@ app.post('/api/newsletter/send', async (req, res) => {
     }
 });
 
+app.post('/api/newsletter/send-test', async (req, res) => {
+    try {
+        const { subject, htmlContent, testEmail } = req.body;
+
+        if (!subject || !htmlContent || !testEmail) {
+            return res.status(400).json({ message: 'Le sujet, le contenu HTML et l\'e-mail de test sont requis.' });
+        }
+
+        if (!/\S+@\S+\.\S+/.test(testEmail)) {
+            return res.status(400).json({ message: 'Adresse e-mail de test invalide.' });
+        }
+
+        await sendBrevoEmail({
+            to: testEmail,
+            subject: `[TEST] ${subject}`,
+            htmlContent,
+        });
+
+        res.json({ message: `E-mail de test envoyé à ${testEmail}.` });
+
+    } catch (error) {
+        console.error('Error sending test email:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi de l\'e-mail de test.' });
+    }
+});
+
 
 // SUBSCRIPTION ROUTES
+app.get('/api/newsletter/subscriber-groups', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const users = await usersCollection.find({
+            role: { $in: [UserRole.PHARMACIEN, UserRole.PREPARATEUR] }
+        }).toArray();
+
+        const roles = [...new Set(users.map(u => u.role))];
+        const cities = [...new Set(users.map(u => u.city).filter(c => c))]; // Filter out null/undefined cities
+
+        res.json({ roles, cities });
+    } catch (error) {
+        console.error('Error fetching subscriber groups:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des groupes d\'abonnés.' });
+    }
+});
 app.post('/api/subscribe', handleSubscription);
 app.post('/api/unsubscribe', handleUnsubscription);
 

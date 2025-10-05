@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User, UserRole } from '../types';
 import SubscriberManager from './admin/SubscriberManager';
 import Newsletter from './admin/Newsletter';
@@ -11,36 +11,36 @@ const AdminPanel: React.FC = () => {
   const [preparateurs, setPreparateurs] = useState<User[]>([]);
   const [pharmacists, setPharmacists] = useState<User[]>([]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setAssignmentLoading(true);
-      try {
-        const [preparateursRes, pharmacistsRes] = await Promise.all([
-          fetch('/api/users/preparateurs'),
-          fetch('/api/users/pharmacists'),
-        ]);
+  const fetchUsers = useCallback(async () => {
+    setAssignmentLoading(true);
+    try {
+      const [preparateursRes, pharmacistsRes] = await Promise.all([
+        fetch('/api/users/preparateurs'),
+        fetch('/api/users/pharmacists'),
+      ]);
 
-        if (!preparateursRes.ok || !pharmacistsRes.ok) {
-          throw new Error('Failed to fetch users');
-        }
-
-        const preparateursData = await preparateursRes.json();
-        const pharmacistsData = await pharmacistsRes.json();
-
-        setPreparateurs(preparateursData);
-        setPharmacists(pharmacistsData);
-      } catch (error) {
-        console.error(error);
-        setAssignmentFeedback({ message: 'Erreur lors du chargement des utilisateurs.', type: 'error' });
-      } finally {
-        setAssignmentLoading(false);
+      if (!preparateursRes.ok || !pharmacistsRes.ok) {
+        throw new Error('Failed to fetch users');
       }
-    };
 
+      const preparateursData = await preparateursRes.json();
+      const pharmacistsData = await pharmacistsRes.json();
+
+      setPreparateurs(preparateursData);
+      setPharmacists(pharmacistsData);
+    } catch (error) {
+      console.error(error);
+      setAssignmentFeedback({ message: 'Erreur lors du chargement des utilisateurs.', type: 'error' });
+    } finally {
+      setAssignmentLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
     if (activeTab === 'assignment') {
       fetchUsers();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchUsers]);
   
   const handleAssignPharmacist = async (preparateurId: string, newPharmacistId: string) => {
     setAssignmentLoading(true);
