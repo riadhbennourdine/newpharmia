@@ -660,7 +660,7 @@ app.post('/api/newsletter/send', async (req, res) => {
                 .replace('{{EMAIL_DESTINATAIRE}}', subscriber.email);
             return sendBrevoEmail({
                 to: subscriber.email,
-                subject,
+                subject: `${subject} - ${new Date().toLocaleDateString()}`,
                 htmlContent: personalizedHtmlContent,
             });
         });
