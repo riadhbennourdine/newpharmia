@@ -85,7 +85,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               {/* Footer */}
               <tr>
                 <td style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6b7280', fontFamily: 'Arial, sans-serif' }}>
-                  <p style={{ marginTop: 0, marginBottom: 8 }}>PharmIA | By PharmaConseil BMB - Formation continue à l'officine</p>
+                  <p style={{ marginTop: 0, marginBottom: 8 }}><a href="https://newpharmia-production.up.railway.app/" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: 'bold' }}>PharmIA</a> | By PharmaConseil BMB - Formation continue à l'officine</p>
                   {/* FIX: Changed margin from a string to a number to resolve TypeScript error. */}
                   <p style={{ margin: 0 }}><a href={`/#/unsubscribe?email={{EMAIL_DESTINATAIRE}}`} style={{ color: '#0d9488', textDecoration: 'none' }}>Se désinscrire</a></p>
                 </td>
