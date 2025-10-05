@@ -630,7 +630,8 @@ app.post('/api/konnect/initiate-payment', async (req, res) => {
             return res.status(500).json({ message: "Konnect payment not configured." });
         }
 
-        const konnectApiUrl = process.env.KONNECT_API_URL || 'https://api.konnect.network/api/v2/payments/init-payment';
+        const konnectApiBaseUrl = process.env.KONNECT_API_BASE_URL || 'https://api.konnect.network/api/v2';
+        const konnectApiUrl = `${konnectApiBaseUrl}/payments/init-payment`;
         const webhookUrl = `${CLIENT_URL}/api/konnect/webhook`; // Our webhook endpoint
         const successUrl = `${CLIENT_URL}/#/pricing?status=success`;
         const failUrl = `${CLIENT_URL}/#/pricing?status=failed`;
