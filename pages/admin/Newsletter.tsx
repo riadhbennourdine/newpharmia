@@ -36,7 +36,7 @@ const getYoutubeEmbedUrl = (url: string) => {
 
 
 // Template 1: Simple avec image (Table-based layout)
-import logo from '../../assets/logo-pharmia.png';
+import logo from '/assets/logo-pharmia.png';
 
 const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
     const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
