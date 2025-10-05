@@ -21,7 +21,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center space-x-2">
+            <Link to={'/'} className="flex items-center space-x-2">
               <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" className="h-8 w-8" />
               <span className="text-2xl font-bold tracking-tight logo-gradient-text">PharmIA</span>
             </Link>
