@@ -60,14 +60,14 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     return (
         <div className="flex flex-col h-[70vh] max-h-[600px] bg-white rounded-lg shadow-lg border border-slate-200/80">
             <div className="flex items-center p-4 border-b border-slate-200/80 bg-slate-50 rounded-t-lg">
-                <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" className="h-6 w-6 mr-3" />
+                <img src="/assets/logo-pharmia.png" alt="PharmIA Logo" className="h-6 w-6 mr-3" />
                 <h3 className="text-lg font-bold text-slate-800">Assistant PharmIA</h3>
             </div>
 
             <div ref={chatContainerRef} className="flex-grow p-4 space-y-4 overflow-y-auto">
                 {messages.map((msg, index) => (
                     <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.role === 'model' && <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA" className="w-8 h-8 rounded-full" />}
+                        {msg.role === 'model' && <img src="/assets/logo-pharmia.png" alt="PharmIA" className="w-8 h-8 rounded-full" />}
                         <div
                             className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl ${
                                 msg.role === 'user' 
