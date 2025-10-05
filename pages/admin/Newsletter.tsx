@@ -40,25 +40,7 @@ const getYoutubeEmbedUrl = (url: string) => {
 
 const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtubeUrl }) => {
     const videoDetails = youtubeUrl ? getYoutubeEmbedUrl(youtubeUrl) : null;
-
-    const videoEmbedCode = videoDetails ? `
-        <table cellPadding="0" cellSpacing="0" border="0" style="width: 100%; margin-top: 24px;">
-            <tbody>
-                <tr>
-                    <td align="center">
-                        <a href="${youtubeUrl}" style="display: block;">
-                            <img src="${videoDetails.thumbnailUrl}" alt="YouTube video thumbnail" style="display: block; border: 0; max-width: 536px; width: 100%;" />
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    ` : '';
-
-    const finalContent = content.includes('{{YOUTUBE_VIDEO}}')
-        ? content.replace('{{YOUTUBE_VIDEO}}', videoEmbedCode)
-        : `${content}${videoEmbedCode}`;
-
+    
     return (
       // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
       <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
@@ -80,7 +62,24 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               <tr>
                 <td style={{ padding: '24px 32px', fontFamily: 'Arial, sans-serif', color: '#111827' }}>
                   <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Arial, sans-serif', color: '#111827' }}>Bonjour {recipientName},</h2>
-                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: finalContent }}></div>
+                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                  {videoDetails && (
+                    // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
+                    // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
+                    <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
+                     <tbody>
+                      <tr>
+                        <td align="center">
+                          <a href={youtubeUrl} style={{ display: 'block' }}>
+                            {/* FIX: Changed border from a string to a number to resolve TypeScript error. */}
+                            <img src={videoDetails.thumbnailUrl} alt="YouTube video thumbnail" style={{ display: 'block', border: 0, maxWidth: '536px', width: '100%' }} />
+                          </a>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  )}
+                  
                 </td>
               </tr>
               {/* Footer */}
@@ -285,7 +284,6 @@ const Newsletter: React.FC = () => {
             <label htmlFor="content" className="block text-sm font-medium text-gray-700">Contenu de la newsletter</label>
             <div className="mt-1 mb-2 flex flex-wrap gap-2">
               <button onClick={() => insertTag('NOM_DESTINATAIRE')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Nom du destinataire</button>
-              <button onClick={() => insertTag('YOUTUBE_VIDEO')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Vidéo YouTube</button>
             </div>
             <textarea ref={contentRef} id="content" rows={10} value={content} onChange={(e) => setContent(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="Écrivez votre contenu ici..." />
           </div>
