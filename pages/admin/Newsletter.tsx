@@ -60,9 +60,9 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
               </tr>
               {/* Main Content */}
               <tr>
-                <td style={{ padding: '24px 32px', fontFamily: 'Arial, sans-serif', color: '#111827' }}>
-                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Arial, sans-serif', color: '#111827' }}>Bonjour {recipientName},</h2>
-                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                <td style={{ padding: '24px 32px', fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }} dangerouslySetInnerHTML={{ __html: `Bonjour ${recipientName},` }}></h2>
+                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
                   {videoDetails && (
                     // FIX: Changed marginTop from a string to a number to resolve TypeScript error.
                     // FIX: Changed string "0" to number {0} for the border attribute to resolve TypeScript error.
@@ -313,7 +313,7 @@ const Newsletter: React.FC = () => {
               <p className="text-sm text-gray-600">Sujet: {subject}</p>
             </div>
             <div ref={previewRef}>
-              <PreviewComponent recipientName="TEST" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
+              <PreviewComponent recipientName="{{NOM_DESTINATAIRE}}" content={formatContentForHtml(content)} youtubeUrl={youtubeUrl} />
             </div>
           </div>
         </div>
