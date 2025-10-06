@@ -780,13 +780,19 @@ app.post('/api/newsletter/send', async (req, res) => {
         console.log('Query:', JSON.stringify(query, null, 2));
         const subscribers = await usersCollection.find(query).toArray();
         console.log('Subscribers found:', subscribers.length);
-        console.log('Subscriber emails:', subscribers.map(s => s.email));
 
-        if (subscribers.length === 0) {
-            return res.status(404).json({ message: 'Aucun abonné trouvé pour les critères spécifiés.' });
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const validSubscribers = subscribers.filter(s => s.email && emailRegex.test(s.email));
+
+        console.log('Valid subscribers found:', validSubscribers.length);
+        console.log('Valid subscriber emails:', validSubscribers.map(s => s.email));
+
+
+        if (validSubscribers.length === 0) {
+            return res.status(404).json({ message: 'Aucun abonné valide trouvé pour les critères spécifiés.' });
         }
 
-        const sendPromises = subscribers.map(async (subscriber) => {
+        const sendPromises = validSubscribers.map(async (subscriber) => {
             const personalizedHtmlContent = htmlContent
                 .replace('{{NOM_DESTINATAIRE}}', subscriber.firstName || subscriber.email)
                 .replace('{{EMAIL_DESTINATAIRE}}', subscriber.email);
@@ -799,7 +805,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         await Promise.all(sendPromises);
 
-        res.json({ message: `Newsletter envoyée à ${subscribers.length} abonnés.` });
+        res.json({ message: `Newsletter envoyée à ${validSubscribers.length} abonnés.` });
 
     } catch (error) {
         console.error('Error sending newsletter:', error);
