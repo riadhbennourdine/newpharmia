@@ -625,9 +625,14 @@ app.post('/api/konnect/initiate-payment', async (req, res) => {
         const KONNECT_RECEIVER_WALLET_ID = process.env.KONNECT_RECEIVER_WALLET_ID;
         const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000'; // Base URL of your frontend
 
-        if (!KONNECT_API_KEY || !KONNECT_RECEIVER_WALLET_ID) {
-            console.error("Konnect API key or Receiver Wallet ID not configured.");
-            return res.status(500).json({ message: "Konnect payment not configured." });
+        let missingVars = [];
+        if (!KONNECT_API_KEY) missingVars.push('KONNECT_API_KEY');
+        if (!KONNECT_RECEIVER_WALLET_ID) missingVars.push('KONNECT_RECEIVER_WALLET_ID');
+
+        if (missingVars.length > 0) {
+            const errorMessage = `Konnect payment not configured. Missing environment variables: ${missingVars.join(', ')}`;
+            console.error(errorMessage);
+            return res.status(500).json({ message: errorMessage });
         }
 
         const konnectApiBaseUrl = process.env.KONNECT_API_BASE_URL || 'https://api.konnect.network/api/v2';
@@ -696,8 +701,9 @@ app.get('/api/konnect/webhook', async (req, res) => {
 
         const KONNECT_API_KEY = process.env.KONNECT_API_KEY;
         if (!KONNECT_API_KEY) {
-            console.error("Konnect API key not configured for webhook.");
-            return res.status(500).json({ message: "Konnect payment not configured." });
+            const errorMessage = "Konnect payment not configured. Missing environment variable: KONNECT_API_KEY";
+            console.error(errorMessage);
+            return res.status(500).json({ message: errorMessage });
         }
 
         const konnectApiUrl = process.env.KONNECT_API_URL || 'https://api.konnect.network/api/v2';
