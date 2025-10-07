@@ -7,7 +7,7 @@ interface BankTransferModalProps {
 const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full mx-4">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full mx-4 overflow-y-auto max-h-[80vh]">
         <h3 className="text-2xl font-bold mb-4 text-gray-800">Paiement par virement bancaire</h3>
         <div className="text-gray-700 space-y-4">
             <p>Veuillez effectuer un virement bancaire aux coordonnées suivantes :</p>
@@ -18,8 +18,8 @@ const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
                 <p><strong>BIC/SWIFT :</strong> BZITTNTT</p>
                 <p><strong>Bénéficiaire :</strong> PHARMACONSEIL BMB</p>
             </div>
-            <div className="mt-4">
-                <img src="https://pharmaconseilbmb.com/photos/site/rib-pharmaconseil.png" alt="RIB PHARMACONSEIL BMB" className="w-full" />
+            <div className="mt-4 image-zoom-container">
+                <img src="https://pharmaconseilbmb.com/photos/site/rib-pharmaconseil.png" alt="RIB PHARMACONSEIL BMB" className="w-full zoom-on-hover" />
             </div>
             <p>Veuillez inclure votre adresse e-mail dans le libellé du virement.</p>
             <p>Une fois le virement effectué, veuillez nous envoyer une preuve de paiement à <a href="mailto:contact@pharmaconseilbmb.com" className="text-teal-600 hover:underline">contact@pharmaconseilbmb.com</a>.</p>

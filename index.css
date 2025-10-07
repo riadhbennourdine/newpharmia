@@ -203,3 +203,16 @@ a, button, [role="button"], input, select, textarea {
 .animate-fade-in-up {
     animation: fade-in-up 0.3s ease-out forwards;
 }
+
+.image-zoom-container {
+    overflow: hidden;
+    position: relative;
+}
+
+.zoom-on-hover {
+    transition: transform 0.3s ease;
+}
+
+.image-zoom-container:hover .zoom-on-hover {
+    transform: scale(1.5);
+}
