@@ -143,19 +143,19 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         );
       }
     }
-    content.push(
-      { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
-    );
     if (caseStudy.customSections && caseStudy.customSections.length > 0) {
       caseStudy.customSections.forEach((section, index) => {
         content.push({
           id: `customSection-${index}`,
           title: section.title,
-          icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt={section.title} />,
+          icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
           content: renderContentWithKeywords(section.content),
         });
       });
     }
+    content.push(
+      { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+    );
     return content;
   }, [caseStudy]);
 
