@@ -125,24 +125,37 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     return processedLines.join('');
   };
 
-  const memoContent = [
-    { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)},
-    { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)},
-    { id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)},
-    { id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)},
-    { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, content: renderContentWithKeywords(caseStudy.recommendations.mainTreatment)},
-    { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, content: renderContentWithKeywords(caseStudy.recommendations.associatedProducts)},
-    { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.recommendations.lifestyleAdvice)},
-    { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, content: renderContentWithKeywords(caseStudy.recommendations.dietaryAdvice)},
-    { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
-    // Custom Sections
-    ...(caseStudy.customSections && caseStudy.customSections.length > 0 ? [{
-      id: "customSections",
-      title: "Sections Personnalisées",
-      icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt="Sections Personnalisées" />, // Placeholder icon
-      content: caseStudy.customSections.map(s => `<h4>${s.title}</h4>${renderContentWithKeywords(s.content)}`).join(''),
-    }] : []),
-  ];
+  const memoContent = useMemo(() => {
+    const content = [];
+    if (caseStudy.type !== 'pharmacologie') {
+      content.push(
+        { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)},
+        { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)},
+        { id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)},
+        { id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)},
+      );
+      if (caseStudy.recommendations) {
+        content.push(
+          { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, content: renderContentWithKeywords(caseStudy.recommendations.mainTreatment)},
+          { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, content: renderContentWithKeywords(caseStudy.recommendations.associatedProducts)},
+          { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.recommendations.lifestyleAdvice)},
+          { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, content: renderContentWithKeywords(caseStudy.recommendations.dietaryAdvice)},
+        );
+      }
+    }
+    content.push(
+      { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+    );
+    if (caseStudy.customSections && caseStudy.customSections.length > 0) {
+      content.push({
+        id: "customSections",
+        title: "Sections Personnalisées",
+        icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt="Sections Personnalisées" />, // Placeholder icon
+        content: caseStudy.customSections.map(s => `<h4>${s.title}</h4>${renderContentWithKeywords(s.content)}`).join(''),
+      });
+    }
+    return content;
+  }, [caseStudy]);
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = [
       { id: 'memo', label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
