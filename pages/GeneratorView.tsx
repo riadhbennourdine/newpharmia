@@ -55,15 +55,16 @@ Instructions spécifiques par section :
 
     const pharmaFormattingInstructions = `
 
-Instructions de formatage impératives pour chaque section :
+Instructions de formatage impératives :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
-- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+- Vous devez générer UNIQUEMENT les sections personnalisées.
+- NE PAS utiliser les sections suivantes : "Questions clés à poser", "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Cas comptoir", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
 
 Instructions spécifiques pour les sections personnalisées :
-- Vous devez générer un tableau de sections personnalisées.
-- Chaque section doit avoir un titre et un contenu.
+- Vous devez générer un tableau de sections personnalisées dans le champ "customSections".
+- Chaque section doit avoir un "title" et un "content".
 - Les titres des sections doivent être pertinents pour le sujet de la pharmacologie.
-- Le contenu de chaque section doit être une liste à puces avec des mots-clés en évidence au début de chaque ligne.
+- Le contenu de chaque section doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 `;
 
     let prompt = '';
