@@ -147,11 +147,13 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
     );
     if (caseStudy.customSections && caseStudy.customSections.length > 0) {
-      content.push({
-        id: "customSections",
-        title: "Sections Personnalisées",
-        icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt="Sections Personnalisées" />, // Placeholder icon
-        content: caseStudy.customSections.map(s => `<h4>${s.title}</h4>${renderContentWithKeywords(s.content)}`).join(''),
+      caseStudy.customSections.forEach((section, index) => {
+        content.push({
+          id: `customSection-${index}`,
+          title: section.title,
+          icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/23.png" className="h-6 w-6 mr-3" alt={section.title} />,
+          content: renderContentWithKeywords(section.content),
+        });
       });
     }
     return content;
