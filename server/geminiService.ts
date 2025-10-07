@@ -88,7 +88,7 @@ const learningToolsSchema = {
                 },
                 required: ['term', 'definition'],
             },
-            description: "Crée un glossaire de 3 à 5 termes techniques importants mentionnés dans la mémofiche."
+            description: "Crée un glossaire d'exactement 10 termes techniques importants mentionnés dans la mémofiche."
         },
         quiz: {
             type: Type.ARRAY,
