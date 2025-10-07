@@ -4,9 +4,10 @@ interface SendEmailOptions {
   to: string;
   subject: string;
   htmlContent: string;
+  attachment?: { content: string; name: string }[];
 }
 
-export const sendBrevoEmail = async ({ to, subject, htmlContent }: SendEmailOptions) => {
+export const sendBrevoEmail = async ({ to, subject, htmlContent, attachment }: SendEmailOptions) => {
   const BREVO_API_KEY = process.env.BREVO_API_KEY;
   const SENDER_EMAIL = process.env.SENDER_EMAIL || 'no-reply@pharmia.com';
   const SENDER_NAME = process.env.SENDER_NAME || 'PharmIA';
@@ -27,6 +28,7 @@ export const sendBrevoEmail = async ({ to, subject, htmlContent }: SendEmailOpti
     to: [{ email: to }],
     subject,
     htmlContent,
+    attachment,
   });
 
   try {

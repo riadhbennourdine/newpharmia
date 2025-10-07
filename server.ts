@@ -39,6 +39,9 @@ const mockUsers: User[] = [
 
 import crypto from 'crypto';
 import { sendBrevoEmail } from './server/emailService';
+import multer from 'multer';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 // AUTH ROUTES
 app.post('/api/auth/login', async (req, res) => {
@@ -904,6 +907,45 @@ app.post('/api/newsletter/send-test', async (req, res) => {
     } catch (error) {
         console.error('Error sending test email:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi de l\'e-mail de test.' });
+    }
+});
+
+app.post('/api/contact', upload.single('attachment'), async (req, res) => {
+    try {
+        const { name, email, message } = req.body;
+        const attachment = req.file;
+
+        if (!name || !email || !message) {
+            return res.status(400).json({ message: 'Name, email, and message are required.' });
+        }
+
+        const htmlContent = `
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+        `;
+
+        const attachments = [];
+        if (attachment) {
+            attachments.push({
+                content: attachment.buffer.toString('base64'),
+                name: attachment.originalname,
+            });
+        }
+
+        await sendBrevoEmail({
+            to: 'rbpharskillseed@gmail.com',
+            subject: `New message from ${name}`,
+            htmlContent,
+            attachment: attachments,
+        });
+
+        res.json({ message: 'Message sent successfully!' });
+
+    } catch (error) {
+        console.error('Error sending contact message:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi du message.' });
     }
 });
 
