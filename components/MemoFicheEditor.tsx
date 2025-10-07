@@ -13,6 +13,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
   return {
     _id: caseStudy?._id || '',
     id: caseStudy?.id || '',
+    type: caseStudy?.type || 'maladie',
     title: caseStudy?.title || '',
     shortDescription: caseStudy?.shortDescription || '',
     theme: caseStudy?.theme || '',
@@ -211,24 +212,28 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        <FormSection title="Contenu du Mémo">
-          <div>
-            <Label htmlFor="patientSituation">Cas comptoir</Label>
-            <Textarea name="patientSituation" id="patientSituation" rows={5} value={caseStudy.patientSituation} onChange={handleChange} />
-          </div>
-          <div>
-            <Label htmlFor="keyQuestions">Questions clés à poser (une par ligne)</Label>
-            <Textarea name="keyQuestions" id="keyQuestions" rows={5} value={caseStudy.keyQuestions.join('\n')} onChange={(e) => handleArrayChange('keyQuestions', e.target.value)} />
-          </div>
-          <div>
-            <Label htmlFor="pathologyOverview">Aperçu pathologie</Label>
-            <Textarea name="pathologyOverview" id="pathologyOverview" rows={5} value={caseStudy.pathologyOverview} onChange={handleChange} />
-          </div>
-          <div>
-            <Label htmlFor="redFlags">Signaux d'alerte (un par ligne)</Label>
-            <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
-          </div>
         </FormSection>
+
+        {caseStudy.type !== 'pharmacologie' && (
+            <FormSection title="Contenu du Mémo">
+              <div>
+                <Label htmlFor="patientSituation">Cas comptoir</Label>
+                <Textarea name="patientSituation" id="patientSituation" rows={5} value={caseStudy.patientSituation} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="keyQuestions">Questions clés à poser (une par ligne)</Label>
+                <Textarea name="keyQuestions" id="keyQuestions" rows={5} value={caseStudy.keyQuestions.join('\n')} onChange={(e) => handleArrayChange('keyQuestions', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="pathologyOverview">Aperçu pathologie</Label>
+                <Textarea name="pathologyOverview" id="pathologyOverview" rows={5} value={caseStudy.pathologyOverview} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="redFlags">Signaux d'alerte (un par ligne)</Label>
+                <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
+              </div>
+            </FormSection>
+        )}
 
         <FormSection title="Recommandations">
             <div>

@@ -627,12 +627,12 @@ app.delete('/api/memofiches/:id', async (req, res) => {
 // GEMINI ROUTES
 app.post('/api/gemini/generate-draft', async (req, res) => {
     try {
-        const { prompt } = req.body;
+        const { prompt, memoFicheType } = req.body;
         if (!prompt) {
             return res.status(400).json({ message: 'Prompt is required.' });
         }
         console.log('Calling generateCaseStudyDraft with prompt:', prompt);
-        const draft = await generateCaseStudyDraft(prompt);
+        const draft = await generateCaseStudyDraft(prompt, memoFicheType);
         console.log('generateCaseStudyDraft returned draft:', draft);
         res.json(draft);
     } catch (error: any) {

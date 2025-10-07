@@ -61,6 +61,7 @@ export interface Media {
 export interface CaseStudy {
   _id: string;
   id: string; // Kept for compatibility with some components, but _id is primary
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive';
   title: string;
   shortDescription: string;
   theme: string;

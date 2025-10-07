@@ -4,14 +4,12 @@ import { CaseStudy } from "../types";
 // This file uses an older syntax for the Google GenAI SDK that is compatible with the project's dependencies.
 // The main class is GoogleGenAI and content is generated via ai.models.generateContent(...)
 
-export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<CaseStudy>> => {
+export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const API_KEY = process.env.GEMINI_API_KEY;
   if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-  const fullPrompt = `
-    ${prompt}
-    La réponse doit être un objet JSON valide avec la structure suivante :
+  let jsonStructure = `
     {
       "title": "string",
       "patientSituation": "string",
@@ -26,6 +24,27 @@ export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<Ca
       },
       "references": ["string"]
     }
+  `;
+
+  if (memoFicheType === 'pharmacologie') {
+    jsonStructure = `
+    {
+      "title": "string",
+      "customSections": [
+        {
+          "title": "string",
+          "content": "string"
+        }
+      ],
+      "references": ["string"]
+    }
+    `;
+  }
+
+  const fullPrompt = `
+    ${prompt}
+    La réponse doit être un objet JSON valide avec la structure suivante :
+    ${jsonStructure}
   `;
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);

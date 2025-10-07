@@ -53,11 +53,24 @@ Instructions spécifiques par section :
 - Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
 `;
 
+    const pharmaFormattingInstructions = `
+
+Instructions de formatage impératives pour chaque section :
+- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
+- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+
+Instructions spécifiques pour les sections personnalisées :
+- Vous devez générer un tableau de sections personnalisées.
+- Chaque section doit avoir un titre et un contenu.
+- Les titres des sections doivent être pertinents pour le sujet de la pharmacologie.
+- Le contenu de chaque section doit être une liste à puces avec des mots-clés en évidence au début de chaque ligne.
+`;
+
     let prompt = '';
     if (memoFicheType === 'maladie') {
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
-        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${formattingInstructions}`;
+        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmaFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else { // exhaustive
@@ -65,13 +78,14 @@ Instructions spécifiques par section :
     }
 
     try {
-      const draft = await generateCaseStudyDraft(prompt);
+      const draft = await generateCaseStudyDraft(prompt, memoFicheType);
 
       // The backend now returns a well-structured object. We just add form metadata.
       const finalMemoFiche: CaseStudy = {
         ...draft,
         _id: '', // Will be set by the database
         id: '', // Will be set by the database
+        type: memoFicheType,
         theme: selectedTheme || pharmaTheme,
         system: selectedSystem || pharmaPathology,
         creationDate: new Date().toISOString(),

@@ -12,7 +12,7 @@ const handleResponse = async (response: Response) => {
   return response.json();
 };
 
-export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<CaseStudy>> => {
+export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const token = getAuthToken();
   if (!token) throw new Error("Jeton d'authentification non trouvé.");
   
@@ -22,7 +22,7 @@ export const generateCaseStudyDraft = async (prompt: string): Promise<Partial<Ca
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ prompt, memoFicheType })
   });
 
   return handleResponse(response);
