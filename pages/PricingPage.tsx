@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import PricingConfirmationModal from '../components/PricingConfirmationModal';
+import PaymentMethodModal from '../components/PaymentMethodModal';
+import BankTransferModal from '../components/BankTransferModal';
 
 interface SelectedPlanDetails {
   planName: string;
@@ -16,6 +18,8 @@ const PricingPage: React.FC = () => {
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [selectedPlanDetails, setSelectedPlanDetails] = useState<SelectedPlanDetails | null>(null);
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [showBankTransferModal, setShowBankTransferModal] = useState(false);
 
   const pricing = {
     solo: {
@@ -64,7 +68,16 @@ const PricingPage: React.FC = () => {
       return;
     }
     setSelectedPlanDetails({ planName, basePrice, isAnnual });
-    setShowConfirmationModal(true);
+    setShowPaymentMethodModal(true);
+  };
+
+  const handlePaymentMethodSelect = (method: 'card' | 'transfer') => {
+    setShowPaymentMethodModal(false);
+    if (method === 'card') {
+      setShowConfirmationModal(true);
+    } else {
+      setShowBankTransferModal(true);
+    }
   };
 
   const confirmAndInitiatePayment = async (totalAmount: number) => {
@@ -174,6 +187,25 @@ const PricingPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {showPaymentMethodModal && (
+        <PaymentMethodModal
+          onSelect={handlePaymentMethodSelect}
+          onCancel={() => {
+            setShowPaymentMethodModal(false);
+            setSelectedPlanDetails(null);
+          }}
+        />
+      )}
+
+      {showBankTransferModal && (
+        <BankTransferModal
+          onClose={() => {
+            setShowBankTransferModal(false);
+            setSelectedPlanDetails(null);
+          }}
+        />
+      )}
 
       {showConfirmationModal && selectedPlanDetails && (
         <PricingConfirmationModal
