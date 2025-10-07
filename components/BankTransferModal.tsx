@@ -18,6 +18,9 @@ const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
                 <p><strong>BIC/SWIFT :</strong> BZITTNTT</p>
                 <p><strong>Bénéficiaire :</strong> PHARMACONSEIL BMB</p>
             </div>
+            <div className="mt-4">
+                <img src="https://pharmaconseilbmb.com/photos/site/rib-pharmaconseil.png" alt="RIB PHARMACONSEIL BMB" className="w-full" />
+            </div>
             <p>Veuillez inclure votre adresse e-mail dans le libellé du virement.</p>
             <p>Une fois le virement effectué, veuillez nous envoyer une preuve de paiement à <a href="mailto:contact@pharmaconseilbmb.com" className="text-teal-600 hover:underline">contact@pharmaconseilbmb.com</a>.</p>
             <p>Votre abonnement sera activé manuellement après confirmation de la réception des fonds.</p>
