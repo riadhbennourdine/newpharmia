@@ -212,8 +212,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        </FormSection>
-
         {caseStudy.type !== 'pharmacologie' && (
             <FormSection title="Contenu du Mémo">
               <div>
