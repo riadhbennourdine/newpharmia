@@ -333,6 +333,24 @@ app.get('/api/users/preparateurs', async (req, res) => {
     }
 });
 
+app.get('/api/users/subscribers', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const subscribers = await usersCollection.find({
+            role: {
+                $in: [UserRole.ADMIN, UserRole.FORMATEUR, UserRole.PHARMACIEN, UserRole.PREPARATEUR]
+            }
+        }).toArray();
+        res.json(subscribers);
+    } catch (error) {
+        console.error('Error fetching subscribers:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des abonnés.' });
+    }
+});
+
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
     try {
         const { preparateurId } = req.params;
@@ -384,6 +402,51 @@ app.get('/api/users/pharmacists/:pharmacistId/team', async (req, res) => {
     } catch (error) {
         console.error('Error fetching pharmacist team:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de l\'équipe.' });
+    }
+});
+
+app.put('/api/users/:userId/subscription', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { subscriptionEndDate, planName } = req.body;
+
+        if (!subscriptionEndDate) {
+            return res.status(400).json({ message: 'subscriptionEndDate is required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const newSubscriptionEndDate = new Date(subscriptionEndDate);
+        const hasActiveSubscription = newSubscriptionEndDate > new Date();
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any },
+            { 
+                $set: { 
+                    subscriptionEndDate: newSubscriptionEndDate,
+                    planName: planName,
+                    hasActiveSubscription: hasActiveSubscription
+                } 
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error updating subscription:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour de l\'abonnement.' });
     }
 });
 
