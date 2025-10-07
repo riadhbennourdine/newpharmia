@@ -12,13 +12,14 @@ const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
         <div className="text-gray-700 space-y-4">
             <p>Veuillez effectuer un virement bancaire aux coordonnées suivantes :</p>
             <div className="p-4 bg-gray-100 rounded-md">
-                <p><strong>Banque :</strong> Banque Internationale Arabe de Tunisie (BIAT)</p>
-                <p><strong>IBAN :</strong> TN59 0800 8001 2345 6789 012 34</p>
-                <p><strong>BIC/SWIFT :</strong> BIATTNTT</p>
-                <p><strong>Bénéficiaire :</strong> PHARMIA FORMATION</p>
+                <p><strong>Banque :</strong> Banque ZITOUNA</p>
+                <p><strong>RIB :</strong> 25044000000093276427</p>
+                <p><strong>IBAN :</strong> TN59 2504 4000 0000 9327 6427</p>
+                <p><strong>BIC/SWIFT :</strong> BZITTNTT</p>
+                <p><strong>Bénéficiaire :</strong> PHARMACONSEIL BMB</p>
             </div>
             <p>Veuillez inclure votre adresse e-mail dans le libellé du virement.</p>
-            <p>Une fois le virement effectué, veuillez nous envoyer une preuve de paiement à <a href="mailto:contact@pharmia.com" className="text-teal-600 hover:underline">contact@pharmia.com</a>.</p>
+            <p>Une fois le virement effectué, veuillez nous envoyer une preuve de paiement à <a href="mailto:contact@pharmaconseilbmb.com" className="text-teal-600 hover:underline">contact@pharmaconseilbmb.com</a>.</p>
             <p>Votre abonnement sera activé manuellement après confirmation de la réception des fonds.</p>
         </div>
         <div className="flex justify-end mt-8">
