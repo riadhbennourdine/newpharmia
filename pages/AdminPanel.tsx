@@ -7,7 +7,7 @@ import CRMDashboard from './admin/crm/CRMDashboard';
 const AdminPanel: React.FC = () => {
   const [assignmentLoading, setAssignmentLoading] = useState(false);
   const [assignmentFeedback, setAssignmentFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const [activeTab, setActiveTab] = useState('crm');
+  const [activeTab, setActiveTab] = useState('subscribers');
 
   const [preparateurs, setPreparateurs] = useState<User[]>([]);
   const [pharmacists, setPharmacists] = useState<User[]>([]);
@@ -81,16 +81,16 @@ const AdminPanel: React.FC = () => {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-2 sm:space-x-4 justify-center" aria-label="Tabs">
             <button
-              onClick={() => setActiveTab('crm')}
-              className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'crm' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              CRM
-            </button>
-            <button
               onClick={() => setActiveTab('subscribers')}
               className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'subscribers' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Abonnés
+            </button>
+            <button
+              onClick={() => setActiveTab('crm')}
+              className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'crm' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              CRM
             </button>
             <button
               onClick={() => setActiveTab('assignment')}
