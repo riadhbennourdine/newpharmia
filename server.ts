@@ -343,9 +343,7 @@ app.get('/api/users/subscribers', async (req, res) => {
         const usersCollection = db.collection<User>('users');
 
         const subscribers = await usersCollection.find({
-            role: {
-                $in: [UserRole.ADMIN, UserRole.FORMATEUR, UserRole.PHARMACIEN, UserRole.PREPARATEUR]
-            }
+            role: UserRole.PHARMACIEN
         }).toArray();
         res.json(subscribers);
     } catch (error) {
