@@ -1,30 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { User, ClientStatus } from '../../types';
+import { User, ClientStatus } from '../../../types';
+import { useNavigate } from 'react-router-dom';
+import AddProspectModal from '../../../components/AddProspectModal';
 
 const CRMDashboard = () => {
   const [clients, setClients] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const fetchClients = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/crm/clients');
+      if (!response.ok) {
+        throw new Error('Failed to fetch clients');
+      }
+      const data = await response.json();
+      setClients(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/crm/clients');
-        if (!response.ok) {
-          throw new Error('Failed to fetch clients');
-        }
-        const data = await response.json();
-        setClients(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchClients();
   }, []);
+
+  const handleViewClient = (clientId: string) => {
+    navigate(`/admin/crm/clients/${clientId}`);
+  };
+
+  const handleAddProspect = async (prospect: { email: string; firstName: string; lastName: string; companyName: string }) => {
+    try {
+      const response = await fetch('/api/admin/crm/prospects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(prospect),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add prospect');
+      }
+
+      setIsModalOpen(false);
+      fetchClients(); // Refresh the client list
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
 
   const renderClientTable = () => {
     if (loading) return <p>Chargement des clients...</p>;
@@ -55,7 +85,12 @@ const CRMDashboard = () => {
                 </td>
                 <td className="py-3 px-4 text-gray-600">{client.assignedTo || 'Non assigné'}</td>
                 <td className="py-3 px-4">
-                  <button className="text-teal-600 hover:text-teal-800">Voir</button>
+                  <button 
+                    onClick={() => handleViewClient(client._id)}
+                    className="text-teal-600 hover:text-teal-800"
+                  >
+                    Voir
+                  </button>
                 </td>
               </tr>
             ))}
@@ -69,11 +104,19 @@ const CRMDashboard = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">CRM - Clients Pharmaciens</h1>
-        <button className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+        >
           + Ajouter un prospect
         </button>
       </div>
       {renderClientTable()}
+      <AddProspectModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddProspect={handleAddProspect}
+      />
     </div>
   );
 };

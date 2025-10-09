@@ -357,55 +357,15 @@ app.get('/api/users/subscribers', async (req, res) => {
 // ===============================================
 // CRM API ROUTES
 // ===============================================
-app.get('/api/admin/crm/clients', async (req, res) => {
-    // TODO: Add authentication and authorization middleware to protect this route
-    try {
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection<User>('users');
 
-        // For CRM, we are primarily interested in pharmacists
-        const clients = await usersCollection.find({ role: UserRole.PHARMACIEN }).toArray();
-        res.json(clients);
-    } catch (error) {
-        console.error('Error fetching CRM clients:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des clients.' });
-    }
-});
 
-app.put('/api/admin/crm/clients/:id', async (req, res) => {
-    // TODO: Add authentication and authorization middleware
-    try {
-        const { id } = req.params;
-        const updates = req.body; // e.g., { status, assignedTo, notes }
 
-        const { ObjectId } = await import('mongodb');
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid client ID.' });
-        }
+import crmRoutes from './server/crm';
 
-        // Basic validation for updates
-        // You might want to add more robust validation here
-
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection<User>('users');
-
-        const result = await usersCollection.updateOne(
-            { _id: new ObjectId(id) as any },
-            { $set: updates }
-        );
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ message: 'Client not found.' });
-        }
-
-        res.json({ message: 'Client updated successfully.' });
-    } catch (error) {
-        console.error('Error updating client:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour du client.' });
-    }
-});
+// ===============================================
+// CRM API ROUTES
+// ===============================================
+app.use('/api/admin/crm', crmRoutes);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {

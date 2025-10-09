@@ -36,6 +36,8 @@ import MemoFicheEditorPage from './pages/MemoFicheEditor';
 import AdminPanel from './pages/AdminPanel';
 import SubscriptionManagement from './pages/admin/SubscriptionManagement';
 import NewsletterManager from './pages/admin/NewsletterManager';
+import CRMDashboard from './pages/admin/crm/CRMDashboard';
+import ClientDetailPage from './pages/admin/crm/ClientDetailPage';
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -81,6 +83,8 @@ const App: React.FC = () => (
                             <Route path="/admin" element={<AdminPanel />} />
                             <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                             <Route path="/admin/newsletter" element={<NewsletterManager />} />
+                            <Route path="/admin/crm" element={<CRMDashboard />} />
+                            <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
                         </Route>
                     </Route>
                     
