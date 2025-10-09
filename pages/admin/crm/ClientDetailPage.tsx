@@ -131,7 +131,7 @@ const ClientDetailPage = () => {
               <h3 className="text-xl font-bold text-teal-600 mb-4">Informations</h3>
               <div className="space-y-3">
                 <p><strong>Email:</strong> {client.email}</p>
-                {client.companyName && <p><strong>Société:</strong> {client.companyName}</p>}
+                {client.companyName && client.companyName !== 'N/A' && <p><strong>Société:</strong> {client.companyName}</p>}
                 <hr />
                 <p><strong>Plan d'abonnement:</strong> {client.planName || 'N/A'}</p>
                 <p><strong>Date d'expiration:</strong> {client.subscriptionEndDate ? new Date(client.subscriptionEndDate).toLocaleDateString() : 'N/A'}</p>
