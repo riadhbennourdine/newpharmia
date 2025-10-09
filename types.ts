@@ -7,6 +7,15 @@ export enum UserRole {
   PREPARATEUR = 'PREPARATEUR',
 }
 
+export enum ClientStatus {
+  PROSPECT = 'PROSPECT',
+  CONTACTED = 'CONTACTED',
+  MEETING_SCHEDULED = 'MEETING_SCHEDULED',
+  NEEDS_FOLLOW_UP = 'NEEDS_FOLLOW_UP',
+  ACTIVE_CLIENT = 'ACTIVE_CLIENT',
+  FORMER_CLIENT = 'FORMER_CLIENT',
+}
+
 export interface User {
   _id: string; // MongoDB's ObjectId as a string
   username?: string;
@@ -29,6 +38,13 @@ export interface User {
   quizHistory?: any[];
   viewedMediaIds?: string[];
   phoneNumber?: string;
+
+  // CRM Fields
+  status?: ClientStatus;
+  assignedTo?: string; // User ID of the admin/formateur
+  companyName?: string; // Pharmacy name
+  lastContactDate?: Date;
+  notes?: string;
 }
 
 
