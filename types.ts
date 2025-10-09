@@ -139,3 +139,13 @@ export interface Taxonomy {
   pedagogical: string[];
   clinical: string[];
 }
+
+export interface Appointment {
+  _id: string;
+  clientId: string; // or prospectId
+  clientName?: string;
+  date: Date;
+  title: string;
+  notes?: string;
+  createdAt: Date;
+}

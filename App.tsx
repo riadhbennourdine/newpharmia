@@ -38,6 +38,9 @@ import SubscriptionManagement from './pages/admin/SubscriptionManagement';
 import NewsletterManager from './pages/admin/NewsletterManager';
 import CRMDashboard from './pages/admin/crm/CRMDashboard';
 import ClientDetailPage from './pages/admin/crm/ClientDetailPage';
+import ClientList from './pages/admin/crm/ClientList';
+import ProspectList from './pages/admin/crm/ProspectList';
+import AppointmentList from './pages/admin/crm/AppointmentList';
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -83,7 +86,12 @@ const App: React.FC = () => (
                             <Route path="/admin" element={<AdminPanel />} />
                             <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                             <Route path="/admin/newsletter" element={<NewsletterManager />} />
-                            <Route path="/admin/crm" element={<CRMDashboard />} />
+                            <Route path="/admin/crm" element={<CRMDashboard />}>
+                                <Route index element={<ClientList />} />
+                                <Route path="clients" element={<ClientList />} />
+                                <Route path="prospects" element={<ProspectList />} />
+                                <Route path="appointments" element={<AppointmentList />} />
+                            </Route>
                             <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
                         </Route>
                     </Route>

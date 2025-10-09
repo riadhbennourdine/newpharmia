@@ -1,5 +1,5 @@
 import express from 'express';
-import { User, UserRole, ClientStatus } from '../types';
+import { User, UserRole, ClientStatus, Appointment } from '../types';
 import clientPromise from './mongo';
 import { ObjectId } from 'mongodb';
 
@@ -122,6 +122,120 @@ router.post('/prospects', async (req, res) => {
     } catch (error) {
         console.error('Error creating prospect:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la création du prospect.' });
+    }
+});
+
+// GET all prospects
+router.get('/prospects', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+        const prospects = await usersCollection.find({ role: UserRole.PHARMACIEN, status: ClientStatus.PROSPECT }).toArray();
+        res.json(prospects);
+    } catch (error) {
+        console.error('Error fetching prospects:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des prospects.' });
+    }
+});
+
+// APPOINTMENTS
+
+// GET all appointments
+router.get('/appointments', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const appointmentsCollection = db.collection<Appointment>('appointments');
+        const appointments = await appointmentsCollection.find({}).sort({ date: 1 }).toArray();
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des rendez-vous.' });
+    }
+});
+
+// POST a new appointment
+router.post('/appointments', async (req, res) => {
+    try {
+        const { clientId, clientName, date, title } = req.body;
+
+        if (!clientId || !date || !title) {
+            return res.status(400).json({ message: 'Client, date and title are required.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const appointmentsCollection = db.collection<Appointment>('appointments');
+
+        const newAppointment: Omit<Appointment, '_id'> = {
+            clientId,
+            clientName,
+            date: new Date(date),
+            title,
+            createdAt: new Date(),
+        };
+
+        const result = await appointmentsCollection.insertOne(newAppointment as Appointment);
+
+        if (result.acknowledged) {
+            res.status(201).json({ message: 'Appointment created successfully.' });
+        } else {
+            res.status(500).json({ message: 'Failed to create appointment.' });
+        }
+
+    } catch (error) {
+        console.error('Error creating appointment:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la création du rendez-vous.' });
+    }
+});
+
+// PUT to update an appointment (add notes)
+router.put('/appointments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { notes } = req.body;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid appointment ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const appointmentsCollection = db.collection<Appointment>('appointments');
+
+        const result = await appointmentsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { notes } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
+
+        res.json({ message: 'Appointment updated successfully.' });
+    } catch (error) {
+        console.error('Error updating appointment:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour du rendez-vous.' });
+    }
+});
+
+// GET all appointments for a client
+router.get('/clients/:id/appointments', async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid client ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const appointmentsCollection = db.collection<Appointment>('appointments');
+        const appointments = await appointmentsCollection.find({ clientId: id }).sort({ date: -1 }).toArray();
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error fetching client appointments:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des rendez-vous du client.' });
     }
 });
 
