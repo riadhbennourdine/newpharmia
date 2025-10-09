@@ -110,23 +110,18 @@ const ClientDetailPage = () => {
 
     return (
       <div className="p-6 bg-gray-50 min-h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center mb-6">
-          <div className="lg:col-span-2">
-            <h1 className="text-5xl font-bold text-teal-600">{client.firstName} {client.lastName}</h1>
-          </div>
-          <div className="lg:col-span-1 flex justify-end">
-            <button 
-              onClick={() => setIsAppointmentModalOpen(true)}
-              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
-            >
-              + Planifier un RDV
-            </button>
-          </div>
-        </div>
-  
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h1 className="text-4xl font-bold text-teal-600 mb-4">{client.firstName} {client.lastName}</h1>
+                <button 
+                  onClick={() => setIsAppointmentModalOpen(true)}
+                  className="w-full px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+                >
+                  + Planifier un RDV
+                </button>
+            </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold text-teal-600 mb-4">Informations</h3>
               <div className="space-y-3">

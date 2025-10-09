@@ -15,7 +15,8 @@ router.get('/clients', async (req, res) => {
             {
                 $match: {
                     role: UserRole.PHARMACIEN,
-                    hasActiveSubscription: true
+                    hasActiveSubscription: true,
+                    planName: { $ne: 'Trial' }
                 }
             },
             {
@@ -167,7 +168,8 @@ router.get('/prospects', async (req, res) => {
             role: UserRole.PHARMACIEN,
             $or: [
                 { hasActiveSubscription: { $exists: false } },
-                { hasActiveSubscription: false }
+                { hasActiveSubscription: false },
+                { planName: 'Trial' }
             ]
         }).toArray();
         res.json(prospects);
