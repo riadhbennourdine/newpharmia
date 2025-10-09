@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Providers
 import { AuthProvider } from './context/AuthContext';
@@ -87,7 +87,7 @@ const App: React.FC = () => (
                             <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                             <Route path="/admin/newsletter" element={<NewsletterManager />} />
                             <Route path="/admin/crm" element={<CRMDashboard />}>
-                                <Route index element={<ClientList />} />
+                                <Route index element={<Navigate to="appointments" replace />} />
                                 <Route path="clients" element={<ClientList />} />
                                 <Route path="prospects" element={<ProspectList />} />
                                 <Route path="appointments" element={<AppointmentList />} />

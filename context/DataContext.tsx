@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CaseStudy, User } from '../types';
+import { useAuth } from '../hooks/useAuth';
 
 interface Pagination {
   total: number;
@@ -33,6 +34,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string }) => {
     setIsLoading(true);
@@ -46,7 +48,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (params.system) queryParams.append('system', params.system);
       if (params.sortBy) queryParams.append('sortBy', params.sortBy);
 
-      const response = await fetch(`/api/memofiches?${queryParams.toString()}`);
+      const headers: HeadersInit = {};
+      if (user) {
+        headers['x-user-id'] = user._id;
+      }
+
+      const response = await fetch(`/api/memofiches?${queryParams.toString()}`, { headers });
       if (!response.ok) throw new Error('Échec de la récupération des mémofiches.');
       const data = await response.json();
       setFiches(data.data);
@@ -80,8 +87,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const existingFiche = fiches.find(f => f._id === id);
       if (existingFiche) return existingFiche;
       
+      const headers: HeadersInit = {};
+      if (user) {
+        headers['x-user-id'] = user._id;
+      }
+
       // If not, fetch it from the API
-      const response = await fetch(`/api/memofiches/${id}`);
+      const response = await fetch(`/api/memofiches/${id}`, { headers });
       if (!response.ok) throw new Error('Mémofiche non trouvée.');
       return await response.json();
     } catch (err: any) {

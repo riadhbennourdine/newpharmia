@@ -30,6 +30,7 @@ export interface User {
   hasActiveSubscription?: boolean;
   planName?: string;
   subscriptionEndDate?: Date;
+  trialExpiresAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   resetPasswordToken?: string;

@@ -50,7 +50,7 @@ const Header: React.FC = () => {
                     <button className={navLinkClass({ isActive: false }) + " flex items-center"}>
                       Administration <span className="ml-1">&#9662;</span>
                     </button>
-                    <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md mt-2 py-1 w-48">
+                    <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-1 w-48 z-50">
                       <NavLink to="/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-gray-100">Panneau d'administration</NavLink>
                       <NavLink to="/generateur" className="block px-4 py-2 text-sm text-slate-700 hover:bg-gray-100">Générateur</NavLink>
                     </div>

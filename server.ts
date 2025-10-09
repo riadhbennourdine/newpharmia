@@ -120,6 +120,7 @@ app.post('/api/auth/register', async (req, res) => {
             lastName,
             city,
             createdAt: new Date(),
+            trialExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             hasActiveSubscription: false, 
             profileIncomplete: false, 
         };
@@ -465,6 +466,8 @@ app.put('/api/users/:userId/subscription', async (req, res) => {
     }
 });
 
+
+
 // ===============================================
 // MEMOFICHES API
 // ===============================================
@@ -479,12 +482,28 @@ app.get('/api/memofiches', async (req, res) => {
             sortBy = 'default' // 'newest'
         } = req.query as { [key: string]: string };
 
+        const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
+
         const pageNum = parseInt(page, 10);
         const limitNum = parseInt(limit, 10);
 
         const client = await clientPromise;
         const db = client.db('pharmia');
         const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        const usersCollection = db.collection<User>('users');
+
+        let user: User | null = null;
+        if (userId && ObjectId.isValid(userId)) {
+            user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        }
+
+        let hasAccess = false;
+        if (user) {
+            const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+            if (user.hasActiveSubscription || (trialExpiresAt && trialExpiresAt > new Date())) {
+                hasAccess = true;
+            }
+        }
 
         let query: any = {};
 
@@ -517,8 +536,15 @@ app.get('/api/memofiches', async (req, res) => {
             .limit(limitNum)
             .toArray();
 
+        const fichesWithAccess = fiches.map(fiche => {
+            if (fiche.isFree) {
+                return { ...fiche, isLocked: false };
+            }
+            return { ...fiche, isLocked: !hasAccess };
+        });
+
         res.json({
-            data: fiches,
+            data: fichesWithAccess,
             pagination: {
                 total,
                 page: pageNum,
@@ -534,22 +560,46 @@ app.get('/api/memofiches', async (req, res) => {
 app.get('/api/memofiches/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        const usersCollection = db.collection<User>('users');
 
-        // MongoDB _id is an ObjectId, so we need to convert the string id
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(id)) {
             return res.status(404).json({ message: 'ID de mémofiche invalide.' });
         }
         const fiche = await memofichesCollection.findOne({ _id: new ObjectId(id) });
 
-        if (fiche) {
-            res.json(fiche);
-        } else {
-            res.status(404).json({ message: 'Mémofiche non trouvée' });
+        if (!fiche) {
+            return res.status(404).json({ message: 'Mémofiche non trouvée' });
         }
+
+        if (fiche.isFree) {
+            return res.json({ ...fiche, isLocked: false });
+        }
+
+        let user: User | null = null;
+        if (userId && ObjectId.isValid(userId)) {
+            user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        }
+
+        let hasAccess = false;
+        if (user) {
+            const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+            if (user.hasActiveSubscription || (trialExpiresAt && trialExpiresAt > new Date())) {
+                hasAccess = true;
+            }
+        }
+
+        if (hasAccess) {
+            res.json({ ...fiche, isLocked: false });
+        } else {
+            res.status(403).json({ message: 'Accès non autorisé. Veuillez vous abonner.', isLocked: true });
+        }
+
     } catch (error) {
         console.error('Error fetching memofiche by ID:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de la mémofiche.' });
