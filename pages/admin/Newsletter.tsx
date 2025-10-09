@@ -148,9 +148,11 @@ const Newsletter: React.FC = () => {
   const [sendStatus, setSendStatus] = useState('');
   const [roles, setRoles] = useState<Group[]>([]);
   const [cities, setCities] = useState<Group[]>([]);
+  const [statuses, setStatuses] = useState<Group[]>([]);
   const [staff, setStaff] = useState<Group | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [testEmail, setTestEmail] = useState('');
 
   useEffect(() => {
@@ -160,10 +162,11 @@ const Newsletter: React.FC = () => {
         if (!response.ok) {
           throw new Error('Failed to fetch subscriber groups');
         }
-        const { roles, cities, staff } = await response.json();
+        const { roles, cities, staff, statuses } = await response.json();
         setRoles(roles);
         setCities(cities);
         setStaff(staff);
+        setStatuses(statuses);
       } catch (err: any) {
         console.error(err);
       }
@@ -180,6 +183,12 @@ const Newsletter: React.FC = () => {
   const handleCityToggle = (city: string) => {
     setSelectedCities(prev => 
         prev.includes(city) ? prev.filter(c => c !== city) : [...prev, city]
+    );
+  };
+
+  const handleStatusToggle = (status: string) => {
+    setSelectedStatuses(prev =>
+        prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
     );
   };
 
@@ -245,7 +254,7 @@ const Newsletter: React.FC = () => {
       const response = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities }),
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities, statuses: selectedStatuses }),
       });
 
       const data = await response.json();
@@ -297,6 +306,18 @@ const Newsletter: React.FC = () => {
                     <div key={role.name} className="flex items-center">
                         <input type="checkbox" id={`role-select-${role.name}`} checked={selectedRoles.includes(role.name)} onChange={() => handleRoleToggle(role.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
                         <label htmlFor={`role-select-${role.name}`} className="ml-2 text-sm text-gray-700">{role.name} ({role.count})</label>
+                    </div>
+                ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Envoyer par Statut CRM</label>
+            <div className="mt-2 flex flex-wrap gap-2">
+                {statuses.map(status => (
+                    <div key={status.name} className="flex items-center">
+                        <input type="checkbox" id={`status-select-${status.name}`} checked={selectedStatuses.includes(status.name)} onChange={() => handleStatusToggle(status.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`status-select-${status.name}`} className="ml-2 text-sm text-gray-700">{status.name} ({status.count})</label>
                     </div>
                 ))}
             </div>

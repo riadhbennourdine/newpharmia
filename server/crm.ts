@@ -103,6 +103,16 @@ router.post('/prospects', async (req, res) => {
 
         const result = await usersCollection.insertOne(newUser as User);
 
+        // Also add to subscribers list if not already there
+        const subscribersCollection = db.collection('subscribers');
+        const existingSubscriber = await subscribersCollection.findOne({ email });
+        if (!existingSubscriber) {
+            await subscribersCollection.insertOne({
+                email,
+                subscribedAt: new Date(),
+            });
+        }
+
         if (result.acknowledged) {
             res.status(201).json({ message: 'Prospect created successfully.' });
         } else {

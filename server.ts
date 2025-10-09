@@ -831,7 +831,7 @@ app.get('/api/konnect/webhook', async (req, res) => {
 
 app.post('/api/newsletter/send', async (req, res) => {
     try {
-        const { subject, htmlContent, roles, cities } = req.body;
+        const { subject, htmlContent, roles, cities, statuses } = req.body;
 
         if (!subject || !htmlContent) {
             return res.status(400).json({ message: 'Le sujet et le contenu HTML sont requis.' });
@@ -860,6 +860,10 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         if (cities && cities.length > 0) {
             query.city = { $in: cities };
+        }
+
+        if (statuses && statuses.length > 0) {
+            query.status = { $in: statuses };
         }
 
         console.log('Query:', JSON.stringify(query, null, 2));
@@ -989,7 +993,13 @@ app.get('/api/newsletter/subscriber-groups', async (req, res) => {
 
         const staffGroup = { name: 'Staff PharmIA', count: staffCount };
 
-        res.json({ roles: rolesWithCounts, cities: citiesWithCounts, staff: staffGroup });
+        const statusesWithCounts = await usersCollection.aggregate([
+            { $match: { status: { $exists: true, $ne: null } } },
+            { $group: { _id: '$status', count: { $sum: 1 } } },
+            { $project: { _id: 0, name: '$_id', count: 1 } }
+        ]).toArray();
+
+        res.json({ roles: rolesWithCounts, cities: citiesWithCounts, staff: staffGroup, statuses: statusesWithCounts });
     } catch (error) {
         console.error('Error fetching subscriber groups:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des groupes d\'abonnés.' });
