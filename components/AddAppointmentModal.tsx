@@ -19,7 +19,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
       // Fetch clients and prospects to populate the dropdown
       const fetchClients = async () => {
         try {
-          const response = await fetch('/api/admin/crm/clients');
+          const response = await fetch('/api/admin/crm/all-contacts');
           const data = await response.json();
           setClients(data);
         } catch (err) {

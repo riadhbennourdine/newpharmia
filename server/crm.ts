@@ -5,13 +5,45 @@ import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
-// GET all clients (pharmacists)
+// GET all clients (pharmacists with active subscription)
 router.get('/clients', async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
-        const clients = await usersCollection.find({ role: UserRole.PHARMACIEN }).toArray();
+        const clients = await usersCollection.aggregate([
+            {
+                $match: {
+                    role: UserRole.PHARMACIEN,
+                    hasActiveSubscription: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { pharmacist_id: "$_id" },
+                    pipeline: [
+                        { $match: 
+                            { $expr: 
+                                { $eq: [ "$pharmacistId", "$$pharmacist_id" ] }
+                            }
+                        },
+                        { $count: "count" }
+                    ],
+                    as: 'teamInfo'
+                }
+            },
+            {
+                $addFields: {
+                    teamSize: { $ifNull: [ { $arrayElemAt: ["$teamInfo.count", 0] }, 0 ] }
+                }
+            },
+            {
+                $project: {
+                    teamInfo: 0
+                }
+            }
+        ]).toArray();
         res.json(clients);
     } catch (error) {
         console.error('Error fetching CRM clients:', error);
@@ -131,11 +163,31 @@ router.get('/prospects', async (req, res) => {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
-        const prospects = await usersCollection.find({ role: UserRole.PHARMACIEN, status: ClientStatus.PROSPECT }).toArray();
+        const prospects = await usersCollection.find({
+            role: UserRole.PHARMACIEN,
+            $or: [
+                { hasActiveSubscription: { $exists: false } },
+                { hasActiveSubscription: false }
+            ]
+        }).toArray();
         res.json(prospects);
     } catch (error) {
         console.error('Error fetching prospects:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des prospects.' });
+    }
+});
+
+// GET all contacts (clients and prospects)
+router.get('/all-contacts', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+        const contacts = await usersCollection.find({ role: UserRole.PHARMACIEN }).toArray();
+        res.json(contacts);
+    } catch (error) {
+        console.error('Error fetching all contacts:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des contacts.' });
     }
 });
 

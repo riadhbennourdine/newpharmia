@@ -45,6 +45,7 @@ export interface User {
   companyName?: string; // Pharmacy name
   lastContactDate?: Date;
   notes?: string;
+  teamSize?: number;
 }
 
 

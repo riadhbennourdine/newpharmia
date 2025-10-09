@@ -69,7 +69,7 @@ const ClientList = () => {
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Nom</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Statut</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Assigné à</th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Equipe</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
@@ -83,7 +83,7 @@ const ClientList = () => {
                     {client.status || 'N/A'}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-gray-600">{client.assignedTo || 'Non assigné'}</td>
+                <td className="py-3 px-4 text-gray-600">{client.teamSize}</td>
                 <td className="py-3 px-4">
                   <button 
                     onClick={() => handleViewClient(client._id)}
