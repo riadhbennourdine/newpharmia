@@ -114,13 +114,8 @@ const ClientDetailPage = () => {
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
-                <h1 className="text-4xl font-bold text-teal-600 mb-4">{client.firstName} {client.lastName}</h1>
-                <button 
-                  onClick={() => setIsAppointmentModalOpen(true)}
-                  className="w-full px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
-                >
-                  + Planifier un RDV
-                </button>
+                <h1 className="text-4xl font-bold text-teal-600">{client.firstName} {client.lastName}</h1>
+                {client.city && <p className="text-base text-gray-700">{client.city}</p>}
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold text-teal-600 mb-4">Informations</h3>
@@ -131,6 +126,12 @@ const ClientDetailPage = () => {
                 <p><strong>Plan d'abonnement:</strong> {client.planName || 'N/A'}</p>
                 <p><strong>Date d'expiration:</strong> {client.subscriptionEndDate ? new Date(client.subscriptionEndDate).toLocaleDateString() : 'N/A'}</p>
               </div>
+              <button 
+                  onClick={() => setIsAppointmentModalOpen(true)}
+                  className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+                >
+                  + Planifier un RDV
+                </button>
             </div>
   
             <div className="bg-white p-6 rounded-lg shadow-md">
