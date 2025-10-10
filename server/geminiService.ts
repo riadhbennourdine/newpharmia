@@ -36,7 +36,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           "content": "string"
         }
       ],
-      "references": ["string"]
+      "references": []
     }
     `;
   }
@@ -59,6 +59,24 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
   const generatedData = JSON.parse(jsonText);
+
+  // Post-processing to remove unwanted sections for specific types
+  if (memoFicheType === 'dispositifs-medicaux') {
+    const unwantedTitles = [
+      "Aperçu pathologie",
+      "Traitement principal",
+      "Produits associés",
+      "Hygiène de vie",
+      "Conseils alimentaires",
+      "Références bibliographiques"
+    ];
+
+    if (generatedData.customSections) {
+      generatedData.customSections = generatedData.customSections.filter(section => 
+        !unwantedTitles.includes(section.title)
+      );
+    }
+  }
 
   return generatedData;
 };
