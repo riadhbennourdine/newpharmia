@@ -97,7 +97,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     const text = Array.isArray(content) ? content.join('\n') : content;
     let html = text;
     
-    const keywordClass = isRedKeywordSection ? 'font-bold text-red-600' : 'font-bold text-teal-600';
+    const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
     html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
     
     const lines = html.split('\n');
