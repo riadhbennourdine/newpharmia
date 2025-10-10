@@ -521,6 +521,7 @@ app.get('/api/memofiches', async (req, res) => {
 
                 }
 
+        let query: any = {};
         if (search) {
             const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
             query.$or = [
