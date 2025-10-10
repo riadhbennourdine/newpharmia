@@ -72,10 +72,13 @@ Instructions spécifiques pour les sections personnalisées :
 Instructions de formatage impératives pour chaque section :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
 - Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-- Pour les sections qui sont des listes (Circonstances de conseil, Pathologies concernées, Exemples d'articles à conseiller, Réponses aux objections des clients, Références), le contenu doit être une liste à puces.
+- Pour les sections qui sont des listes (Questions clés, Signaux d'alerte, Circonstances de conseil, Pathologies concernées, Exemples d'articles à conseiller, Réponses aux objections des clients, Références), le contenu doit être une liste à puces.
 
 Instructions spécifiques par section :
 - **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
+- **Questions clés**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
+- **Aperçu pathologie**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
+- **Signaux d'alerte**: Doit être une liste à puces (commençant par "- "). Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
 - **Circonstances de conseil**: Indiquer le contexte d’intervention (automédication, renouvellement, etc.).
 - **Pathologies concernées**: Lister les pathologies fréquemment associées.
 - **Argumentation et intérêt du dispositif**: Expliquer le rôle et l’intérêt du dispositif médical.

@@ -45,6 +45,10 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     {
       "title": "string",
       "patientSituation": "string",
+      "casComptoir": "string",
+      "keyQuestions": ["string"],
+      "pathologyOverview": "string",
+      "redFlags": ["string"],
       "circonstancesConseil": "string",
       "pathologiesConcernees": "string",
       "argumentationInteret": "string",
