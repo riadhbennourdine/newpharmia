@@ -58,7 +58,7 @@ Instructions spécifiques par section :
 Instructions de formatage impératives :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
 - Vous devez générer UNIQUEMENT les sections personnalisées.
-- Interdiction formelle d'utiliser les sections suivantes, car elles ne sont absolument pas pertinentes pour la pharmacologie ou les dispositifs médicaux : "Questions clés à poser", "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Cas comptoir", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
+- Interdiction formelle d'utiliser les sections suivantes, car elles ne sont absolument pas pertinentes pour la pharmacologie ou les dispositifs médicaux : "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
 
 Instructions spécifiques pour les sections personnalisées :
 - Vous devez générer un tableau de sections personnalisées dans le champ "customSections".

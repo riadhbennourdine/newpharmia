@@ -30,13 +30,14 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     jsonStructure = `
     {
       "title": "string",
+      "patientSituation": "string",
+      "keyQuestions": ["string"],
       "customSections": [
         {
           "title": "string",
           "content": "string"
         }
-      ],
-      "references": []
+      ]
     }
     `;
   }
@@ -68,7 +69,8 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       "Produits associés",
       "Hygiène de vie",
       "Conseils alimentaires",
-      "Références bibliographiques"
+      "Références bibliographiques",
+      "Signaux d'alerte"
     ];
 
     if (generatedData.customSections) {
@@ -76,6 +78,12 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         !unwantedTitles.includes(section.title)
       );
     }
+
+    // Also delete the fields from the "maladie" structure, in case the model returned them
+    delete (generatedData as any).pathologyOverview;
+    delete (generatedData as any).redFlags;
+    delete (generatedData as any).recommendations;
+    delete (generatedData as any).references;
   }
 
   return generatedData;
