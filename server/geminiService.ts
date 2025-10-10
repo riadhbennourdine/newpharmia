@@ -66,8 +66,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         exemplesArticles: { type: Type.STRING },
         reponsesObjections: { type: Type.STRING },
         pagesSponsorisees: { type: Type.STRING },
-        references: { type: Type.STRING },
-      },
+        references: { type: Type.ARRAY, items: { type: Type.STRING } },
       required: [
         'title',
         'patientSituation',
