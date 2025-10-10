@@ -26,7 +26,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     }
   `;
 
-  if (memoFicheType === 'pharmacologie') {
+  if (memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = `
     {
       "title": "string",

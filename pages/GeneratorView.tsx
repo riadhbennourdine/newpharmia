@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const GeneratorView: React.FC = () => {
 
   const handleGenerate = async () => {
     if (memoFicheType === 'maladie' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
-    if (memoFicheType === 'pharmacologie' && (!sourceText.trim() || !pharmaTheme.trim() || !pharmaPathology.trim())) return;
+    if ((memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') && (!sourceText.trim() || !pharmaTheme.trim() || !pharmaPathology.trim())) return;
     if (memoFicheType === 'dermocosmetique' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
     if (memoFicheType === 'exhaustive' && !sourceText.trim()) return;
 
@@ -58,7 +58,7 @@ Instructions spécifiques par section :
 Instructions de formatage impératives :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
 - Vous devez générer UNIQUEMENT les sections personnalisées.
-- NE PAS utiliser les sections suivantes : "Questions clés à poser", "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Cas comptoir", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
+- Interdiction formelle d'utiliser les sections suivantes, car elles ne sont absolument pas pertinentes pour la pharmacologie ou les dispositifs médicaux : "Questions clés à poser", "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Cas comptoir", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
 
 Instructions spécifiques pour les sections personnalisées :
 - Vous devez générer un tableau de sections personnalisées dans le champ "customSections".
@@ -72,6 +72,8 @@ Instructions spécifiques pour les sections personnalisées :
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
         prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmaFormattingInstructions}`;
+    } else if (memoFicheType === 'dispositifs-medicaux') {
+        prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${pharmaFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else { // exhaustive
@@ -274,6 +276,7 @@ Instructions spécifiques pour les sections personnalisées :
             <option value="maladie">Maladie courante</option>
             <option value="pharmacologie">Pharmacologie</option>
             <option value="dermocosmetique">Dermocosmétique</option>
+            <option value="dispositifs-medicaux">Dispositifs médicaux</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>
@@ -317,32 +320,32 @@ Instructions spécifiques pour les sections personnalisées :
             </div>
         )}
 
-        {memoFicheType === 'pharmacologie' && (
+        {(memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label htmlFor="pharma-theme-input" className="block text-lg font-medium text-slate-700 mb-2">
-                    Thème de la mémofiche
+                    Thème
                     </label>
                     <input
                     id="pharma-theme-input"
                     type="text"
                     value={pharmaTheme}
                     onChange={(e) => setPharmaTheme(e.target.value)}
-                    placeholder="Ex: Les antiulcéreux"
+                    placeholder="Ex: Les antiulcéreux / Le matériel de pansement"
                     className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
                     disabled={isLoading}
                     />
                 </div>
                 <div>
                     <label htmlFor="pharma-pathology-input" className="block text-lg font-medium text-slate-700 mb-2">
-                    Pathologie cible
+                    Indication principale
                     </label>
                     <input
                     id="pharma-pathology-input"
                     type="text"
                     value={pharmaPathology}
                     onChange={(e) => setPharmaPathology(e.target.value)}
-                    placeholder="Ex: Le reflux gastro-œsophagien"
+                    placeholder="Ex: Le reflux gastro-œsophagien / Le traitement des plaies"
                     className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
                     disabled={isLoading}
                     />
