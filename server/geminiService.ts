@@ -9,65 +9,90 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-  let jsonStructure = `
-    {
-      "title": "string",
-      "patientSituation": "string",
-      "keyQuestions": ["string"],
-      "pathologyOverview": "string",
-      "redFlags": ["string"],
-      "recommendations": {
-        "mainTreatment": ["string"],
-        "associatedProducts": ["string"],
-        "lifestyleAdvice": ["string"],
-        "dietaryAdvice": ["string"]
+  let jsonStructure: any = {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING },
+      patientSituation: { type: Type.STRING },
+      keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      pathologyOverview: { type: Type.STRING },
+      redFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
+      recommendations: {
+        type: Type.OBJECT,
+        properties: {
+          mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
+          associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
+          lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+          dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+        },
+        required: ['mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice'],
       },
-      "references": ["string"]
-    }
-  `;
+      references: { type: Type.ARRAY, items: { type: STRING } },
+    },
+    required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'recommendations', 'references'],
+  };
 
   if (memoFicheType === 'pharmacologie') {
-    jsonStructure = `
-    {
-      "title": "string",
-      "patientSituation": "string",
-      "keyQuestions": ["string"],
-      "customSections": [
-        {
-          "title": "string",
-          "content": "string"
-        }
-      ]
-    }
-    `;
+    jsonStructure = {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        patientSituation: { type: Type.STRING },
+        keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
+        customSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
+          },
+        },
+      },
+      required: ['title', 'patientSituation', 'keyQuestions', 'customSections'],
+    };
   } else if (memoFicheType === 'dispositifs-medicaux') {
-    jsonStructure = `
-    {
-      "title": "string",
-      "patientSituation": "string",
-      "circonstancesConseil": "string",
-      "pathologiesConcernees": "string",
-      "argumentationInteret": "string",
-      "beneficesSante": "string",
-      "exemplesArticles": "string",
-      "reponsesObjections": "string",
-      "pagesSponsorisees": "string",
-      "references": "string"
-    }
-    `;
+    jsonStructure = {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        patientSituation: { type: Type.STRING },
+        circonstancesConseil: { type: Type.STRING },
+        pathologiesConcernees: { type: Type.STRING },
+        argumentationInteret: { type: Type.STRING },
+        beneficesSante: { type: Type.STRING },
+        exemplesArticles: { type: Type.STRING },
+        reponsesObjections: { type: Type.STRING },
+        pagesSponsorisees: { type: Type.STRING },
+        references: { type: Type.STRING },
+      },
+      required: [
+        'title',
+        'patientSituation',
+        'circonstancesConseil',
+        'pathologiesConcernees',
+        'argumentationInteret',
+        'beneficesSante',
+        'exemplesArticles',
+        'reponsesObjections',
+        'pagesSponsorisees',
+        'references',
+      ],
+    };
   }
 
   const fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de ```json). Respectez impérativement la structure suivante :
-    ${jsonStructure}
-  `;
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de ```json). Respectez impérativement la structure suivante.`;
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+    config: { responseMimeType: "application/json", responseSchema: jsonStructure },
   });
   
   const responseText = response.text.trim();
