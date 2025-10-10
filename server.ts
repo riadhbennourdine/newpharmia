@@ -499,15 +499,27 @@ app.get('/api/memofiches', async (req, res) => {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
         }
 
-        let hasAccess = false;
-        if (user) {
-            const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-            if (user.hasActiveSubscription || (trialExpiresAt && trialExpiresAt > new Date())) {
-                hasAccess = true;
-            }
-        }
+                let hasAccess = false;
 
-        let query: any = {};
+                if (user) {
+
+                    console.log('User object for access check:', JSON.stringify(user, null, 2));
+
+                    const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+
+                    console.log('Calculated trialExpiresAt:', trialExpiresAt);
+
+                    console.log('Is trial still valid?:', trialExpiresAt && new Date(trialExpiresAt) > new Date());
+
+        
+
+                    if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+
+                        hasAccess = true;
+
+                    }
+
+                }
 
         if (search) {
             const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
@@ -590,8 +602,12 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
         let hasAccess = false;
         if (user) {
+            console.log('User object for access check:', JSON.stringify(user, null, 2));
             const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-            if (user.hasActiveSubscription || (trialExpiresAt && trialExpiresAt > new Date())) {
+            console.log('Calculated trialExpiresAt:', trialExpiresAt);
+            console.log('Is trial still valid?:', trialExpiresAt && new Date(trialExpiresAt) > new Date());
+
+            if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
                 hasAccess = true;
             }
         }
