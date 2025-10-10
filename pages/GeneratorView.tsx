@@ -288,7 +288,15 @@ Instructions spécifiques par section :
             <select
             id="memofiche-type-select"
             value={memoFicheType}
-            onChange={(e) => setMemoFicheType(e.target.value as any)}
+            onChange={(e) => {
+              const newMemoFicheType = e.target.value as any;
+              setMemoFicheType(newMemoFicheType);
+              if (newMemoFicheType === 'dispositifs-medicaux') {
+                setPharmaTheme('Dispositifs médicaux');
+              } else {
+                setPharmaTheme(''); // Clear if not 'dispositifs-medicaux'
+              }
+            }}
             className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
             disabled={isLoading}
             >
