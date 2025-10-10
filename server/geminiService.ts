@@ -75,6 +75,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
   const generatedData = JSON.parse(jsonText);
+  console.log("Données générées brutes de Gemini :", JSON.stringify(generatedData, null, 2));
 
   return generatedData;
 };
