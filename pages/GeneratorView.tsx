@@ -72,20 +72,17 @@ Instructions spécifiques pour les sections personnalisées :
 Instructions de formatage impératives pour chaque section :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
 - Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-- Pour les sections qui sont des listes (Questions clés, Signaux d'alerte, Circonstances de conseil, Pathologies concernées, Exemples d'articles à conseiller, Réponses aux objections des clients, Références), le contenu doit être une liste à puces.
+- Pour les sections qui sont des listes, le contenu doit être une liste à puces.
 
 Instructions spécifiques par section :
-- **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
-- **Questions clés**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
-- **Aperçu pathologie**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
-- **Signaux d'alerte**: Doit être une liste à puces (commençant par "- "). Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **Circonstances de conseil**: Indiquer le contexte d’intervention (automédication, renouvellement, etc.).
-- **Pathologies concernées**: Lister les pathologies fréquemment associées.
-- **Argumentation et intérêt du dispositif**: Expliquer le rôle et l’intérêt du dispositif médical.
-- **Bénéfices pour la santé**: Mettre en avant les bénéfices pour l’utilisateur.
-- **Exemples d'articles à conseiller**: Suggérer des noms de dispositifs disponibles à l’officine.
-- **Réponses aux objections des clients**: Fournir des formulations pour rassurer et lever les réticences.
-- **Pages sponsorisées**: Décrire l'espace dédié à la présentation des gammes partenaires.
+- **Cas comptoir**: Description rapide des situations courantes au comptoir (exemple : demande de pansement pour blessure mineure, usage de glucomètre pour surveillance glycémique, conseil sur l’usage d’un aérosol suite à une ordonnance).
+- **Circonstances de conseil**: Indications du contexte d’intervention (automédication, renouvellement, première initiation, recommandations du médecin, demande spontanée du patient).
+- **Pathologies concernées**: Liste des pathologies fréquemment associées à la demande (plaie, allergie, asthme, diabète, hypertension...).
+- **Argumentation et intérêt du dispositif**: Explications claires sur le rôle et l’intérêt du dispositif médical par rapport à la pathologie (exemple : les pansements hydrocolloïdes favorisent la cicatrisation, le tensiomètre permet le suivi précis de la tension artérielle).
+- **Bénéfices pour la santé**: Mise en avant des bénéfices pour l’utilisateur (prévention des complications, amélioration des symptômes, autonomie, confort d’utilisation).
+- **Exemples d’articles à conseiller**: Suggestions concrètes : noms de dispositifs disponibles à l’officine (marques, formats adaptés à l’âge ou aux besoins).
+- **Réponses aux objections des clients**: Formulations pour rassurer et lever les réticences (prix, efficacité, facilité d’utilisation, entretien, remboursement).
+- **Pages sponsorisées**: Espace dédié à la présentation des gammes partenaires, flyers ou QR codes vers des supports d’information ou vidéos explicatives.
 - **Références**: Lister les références bibliographiques utilisées.
 `;
 
