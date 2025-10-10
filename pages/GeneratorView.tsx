@@ -53,7 +53,7 @@ Instructions spécifiques par section :
 - Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
 `;
 
-    const pharmaFormattingInstructions = `
+    const pharmacologieFormattingInstructions = `
 
 Instructions de formatage impératives :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
@@ -67,13 +67,32 @@ Instructions spécifiques pour les sections personnalisées :
 - Le contenu de chaque section doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 `;
 
+    const dispositifsMedicauxFormattingInstructions = `
+
+Instructions de formatage impératives pour chaque section :
+- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
+- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+- Pour les sections qui sont des listes (Circonstances de conseil, Pathologies concernées, Exemples d'articles à conseiller, Réponses aux objections des clients, Références), le contenu doit être une liste à puces.
+
+Instructions spécifiques par section :
+- **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
+- **Circonstances de conseil**: Indiquer le contexte d’intervention (automédication, renouvellement, etc.).
+- **Pathologies concernées**: Lister les pathologies fréquemment associées.
+- **Argumentation et intérêt du dispositif**: Expliquer le rôle et l’intérêt du dispositif médical.
+- **Bénéfices pour la santé**: Mettre en avant les bénéfices pour l’utilisateur.
+- **Exemples d'articles à conseiller**: Suggérer des noms de dispositifs disponibles à l’officine.
+- **Réponses aux objections des clients**: Fournir des formulations pour rassurer et lever les réticences.
+- **Pages sponsorisées**: Décrire l'espace dédié à la présentation des gammes partenaires.
+- **Références**: Lister les références bibliographiques utilisées.
+`;
+
     let prompt = '';
     if (memoFicheType === 'maladie') {
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
-        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmaFormattingInstructions}`;
+        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
     } else if (memoFicheType === 'dispositifs-medicaux') {
-        prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${pharmaFormattingInstructions}`;
+        prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else { // exhaustive

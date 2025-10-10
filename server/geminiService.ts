@@ -26,7 +26,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     }
   `;
 
-  if (memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') {
+  if (memoFicheType === 'pharmacologie') {
     jsonStructure = `
     {
       "title": "string",
@@ -38,6 +38,21 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           "content": "string"
         }
       ]
+    }
+    `;
+  } else if (memoFicheType === 'dispositifs-medicaux') {
+    jsonStructure = `
+    {
+      "title": "string",
+      "patientSituation": "string",
+      "circonstancesConseil": "string",
+      "pathologiesConcernees": "string",
+      "argumentationInteret": "string",
+      "beneficesSante": "string",
+      "exemplesArticles": "string",
+      "reponsesObjections": "string",
+      "pagesSponsorisees": "string",
+      "references": "string"
     }
     `;
   }
@@ -60,31 +75,6 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
   const generatedData = JSON.parse(jsonText);
-
-  // Post-processing to remove unwanted sections for specific types
-  if (memoFicheType === 'dispositifs-medicaux') {
-    const unwantedTitles = [
-      "Aperçu pathologie",
-      "Traitement principal",
-      "Produits associés",
-      "Hygiène de vie",
-      "Conseils alimentaires",
-      "Références bibliographiques",
-      "Signaux d'alerte"
-    ];
-
-    if (generatedData.customSections) {
-      generatedData.customSections = generatedData.customSections.filter(section => 
-        !unwantedTitles.includes(section.title)
-      );
-    }
-
-    // Also delete the fields from the "maladie" structure, in case the model returned them
-    delete (generatedData as any).pathologyOverview;
-    delete (generatedData as any).redFlags;
-    delete (generatedData as any).recommendations;
-    delete (generatedData as any).references;
-  }
 
   return generatedData;
 };
