@@ -364,18 +364,21 @@ Instructions spécifiques par section :
                     />
                 </div>
                 <div>
-                    <label htmlFor="pharma-pathology-input" className="block text-lg font-medium text-slate-700 mb-2">
+                    <label htmlFor="pharma-pathology-select" className="block text-lg font-medium text-slate-700 mb-2">
                     Indication principale
                     </label>
-                    <input
-                    id="pharma-pathology-input"
-                    type="text"
+                    <select
+                    id="pharma-pathology-select"
                     value={pharmaPathology}
                     onChange={(e) => setPharmaPathology(e.target.value)}
-                    placeholder="Ex: Le reflux gastro-œsophagien / Le traitement des plaies"
                     className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
                     disabled={isLoading}
-                    />
+                    >
+                    <option value="">Sélectionnez une indication</option>
+                    {TOPIC_CATEGORIES[1].topics.map(topic => (
+                        <option key={topic} value={topic}>{topic}</option>
+                    ))}
+                    </select>
                 </div>
             </div>
         )}
