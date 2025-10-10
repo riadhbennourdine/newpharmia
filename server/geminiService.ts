@@ -27,7 +27,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         },
         required: ['mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice'],
       },
-      references: { type: Type.ARRAY, items: { type: STRING } },
+      references: { type: Type.ARRAY, items: { type: Type.STRING } },
     },
     required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'recommendations', 'references'],
   };
@@ -67,6 +67,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         reponsesObjections: { type: Type.STRING },
         pagesSponsorisees: { type: Type.STRING },
         references: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
       required: [
         'title',
         'patientSituation',

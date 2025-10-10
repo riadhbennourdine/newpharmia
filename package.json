@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "npm run build && NODE_ENV=production npx tsx server.ts",
-    "dev": "concurrently \"vite\" \"tsx --watch server.ts\"",
+    "start": "npm run build && npm run build:server && NODE_ENV=production node dist-server/server.js",
+    "dev": "concurrently \"vite\" \"tsc --watch --outDir dist-server --esModuleInterop server.ts\" \"nodemon --watch dist-server dist-server/server.js\"",
     "build": "vite build",
+    "build:server": "tsc --outDir dist-server --esModuleInterop server.ts",
     "preview": "vite preview"
   },
   "dependencies": {
