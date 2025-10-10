@@ -85,7 +85,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   const fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de ```json). Respectez impérativement la structure suivante.`;
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de ```json). Respectez impérativement la structure suivante.`
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
