@@ -3,6 +3,8 @@ import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm } from '../types';
 import { ensureArray } from '../utils/array';
 import { TrashIcon, PlusCircleIcon } from './Icons';
 
+import { TOPIC_CATEGORIES } from '../constants';
+
 interface MemoFicheEditorProps {
   initialCaseStudy?: CaseStudy;
   onSave: (caseStudy: CaseStudy) => void;
@@ -210,7 +212,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="theme">Thème Pédagogique</Label>
-              <Input type="text" name="theme" id="theme" value={caseStudy.theme} onChange={handleChange} />
+              <select name="theme" id="theme" value={caseStudy.theme} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <option value="">Sélectionner un thème</option>
+                {TOPIC_CATEGORIES[0].topics.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
             <div>
               <Label htmlFor="system">Système/Organe</Label>
