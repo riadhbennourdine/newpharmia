@@ -37,7 +37,10 @@ export const sendBrevoEmail = async ({ to, subject, htmlContent, attachment }: S
 
     if (!response.ok) {
       console.error("Brevo API error:", response.status, data);
-      throw new Error(data.message || 'Failed to send email via Brevo.');
+      const errorMessage = (data && typeof data === 'object' && 'message' in data) 
+        ? String(data.message) 
+        : 'Failed to send email via Brevo.';
+      throw new Error(errorMessage);
     }
 
     console.log("Email sent successfully via Brevo:", response.status, data);

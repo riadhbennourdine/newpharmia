@@ -638,7 +638,7 @@ app.post('/api/memofiches', async (req, res) => {
         const result = await memofichesCollection.insertOne({
             ...ficheData,
             creationDate: new Date().toISOString(),
-        });
+        } as CaseStudy);
 
         if (result.acknowledged) {
             const insertedFiche = { _id: result.insertedId, ...ficheData, creationDate: new Date().toISOString() };

@@ -285,7 +285,7 @@ router.get('/clients/:id/appointments', async (req, res) => {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const appointmentsCollection = db.collection<Appointment>('appointments');
-        const appointments = await appointmentsCollection.find({ clientId: id }).sort({ date: -1 }).toArray();
+        const appointments = await appointmentsCollection.find({ clientId: new ObjectId(id) }).sort({ date: -1 }).toArray();
         res.json(appointments);
     } catch (error) {
         console.error('Error fetching client appointments:', error);
