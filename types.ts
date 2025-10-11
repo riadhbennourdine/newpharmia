@@ -85,7 +85,7 @@ export interface Media {
 export interface CaseStudy {
   _id: ObjectId | string;
   id: string;
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux';
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances';
   title: string;
   shortDescription: string;
   theme: string;
@@ -120,15 +120,73 @@ export interface CaseStudy {
   isFree?: boolean;
   customSections?: MemoFicheSection[];
 
-  // Dispositifs médicaux
-  casComptoir?: string;
-  objectifsConseil?: string;
-  pathologiesConcernees?: string;
-  interetDispositif?: string;
-  beneficesSante?: string;
-  dispositifsAConseiller?: string;
-  reponsesObjections?: string;
-  pagesSponsorisees?: string;
+  // Ordonnances
+  analyseOrdonnance?: {
+    premierePrescription?: boolean;
+    informationsPatient?: string;
+  };
+  conseilsTraitement?: {
+    proprieteModeAction?: string;
+    administrationHorairesEffets?: string;
+    interactionsContreIndications?: string;
+  };
+  informationsOrdonnance?: {
+    informationsEssentielles?: string;
+    specificitesPathologie?: string;
+    objectifTraitement?: string;
+  };
+  conseilsHygienoDietetiques?: {
+    hygieneDeVie?: string;
+    alimentation?: string;
+  };
+  venteComplementaire?: {
+    produitsAccessoires?: string;
+    explicationProduits?: string;
+  };
+  referencesBibliographiques?: string[];
+
+  // Dermocosmétique
+  casComptoirDermo?: string;
+  questionsCles?: string;
+  etatBesoinPeau?: string;
+  conseillerConsultationDermato?: string;
+  produitPrincipal?: string;
+  produitsAssocies?: string;
+  hygieneDeVieDermo?: string;
+  conseilsAlimentairesDermo?: string;
+  referencesBibliographiquesDermo?: string[];
+
+  // Dispositifs Médicaux
+  analyseDemandePrescription?: {
+    identificationBesoin?: string;
+    informationsPatientDM?: string;
+  };
+  connaissanceDispositifMedical?: {
+    typeClassification?: string;
+    modeFonctionnement?: string;
+    indicationsContreIndications?: string;
+    precautionsEffetsIndesirables?: string;
+  };
+  conseilsPatient?: {
+    explicationUtilisation?: string;
+    hygieneEntretien?: string;
+    conditionsConservation?: string;
+    signesAlerte?: string;
+    gestionDechets?: string;
+  };
+  aspectsReglementaires?: {
+    remboursement?: string;
+    tracabilite?: string;
+    materiovigilance?: string;
+  };
+  venteComplementaireDM?: {
+    produitsHygiene?: string;
+    protectionsCutanees?: string;
+    confort?: string;
+    consommables?: string;
+    explicationValeurAjoutee?: string;
+  };
+  referencesBibliographiquesDM?: string[];
 }
 
 export type MemoFiche = CaseStudy;

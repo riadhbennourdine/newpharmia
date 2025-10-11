@@ -38,7 +38,75 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
-  customSections: ensureArray(caseStudy?.customSections),
+    customSections: ensureArray(caseStudy?.customSections),
+
+    // Ordonnances
+    analyseOrdonnance: {
+      premierePrescription: caseStudy?.analyseOrdonnance?.premierePrescription || false,
+      informationsPatient: caseStudy?.analyseOrdonnance?.informationsPatient || '',
+    },
+    conseilsTraitement: {
+      proprieteModeAction: caseStudy?.conseilsTraitement?.proprieteModeAction || '',
+      administrationHorairesEffets: caseStudy?.conseilsTraitement?.administrationHorairesEffets || '',
+      interactionsContreIndications: caseStudy?.conseilsTraitement?.interactionsContreIndications || '',
+    },
+    informationsOrdonnance: {
+      informationsEssentielles: caseStudy?.informationsOrdonnance?.informationsEssentielles || '',
+      specificitesPathologie: caseStudy?.informationsOrdonnance?.specificitesPathologie || '',
+      objectifTraitement: caseStudy?.informationsOrdonnance?.objectifTraitement || '',
+    },
+    conseilsHygienoDietetiques: {
+      hygieneDeVie: caseStudy?.conseilsHygienoDietetiques?.hygieneDeVie || '',
+      alimentation: caseStudy?.conseilsHygienoDietetiques?.alimentation || '',
+    },
+    venteComplementaire: {
+      produitsAccessoires: caseStudy?.venteComplementaire?.produitsAccessoires || '',
+      explicationProduits: caseStudy?.venteComplementaire?.explicationProduits || '',
+    },
+    referencesBibliographiques: ensureArray(caseStudy?.referencesBibliographiques),
+
+    // Dermocosmétique
+    casComptoirDermo: caseStudy?.casComptoirDermo || '',
+    questionsCles: caseStudy?.questionsCles || '',
+    etatBesoinPeau: caseStudy?.etatBesoinPeau || '',
+    conseillerConsultationDermato: caseStudy?.conseillerConsultationDermato || '',
+    produitPrincipal: caseStudy?.produitPrincipal || '',
+    produitsAssocies: caseStudy?.produitsAssocies || '',
+    hygieneDeVieDermo: caseStudy?.hygieneDeVieDermo || '',
+    conseilsAlimentairesDermo: caseStudy?.conseilsAlimentairesDermo || '',
+    referencesBibliographiquesDermo: ensureArray(caseStudy?.referencesBibliographiquesDermo),
+
+    // Dispositifs Médicaux
+    analyseDemandePrescription: {
+      identificationBesoin: caseStudy?.analyseDemandePrescription?.identificationBesoin || '',
+      informationsPatientDM: caseStudy?.analyseDemandePrescription?.informationsPatientDM || '',
+    },
+    connaissanceDispositifMedical: {
+      typeClassification: caseStudy?.connaissanceDispositifMedical?.typeClassification || '',
+      modeFonctionnement: caseStudy?.connaissanceDispositifMedical?.modeFonctionnement || '',
+      indicationsContreIndications: caseStudy?.connaissanceDispositifMedical?.indicationsContreIndications || '',
+      precautionsEffetsIndesirables: caseStudy?.connaissanceDispositifMedical?.precautionsEffetsIndesirables || '',
+    },
+    conseilsPatient: {
+      explicationUtilisation: caseStudy?.conseilsPatient?.explicationUtilisation || '',
+      hygieneEntretien: caseStudy?.conseilsPatient?.hygieneEntretien || '',
+      conditionsConservation: caseStudy?.conseilsPatient?.conditionsConservation || '',
+      signesAlerte: caseStudy?.conseilsPatient?.signesAlerte || '',
+      gestionDechets: caseStudy?.conseilsPatient?.gestionDechets || '',
+    },
+    aspectsReglementaires: {
+      remboursement: caseStudy?.aspectsReglementaires?.remboursement || '',
+      tracabilite: caseStudy?.aspectsReglementaires?.tracabilite || '',
+      materiovigilance: caseStudy?.aspectsReglementaires?.materiovigilance || '',
+    },
+    venteComplementaireDM: {
+      produitsHygiene: caseStudy?.venteComplementaireDM?.produitsHygiene || '',
+      protectionsCutanees: caseStudy?.venteComplementaireDM?.protectionsCutanees || '',
+      confort: caseStudy?.venteComplementaireDM?.confort || '',
+      consommables: caseStudy?.venteComplementaireDM?.consommables || '',
+      explicationValeurAjoutee: caseStudy?.venteComplementaireDM?.explicationValeurAjoutee || '',
+    },
+    referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
   };
 };
 
@@ -70,6 +138,29 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setCaseStudy(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const handleNestedChange = (parent: keyof CaseStudy, child: string, value: any) => {
+    setCaseStudy(prev => ({
+      ...prev,
+      [parent]: {
+        ...((prev[parent] as object) || {}),
+        [child]: value,
+      },
+    }));
+  };
+
+  const handleDeeplyNestedChange = (grandparent: keyof CaseStudy, parent: string, child: string, value: any) => {
+    setCaseStudy(prev => ({
+      ...prev,
+      [grandparent]: {
+        ...((prev[grandparent] as object) || {}),
+        [parent]: {
+          ...(((prev[grandparent] as any)?.[parent] as object) || {}),
+          [child]: value,
+        },
+      },
+    }));
   };
 
   const handleArrayChange = (name: keyof CaseStudy, value: string) => {
@@ -167,6 +258,17 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
         <FormSection title="Informations Générales">
           <div>
+            <Label htmlFor="type">Type de mémofiche</Label>
+            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <option value="maladie">Maladie</option>
+                <option value="pharmacologie">Pharmacologie</option>
+                <option value="dermocosmetique">Dermocosmétique</option>
+                <option value="dispositifs-medicaux">Dispositifs Médicaux</option>
+                <option value="ordonnances">Ordonnances</option>
+                <option value="exhaustive">Exhaustive</option>
+            </select>
+          </div>
+          <div>
             <Label htmlFor="title">Titre</Label>
             <Input type="text" name="title" id="title" value={caseStudy.title} onChange={handleChange} />
           </div>
@@ -212,8 +314,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        {caseStudy.type !== 'pharmacologie' && (
-            <FormSection title="Contenu du Mémo">
+        {caseStudy.type === 'maladie' && (
+            <FormSection title="Contenu du Mémo (Maladie)">
               <div>
                 <Label htmlFor="patientSituation">Cas comptoir</Label>
                 <Textarea name="patientSituation" id="patientSituation" rows={5} value={caseStudy.patientSituation} onChange={handleChange} />
@@ -231,6 +333,89 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
               </div>
             </FormSection>
+        )}
+
+        {caseStudy.type === 'ordonnances' && (
+          <>
+            <FormSection title="Analyse de l'Ordonnance">
+              <div className="flex items-center">
+                  <input type="checkbox" name="premierePrescription" id="premierePrescription" checked={caseStudy.analyseOrdonnance?.premierePrescription} onChange={(e) => handleNestedChange('analyseOrdonnance', 'premierePrescription', e.target.checked)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                  <label htmlFor="premierePrescription" className="ml-2 block text-sm text-gray-900">Première prescription</label>
+              </div>
+              <div>
+                <Label htmlFor="informationsPatient">Informations Patient</Label>
+                <Textarea name="informationsPatient" id="informationsPatient" rows={3} value={caseStudy.analyseOrdonnance?.informationsPatient} onChange={(e) => handleNestedChange('analyseOrdonnance', 'informationsPatient', e.target.value)} />
+              </div>
+            </FormSection>
+            <FormSection title="Conseils sur le traitement médicamenteux">
+              <div>
+                <Label htmlFor="proprieteModeAction">Propriété et mode d'action</Label>
+                <Textarea name="proprieteModeAction" id="proprieteModeAction" rows={3} value={caseStudy.conseilsTraitement?.proprieteModeAction} onChange={(e) => handleNestedChange('conseilsTraitement', 'proprieteModeAction', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="administrationHorairesEffets">Administration, horaires et effets</Label>
+                <Textarea name="administrationHorairesEffets" id="administrationHorairesEffets" rows={3} value={caseStudy.conseilsTraitement?.administrationHorairesEffets} onChange={(e) => handleNestedChange('conseilsTraitement', 'administrationHorairesEffets', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="interactionsContreIndications">Interactions et contre-indications</Label>
+                <Textarea name="interactionsContreIndications" id="interactionsContreIndications" rows={3} value={caseStudy.conseilsTraitement?.interactionsContreIndications} onChange={(e) => handleNestedChange('conseilsTraitement', 'interactionsContreIndications', e.target.value)} />
+              </div>
+            </FormSection>
+          </>
+        )}
+
+        {caseStudy.type === 'dermocosmetique' && (
+          <FormSection title="Contenu du Mémo (Dermocosmétique)">
+            <div>
+              <Label htmlFor="casComptoirDermo">Cas comptoir</Label>
+              <Textarea name="casComptoirDermo" id="casComptoirDermo" rows={3} value={caseStudy.casComptoirDermo} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="questionsCles">Questions clés</Label>
+              <Textarea name="questionsCles" id="questionsCles" rows={3} value={caseStudy.questionsCles} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="etatBesoinPeau">État et besoin de la peau</Label>
+              <Textarea name="etatBesoinPeau" id="etatBesoinPeau" rows={3} value={caseStudy.etatBesoinPeau} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="conseillerConsultationDermato">Conseiller une consultation dermatologique</Label>
+              <Textarea name="conseillerConsultationDermato" id="conseillerConsultationDermato" rows={3} value={caseStudy.conseillerConsultationDermato} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="produitPrincipal">Produit principal</Label>
+              <Textarea name="produitPrincipal" id="produitPrincipal" rows={3} value={caseStudy.produitPrincipal} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="produitsAssocies">Produits associés</Label>
+              <Textarea name="produitsAssocies" id="produitsAssocies" rows={3} value={caseStudy.produitsAssocies} onChange={handleChange} />
+            </div>
+          </FormSection>
+        )}
+
+        {caseStudy.type === 'dispositifs-medicaux' && (
+          <>
+            <FormSection title="Analyse de la Demande / Prescription">
+              <div>
+                <Label htmlFor="identificationBesoin">Identification du besoin</Label>
+                <Textarea name="identificationBesoin" id="identificationBesoin" rows={3} value={caseStudy.analyseDemandePrescription?.identificationBesoin} onChange={(e) => handleNestedChange('analyseDemandePrescription', 'identificationBesoin', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="informationsPatientDM">Informations patient</Label>
+                <Textarea name="informationsPatientDM" id="informationsPatientDM" rows={3} value={caseStudy.analyseDemandePrescription?.informationsPatientDM} onChange={(e) => handleNestedChange('analyseDemandePrescription', 'informationsPatientDM', e.target.value)} />
+              </div>
+            </FormSection>
+            <FormSection title="Connaissance du Dispositif Médical">
+              <div>
+                <Label htmlFor="typeClassification">Type et classification</Label>
+                <Textarea name="typeClassification" id="typeClassification" rows={3} value={caseStudy.connaissanceDispositifMedical?.typeClassification} onChange={(e) => handleNestedChange('connaissanceDispositifMedical', 'typeClassification', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="modeFonctionnement">Mode de fonctionnement</Label>
+                <Textarea name="modeFonctionnement" id="modeFonctionnement" rows={3} value={caseStudy.connaissanceDispositifMedical?.modeFonctionnement} onChange={(e) => handleNestedChange('connaissanceDispositifMedical', 'modeFonctionnement', e.target.value)} />
+              </div>
+            </FormSection>
+          </>
         )}
 
         <FormSection title="Recommandations">
