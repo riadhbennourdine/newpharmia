@@ -64,25 +64,52 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
   if (showResults) {
     const score = calculateScore();
     const percentage = Math.round((score / questions.length) * 100);
+
+    const getAppreciation = () => {
+        if (percentage === 100) return { message: "Parfait ! Vous êtes un expert sur ce sujet !", color: "text-green-500" };
+        if (percentage >= 80) return { message: "Excellent ! Vous maîtrisez bien le sujet.", color: "text-green-500" };
+        if (percentage >= 50) return { message: "Bon travail ! Continuez à approfondir vos connaissances.", color: "text-amber-500" };
+        return { message: "Continuez à réviser, vous êtes sur la bonne voie !", color: "text-red-500" };
+    };
+
+    const appreciation = getAppreciation();
+
+    const handleRestart = () => {
+        setCurrentQuestionIndex(0);
+        setSelectedAnswers(Array(questions.length).fill(null));
+        setShowResults(false);
+        setSubmittedAnswer(null);
+    };
+
     return (
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg animate-fade-in">
-        <div className="text-center">
+        <div className="text-center border-b pb-8 mb-8">
             <h2 className="text-3xl font-bold text-slate-800 mb-2">Résultats du Quiz</h2>
             <p className="text-slate-600 mb-6">Pour le cas : "{caseTitle}"</p>
-            <div className={`mb-6 text-6xl font-extrabold ${percentage >= 80 ? 'text-green-500' : percentage >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
-            {percentage}%
+            
+            <div className={`mb-4 text-7xl font-extrabold ${appreciation.color}`}>
+                {percentage}%
             </div>
-            <p className="text-xl text-slate-700 mb-4">Vous avez répondu correctement à {score} question(s) sur {questions.length}.</p>
-            <p className="text-lg text-slate-600 mb-8">
-            {percentage === 100 && "Parfait ! Vous êtes un expert sur ce sujet !"}
-            {percentage >= 80 && percentage < 100 && "Excellent ! Vous maîtrisez bien le sujet."}
-            {percentage >= 50 && percentage < 80 && "Bon travail ! Continuez à approfondir vos connaissances."}
-            {percentage < 50 && "Continuez à réviser, vous êtes sur la bonne voie !"}
+            <p className={`text-xl font-semibold ${appreciation.color} mb-4`}>{appreciation.message}</p>
+            
+            <p className="text-lg text-slate-700 mb-6">Vous avez répondu correctement à {score} question(s) sur {questions.length}.</p>
+            
+            <p className="text-md text-slate-500 mb-8 max-w-md mx-auto">
+                Chaque erreur est une opportunité d'apprendre. N'hésitez pas à revoir la mémofiche pour renforcer vos connaissances.
             </p>
+
+            <div className="flex justify-center space-x-4">
+                <button onClick={handleRestart} className="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors">
+                    Recommencer le Quiz
+                </button>
+                <button onClick={onBack} className="px-6 py-3 bg-slate-200 text-slate-800 font-bold rounded-lg hover:bg-slate-300 transition-colors">
+                    Retour à l'étude de cas
+                </button>
+            </div>
         </div>
         
-        <div className="text-left mt-10 space-y-4 bg-slate-50 p-6 rounded-lg border">
-            <h3 className="text-xl font-bold text-slate-800 text-center mb-4 border-b pb-3">Réponses détaillées</h3>
+        <div className="text-left space-y-4">
+            <h3 className="text-xl font-bold text-slate-800 text-center mb-4">Réponses détaillées</h3>
             {questions.map((q, index) => {
                 const userAnswerIndex = selectedAnswers[index];
                 const isCorrect = userAnswerIndex === q.correctAnswerIndex;
@@ -93,7 +120,7 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
                         <div className="p-4">
                             <p className="font-semibold text-slate-800">{index + 1}. {q.question}</p>
                         </div>
-                        <div className="p-4 bg-white border-t border-slate-200/80 space-y-3">
+                        <div className="p-4 bg-slate-50/50 border-t border-slate-200/80 space-y-3">
                             <div className={`flex items-start ${isCorrect ? 'text-slate-700' : 'text-red-700'}`}>
                                 {isCorrect ? 
                                     <CheckCircleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0 text-green-600" /> : 
@@ -120,12 +147,6 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
                     </div>
                 );
             })}
-        </div>
-
-        <div className="text-center">
-            <button onClick={onBack} className="mt-8 bg-teal-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-teal-700 transition-colors">
-            Retour à l'étude de cas
-            </button>
         </div>
       </div>
     );
