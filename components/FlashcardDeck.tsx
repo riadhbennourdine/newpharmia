@@ -1,29 +1,40 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Flashcard } from '../types';
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon, ArrowUturnLeftIcon } from './Icons';
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon, ArrowUturnLeftIcon, CheckCircleIcon, ArrowPathIcon } from './Icons';
 
-const FlashcardDeck: React.FC<{ flashcards: Flashcard[] }> = ({ flashcards }) => {
+interface FlashcardDeckProps {
+    flashcards: Flashcard[];
+    memoFicheId: string;
+}
+
+const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
+
+    const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
     const handleNext = useCallback(() => {
         setIsFlipped(false);
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
-    }, [flashcards.length]);
+        if (currentIndex < deck.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        } else {
+            setIsCompleted(true);
+        }
+    }, [currentIndex, deck.length]);
 
     const handlePrev = useCallback(() => {
         setIsFlipped(false);
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
-    }, [flashcards.length]);
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    }, [currentIndex]);
 
-    // Keyboard navigation effect for arrows
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement;
-            // Ignore key events if user is typing in an input
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
-                return;
-            }
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
@@ -31,43 +42,67 @@ const FlashcardDeck: React.FC<{ flashcards: Flashcard[] }> = ({ flashcards }) =>
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 handlePrev();
+            } else if (e.key === ' ' || e.key === 'Enter') {
+                if (document.activeElement?.classList.contains('flashcard-container')) {
+                    e.preventDefault();
+                    setIsFlipped(prev => !prev);
+                }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
+        return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleNext, handlePrev]);
 
-    const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        // Allow flipping with Space or Enter when the card is focused
-        if (e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault();
-            setIsFlipped(prev => !prev);
-        }
+    const handleRestart = () => {
+        setCurrentIndex(0);
+        setIsFlipped(false);
+        setIsCompleted(false);
     };
 
-    if (!flashcards || flashcards.length === 0) {
+    if (!deck || deck.length === 0) {
         return (
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
                 <p className="text-slate-500">Aucune flashcard disponible pour cette mémofiche.</p>
             </div>
         );
     }
+
+    if (isCompleted) {
+        return (
+            <div className="w-full max-w-xl mx-auto p-8 text-center bg-white rounded-lg shadow-xl animate-fade-in border-t-4 border-green-500">
+                <CheckCircleIcon className="h-20 w-20 text-green-500 mx-auto mb-4" />
+                <h3 className="text-3xl font-bold text-slate-800 mb-3">Félicitations !</h3>
+                <p className="text-lg text-slate-600 mb-8">Vous avez terminé cette série de flashcards. Continuez comme ça !</p>
+                <div className="flex justify-center items-center space-x-4">
+                    <button
+                        onClick={handleRestart}
+                        className="flex items-center justify-center px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-md hover:bg-teal-700 transition-all duration-300 transform hover:-translate-y-0.5"
+                    >
+                        <ArrowPathIcon className="h-6 w-6 mr-2" />
+                        Refaire les flashcards
+                    </button>
+                    <Link
+                        to={`/memofiche/${memoFicheId}`}
+                        className="flex items-center justify-center px-6 py-3 bg-slate-200 text-slate-800 font-bold rounded-lg shadow-md hover:bg-slate-300 transition-all duration-300"
+                    >
+                        Retour à la mémofiche
+                    </Link>
+                </div>
+            </div>
+        );
+    }
     
-    const currentCard = flashcards[currentIndex];
+    const currentCard = deck[currentIndex];
 
     return (
         <div className="w-full max-w-xl mx-auto p-4">
             <div 
                 className={`flashcard-container w-full h-80 cursor-pointer mb-4 ${isFlipped ? 'flipped' : ''}`} 
                 onClick={() => setIsFlipped(!isFlipped)}
-                onKeyDown={handleCardKeyDown}
                 role="button"
                 tabIndex={0}
-                aria-label={`Flashcard ${currentIndex + 1} sur ${flashcards.length}. Question: ${currentCard.question}.`}
+                aria-label={`Flashcard ${currentIndex + 1} sur ${deck.length}. Question: ${currentCard.question}.`}
             >
                 <div className="flashcard-inner">
                     <div className="flashcard-face flashcard-front" aria-hidden={isFlipped}>
@@ -82,7 +117,8 @@ const FlashcardDeck: React.FC<{ flashcards: Flashcard[] }> = ({ flashcards }) =>
             <div className="flex items-center justify-between">
                 <button 
                     onClick={handlePrev}
-                    className="p-2 text-slate-500 hover:text-teal-600 disabled:opacity-50 transition-colors"
+                    disabled={currentIndex === 0}
+                    className="p-2 text-slate-500 hover:text-teal-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     aria-label="Carte précédente (Flèche gauche)"
                 >
                     <ArrowLeftCircleIcon className="h-10 w-10" />
@@ -98,13 +134,13 @@ const FlashcardDeck: React.FC<{ flashcards: Flashcard[] }> = ({ flashcards }) =>
                         Retourner
                     </button>
                     <p className="text-sm text-slate-500 mt-2" aria-live="polite">
-                        Carte {currentIndex + 1} / {flashcards.length}
+                        Carte {currentIndex + 1} / {deck.length}
                     </p>
                 </div>
 
                 <button 
                     onClick={handleNext}
-                    className="p-2 text-slate-500 hover:text-teal-600 disabled:opacity-50 transition-colors"
+                    className="p-2 text-slate-500 hover:text-teal-600 transition-colors"
                     aria-label="Carte suivante (Flèche droite)"
                 >
                     <ArrowRightCircleIcon className="h-10 w-10" />

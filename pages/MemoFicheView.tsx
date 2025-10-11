@@ -180,7 +180,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const renderContent = () => {
     switch (activeTab) {
         case 'memo': return memoContent.map(section => <AccordionSection key={section.id} {...section} isOpen={openSection === section.id} onToggle={() => handleToggle(section.id)}>{section.content}</AccordionSection>);
-        case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} />;
+        case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} memoFicheId={caseStudy._id as string} />;
         case 'glossary': return <div className="bg-white p-6 rounded-lg shadow-md space-y-4">{caseStudy.glossary.map((item, i) => <div key={i} className="border-b border-slate-200 pb-2"><h4 className="font-bold text-slate-800">{item.term}</h4><p className="text-slate-600">{item.definition}</p></div>)}</div>;
         case 'media':
             const youtubeEmbedUrls = (caseStudy.youtubeLinks || [])
