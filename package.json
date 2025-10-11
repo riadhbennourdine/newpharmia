@@ -8,7 +8,7 @@
     "dev": "concurrently \"vite\" \"tsc --watch -p tsconfig.server.json\" \"nodemon --watch dist-server dist-server/server.js\"",
     "build": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
-    "build:server": "tsc --outDir dist-server --esModuleInterop server.ts",
+
     "preview": "vite preview"
   },
   "dependencies": {
