@@ -10,6 +10,17 @@ interface MemoFicheEditorProps {
 }
 
 const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
+  const safeCustomSections = ensureArray(caseStudy?.customSections).map(section => {
+    if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
+      return { title: section.title, content: section.content };
+    }
+    if (typeof section === 'string') {
+        return { title: 'Section', content: section };
+    }
+    // This will handle malformed objects that might not have title or content.
+    return { title: (section as any)?.title || '', content: (section as any)?.content || '' };
+  });
+
   return {
     _id: caseStudy?._id || '',
     id: caseStudy?.id || '',
@@ -38,7 +49,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
-    customSections: ensureArray(caseStudy?.customSections),
+    customSections: safeCustomSections,
   };
 };
 
