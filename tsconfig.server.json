@@ -4,7 +4,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "./dist-server",
-    "noEmit": false
+    "noEmit": false,
+    "allowImportingTsExtensions": false
   },
   "include": ["server/**/*.ts", "server.ts", "subscribe.ts"]
 }
