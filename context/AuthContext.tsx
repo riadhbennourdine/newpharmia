@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   const register = async (userData: Omit<User, '_id'>) => {
