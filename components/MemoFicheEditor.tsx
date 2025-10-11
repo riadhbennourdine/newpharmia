@@ -39,74 +39,6 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
     customSections: ensureArray(caseStudy?.customSections),
-
-    // Ordonnances
-    analyseOrdonnance: {
-      premierePrescription: caseStudy?.analyseOrdonnance?.premierePrescription || false,
-      informationsPatient: caseStudy?.analyseOrdonnance?.informationsPatient || '',
-    },
-    conseilsTraitement: {
-      proprieteModeAction: caseStudy?.conseilsTraitement?.proprieteModeAction || '',
-      administrationHorairesEffets: caseStudy?.conseilsTraitement?.administrationHorairesEffets || '',
-      interactionsContreIndications: caseStudy?.conseilsTraitement?.interactionsContreIndications || '',
-    },
-    informationsOrdonnance: {
-      informationsEssentielles: caseStudy?.informationsOrdonnance?.informationsEssentielles || '',
-      specificitesPathologie: caseStudy?.informationsOrdonnance?.specificitesPathologie || '',
-      objectifTraitement: caseStudy?.informationsOrdonnance?.objectifTraitement || '',
-    },
-    conseilsHygienoDietetiques: {
-      hygieneDeVie: caseStudy?.conseilsHygienoDietetiques?.hygieneDeVie || '',
-      alimentation: caseStudy?.conseilsHygienoDietetiques?.alimentation || '',
-    },
-    venteComplementaire: {
-      produitsAccessoires: caseStudy?.venteComplementaire?.produitsAccessoires || '',
-      explicationProduits: caseStudy?.venteComplementaire?.explicationProduits || '',
-    },
-    referencesBibliographiques: ensureArray(caseStudy?.referencesBibliographiques),
-
-    // Dermocosmétique
-    casComptoirDermo: caseStudy?.casComptoirDermo || '',
-    questionsCles: caseStudy?.questionsCles || '',
-    etatBesoinPeau: caseStudy?.etatBesoinPeau || '',
-    conseillerConsultationDermato: caseStudy?.conseillerConsultationDermato || '',
-    produitPrincipal: caseStudy?.produitPrincipal || '',
-    produitsAssocies: caseStudy?.produitsAssocies || '',
-    hygieneDeVieDermo: caseStudy?.hygieneDeVieDermo || '',
-    conseilsAlimentairesDermo: caseStudy?.conseilsAlimentairesDermo || '',
-    referencesBibliographiquesDermo: ensureArray(caseStudy?.referencesBibliographiquesDermo),
-
-    // Dispositifs Médicaux
-    analyseDemandePrescription: {
-      identificationBesoin: caseStudy?.analyseDemandePrescription?.identificationBesoin || '',
-      informationsPatientDM: caseStudy?.analyseDemandePrescription?.informationsPatientDM || '',
-    },
-    connaissanceDispositifMedical: {
-      typeClassification: caseStudy?.connaissanceDispositifMedical?.typeClassification || '',
-      modeFonctionnement: caseStudy?.connaissanceDispositifMedical?.modeFonctionnement || '',
-      indicationsContreIndications: caseStudy?.connaissanceDispositifMedical?.indicationsContreIndications || '',
-      precautionsEffetsIndesirables: caseStudy?.connaissanceDispositifMedical?.precautionsEffetsIndesirables || '',
-    },
-    conseilsPatient: {
-      explicationUtilisation: caseStudy?.conseilsPatient?.explicationUtilisation || '',
-      hygieneEntretien: caseStudy?.conseilsPatient?.hygieneEntretien || '',
-      conditionsConservation: caseStudy?.conseilsPatient?.conditionsConservation || '',
-      signesAlerte: caseStudy?.conseilsPatient?.signesAlerte || '',
-      gestionDechets: caseStudy?.conseilsPatient?.gestionDechets || '',
-    },
-    aspectsReglementaires: {
-      remboursement: caseStudy?.aspectsReglementaires?.remboursement || '',
-      tracabilite: caseStudy?.aspectsReglementaires?.tracabilite || '',
-      materiovigilance: caseStudy?.aspectsReglementaires?.materiovigilance || '',
-    },
-    venteComplementaireDM: {
-      produitsHygiene: caseStudy?.venteComplementaireDM?.produitsHygiene || '',
-      protectionsCutanees: caseStudy?.venteComplementaireDM?.protectionsCutanees || '',
-      confort: caseStudy?.venteComplementaireDM?.confort || '',
-      consommables: caseStudy?.venteComplementaireDM?.consommables || '',
-      explicationValeurAjoutee: caseStudy?.venteComplementaireDM?.explicationValeurAjoutee || '',
-    },
-    referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
   };
 };
 
@@ -138,29 +70,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setCaseStudy(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-  };
-
-  const handleNestedChange = (parent: keyof CaseStudy, child: string, value: any) => {
-    setCaseStudy(prev => ({
-      ...prev,
-      [parent]: {
-        ...((prev[parent] as object) || {}),
-        [child]: value,
-      },
-    }));
-  };
-
-  const handleDeeplyNestedChange = (grandparent: keyof CaseStudy, parent: string, child: string, value: any) => {
-    setCaseStudy(prev => ({
-      ...prev,
-      [grandparent]: {
-        ...((prev[grandparent] as object) || {}),
-        [parent]: {
-          ...(((prev[grandparent] as any)?.[parent] as object) || {}),
-          [child]: value,
-        },
-      },
-    }));
   };
 
   const handleArrayChange = (name: keyof CaseStudy, value: string) => {
