@@ -36,21 +36,15 @@ const GeneratorView: React.FC = () => {
     const formattingInstructions = `
 
 Instructions de formatage impératives pour chaque section :
-- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
+- Améliorer le style de rédaction pour qu'il soit clair, concis et professionnel.
+- Le contenu de chaque section doit être une liste à puces (commençant par "- ").
 - Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 
 Instructions spécifiques par section :
 - **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
-- **Aperçu pathologie**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
-- **Signaux d'alerte**: Doit être une liste à puces (commençant par "- "). Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **Produits associés**: Doit être une liste à puces (commençant par "- "). Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
-- **Cas comptoir**: Décrire la situation ou la demande du patient se présentant au comptoir.
-- **Etat et besoin de la peau**: Analyser les informations collectées pour définir le besoin principal.
-- **Conseiller une consultation dermatologique**: Identifier les signaux d'alerte nécessitant un avis médical.
-- **Produit principal**: Proposer un ou deux produits principaux répondant directement au besoin identifié.
-- **Hygiène de vie**: Conseils généraux pour soutenir la santé globale.
-- **Conseils alimentaires**: Conseiller sur les régimes alimentaires spécifiques.
-- Pour toutes les autres sections, appliquer le formatage général d'une liste à puces avec des mots-clés en évidence au début de chaque ligne.
+- **Aperçu pathologie**: Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
+- **Signaux d'alerte**: Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
+- **Produits associés**: Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
 `;
 
     const pharmacologieFormattingInstructions = `
@@ -69,21 +63,37 @@ Instructions spécifiques pour les sections personnalisées :
 
     const dispositifsMedicauxFormattingInstructions = `
 
-Instructions de formatage impératives pour chaque section :
-- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
-- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-- Pour les sections qui sont des listes, le contenu doit être une liste à puces.
+Instructions de formatage impératives et strictes pour chaque section :
+- Le style de rédaction doit être clair, concis et professionnel.
+- Le contenu de CHAQUE section doit être une liste de points.
+- CHAQUE point de la liste doit commencer par le caractère "•".
+- CHAQUE point de la liste doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 
-Instructions spécifiques par section :
-- **Cas comptoir**: Description rapide des situations courantes au comptoir (exemple : demande de pansement pour blessure mineure, usage de glucomètre pour surveillance glycémique, conseil sur l’usage d’un aérosol suite à une ordonnance).
-- **Circonstances de conseil**: Indications du contexte d’intervention (automédication, renouvellement, première initiation, recommandations du médecin, demande spontanée du patient).
-- **Pathologies concernées**: Liste des pathologies fréquemment associées à la demande (plaie, allergie, asthme, diabète, hypertension...).
-- **Argumentation et intérêt du dispositif**: Explications claires sur le rôle et l’intérêt du dispositif médical par rapport à la pathologie (exemple : les pansements hydrocolloïdes favorisent la cicatrisation, le tensiomètre permet le suivi précis de la tension artérielle).
-- **Bénéfices pour la santé**: Mise en avant des bénéfices pour l’utilisateur (prévention des complications, amélioration des symptômes, autonomie, confort d’utilisation).
-- **Exemples d’articles à conseiller**: Suggestions concrètes : noms de dispositifs disponibles à l’officine (marques, formats adaptés à l’âge ou aux besoins).
-- **Réponses aux objections des clients**: Formulations pour rassurer et lever les réticences (prix, efficacité, facilité d’utilisation, entretien, remboursement).
-- **Pages sponsorisées**: Espace dédié à la présentation des gammes partenaires, flyers ou QR codes vers des supports d’information ou vidéos explicatives.
-- **Références**: Lister les références bibliographiques utilisées.
+Voici un exemple de formatage pour une section :
+### Intérêt du dispositif
+• **Suivi précis**: Permet un suivi précis de la tension artérielle à domicile.
+• **Prévention**: Aide à prévenir les complications liées à l'hypertension.
+• **Autonomie**: Donne au patient plus d'autonomie dans la gestion de sa santé.
+
+Voici le plan détaillé à suivre OBLIGATOIREMENT :
+1.  **Cas comptoir**:
+    -   Doit être une liste de points.
+2.  **Objectifs de conseil**:
+    -   Doit être une liste de points.
+3.  **Pathologies concernées**:
+    -   Doit être une liste de points.
+    -   Chaque pathologie doit être clairement expliquée.
+    -   Développer davantage cette rubrique.
+4.  **Intérêt du dispositif**:
+    -   Doit être une liste de points.
+5.  **Bénéfices pour la santé**:
+    -   Doit être une liste de points.
+6.  **Dispositifs à conseiller ou à dispenser**:
+    -   Doit être une liste de points.
+7.  **Réponses aux objections des clients**:
+    -   Doit être une liste de points.
+8.  **Pages sponsorisées**:
+    -   Doit être une liste de points.
 `;
 
     let prompt = '';

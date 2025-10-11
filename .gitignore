@@ -24,3 +24,10 @@ dist-ssr
 *.sw?
 /assets
 .env
+
+# Build artifacts
+dist-server/
+server.js
+server/*.js
+types.js
+tsconfig.server.json

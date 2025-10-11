@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export enum UserRole {
   VISITEUR = 'VISITEUR',
   APPRENANT = 'APPRENANT',
@@ -17,16 +19,16 @@ export enum ClientStatus {
 }
 
 export interface User {
-  _id: string; // MongoDB's ObjectId as a string
+  _id: ObjectId;
   username?: string;
   firstName?: string;
   lastName?: string;
   email: string;
   role: UserRole;
-  passwordHash?: string; // Only on server-side, optional on client
+  passwordHash?: string;
   profileIncomplete?: boolean;
-  city?: string; // For pharmacists
-  pharmacistId?: string; // For preparators, string representation of ObjectId
+  city?: string;
+  pharmacistId?: ObjectId;
   hasActiveSubscription?: boolean;
   planName?: string;
   subscriptionEndDate?: Date;
@@ -39,16 +41,21 @@ export interface User {
   quizHistory?: any[];
   viewedMediaIds?: string[];
   phoneNumber?: string;
-
-  // CRM Fields
   status?: ClientStatus;
-  assignedTo?: string; // User ID of the admin/formateur
-  companyName?: string; // Pharmacy name
+  assignedTo?: ObjectId;
+  companyName?: string;
   lastContactDate?: Date;
   notes?: string;
   teamSize?: number;
 }
 
+export interface Client extends User {
+  // Client-specific properties can be added here
+}
+
+export interface Prospect extends User {
+  // Prospect-specific properties can be added here
+}
 
 export interface PharmacistWithCollaborators extends User {
   collaborators?: User[];
@@ -75,18 +82,16 @@ export interface Media {
   caption?: string;
 }
 
-
 export interface CaseStudy {
-  _id: string;
-  id: string; // Kept for compatibility with some components, but _id is primary
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive';
+  _id: ObjectId;
+  id: string;
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux';
   title: string;
   shortDescription: string;
   theme: string;
   system: string;
   creationDate: string;
   isLocked?: boolean;
-
   patientSituation: string;
   keyQuestions: string[];
   pathologyOverview: string;
@@ -99,36 +104,34 @@ export interface CaseStudy {
   };
   references: string[];
   keyPoints: string[];
-
   glossary: GlossaryTerm[];
   flashcards: Flashcard[];
-  
   coverImageUrl?: string;
   youtubeUrl?: string;
   kahootUrl?: string;
-
   quiz?: QuizQuestion[];
-
-  // For generator and editor
   summary?: string;
   sections?: MemoFicheSection[];
-  memoSections?: MemoFicheSection[]; // Used by new editor
-  taxonomies?: {
-    pedagogical: string;
-    clinical: string;
-  };
-  
-  // New fields from new editor
+  memoSections?: MemoFicheSection[];
   media?: Media[];
   sourceText?: string;
   level?: string;
   knowledgeBaseUrl?: string;
   isFree?: boolean;
   customSections?: MemoFicheSection[];
+
+  // Dispositifs médicaux
+  casComptoir?: string;
+  objectifsConseil?: string;
+  pathologiesConcernees?: string;
+  interetDispositif?: string;
+  beneficesSante?: string;
+  dispositifsAConseiller?: string;
+  reponsesObjections?: string;
+  pagesSponsorisees?: string;
 }
 
 export type MemoFiche = CaseStudy;
-
 
 export interface QuizQuestion {
   question: string;
@@ -143,8 +146,8 @@ export interface Taxonomy {
 }
 
 export interface Appointment {
-  _id: string;
-  clientId: string; // or prospectId
+  _id: ObjectId;
+  clientId: ObjectId;
   clientName?: string;
   date: Date;
   title: string;

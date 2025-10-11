@@ -58,24 +58,24 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       type: Type.OBJECT,
       properties: {
         title: { type: Type.STRING },
-        patientSituation: { type: Type.STRING },
-        circonstancesConseil: { type: Type.STRING },
+        casComptoir: { type: Type.STRING },
+        objectifsConseil: { type: Type.STRING },
         pathologiesConcernees: { type: Type.STRING },
-        argumentationInteret: { type: Type.STRING },
+        interetDispositif: { type: Type.STRING },
         beneficesSante: { type: Type.STRING },
-        exemplesArticles: { type: Type.STRING },
+        dispositifsAConseiller: { type: Type.STRING },
         reponsesObjections: { type: Type.STRING },
         pagesSponsorisees: { type: Type.STRING },
         references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
       required: [
         'title',
-        'patientSituation',
-        'circonstancesConseil',
+        'casComptoir',
+        'objectifsConseil',
         'pathologiesConcernees',
-        'argumentationInteret',
+        'interetDispositif',
         'beneficesSante',
-        'exemplesArticles',
+        'dispositifsAConseiller',
         'reponsesObjections',
         'pagesSponsorisees',
         'references',
@@ -85,7 +85,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   const fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de ```json). Respectez impérativement la structure suivante.`
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante.`;
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
