@@ -1,6 +1,6 @@
 import express from 'express';
-import { User, UserRole, ClientStatus, Appointment } from '../types';
-import clientPromise from './mongo';
+import { User, UserRole, ClientStatus, Appointment } from '../types.js';
+import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 
 const router = express.Router();

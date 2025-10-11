@@ -4,13 +4,13 @@ import path from 'path';
 import cors from 'cors';
 // FIX: Added imports for ES module scope __dirname
 import { fileURLToPath } from 'url';
-import { handleSubscription, handleUnsubscription } from './server/subscribe';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService';
-import { User, UserRole, CaseStudy } from './types';
+import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
+import { User, UserRole, CaseStudy } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 
-import clientPromise from './server/mongo';
+import clientPromise from './server/mongo.js';
 
 // FIX: Define __filename and __dirname for ES module scope
 const __filename = fileURLToPath(import.meta.url);
@@ -38,7 +38,7 @@ const mockUsers: User[] = [
 ];
 
 import crypto from 'crypto';
-import { sendBrevoEmail } from './server/emailService';
+import { sendBrevoEmail } from './server/emailService.js';
 import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -359,7 +359,7 @@ app.get('/api/users/subscribers', async (req, res) => {
 
 
 
-import crmRoutes from './server/crm';
+import crmRoutes from './server/crm.js';
 
 // ===============================================
 // CRM API ROUTES

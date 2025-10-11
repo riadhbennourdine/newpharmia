@@ -44,6 +44,9 @@ export const sendBrevoEmail = async ({ to, subject, htmlContent, attachment }: S
     return data;
   } catch (error) {
     console.error("Error sending email via Brevo:", error);
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(`An unknown error occurred: ${String(error)}`);
   }
 };

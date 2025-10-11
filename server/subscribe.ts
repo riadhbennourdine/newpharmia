@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import clientPromise from './mongo';
+import clientPromise from './mongo.js';
 
 interface Subscriber {
   email: string;

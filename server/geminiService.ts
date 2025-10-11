@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { CaseStudy } from "../types";
+import { CaseStudy } from "../types.js";
 
 // This file uses an older syntax for the Google GenAI SDK that is compatible with the project's dependencies.
 // The main class is GoogleGenAI and content is generated via ai.models.generateContent(...)
