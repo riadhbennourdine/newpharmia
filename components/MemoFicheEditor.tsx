@@ -34,7 +34,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     level: caseStudy?.level || 'Facile',
     isFree: caseStudy?.isFree || false,
     coverImageUrl: caseStudy?.coverImageUrl || '',
-    youtubeUrl: caseStudy?.youtubeUrl || '',
+    youtubeLinks: ensureArray(caseStudy?.youtubeLinks),
     kahootUrl: caseStudy?.kahootUrl || '',
     patientSituation: caseStudy?.patientSituation || '',
     keyQuestions: ensureArray(caseStudy?.keyQuestions),
@@ -179,6 +179,36 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     }
   };
 
+  const handleYoutubeLinkChange = (index: number, field: 'url' | 'title', value: string) => {
+    setCaseStudy(prev => {
+      const newYoutubeLinks = [...(prev.youtubeLinks || [])];
+      newYoutubeLinks[index] = { ...newYoutubeLinks[index], [field]: value };
+      return { ...prev, youtubeLinks: newYoutubeLinks };
+    });
+  };
+
+  const addYoutubeLink = () => {
+    setCaseStudy(prev => {
+        if ((prev.youtubeLinks || []).length < 3) {
+            return {
+                ...prev,
+                youtubeLinks: [...(prev.youtubeLinks || []), { url: '', title: '' }],
+            };
+        }
+        return prev;
+    });
+  };
+
+  const removeYoutubeLink = (index: number) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce lien YouTube ?")) {
+      setCaseStudy(prev => {
+        const newYoutubeLinks = [...(prev.youtubeLinks || [])];
+        newYoutubeLinks.splice(index, 1);
+        return { ...prev, youtubeLinks: newYoutubeLinks };
+      });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(caseStudy);
@@ -241,8 +271,22 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} />
           </div>
           <div>
-            <Label htmlFor="youtubeUrl">URL Vidéo YouTube</Label>
-            <Input type="text" name="youtubeUrl" id="youtubeUrl" value={caseStudy.youtubeUrl} onChange={handleChange} />
+            <Label>Liens Vidéo YouTube</Label>
+            {caseStudy.youtubeLinks?.map((link, index) => (
+                <div key={index} className="flex items-center space-x-2 mb-2">
+                    <Input type="text" placeholder="Titre de la vidéo" value={link.title} onChange={(e) => handleYoutubeLinkChange(index, 'title', e.target.value)} />
+                    <Input type="text" placeholder="URL de la vidéo" value={link.url} onChange={(e) => handleYoutubeLinkChange(index, 'url', e.target.value)} />
+                    <button type="button" onClick={() => removeYoutubeLink(index)} className="text-red-500 hover:text-red-700">
+                        <TrashIcon className="h-5 w-5" />
+                    </button>
+                </div>
+            ))}
+            {(caseStudy.youtubeLinks?.length || 0) < 3 && (
+                <button type="button" onClick={addYoutubeLink} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
+                    <PlusCircleIcon className="h-5 w-5 mr-2" />
+                    Ajouter un lien YouTube
+                </button>
+            )}
           </div>
            <div>
             <Label htmlFor="kahootUrl">URL Jeu Kahoot!</Label>

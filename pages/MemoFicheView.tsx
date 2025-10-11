@@ -65,7 +65,6 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const [openSection, setOpenSection] = useState<string | null>('patientSituation');
   const [activeTab, setActiveTab] = useState<TabName>('memo');
-  const [isYoutubeModalOpen, setYoutubeModalOpen] = useState(false);
 
   const handleToggle = (title: string) => setOpenSection(openSection === title ? null : title);
   
@@ -89,7 +88,6 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }
   };
 
-  const youtubeEmbedUrl = getYoutubeEmbedUrl(caseStudy.youtubeUrl);
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
@@ -184,7 +182,30 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         case 'memo': return memoContent.map(section => <AccordionSection key={section.id} {...section} isOpen={openSection === section.id} onToggle={() => handleToggle(section.id)}>{section.content}</AccordionSection>);
         case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} />;
         case 'glossary': return <div className="bg-white p-6 rounded-lg shadow-md space-y-4">{caseStudy.glossary.map((item, i) => <div key={i} className="border-b border-slate-200 pb-2"><h4 className="font-bold text-slate-800">{item.term}</h4><p className="text-slate-600">{item.definition}</p></div>)}</div>;
-        case 'media': return youtubeEmbedUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Vidéo associée</h4><div className="w-full"><iframe src={youtubeEmbedUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div></div> : <div className="text-center text-slate-500">Aucun média disponible.</div>;
+        case 'media':
+            const youtubeEmbedUrls = (caseStudy.youtubeLinks || [])
+                .map(link => ({ ...link, embedUrl: getYoutubeEmbedUrl(link.url) }))
+                .filter(link => link.embedUrl);
+
+            return youtubeEmbedUrls.length > 0 ? (
+                <div className="space-y-6">
+                    {youtubeEmbedUrls.map((link, index) => (
+                        <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                            <h4 className="font-bold text-slate-800 mb-4">{link.title || 'Vidéo YouTube'}</h4>
+                            <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
+                                <iframe
+                                    src={link.embedUrl!}
+                                    title={link.title || 'YouTube video player'}
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="absolute top-0 left-0 w-full h-full rounded-md"
+                                ></iframe>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : <div className="text-center text-slate-500">Aucun média disponible.</div>;
         case 'quiz': return <div className="text-center bg-white p-8 rounded-lg shadow-md"><h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances !</h3><button onClick={onStartQuiz} className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700"><CheckCircleIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz</button></div>;
         case 'kahoot': return caseStudy.kahootUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Jeu Kahoot!</h4><iframe src={caseStudy.kahootUrl} title="Kahoot! Game" frameBorder="0" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div> : <div className="text-center text-slate-600">Aucun lien Kahoot! disponible.</div>;
     }
@@ -207,18 +228,8 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
            <div className="text-center mb-8">
               <div className="flex items-center justify-center">
                   <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">{caseStudy.title}</h2>
-                  {youtubeEmbedUrl && <button onClick={() => setYoutubeModalOpen(true)} className="ml-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"><VideoCameraIcon className="h-5 w-5 mr-2" /> Voir la vidéo</button>}
               </div>
            </div>
-      )}
-
-      {isYoutubeModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={() => setYoutubeModalOpen(false)}>
-              <div className="bg-white p-4 rounded-lg shadow-lg relative w-full max-w-3xl" onClick={e => e.stopPropagation()}>
-                  <button onClick={() => setYoutubeModalOpen(false)} className="absolute -top-2 -right-2 bg-white rounded-full p-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-                  <div className="aspect-w-16 aspect-h-9"><iframe src={youtubeEmbedUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full rounded-md"></iframe></div>
-              </div>
-          </div>
       )}
       
       {caseStudy.keyPoints && caseStudy.keyPoints.length > 0 && (

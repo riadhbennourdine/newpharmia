@@ -107,7 +107,7 @@ export interface CaseStudy {
   glossary: GlossaryTerm[];
   flashcards: Flashcard[];
   coverImageUrl?: string;
-  youtubeUrl?: string;
+  youtubeLinks?: { url: string; title: string; }[];
   kahootUrl?: string;
   quiz?: QuizQuestion[];
   summary?: string;

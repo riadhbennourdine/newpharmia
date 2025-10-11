@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { generateCaseStudyDraft, generateLearningTools } from '../services/geminiService';
 import { CaseStudy } from '../types';
-import { SparklesIcon, ChevronLeftIcon, Spinner } from '../components/Icons';
+import { SparklesIcon, ChevronLeftIcon, Spinner, TrashIcon, PlusCircleIcon } from '../components/Icons';
 import { DetailedMemoFicheView } from './MemoFicheView';
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -12,7 +12,7 @@ const GeneratorView: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState('');
   const [selectedSystem, setSelectedSystem] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeLinks, setYoutubeLinks] = useState<{ url: string; title: string; }[]>([{ url: '', title: '' }]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
@@ -22,6 +22,24 @@ const GeneratorView: React.FC = () => {
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
   const { saveCaseStudy } = useData();
+
+  const handleYoutubeLinkChange = (index: number, field: 'url' | 'title', value: string) => {
+    const newYoutubeLinks = [...youtubeLinks];
+    newYoutubeLinks[index] = { ...newYoutubeLinks[index], [field]: value };
+    setYoutubeLinks(newYoutubeLinks);
+  };
+
+  const addYoutubeLink = () => {
+    if (youtubeLinks.length < 3) {
+      setYoutubeLinks([...youtubeLinks, { url: '', title: '' }]);
+    }
+  };
+
+  const removeYoutubeLink = (index: number) => {
+    const newYoutubeLinks = [...youtubeLinks];
+    newYoutubeLinks.splice(index, 1);
+    setYoutubeLinks(newYoutubeLinks);
+  };
 
   const handleGenerate = async () => {
     if (memoFicheType === 'maladie' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
@@ -131,7 +149,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
             clinical: selectedSystem || pharmaPathology,
         },
         coverImageUrl: coverImageUrl.trim() || undefined,
-        youtubeUrl: youtubeUrl.trim() || undefined,
+        youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
       } as CaseStudy;
 
       setGeneratedCase(finalMemoFiche);
@@ -209,7 +227,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         flashcards: [],
         quiz: [],
         coverImageUrl: coverImageUrl.trim() || undefined,
-        youtubeUrl: youtubeUrl.trim() || undefined,
+        youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
         sourceText: sourceText,
         memoSections: [],
         customSections: [],
@@ -231,7 +249,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
       setSelectedTheme('');
       setSelectedSystem('');
       setCoverImageUrl('');
-      setYoutubeUrl('');
+      setYoutubeLinks([{ url: '', title: '' }]);
       setError(null);
   }
   
@@ -463,18 +481,40 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
                 />
             </div>
             <div>
-                <label htmlFor="youtube-url" className="block text-lg font-medium text-slate-700 mb-2">
-                URL de la vidéo YouTube (Optionnel)
+                <label className="block text-lg font-medium text-slate-700 mb-2">
+                Liens Vidéo YouTube (Optionnel)
                 </label>
-                <input
-                id="youtube-url"
-                type="text"
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=..."
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                disabled={isLoading}
-                />
+                {youtubeLinks.map((link, index) => (
+                    <div key={index} className="flex items-center space-x-2 mb-2">
+                        <input
+                        type="text"
+                        placeholder="Titre de la vidéo"
+                        value={link.title}
+                        onChange={(e) => handleYoutubeLinkChange(index, 'title', e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                        disabled={isLoading}
+                        />
+                        <input
+                        type="text"
+                        placeholder="URL de la vidéo"
+                        value={link.url}
+                        onChange={(e) => handleYoutubeLinkChange(index, 'url', e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                        disabled={isLoading}
+                        />
+                        {youtubeLinks.length > 1 && (
+                            <button type="button" onClick={() => removeYoutubeLink(index)} className="text-red-500 hover:text-red-700" disabled={isLoading}>
+                                <TrashIcon className="h-5 w-5" />
+                            </button>
+                        )}
+                    </div>
+                ))}
+                {youtubeLinks.length < 3 && (
+                    <button type="button" onClick={addYoutubeLink} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2" disabled={isLoading}>
+                        <PlusCircleIcon className="h-5 w-5 mr-2" />
+                        Ajouter un lien YouTube
+                    </button>
+                )}
             </div>
         </div>
 
