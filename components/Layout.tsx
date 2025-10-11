@@ -143,8 +143,8 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to={'/'} className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-              <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" className="h-8 w-8" />
-              <span className="text-2xl font-bold tracking-tight logo-gradient-text">PharmIA</span>
+              <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" className="h-10 w-10" />
+              <span className="text-3xl font-bold tracking-tight logo-gradient-text">PharmIA</span>
             </Link>
           </div>
           <nav className="hidden md:flex items-center space-x-1">
