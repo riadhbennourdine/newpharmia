@@ -19,7 +19,7 @@ export enum ClientStatus {
 }
 
 export interface User {
-  _id: ObjectId;
+  _id: ObjectId | string;
   username?: string;
   firstName?: string;
   lastName?: string;
@@ -83,7 +83,7 @@ export interface Media {
 }
 
 export interface CaseStudy {
-  _id: ObjectId;
+  _id: ObjectId | string;
   id: string;
   type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux';
   title: string;
@@ -146,7 +146,7 @@ export interface Taxonomy {
 }
 
 export interface Appointment {
-  _id: ObjectId;
+  _id: ObjectId | string;
   clientId: ObjectId;
   clientName?: string;
   date: Date;
