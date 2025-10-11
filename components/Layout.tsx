@@ -13,16 +13,16 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const baseLinkClass = "px-3 py-2 rounded-md text-sm font-medium transition-colors";
+  const baseLinkClass = "px-3 py-2 rounded-md text-sm font-medium transition-colors font-poppins";
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `${baseLinkClass} ${
-      isActive ? 'text-teal-600 font-semibold' : 'text-slate-600 hover:text-teal-600'
+      isActive ? 'text-teal-600 font-semibold' : 'text-teal-800 hover:text-teal-600'
     }`;
   
-  const mobileBaseLinkClass = "block px-3 py-2 rounded-md text-base font-medium";
+  const mobileBaseLinkClass = "block px-3 py-2 rounded-md text-base font-medium font-poppins";
   const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `${mobileBaseLinkClass} ${
-      isActive ? 'bg-teal-50 text-teal-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+      isActive ? 'bg-teal-50 text-teal-700' : 'text-teal-800 hover:bg-gray-50 hover:text-teal-900'
     }`;
 
   const navLinks = (
