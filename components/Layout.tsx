@@ -16,13 +16,13 @@ const Header: React.FC = () => {
   const baseLinkClass = "px-3 py-2 rounded-md text-sm font-medium transition-colors font-poppins";
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `${baseLinkClass} ${
-      isActive ? 'text-teal-600 font-semibold' : 'text-teal-800 hover:text-teal-600'
+      isActive ? 'text-teal-700 font-semibold' : 'text-teal-600 hover:text-teal-500'
     }`;
   
   const mobileBaseLinkClass = "block px-3 py-2 rounded-md text-base font-medium font-poppins";
   const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `${mobileBaseLinkClass} ${
-      isActive ? 'bg-teal-50 text-teal-700' : 'text-teal-800 hover:bg-gray-50 hover:text-teal-900'
+      isActive ? 'bg-teal-50 text-teal-700' : 'text-teal-600 hover:bg-gray-50 hover:text-teal-500'
     }`;
 
   const navLinks = (
@@ -51,8 +51,8 @@ const Header: React.FC = () => {
                 Administration <span className="ml-1 text-xs">&#9662;</span>
               </button>
               <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-1 w-48 z-50 border border-slate-100">
-                <NavLink to="/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-gray-100" onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
-                <NavLink to="/generateur" className="block px-4 py-2 text-sm text-slate-700 hover:bg-gray-100" onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
+                <NavLink to="/admin" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
+                <NavLink to="/generateur" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
               </div>
             </div>
           )}
