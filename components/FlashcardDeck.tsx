@@ -70,11 +70,11 @@ const FlashcardDeck: React.FC<{ flashcards: Flashcard[] }> = ({ flashcards }) =>
                 aria-label={`Flashcard ${currentIndex + 1} sur ${flashcards.length}. Question: ${currentCard.question}.`}
             >
                 <div className="flashcard-inner">
-                    <div className="flashcard-face flashcard-front flex items-center justify-center p-6" aria-hidden={isFlipped}>
-                        <p className="text-xl font-semibold text-slate-800 text-center">{currentCard.question}</p>
+                    <div className="flashcard-face flashcard-front" aria-hidden={isFlipped}>
+                        <p className="text-2xl font-semibold text-slate-800 text-center">{currentCard.question}</p>
                     </div>
-                    <div className="flashcard-face flashcard-back bg-teal-600 flex items-center justify-center p-6" aria-hidden={!isFlipped}>
-                        <p className="text-xl text-white text-center">{currentCard.answer}</p>
+                    <div className="flashcard-face flashcard-back" aria-hidden={!isFlipped}>
+                        <p className="text-2xl font-bold text-white text-center">{currentCard.answer}</p>
                     </div>
                 </div>
             </div>

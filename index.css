@@ -27,3 +27,44 @@
   100% { background-position: 0% 50%; }
 }
 
+/* Flashcard animation styles */
+.flashcard-container {
+  perspective: 1000px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard-container.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.flashcard-front {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0; /* slate-200 */
+}
+
+.flashcard-back {
+  background-color: #0D9488; /* teal-700 */
+  color: white;
+  transform: rotateY(180deg);
+}
