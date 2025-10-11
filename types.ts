@@ -119,6 +119,17 @@ export interface CaseStudy {
   knowledgeBaseUrl?: string;
   isFree?: boolean;
   customSections?: MemoFicheSection[];
+
+  // Dispositifs médicaux
+  casComptoir?: string;
+  objectifsConseil?: string;
+  pathologiesConcernees?: string;
+  interetDispositif?: string;
+  beneficesSante?: string;
+  dispositifsAConseiller?: string;
+  reponsesObjections?: string;
+  pagesSponsorisees?: string;
+  referencesBibliographiquesDM?: string[];
 }
 
 export type MemoFiche = CaseStudy;

@@ -50,6 +50,17 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
     customSections: safeCustomSections,
+
+    // Dispositifs médicaux
+    casComptoir: caseStudy?.casComptoir || '',
+    objectifsConseil: caseStudy?.objectifsConseil || '',
+    pathologiesConcernees: caseStudy?.pathologiesConcernees || '',
+    interetDispositif: caseStudy?.interetDispositif || '',
+    beneficesSante: caseStudy?.beneficesSante || '',
+    dispositifsAConseiller: caseStudy?.dispositifsAConseiller || '',
+    reponsesObjections: caseStudy?.reponsesObjections || '',
+    pagesSponsorisees: caseStudy?.pagesSponsorisees || '',
+    referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
   };
 };
 
@@ -255,118 +266,80 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             </FormSection>
         )}
 
-        {caseStudy.type === 'ordonnances' && (
-          <>
-            <FormSection title="Analyse de l'Ordonnance">
-              <div className="flex items-center">
-                  <input type="checkbox" name="premierePrescription" id="premierePrescription" checked={caseStudy.analyseOrdonnance?.premierePrescription} onChange={(e) => handleNestedChange('analyseOrdonnance', 'premierePrescription', e.target.checked)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                  <label htmlFor="premierePrescription" className="ml-2 block text-sm text-gray-900">Première prescription</label>
-              </div>
-              <div>
-                <Label htmlFor="informationsPatient">Informations Patient</Label>
-                <Textarea name="informationsPatient" id="informationsPatient" rows={3} value={caseStudy.analyseOrdonnance?.informationsPatient} onChange={(e) => handleNestedChange('analyseOrdonnance', 'informationsPatient', e.target.value)} />
-              </div>
-            </FormSection>
-            <FormSection title="Conseils sur le traitement médicamenteux">
-              <div>
-                <Label htmlFor="proprieteModeAction">Propriété et mode d'action</Label>
-                <Textarea name="proprieteModeAction" id="proprieteModeAction" rows={3} value={caseStudy.conseilsTraitement?.proprieteModeAction} onChange={(e) => handleNestedChange('conseilsTraitement', 'proprieteModeAction', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="administrationHorairesEffets">Administration, horaires et effets</Label>
-                <Textarea name="administrationHorairesEffets" id="administrationHorairesEffets" rows={3} value={caseStudy.conseilsTraitement?.administrationHorairesEffets} onChange={(e) => handleNestedChange('conseilsTraitement', 'administrationHorairesEffets', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="interactionsContreIndications">Interactions et contre-indications</Label>
-                <Textarea name="interactionsContreIndications" id="interactionsContreIndications" rows={3} value={caseStudy.conseilsTraitement?.interactionsContreIndications} onChange={(e) => handleNestedChange('conseilsTraitement', 'interactionsContreIndications', e.target.value)} />
-              </div>
-            </FormSection>
-          </>
-        )}
-
-        {caseStudy.type === 'dermocosmetique' && (
-          <FormSection title="Contenu du Mémo (Dermocosmétique)">
+        {caseStudy.type === 'dispositifs-medicaux' && (
+          <FormSection title="Contenu du Mémo (Dispositifs Médicaux)">
             <div>
-              <Label htmlFor="casComptoirDermo">Cas comptoir</Label>
-              <Textarea name="casComptoirDermo" id="casComptoirDermo" rows={3} value={caseStudy.casComptoirDermo} onChange={handleChange} />
+              <Label htmlFor="casComptoir">Cas comptoir</Label>
+              <Textarea name="casComptoir" id="casComptoir" rows={3} value={caseStudy.casComptoir} onChange={handleChange} />
             </div>
             <div>
-              <Label htmlFor="questionsCles">Questions clés</Label>
-              <Textarea name="questionsCles" id="questionsCles" rows={3} value={caseStudy.questionsCles} onChange={handleChange} />
+              <Label htmlFor="objectifsConseil">Objectifs de conseil</Label>
+              <Textarea name="objectifsConseil" id="objectifsConseil" rows={3} value={caseStudy.objectifsConseil} onChange={handleChange} />
             </div>
             <div>
-              <Label htmlFor="etatBesoinPeau">État et besoin de la peau</Label>
-              <Textarea name="etatBesoinPeau" id="etatBesoinPeau" rows={3} value={caseStudy.etatBesoinPeau} onChange={handleChange} />
+              <Label htmlFor="pathologiesConcernees">Pathologies concernées</Label>
+              <Textarea name="pathologiesConcernees" id="pathologiesConcernees" rows={3} value={caseStudy.pathologiesConcernees} onChange={handleChange} />
             </div>
             <div>
-              <Label htmlFor="conseillerConsultationDermato">Conseiller une consultation dermatologique</Label>
-              <Textarea name="conseillerConsultationDermato" id="conseillerConsultationDermato" rows={3} value={caseStudy.conseillerConsultationDermato} onChange={handleChange} />
+              <Label htmlFor="interetDispositif">Intérêt du dispositif</Label>
+              <Textarea name="interetDispositif" id="interetDispositif" rows={3} value={caseStudy.interetDispositif} onChange={handleChange} />
             </div>
             <div>
-              <Label htmlFor="produitPrincipal">Produit principal</Label>
-              <Textarea name="produitPrincipal" id="produitPrincipal" rows={3} value={caseStudy.produitPrincipal} onChange={handleChange} />
+              <Label htmlFor="beneficesSante">Bénéfices pour la santé</Label>
+              <Textarea name="beneficesSante" id="beneficesSante" rows={3} value={caseStudy.beneficesSante} onChange={handleChange} />
             </div>
             <div>
-              <Label htmlFor="produitsAssocies">Produits associés</Label>
-              <Textarea name="produitsAssocies" id="produitsAssocies" rows={3} value={caseStudy.produitsAssocies} onChange={handleChange} />
+              <Label htmlFor="dispositifsAConseiller">Dispositifs à conseiller ou à dispenser</Label>
+              <Textarea name="dispositifsAConseiller" id="dispositifsAConseiller" rows={3} value={caseStudy.dispositifsAConseiller} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="reponsesObjections">Réponses aux objections des clients</Label>
+              <Textarea name="reponsesObjections" id="reponsesObjections" rows={3} value={caseStudy.reponsesObjections} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="pagesSponsorisees">Pages sponsorisées</Label>
+              <Textarea name="pagesSponsorisees" id="pagesSponsorisees" rows={3} value={caseStudy.pagesSponsorisees} onChange={handleChange} />
+            </div>
+            <div>
+              <Label htmlFor="referencesBibliographiquesDM">Références bibliographiques (une par ligne)</Label>
+              <Textarea name="referencesBibliographiquesDM" id="referencesBibliographiquesDM" rows={4} value={(caseStudy.referencesBibliographiquesDM || []).join('\n')} onChange={(e) => handleArrayChange('referencesBibliographiquesDM', e.target.value)} />
             </div>
           </FormSection>
         )}
 
-        {caseStudy.type === 'dispositifs-medicaux' && (
+        {caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && (
           <>
-            <FormSection title="Analyse de la Demande / Prescription">
-              <div>
-                <Label htmlFor="identificationBesoin">Identification du besoin</Label>
-                <Textarea name="identificationBesoin" id="identificationBesoin" rows={3} value={caseStudy.analyseDemandePrescription?.identificationBesoin} onChange={(e) => handleNestedChange('analyseDemandePrescription', 'identificationBesoin', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="informationsPatientDM">Informations patient</Label>
-                <Textarea name="informationsPatientDM" id="informationsPatientDM" rows={3} value={caseStudy.analyseDemandePrescription?.informationsPatientDM} onChange={(e) => handleNestedChange('analyseDemandePrescription', 'informationsPatientDM', e.target.value)} />
-              </div>
+            <FormSection title="Recommandations">
+                <div>
+                    <Label htmlFor="mainTreatment">Traitement principal (un par ligne)</Label>
+                    <Textarea name="mainTreatment" id="mainTreatment" rows={4} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
+                </div>
+                <div>
+                    <Label htmlFor="associatedProducts">Produits associés (un par ligne)</Label>
+                    <Textarea name="associatedProducts" id="associatedProducts" rows={4} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
+                </div>
+                <div>
+                    <Label htmlFor="lifestyleAdvice">Hygiène de vie (un par ligne)</Label>
+                    <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={4} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
+                </div>
+                <div>
+                    <Label htmlFor="dietaryAdvice">Conseils alimentaires (un par ligne)</Label>
+                    <Textarea name="dietaryAdvice" id="dietaryAdvice" rows={4} value={caseStudy.recommendations.dietaryAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'dietaryAdvice', e.target.value)} />
+                </div>
             </FormSection>
-            <FormSection title="Connaissance du Dispositif Médical">
-              <div>
-                <Label htmlFor="typeClassification">Type et classification</Label>
-                <Textarea name="typeClassification" id="typeClassification" rows={3} value={caseStudy.connaissanceDispositifMedical?.typeClassification} onChange={(e) => handleNestedChange('connaissanceDispositifMedical', 'typeClassification', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="modeFonctionnement">Mode de fonctionnement</Label>
-                <Textarea name="modeFonctionnement" id="modeFonctionnement" rows={3} value={caseStudy.connaissanceDispositifMedical?.modeFonctionnement} onChange={(e) => handleNestedChange('connaissanceDispositifMedical', 'modeFonctionnement', e.target.value)} />
-              </div>
+
+            <FormSection title="Points Clés & Références">
+                <div>
+                    <Label htmlFor="keyPoints">Points clés à retenir (un par ligne)</Label>
+                    <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
+                </div>
+                <div>
+                    <Label htmlFor="references">Références (une par ligne)</Label>
+                    <Textarea name="references" id="references" rows={4} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
+                </div>
             </FormSection>
           </>
         )}
-
-        <FormSection title="Recommandations">
-            <div>
-                <Label htmlFor="mainTreatment">Traitement principal (un par ligne)</Label>
-                <Textarea name="mainTreatment" id="mainTreatment" rows={4} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
-            </div>
-            <div>
-                <Label htmlFor="associatedProducts">Produits associés (un par ligne)</Label>
-                <Textarea name="associatedProducts" id="associatedProducts" rows={4} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
-            </div>
-            <div>
-                <Label htmlFor="lifestyleAdvice">Hygiène de vie (un par ligne)</Label>
-                <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={4} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
-            </div>
-            <div>
-                <Label htmlFor="dietaryAdvice">Conseils alimentaires (un par ligne)</Label>
-                <Textarea name="dietaryAdvice" id="dietaryAdvice" rows={4} value={caseStudy.recommendations.dietaryAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'dietaryAdvice', e.target.value)} />
-            </div>
-        </FormSection>
-
-        <FormSection title="Points Clés & Références">
-            <div>
-                <Label htmlFor="keyPoints">Points clés à retenir (un par ligne)</Label>
-                <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
-            </div>
-            <div>
-                <Label htmlFor="references">Références (une par ligne)</Label>
-                <Textarea name="references" id="references" rows={4} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
-            </div>
-        </FormSection>
 
         <FormSection title="Sections Personnalisées">
             <div className="space-y-4">
