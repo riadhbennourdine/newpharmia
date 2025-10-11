@@ -15,21 +15,28 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
     const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
-    const handleNext = () => {
-        if (currentIndex < deck.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setIsFlipped(false);
-        } else {
-            setIsCompleted(true);
-        }
-    };
+    const handleNext = useCallback(() => {
+        setIsFlipped(false);
+        setCurrentIndex(prevIndex => {
+            if (prevIndex < deck.length - 1) {
+                return prevIndex + 1;
+            } else {
+                setIsCompleted(true);
+                return prevIndex; // Stay on the last index
+            }
+        });
+    }, [deck.length]);
 
-    const handlePrev = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            setIsFlipped(false);
-        }
-    };
+    const handlePrev = useCallback(() => {
+        setIsFlipped(false);
+        setCurrentIndex(prevIndex => {
+            if (prevIndex > 0) {
+                return prevIndex - 1;
+            } else {
+                return prevIndex; // Stay on the first index
+            }
+        });
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -52,7 +59,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentIndex, deck.length]);
+    }, [handleNext, handlePrev]);
 
     const handleRestart = () => {
         setCurrentIndex(0);
