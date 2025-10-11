@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
             <section className="bg-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
                     <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
-                        Devenez un expert du conseil à l'officine <br className="md:hidden"/>avec <span className="animated-pharmia">PharmIA</span>
+                        Devenez un expert du conseil à l'officine <br className="md:hidden"/>avec <span className="logo-gradient-text font-poppins">PharmIA</span>
                     </h1>
                      <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600">
                         Maîtrisez le comptoir grâce à nos mémofiches intelligentes et interactives. Apprentissage rapide, efficace et adapté à votre quotidien.
