@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Flashcard } from '../types';
 import { ArrowLeftCircleIcon, ArrowRightCircleIcon, ArrowUturnLeftIcon, CheckCircleIcon, ArrowPathIcon } from './Icons';
@@ -15,21 +15,21 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
     const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
-    const handleNext = useCallback(() => {
-        setIsFlipped(false);
+    const handleNext = () => {
         if (currentIndex < deck.length - 1) {
             setCurrentIndex(currentIndex + 1);
+            setIsFlipped(false);
         } else {
             setIsCompleted(true);
         }
-    }, [currentIndex, deck.length]);
+    };
 
-    const handlePrev = useCallback(() => {
-        setIsFlipped(false);
+    const handlePrev = () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
+            setIsFlipped(false);
         }
-    }, [currentIndex]);
+    };
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -52,7 +52,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleNext, handlePrev]);
+    }, [currentIndex, deck.length]);
 
     const handleRestart = () => {
         setCurrentIndex(0);
