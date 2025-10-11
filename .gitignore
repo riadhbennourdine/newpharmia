@@ -30,4 +30,3 @@ dist-server/
 server.js
 server/*.js
 types.js
-tsconfig.server.json
