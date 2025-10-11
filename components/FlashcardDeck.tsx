@@ -15,29 +15,6 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
     const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
-    const handleNext = useCallback(() => {
-        setIsFlipped(false);
-        setCurrentIndex(prevIndex => {
-            if (prevIndex < deck.length - 1) {
-                return prevIndex + 1;
-            } else {
-                setIsCompleted(true);
-                return prevIndex; // Stay on the last index
-            }
-        });
-    }, [deck.length]);
-
-    const handlePrev = useCallback(() => {
-        setIsFlipped(false);
-        setCurrentIndex(prevIndex => {
-            if (prevIndex > 0) {
-                return prevIndex - 1;
-            } else {
-                return prevIndex; // Stay on the first index
-            }
-        });
-    }, []);
-
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement;
@@ -45,10 +22,25 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                handleNext();
+                setCurrentIndex(prevIndex => {
+                    if (prevIndex < deck.length - 1) {
+                        setIsFlipped(false);
+                        return prevIndex + 1;
+                    } else {
+                        setIsCompleted(true);
+                        return prevIndex;
+                    }
+                });
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                handlePrev();
+                setCurrentIndex(prevIndex => {
+                    if (prevIndex > 0) {
+                        setIsFlipped(false);
+                        return prevIndex - 1;
+                    } else {
+                        return prevIndex;
+                    }
+                });
             } else if (e.key === ' ' || e.key === 'Enter') {
                 if (document.activeElement?.classList.contains('flashcard-container')) {
                     e.preventDefault();
@@ -59,7 +51,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleNext, handlePrev]);
+    }, [deck.length]);
 
     const handleRestart = () => {
         setCurrentIndex(0);
@@ -123,7 +115,16 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
             <div className="flex items-center justify-between">
                 <button 
-                    onClick={handlePrev}
+                    onClick={() => {
+                        setCurrentIndex(prevIndex => {
+                            if (prevIndex > 0) {
+                                setIsFlipped(false);
+                                return prevIndex - 1;
+                            } else {
+                                return prevIndex;
+                            }
+                        });
+                    }}
                     disabled={currentIndex === 0}
                     className="p-2 text-slate-500 hover:text-teal-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     aria-label="Carte précédente (Flèche gauche)"
@@ -146,7 +147,17 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
                 </div>
 
                 <button 
-                    onClick={handleNext}
+                    onClick={() => {
+                        setCurrentIndex(prevIndex => {
+                            if (prevIndex < deck.length - 1) {
+                                setIsFlipped(false);
+                                return prevIndex + 1;
+                            } else {
+                                setIsCompleted(true);
+                                return prevIndex;
+                            }
+                        });
+                    }}
                     className="p-2 text-slate-500 hover:text-teal-600 transition-colors"
                     aria-label="Carte suivante (Flèche droite)"
                 >
