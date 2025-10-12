@@ -366,7 +366,7 @@ ${formattingInstructions}
             </select>
         </div>
 
-        {memoFicheType === 'maladie' && (
+        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances') && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
@@ -441,44 +441,7 @@ ${formattingInstructions}
             </div>
         )}
 
-        {memoFicheType === 'dermocosmetique' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                 <div>
-                    <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
-                    Thème Pédagogique
-                    </label>
-                    <select
-                    id="theme-select"
-                    value={selectedTheme}
-                    onChange={(e) => setSelectedTheme(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    >
-                    <option value="">Sélectionnez un thème</option>
-                    {TOPIC_CATEGORIES[0].topics.map(topic => (
-                        <option key={topic} value={topic}>{topic}</option>
-                    ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="system-select" className="block text-lg font-medium text-slate-700 mb-2">
-                    Système/Organe
-                    </label>
-                    <select
-                    id="system-select"
-                    value={selectedSystem}
-                    onChange={(e) => setSelectedSystem(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    >
-                    <option value="">Sélectionnez un système/organe</option>
-                    {TOPIC_CATEGORIES[1].topics.map(topic => (
-                        <option key={topic} value={topic}>{topic}</option>
-                    ))}
-                    </select>
-                </div>
-            </div>
-        )}
+
 
         <div className="mb-6">
             <label htmlFor="source-text" className="block text-lg font-medium text-slate-700 mb-2">
