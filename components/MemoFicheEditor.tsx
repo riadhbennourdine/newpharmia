@@ -63,6 +63,15 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     reponsesObjections: caseStudy?.reponsesObjections || '',
     pagesSponsorisees: caseStudy?.pagesSponsorisees || '',
     referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
+
+    // Ordonnances
+    ordonnance: ensureArray(caseStudy?.ordonnance),
+    analyseOrdonnance: ensureArray(caseStudy?.analyseOrdonnance),
+    conseilsTraitement: caseStudy?.conseilsTraitement || [],
+    informationsMaladie: ensureArray(caseStudy?.informationsMaladie),
+    conseilsHygieneDeVie: ensureArray(caseStudy?.conseilsHygieneDeVie),
+    conseilsAlimentaires: ensureArray(caseStudy?.conseilsAlimentaires),
+    ventesAdditionnelles: caseStudy?.ventesAdditionnelles || {},
   };
 };
 
@@ -354,6 +363,39 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
               <Textarea name="referencesBibliographiquesDM" id="referencesBibliographiquesDM" rows={4} value={(caseStudy.referencesBibliographiquesDM || []).join('\n')} onChange={(e) => handleArrayChange('referencesBibliographiquesDM', e.target.value)} />
             </div>
           </FormSection>
+        )}
+
+        {caseStudy.type === 'ordonnances' && (
+            <FormSection title="Contenu du Mémo (Ordonnances)">
+              <div>
+                <Label htmlFor="ordonnance">Ordonnance (une par ligne)</Label>
+                <Textarea name="ordonnance" id="ordonnance" rows={5} value={(caseStudy.ordonnance || []).join('\n')} onChange={(e) => handleArrayChange('ordonnance', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="analyseOrdonnance">Analyse de l'ordonnance (une par ligne)</Label>
+                <Textarea name="analyseOrdonnance" id="analyseOrdonnance" rows={5} value={(caseStudy.analyseOrdonnance || []).join('\n')} onChange={(e) => handleArrayChange('analyseOrdonnance', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="conseilsTraitement">Conseils sur le traitement médicamenteux (JSON)</Label>
+                <Textarea name="conseilsTraitement" id="conseilsTraitement" rows={5} value={JSON.stringify(caseStudy.conseilsTraitement, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, conseilsTraitement: JSON.parse(e.target.value) }))} />
+              </div>
+              <div>
+                <Label htmlFor="informationsMaladie">Informations sur la maladie (une par ligne)</Label>
+                <Textarea name="informationsMaladie" id="informationsMaladie" rows={5} value={(caseStudy.informationsMaladie || []).join('\n')} onChange={(e) => handleArrayChange('informationsMaladie', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="conseilsHygieneDeVie">Conseils hygiène de vie (une par ligne)</Label>
+                <Textarea name="conseilsHygieneDeVie" id="conseilsHygieneDeVie" rows={5} value={(caseStudy.conseilsHygieneDeVie || []).join('\n')} onChange={(e) => handleArrayChange('conseilsHygieneDeVie', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="conseilsAlimentaires">Conseils alimentaires (une par ligne)</Label>
+                <Textarea name="conseilsAlimentaires" id="conseilsAlimentaires" rows={5} value={(caseStudy.conseilsAlimentaires || []).join('\n')} onChange={(e) => handleArrayChange('conseilsAlimentaires', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="ventesAdditionnelles">Ventes additionnelles (JSON)</Label>
+                <Textarea name="ventesAdditionnelles" id="ventesAdditionnelles" rows={5} value={JSON.stringify(caseStudy.ventesAdditionnelles, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, ventesAdditionnelles: JSON.parse(e.target.value) }))} />
+              </div>
+            </FormSection>
         )}
 
         {caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && (
