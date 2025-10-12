@@ -136,7 +136,7 @@ Voici le détail de chaque section :
 - **informationsMaladie**: Informations sur la maladie. Ne pas commencer par le mot "Mécanisme". Commencer par le nom de la maladie en gras (par exemple, **Rhinite allergique**).
 - **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.
 - **conseilsAlimentaires**: Conseils alimentaires. Indiquer les aliments à consommer à privilégier, et les aliments à éviter. Ne pas lister de micronutriments.
-- **ventesAdditionnelles**: Ventes additionnelles. Développe davantage cette section. Pour chaque produit, inclure les doses, les posologies et les modes d'administration. Inclure une sous-rubrique "Compléments alimentaires" où seront listés les micronutriments pertinents avec leurs doses, posologies et modes d'administration.
+- **ventesAdditionnelles**: Ventes additionnelles. Répartir les produits dans les sous-rubriques suivantes (si pertinentes) : "complementsAlimentaires", "accessoires", "dispositifs", "cosmetiques". Pour chaque produit, inclure les doses, les posologies et les modes d'administration.
 - **references**: Références bibliographiques.
 
 ${formattingInstructions}

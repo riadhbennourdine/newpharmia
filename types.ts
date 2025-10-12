@@ -138,7 +138,12 @@ export interface CaseStudy {
   informationsMaladie?: string[];
   conseilsHygieneDeVie?: string[];
   conseilsAlimentaires?: string[];
-  ventesAdditionnelles?: string[];
+  ventesAdditionnelles?: {
+    complementsAlimentaires?: string[];
+    accessoires?: string[];
+    dispositifs?: string[];
+    cosmetiques?: string[];
+  } | string[];
 }
 
 export type MemoFiche = CaseStudy;

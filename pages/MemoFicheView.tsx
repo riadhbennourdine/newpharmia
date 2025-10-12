@@ -148,8 +148,29 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Informations sur la maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie as string[])},
         { id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Conseils hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie as string[])},
         { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires as string[])},
-        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes additionnelles" />, content: renderContentWithKeywords(caseStudy.ventesAdditionnelles as string[])},
       );
+
+      if (caseStudy.ventesAdditionnelles) {
+        if (Array.isArray(caseStudy.ventesAdditionnelles)) {
+          // Handle old format for backward compatibility
+          content.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes additionnelles" />, content: renderContentWithKeywords(caseStudy.ventesAdditionnelles as string[])});
+        } else {
+          // Handle new object format
+          const va = caseStudy.ventesAdditionnelles as { complementsAlimentaires?: string[], accessoires?: string[], dispositifs?: string[], cosmetiques?: string[] };
+          if (va.complementsAlimentaires && va.complementsAlimentaires.length > 0) {
+            content.push({ id: 'va-complements', title: 'Compléments alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Compléments alimentaires" />, content: renderContentWithKeywords(va.complementsAlimentaires)});
+          }
+          if (va.accessoires && va.accessoires.length > 0) {
+            content.push({ id: 'va-accessoires', title: 'Accessoires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Accessoires" />, content: renderContentWithKeywords(va.accessoires)});
+          }
+          if (va.dispositifs && va.dispositifs.length > 0) {
+            content.push({ id: 'va-dispositifs', title: 'Dispositifs', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Dispositifs" />, content: renderContentWithKeywords(va.dispositifs)});
+          }
+          if (va.cosmetiques && va.cosmetiques.length > 0) {
+            content.push({ id: 'va-cosmetiques', title: 'Cosmétiques', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Cosmétiques" />, content: renderContentWithKeywords(va.cosmetiques)});
+          }
+        }
+      }
     } else if (caseStudy.type !== 'pharmacologie') {
       content.push(
         { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)},
