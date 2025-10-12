@@ -142,7 +142,8 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       ).join('\n\n');
 
       content.push(
-        { id: 'memoOrdonnance', title: 'Mémo : Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Mémo : Ordonnance" />, content: renderContentWithKeywords(caseStudy.memoOrdonnance as string[])},
+        { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance as string[])},
+        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse de l\'ordonnance" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance as string[])},
         { id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils sur le traitement médicamenteux" />, content: renderContentWithKeywords(conseilsTraitementContent)},
         { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Informations sur la maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie as string[])},
         { id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Conseils hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie as string[])},

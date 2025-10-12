@@ -125,17 +125,18 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'ordonnances') {
         prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
-Tu dois générer un objet JSON avec les clés suivantes : "memoOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".
+Tu dois générer un objet JSON avec les clés suivantes : "ordonnance", "analyseOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".
 Le contenu de chaque clé doit être un tableau de chaînes de caractères.
 Chaque chaîne de caractères doit correspondre à un point de la section.
 
 Voici le détail de chaque section :
-- **memoOrdonnance**: Mémo : "Ordonnance".
+- **ordonnance**: Ordonnance. Contenant les détails du patient, la pathologie, la prescription et la durée.
+- **analyseOrdonnance**: Analyse de l'ordonnance. Contenant l'analyse de la prescription, la vérification essentielle et le profil du patient.
 - **conseilsTraitement**: Conseils sur le traitement médicamenteux. Pour chaque médicament de la prescription, créer un objet avec les clés "medicament" et "conseils". "medicament" est le nom du médicament. "conseils" est un tableau de chaînes de caractères contenant les conseils d'administration, les effets indésirables éventuels et les précautions d'emploi.
 - **informationsMaladie**: Informations sur la maladie. Ne pas commencer par le mot "Mécanisme". Commencer par le nom de la maladie en gras (par exemple, **Rhinite allergique**).
 - **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.
 - **conseilsAlimentaires**: Conseils alimentaires. Indiquer les aliments à consommer à privilégier, et les aliments à éviter. Ne pas lister de micronutriments.
-- **ventesAdditionnelles**: Ventes additionnelles. Développe davantage cette section. Inclure une sous-rubrique "Compléments alimentaires" où seront listés les micronutriments pertinents.
+- **ventesAdditionnelles**: Ventes additionnelles. Développe davantage cette section. Pour chaque produit, inclure les doses, les posologies et les modes d'administration. Inclure une sous-rubrique "Compléments alimentaires" où seront listés les micronutriments pertinents avec leurs doses, posologies et modes d'administration.
 - **references**: Références bibliographiques.
 
 ${formattingInstructions}

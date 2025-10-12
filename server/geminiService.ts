@@ -86,7 +86,8 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       type: Type.OBJECT,
       properties: {
         title: { type: Type.STRING },
-        memoOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        ordonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        analyseOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
         conseilsTraitement: {
           type: Type.ARRAY,
           items: {
@@ -104,7 +105,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         ventesAdditionnelles: { type: Type.ARRAY, items: { type: Type.STRING } },
         references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
-      required: ['title', 'memoOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
+      required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   }
 
