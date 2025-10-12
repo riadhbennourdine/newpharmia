@@ -125,30 +125,18 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'ordonnances') {
         prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
-Tu dois générer un objet JSON avec les clés suivantes : "analyseOrdonnance", "conseilsTraitement", "informationsOrdonnance", "conseilsHygienoDietetiques", "venteComplementaire", "references".
+Tu dois générer un objet JSON avec les clés suivantes : "memoOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".
 Le contenu de chaque clé doit être un tableau de chaînes de caractères.
 Chaque chaîne de caractères doit correspondre à un point de la section.
 
 Voici le détail de chaque section :
-- **analyseOrdonnance**: Analyse de l'Ordonnance : la prescription médicale et les besoins du patient.
-  - Déterminer s'il s'agit d'une première prescription ou d'un renouvellement.
-  - Collecter des informations sur l'âge, les antécédents médicaux et le motif de consultation du patient.
-- **conseilsTraitement**: Conseils sur le traitement médicamenteux.
-  - La propriété et le mode d'action de chaque médicament.
-  - Expliquer le mode d'administration, les horaires de prise et les effets indésirables possibles.
-  - Informer sur les interactions médicamenteuses ou alimentaires et les contre-indications.
-- **informationsOrdonnance**: Informations sur l'Ordonnance.
-  - Présenter les informations essentielles sur l'ordonnance.
-  - Expliquer les spécificités de la pathologie qui peuvent affecter le traitement.
-  - Donner une idée sur l'objectif du traitement.
-- **conseilsHygienoDietetiques**: Conseils hygiéno-diététiques.
-  - Fournir des conseils d'hygiène de vie, y compris l'exercice et le sommeil.
-  - Offrir des conseils alimentaires adaptés à la pathologie.
-- **venteComplementaire**: Vente complémentaire.
-  - Identifier les produits ou accessoires complémentaires pertinents qu'on peut proposer au patient.
-  - Expliquer comment ces produits peuvent améliorer l'efficacité, la tolérance ou le confort du traitement, ou alors assurer la prévention contre les récidives et les complications.
+- **memoOrdonnance**: Mémo : "Ordonnance".
+- **conseilsTraitement**: Conseils sur le traitement médicamenteux. Développe davantage sur les conseils d'administration, les effets indésirables éventuels et précautions d'emploi.
+- **informationsMaladie**: Informations sur la maladie.
+- **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.
+- **conseilsAlimentaires**: Conseils alimentaires.
+- **ventesAdditionnelles**: Ventes additionnelles. Développes davantage cette section.
 - **references**: Références bibliographiques.
-  - Insérer ici les références bibliographiques utilisées pour la rédaction de cette fiche.
 
 ${formattingInstructions}
 `;

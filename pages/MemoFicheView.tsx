@@ -138,11 +138,12 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       );
     } else if (caseStudy.type === 'ordonnances') {
       content.push(
-        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Analyse de l\'ordonnance" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance as string[])},
+        { id: 'memoOrdonnance', title: 'Mémo : Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Mémo : Ordonnance" />, content: renderContentWithKeywords(caseStudy.memoOrdonnance as string[])},
         { id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils sur le traitement médicamenteux" />, content: renderContentWithKeywords(caseStudy.conseilsTraitement as string[])},
-        { id: 'informationsOrdonnance', title: 'Informations sur l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Informations sur l\'ordonnance" />, content: renderContentWithKeywords(caseStudy.informationsOrdonnance as string[])},
-        { id: 'conseilsHygienoDietetiques', title: 'Conseils hygiéno-diététiques', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Conseils hygiéno-diététiques" />, content: renderContentWithKeywords(caseStudy.conseilsHygienoDietetiques as string[])},
-        { id: 'venteComplementaire', title: 'Vente complémentaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Vente complémentaire" />, content: renderContentWithKeywords(caseStudy.venteComplementaire as string[])},
+        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Informations sur la maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie as string[])},
+        { id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Conseils hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie as string[])},
+        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires as string[])},
+        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes additionnelles" />, content: renderContentWithKeywords(caseStudy.ventesAdditionnelles as string[])},
       );
     } else if (caseStudy.type !== 'pharmacologie') {
       content.push(
