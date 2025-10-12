@@ -132,10 +132,10 @@ Chaque chaîne de caractères doit correspondre à un point de la section.
 Voici le détail de chaque section :
 - **memoOrdonnance**: Mémo : "Ordonnance".
 - **conseilsTraitement**: Conseils sur le traitement médicamenteux. Pour chaque médicament de la prescription, créer un objet avec les clés "medicament" et "conseils". "medicament" est le nom du médicament. "conseils" est un tableau de chaînes de caractères contenant les conseils d'administration, les effets indésirables éventuels et les précautions d'emploi.
-- **informationsMaladie**: Informations sur la maladie.
+- **informationsMaladie**: Informations sur la maladie. Ne pas commencer par le mot "Mécanisme". Commencer par le nom de la maladie en gras (par exemple, **Rhinite allergique**).
 - **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.
-- **conseilsAlimentaires**: Conseils alimentaires.
-- **ventesAdditionnelles**: Ventes additionnelles. Développes davantage cette section.
+- **conseilsAlimentaires**: Conseils alimentaires. Indiquer les aliments à consommer à privilégier, et les aliments à éviter. Ne pas lister de micronutriments.
+- **ventesAdditionnelles**: Ventes additionnelles. Développe davantage cette section. Inclure une sous-rubrique "Compléments alimentaires" où seront listés les micronutriments pertinents.
 - **references**: Références bibliographiques.
 
 ${formattingInstructions}
