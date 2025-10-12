@@ -130,6 +130,15 @@ export interface CaseStudy {
   reponsesObjections?: string;
   pagesSponsorisees?: string;
   referencesBibliographiquesDM?: string[];
+
+  // Ordonnances
+  ordonnance?: string[];
+  analyseOrdonnance?: string[];
+  conseilsTraitement?: { medicament: string; conseils: string[] }[] | string[];
+  informationsMaladie?: string[];
+  conseilsHygieneDeVie?: string[];
+  conseilsAlimentaires?: string[];
+  ventesAdditionnelles?: string[];
 }
 
 export type MemoFiche = CaseStudy;
