@@ -81,6 +81,20 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         'references',
       ],
     };
+  } else if (memoFicheType === 'ordonnances') {
+    jsonStructure = {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        analyseOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        conseilsTraitement: { type: Type.ARRAY, items: { type: Type.STRING } },
+        informationsOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        conseilsHygienoDietetiques: { type: Type.ARRAY, items: { type: Type.STRING } },
+        venteComplementaire: { type: Type.ARRAY, items: { type: Type.STRING } },
+        references: { type: Type.ARRAY, items: { type: Type.STRING } },
+      },
+      required: ['title', 'analyseOrdonnance', 'conseilsTraitement', 'informationsOrdonnance', 'conseilsHygienoDietetiques', 'venteComplementaire', 'references'],
+    };
   }
 
   const fullPrompt = `

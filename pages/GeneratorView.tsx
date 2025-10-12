@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -123,6 +123,35 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
+    } else if (memoFicheType === 'ordonnances') {
+        prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Tu dois obligatoirement utiliser le modèle de mémofiche pour les ordonnances. Voici le plan détaillé à suivre OBLIGATOIREMENT :
+
+1.  **Analyse de l'Ordonnance : la prescription médicale et les besoins du patient**
+    *   Déterminer s'il s'agit d'une première prescription ou d'un renouvellement.
+    *   Collecter des informations sur l'âge, les antécédents médicaux et le motif de consultation du patient.
+
+2.  **Conseils sur le traitement médicamenteux :**
+    *   La propriété et le mode d'action de chaque médicament.
+    *   Expliquer le mode d'administration, les horaires de prise et les effets indésirables possibles.
+    *   Informer sur les interactions médicamenteuses ou alimentaires et les contre-indications.
+
+3.  **Informations sur l'Ordonnance :**
+    *   Présenter les informations essentielles sur l'ordonnance.
+    *   Expliquer les spécificités de la pathologie qui peuvent affecter le traitement.
+    *   Donner une idée sur l'objectif du traitement.
+
+4.  **Conseils hygiéno-diététiques :**
+    *   Fournir des conseils d'hygiène de vie, y compris l'exercice et le sommeil.
+    *   Offrir des conseils alimentaires adaptés à la pathologie.
+
+5.  **Vente complémentaire :**
+    *   Identifier les produits ou accessoires complémentaires pertinents qu'on peut proposer au patient.
+    *   Expliquer comment ces produits peuvent améliorer l'efficacité, la tolérance ou le confort du traitement, ou alors assurer la prévention contre les récidives et les complications.
+
+6.  **Références bibliographiques :**
+    *   Insérer ici les références bibliographiques utilisées pour la rédaction de cette fiche.
+${formattingInstructions}
+`;
     } else { // exhaustive
         prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
     }
@@ -332,6 +361,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
             <option value="pharmacologie">Pharmacologie</option>
             <option value="dermocosmetique">Dermocosmétique</option>
             <option value="dispositifs-medicaux">Dispositifs médicaux</option>
+            <option value="ordonnances">Ordonnances</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>
