@@ -121,6 +121,8 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       properties: {
         title: { type: Type.STRING },
         shortDescription: { type: Type.STRING },
+        summary: { type: Type.STRING },
+        patientSituation: { type: Type.STRING },
         customSections: {
           type: Type.ARRAY,
           items: {
@@ -133,7 +135,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           },
         },
       },
-      required: ['title', 'shortDescription', 'customSections'],
+      required: ['title', 'shortDescription', 'summary', 'patientSituation', 'customSections'],
     };
   }
 
@@ -142,7 +144,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante.`;
 
   if (memoFicheType === 'communication') {
-    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Chaque section doit avoir un titre et un contenu. Le texte à analyser est :\n\n${prompt}`;
+    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le texte à analyser est :\n\n${prompt}`;
   }
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);

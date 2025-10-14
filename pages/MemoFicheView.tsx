@@ -171,13 +171,26 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
           }
         }
       }
+    } else if (caseStudy.type === 'communication') {
+      if (caseStudy.summary) {
+        content.push({ id: 'summary', title: 'Résumé', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Résumé" />, content: renderContentWithKeywords(caseStudy.summary)});
+      }
+      if (caseStudy.patientSituation) {
+        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)});
+      }
     } else if (caseStudy.type !== 'pharmacologie') {
-      content.push(
-        { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)},
-        { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)},
-        { id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)},
-        { id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)},
-      );
+      if (caseStudy.patientSituation) {
+        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)});
+      }
+      if (caseStudy.keyQuestions && caseStudy.keyQuestions.length > 0) {
+        content.push({ id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)});
+      }
+      if (caseStudy.pathologyOverview) {
+        content.push({ id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)});
+      }
+      if (caseStudy.redFlags && caseStudy.redFlags.length > 0) {
+        content.push({ id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)});
+      }
       if (caseStudy.recommendations) {
         content.push(
           { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, content: renderContentWithKeywords(caseStudy.recommendations.mainTreatment)},
