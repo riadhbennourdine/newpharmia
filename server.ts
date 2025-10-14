@@ -360,13 +360,11 @@ app.get('/api/users/subscribers', async (req, res) => {
 
 
 import crmRoutes from './server/crm.js';
-import groupsRoutes from './server/groups.js';
 
 // ===============================================
 // CRM API ROUTES
 // ===============================================
 app.use('/api/admin/crm', crmRoutes);
-app.use('/api/admin/groups', groupsRoutes);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
@@ -495,7 +493,6 @@ app.get('/api/memofiches', async (req, res) => {
         const db = client.db('pharmia');
         const memofichesCollection = db.collection<CaseStudy>('memofiches');
         const usersCollection = db.collection<User>('users');
-        const groupsCollection = db.collection<Group>('groups');
 
         let user: User | null = null;
         if (userId && ObjectId.isValid(userId)) {
@@ -522,12 +519,6 @@ app.get('/api/memofiches', async (req, res) => {
 
                     }
 
-                    if (!hasAccess && user.groupId) {
-                        const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                        if (group && group.assignedFiches.some(f => f.ficheId === req.params.id)) {
-                            hasAccess = true;
-                        }
-                    }
                 }
 
         let query: any = {};
@@ -590,7 +581,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
         const db = client.db('pharmia');
         const memofichesCollection = db.collection<CaseStudy>('memofiches');
         const usersCollection = db.collection<User>('users');
-        const groupsCollection = db.collection<Group>('groups');
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(id)) {
@@ -620,13 +610,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
             if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
                 hasAccess = true;
-            }
-
-            if (!hasAccess && user.groupId) {
-                const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                if (group && group.assignedFiches.some(f => f.ficheId === id)) {
-                    hasAccess = true;
-                }
             }
         }
 

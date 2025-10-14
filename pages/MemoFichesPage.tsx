@@ -3,17 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole } from '../types';
-import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon, UserGroupIcon } from '../components/Icons';
+import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon } from '../components/Icons';
 import { TOPIC_CATEGORIES } from '../constants';
-import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
 
 // This is the full-featured card, kept for the main memo fiches page
-const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: CaseStudy) => void }> = ({ caseStudy, onAssign }) => {
+const MemoFicheCard: React.FC<{ caseStudy: CaseStudy }> = ({ caseStudy }) => {
     const { user } = useAuth();
     const { editCaseStudy, deleteCaseStudy } = useData();
     const navigate = useNavigate();
     
-    const canAccess = !caseStudy.isLocked;
+    const canAccess = (
+      !caseStudy.isLocked || 
+      user?.hasActiveSubscription || 
+      (user?.trialExpiresAt && new Date(user.trialExpiresAt) > new Date()) ||
+      user?.role === UserRole.ADMIN
+    );
     const isAdmin = user?.role === UserRole.ADMIN;
     const isFormateur = user?.role === UserRole.FORMATEUR;
 
@@ -71,9 +75,6 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                         <button onClick={handleDelete} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors">
                             <TrashIcon className="h-5 w-5" />
                         </button>
-                        <button onClick={() => onAssign(caseStudy)} className="p-2 text-slate-500 hover:text-green-600 hover:bg-green-100 rounded-full transition-colors">
-                            <UserGroupIcon className="h-5 w-5" />
-                        </button>
                     )}
                 </div>
             )}
@@ -116,8 +117,6 @@ const MemoFichesPage: React.FC = () => {
     const [selectedTheme, setSelectedTheme] = useState('all');
     const [selectedSystem, setSelectedSystem] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
-    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-    const [selectedFiche, setSelectedFiche] = useState<CaseStudy | undefined>(undefined);
 
     useEffect(() => {
         fetchFiches({ 
@@ -146,16 +145,6 @@ const MemoFichesPage: React.FC = () => {
     
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-    };
-
-    const handleOpenAssignModal = (fiche: CaseStudy) => {
-        setSelectedFiche(fiche);
-        setIsAssignModalOpen(true);
-    };
-
-    const handleCloseAssignModal = () => {
-        setSelectedFiche(undefined);
-        setIsAssignModalOpen(false);
     };
 
     const isAdmin = user?.role === UserRole.ADMIN;
@@ -212,7 +201,7 @@ const MemoFichesPage: React.FC = () => {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {fiches.map(cs => (
-                            <MemoFicheCard key={cs._id} caseStudy={cs} onAssign={handleOpenAssignModal} />
+                            <MemoFicheCard key={cs._id} caseStudy={cs} />
                         ))}
                     </div>
                     {pagination && (
@@ -228,10 +217,6 @@ const MemoFichesPage: React.FC = () => {
                     <h3 className="text-xl font-semibold text-slate-700">Aucune mémofiche trouvée</h3>
                     <p className="text-slate-500 mt-2">Essayez d'ajuster vos filtres de recherche.</p>
                 </div>
-            )}
-
-            {isAssignModalOpen && selectedFiche && (
-                <AssignFicheToGroupModal fiche={selectedFiche} onClose={handleCloseAssignModal} />
             )}
         </div>
     );
