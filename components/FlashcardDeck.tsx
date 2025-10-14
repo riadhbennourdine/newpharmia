@@ -13,8 +13,6 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
     const [isFlipped, setIsFlipped] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
 
-    console.log('memoFicheId:', memoFicheId);
-
     const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
     useEffect(() => {
