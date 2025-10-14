@@ -48,7 +48,7 @@ const AssignFicheToGroupModal: React.FC<AssignFicheToGroupModalProps> = ({ fiche
       }
     } catch (error) {
       console.error('Error assigning fiche:', error);
-      alert('Une erreur est survenue lors de l\'assignation de la mémofiche.');
+      alert('Une erreur est survenue lors de l'assignation de la mémofiche.');
     }
   };
 
