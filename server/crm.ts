@@ -231,6 +231,8 @@ router.post('/appointments', async (req, res) => {
             createdAt: new Date(),
         };
 
+        console.log('New appointment:', newAppointment);
+
         const result = await appointmentsCollection.insertOne(newAppointment as Appointment);
 
         if (result.acknowledged) {
