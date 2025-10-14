@@ -60,10 +60,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setPagination(data.pagination);
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  } finally {
+    setIsLoading(false);
+  }
+}, [user]);
 
   const getPharmacistTeam = useCallback(async (pharmacistId: string) => {
     setIsLoading(true);
@@ -81,7 +82,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
 
-  const getCaseStudyById = async (id: string): Promise<CaseStudy | undefined> => {
+  const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
     try {
       // First, check if the fiche is already in the current list
       const existingFiche = fiches.find(f => f._id === id);
@@ -101,7 +102,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       navigate('/dashboard', { replace: true });
       return undefined;
     }
-  };
+  }, [user, fiches, navigate]);
 
   const saveCaseStudy = async (caseStudy: CaseStudy): Promise<CaseStudy> => {
     const isNew = !caseStudy._id;
