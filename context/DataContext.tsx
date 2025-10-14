@@ -60,11 +60,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setPagination(data.pagination);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-  } finally {
-    setIsLoading(false);
-  }
-}, [user]);
+  }, [user]);
 
   const getPharmacistTeam = useCallback(async (pharmacistId: string) => {
     setIsLoading(true);
