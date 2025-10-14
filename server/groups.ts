@@ -144,7 +144,7 @@ router.post('/:id/assign-fiche', async (req, res) => {
 
     res.status(200).json({ message: 'Mémofiche assignée avec succès.' });
   } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de l'assignation de la mémofiche.', error });
+    res.status(500).json({ message: "Erreur lors de l'assignation de la mémofiche.", error });
   }
 });
 
