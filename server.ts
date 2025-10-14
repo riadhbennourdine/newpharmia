@@ -544,10 +544,11 @@ app.get('/api/memofiches', async (req, res) => {
         const fichesWithAccess = fiches.map(fiche => {
             let hasAccess = false;
             if (user) {
-                if(user.role === UserRole.ADMIN) {
+                if(user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
                     hasAccess = true;
                 } else {
-                    const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+                    console.log('user.createdAt:', user.createdAt);
+                    const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(new Date(user.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000) : null);
                     if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
                         hasAccess = true;
                     }
@@ -613,7 +614,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
                 hasAccess = true;
             } else {
                 console.log('User object for access check:', JSON.stringify(user, null, 2));
-                const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+                const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(new Date(user.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000) : null);
                 console.log('Calculated trialExpiresAt:', trialExpiresAt);
                 console.log('Is trial still valid?:', trialExpiresAt && new Date(trialExpiresAt) > new Date());
 
