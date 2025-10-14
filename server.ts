@@ -6,7 +6,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
-import { User, UserRole, CaseStudy } from './types.js';
+import { User, UserRole, CaseStudy, Group } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 
@@ -498,37 +498,14 @@ app.get('/api/memofiches', async (req, res) => {
         const groupsCollection = db.collection<Group>('groups');
 
         let user: User | null = null;
+        let group: Group | null = null;
+
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (user && user.groupId) {
+                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+            }
         }
-
-                let hasAccess = false;
-
-                if (user) {
-
-                    console.log('User object for access check:', JSON.stringify(user, null, 2));
-
-                    const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-
-                    console.log('Calculated trialExpiresAt:', trialExpiresAt);
-
-                    console.log('Is trial still valid?:', trialExpiresAt && new Date(trialExpiresAt) > new Date());
-
-        
-
-                    if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
-
-                        hasAccess = true;
-
-                    }
-
-                    if (!hasAccess && user.groupId) {
-                        const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                        if (group && group.assignedFiches.some(f => f.ficheId === req.params.id)) {
-                            hasAccess = true;
-                        }
-                    }
-                }
 
         let query: any = {};
         if (search) {
@@ -561,6 +538,17 @@ app.get('/api/memofiches', async (req, res) => {
             .toArray();
 
         const fichesWithAccess = fiches.map(fiche => {
+            let hasAccess = false;
+            if (user) {
+                const trialExpiresAt = user.trialExpiresAt || (user.createdAt ? new Date(user.createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+                if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+                    hasAccess = true;
+                }
+                if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
+                    hasAccess = true;
+                }
+            }
+
             if (fiche.isFree) {
                 return { ...fiche, isLocked: false };
             }
