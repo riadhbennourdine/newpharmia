@@ -45,6 +45,7 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                         src={caseStudy.coverImageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} 
                         alt={caseStudy.title} 
                         className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        style={{ objectPosition: caseStudy.coverImagePosition || 'center' }}
                     />
                     {!canAccess && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

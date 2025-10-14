@@ -286,6 +286,16 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             <Label htmlFor="coverImageUrl">URL de l'image de couverture</Label>
             <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} />
           </div>
+          {caseStudy.coverImageUrl && (
+            <div>
+              <Label htmlFor="coverImagePosition">Position de l'image de couverture</Label>
+              <select name="coverImagePosition" id="coverImagePosition" value={caseStudy.coverImagePosition || 'middle'} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <option value="top">Haut</option>
+                <option value="middle">Milieu</option>
+                <option value="bottom">Bas</option>
+              </select>
+            </div>
+          )}
           <div>
             <Label>Liens Vidéo YouTube</Label>
             {caseStudy.youtubeLinks?.map((link, index) => (

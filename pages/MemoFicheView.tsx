@@ -263,7 +263,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     <div className="animate-fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {caseStudy.coverImageUrl ? (
           <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-64 flex items-end p-8 text-white bg-slate-800">
-              <img src={caseStudy.coverImageUrl} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img src={caseStudy.coverImageUrl} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: caseStudy.coverImagePosition || 'center' }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
               <div className="relative z-20">
                   <h2 className="text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>
