@@ -223,15 +223,13 @@ router.post('/appointments', async (req, res) => {
         const appointmentsCollection = db.collection<Appointment>('appointments');
 
         const newAppointment: Omit<Appointment, '_id'> = {
-            clientId,
+            clientId: new ObjectId(clientId),
             clientName,
             date: new Date(date),
             title,
             notes,
             createdAt: new Date(),
         };
-
-        console.log('New appointment:', newAppointment);
 
         const result = await appointmentsCollection.insertOne(newAppointment as Appointment);
 
