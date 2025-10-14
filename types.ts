@@ -47,6 +47,15 @@ export interface User {
   lastContactDate?: Date;
   notes?: string;
   teamSize?: number;
+  groupId?: ObjectId | string;
+}
+
+export interface Group {
+  _id: ObjectId | string;
+  name: string;
+  pharmacistId: ObjectId | string;
+  preparatorIds: (ObjectId | string)[];
+  assignedFiches: { ficheId: string; assignedAt: Date; }[];
 }
 
 export interface Client extends User {
