@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -123,6 +123,8 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
         prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
+    } else if (memoFicheType === 'communication') {
+        prompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Chaque section doit avoir un titre et un contenu. Le texte à analyser est :\n\n${sourceText}`;
     } else if (memoFicheType === 'ordonnances') {
         prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
 Tu dois générer un objet JSON avec les clés suivantes : "ordonnance", "analyseOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".
@@ -351,11 +353,12 @@ ${formattingInstructions}
             <option value="dermocosmetique">Dermocosmétique</option>
             <option value="dispositifs-medicaux">Dispositifs médicaux</option>
             <option value="ordonnances">Ordonnances</option>
+            <option value="communication">Communication</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>
 
-        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances') && (
+        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances' || memoFicheType === 'communication') && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
@@ -374,6 +377,7 @@ ${formattingInstructions}
                     ))}
                     </select>
                 </div>
+                {memoFicheType !== 'communication' && (
                 <div>
                     <label htmlFor="system-select" className="block text-lg font-medium text-slate-700 mb-2">
                     Système/Organe
@@ -391,6 +395,7 @@ ${formattingInstructions}
                     ))}
                     </select>
                 </div>
+                )}
             </div>
         )}
 
