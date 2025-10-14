@@ -12,7 +12,12 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy }> = ({ caseStudy }) => {
     const { editCaseStudy, deleteCaseStudy } = useData();
     const navigate = useNavigate();
     
-    const canAccess = !caseStudy.isLocked || user?.hasActiveSubscription || user?.role === UserRole.ADMIN;
+    const canAccess = (
+      !caseStudy.isLocked || 
+      user?.hasActiveSubscription || 
+      (user?.trialExpiresAt && new Date(user.trialExpiresAt) > new Date()) ||
+      user?.role === UserRole.ADMIN
+    );
     const isAdmin = user?.role === UserRole.ADMIN;
     const isFormateur = user?.role === UserRole.FORMATEUR;
 
