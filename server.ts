@@ -487,6 +487,7 @@ app.get('/api/memofiches', async (req, res) => {
         } = req.query as { [key: string]: string };
 
         const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
+        console.log('x-user-id:', userId);
 
         const pageNum = parseInt(page, 10);
         const limitNum = parseInt(limit, 10);
@@ -502,6 +503,7 @@ app.get('/api/memofiches', async (req, res) => {
 
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            console.log('User from DB:', user);
             if (user && user.groupId) {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
             }
