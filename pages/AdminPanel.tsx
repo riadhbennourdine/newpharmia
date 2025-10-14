@@ -9,6 +9,7 @@ const AdminPanel: React.FC = () => {
   const [assignmentLoading, setAssignmentLoading] = useState(false);
   const [assignmentFeedback, setAssignmentFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [activeTab, setActiveTab] = useState('subscribers');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [preparateurs, setPreparateurs] = useState<User[]>([]);
   const [pharmacists, setPharmacists] = useState<User[]>([]);
@@ -137,6 +138,13 @@ const AdminPanel: React.FC = () => {
                 {assignmentFeedback.message}
               </p>
             )}
+            <input
+              type="text"
+              placeholder="Rechercher un préparateur..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base mb-4"
+            />
             {assignmentLoading && preparateurs.length === 0 ? (
                 <p>Chargement...</p>
             ) : preparateurs.length === 0 ? (
@@ -151,7 +159,16 @@ const AdminPanel: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {preparateurs.map((prep) => (
+                    {preparateurs
+                      .filter(p => {
+                        const searchTermLower = searchTerm.toLowerCase();
+                        return (
+                          p.firstName?.toLowerCase().includes(searchTermLower) ||
+                          p.lastName?.toLowerCase().includes(searchTermLower) ||
+                          p.email.toLowerCase().includes(searchTermLower)
+                        );
+                      })
+                      .map((prep) => (
                       <tr key={prep._id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                         <td className="py-3 px-4 text-gray-800 font-medium">{prep.firstName} {prep.lastName} <span className="text-gray-500">({prep.email})</span></td>
                         <td className="py-3 px-4 w-1/2">
