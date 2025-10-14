@@ -94,7 +94,7 @@ export interface Media {
 export interface CaseStudy {
   _id: ObjectId | string;
   id: string;
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances';
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication';
   title: string;
   shortDescription: string;
   theme: string;

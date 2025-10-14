@@ -115,11 +115,35 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
+  } else if (memoFicheType === 'communication') {
+    jsonStructure = {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
+        customSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
+          },
+        },
+      },
+      required: ['title', 'shortDescription', 'customSections'],
+    };
   }
 
-  const fullPrompt = `
+  let fullPrompt = `
     ${prompt}
     La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante.`;
+
+  if (memoFicheType === 'communication') {
+    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Chaque section doit avoir un titre et un contenu. Le texte à analyser est :\n\n${prompt}`;
+  }
     
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 

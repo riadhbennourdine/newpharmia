@@ -241,6 +241,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 <option value="dermocosmetique">Dermocosmétique</option>
                 <option value="dispositifs-medicaux">Dispositifs Médicaux</option>
                 <option value="ordonnances">Ordonnances</option>
+                <option value="communication">Communication</option>
                 <option value="exhaustive">Exhaustive</option>
             </select>
           </div>
@@ -260,10 +261,12 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 {TOPIC_CATEGORIES[0].topics.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
+            {caseStudy.type !== 'communication' && (
             <div>
               <Label htmlFor="system">Système/Organe</Label>
               <Input type="text" name="system" id="system" value={caseStudy.system} onChange={handleChange} />
             </div>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
