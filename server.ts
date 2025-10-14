@@ -523,6 +523,8 @@ app.get('/api/memofiches', async (req, res) => {
             query.system = system;
         }
 
+        console.log('Query:', query);
+
         const total = await memofichesCollection.countDocuments(query);
         const totalPages = Math.ceil(total / limitNum);
 
@@ -536,6 +538,8 @@ app.get('/api/memofiches', async (req, res) => {
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum)
             .toArray();
+
+        console.log('Fiches found:', fiches.length);
 
         const fichesWithAccess = fiches.map(fiche => {
             let hasAccess = false;
