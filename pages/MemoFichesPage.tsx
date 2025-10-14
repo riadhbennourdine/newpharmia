@@ -68,14 +68,12 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                         </button>
                     )}
                     {isAdmin && (
-                        <>
-                            <button onClick={handleDelete} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors">
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                            <button onClick={() => onAssign(caseStudy)} className="p-2 text-slate-500 hover:text-green-600 hover:bg-green-100 rounded-full transition-colors">
-                                <UserGroupIcon className="h-5 w-5" />
-                            </button>
-                        </>
+                        <button onClick={handleDelete} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors">
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                        <button onClick={() => onAssign(caseStudy)} className="p-2 text-slate-500 hover:text-green-600 hover:bg-green-100 rounded-full transition-colors">
+                            <UserGroupIcon className="h-5 w-5" />
+                        </button>
                     )}
                 </div>
             )}
