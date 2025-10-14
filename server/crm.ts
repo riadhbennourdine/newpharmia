@@ -212,7 +212,7 @@ router.get('/appointments', async (req, res) => {
 // POST a new appointment
 router.post('/appointments', async (req, res) => {
     try {
-        const { clientId, clientName, date, title } = req.body;
+        const { clientId, clientName, date, title, notes } = req.body;
 
         if (!clientId || !date || !title) {
             return res.status(400).json({ message: 'Client, date and title are required.' });
@@ -227,6 +227,7 @@ router.post('/appointments', async (req, res) => {
             clientName,
             date: new Date(date),
             title,
+            notes,
             createdAt: new Date(),
         };
 

@@ -4,12 +4,13 @@ import { User } from '../../types';
 interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAppointment: (appointment: { clientId: string; clientName: string; date: string; title: string }) => void;
+  onAddAppointment: (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => void;
 }
 
 const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClose, onAddAppointment }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
+  const [notes, setNotes] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [clients, setClients] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +48,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
       clientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
       date,
       title,
+      notes,
     });
   };
 
@@ -92,6 +94,14 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">Notes</label>
+            <textarea
+              className="w-full px-3 py-2 border rounded-md"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
             />
           </div>
           <div className="flex justify-end space-x-4">

@@ -17,7 +17,7 @@ const ClientDetailPage = () => {
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
 
-  const handleAddAppointment = async (appointment: { clientId: string; clientName: string; date: string; title: string }) => {
+  const handleAddAppointment = async (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => {
     try {
       const response = await fetch('/api/admin/crm/appointments', {
         method: 'POST',
@@ -38,6 +38,44 @@ const ClientDetailPage = () => {
       if (appointmentsRes.ok) {
         const appointmentsData = await appointmentsRes.json();
         setAppointments(appointmentsData);
+      }
+
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleActivateSubscription = async () => {
+    if (!client) return;
+
+    const subscriptionEndDate = new Date();
+    subscriptionEndDate.setFullYear(subscriptionEndDate.getFullYear() + 1);
+
+    try {
+      const response = await fetch(`/api/users/${client._id}/subscription`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            subscriptionEndDate: subscriptionEndDate.toISOString(),
+            planName: 'Premium',
+            hasActiveSubscription: true,
+            status: ClientStatus.ACTIVE_CLIENT
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to activate subscription');
+      }
+
+      alert('Abonnement activé avec succès!');
+      // Refetch client data to update the UI
+      const clientRes = await fetch(`/api/admin/crm/clients/${id}`);
+      if (clientRes.ok) {
+        const clientData = await clientRes.json();
+        setClient(clientData);
+        setStatus(clientData.status);
       }
 
     } catch (err: any) {
@@ -132,6 +170,14 @@ const ClientDetailPage = () => {
                 >
                   + Planifier un RDV
                 </button>
+                {client.status === ClientStatus.PROSPECT && (
+                  <button 
+                    onClick={handleActivateSubscription}
+                    className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                  >
+                    Activer l'abonnement
+                  </button>
+                )}
             </div>
   
             <div className="bg-white p-6 rounded-lg shadow-md">
