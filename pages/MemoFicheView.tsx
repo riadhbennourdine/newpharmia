@@ -171,14 +171,14 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     const content: any[] = [];
     if (caseStudy.type === 'dispositifs-medicaux') {
       content.push(
-        { id: 'casComptoir', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.casComptoir)},
-        { id: 'objectifsConseil', title: 'Objectifs de conseil', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Objectifs de conseil" />, content: renderContentWithKeywords(caseStudy.objectifsConseil)},
-        { id: 'pathologiesConcernees', title: 'Pathologies concernées', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Pathologies concernées" />, content: renderContentWithKeywords(caseStudy.pathologiesConcernees)},
-        { id: 'interetDispositif', title: 'Intérêt du dispositif', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Intérêt du dispositif" />, content: renderContentWithKeywords(caseStudy.interetDispositif)},
-        { id: 'beneficesSante', title: 'Bénéfices pour la santé', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Bénéfices pour la santé" />, content: renderContentWithKeywords(caseStudy.beneficesSante)},
-        { id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Dispositifs à conseiller ou à dispenser" />, content: renderContentWithKeywords(caseStudy.dispositifsAConseiller)},
-        { id: 'reponsesObjections', title: 'Réponses aux objections des clients', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Réponses aux objections des clients" />, content: renderContentWithKeywords(caseStudy.reponsesObjections)},
-        { id: 'pagesSponsorisees', title: 'Pages sponsorisées', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Pages sponsorisées" />, content: renderContentWithKeywords(caseStudy.pagesSponsorisees)},
+        { id: 'casComptoir', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.casComptoir.content)},
+        { id: 'objectifsConseil', title: 'Objectifs de conseil', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Objectifs de conseil" />, content: renderContentWithKeywords(caseStudy.objectifsConseil.content)},
+        { id: 'pathologiesConcernees', title: 'Pathologies concernées', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Pathologies concernées" />, content: renderContentWithKeywords(caseStudy.pathologiesConcernees.content)},
+        { id: 'interetDispositif', title: 'Intérêt du dispositif', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Intérêt du dispositif" />, content: renderContentWithKeywords(caseStudy.interetDispositif.content)},
+        { id: 'beneficesSante', title: 'Bénéfices pour la santé', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Bénéfices pour la santé" />, content: renderContentWithKeywords(caseStudy.beneficesSante.content)},
+        { id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Dispositifs à conseiller ou à dispenser" />, content: renderContentWithKeywords(caseStudy.dispositifsAConseiller.content)},
+        { id: 'reponsesObjections', title: 'Réponses aux objections des clients', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Réponses aux objections des clients" />, content: renderContentWithKeywords(caseStudy.reponsesObjections.content)},
+        { id: 'pagesSponsorisees', title: 'Pages sponsorisées', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Pages sponsorisées" />, content: renderContentWithKeywords(caseStudy.pagesSponsorisees.content)},
       );
     } else if (caseStudy.type === 'ordonnances') {
       const conseilsTraitementContent = (caseStudy.conseilsTraitement as {medicament: string, conseils: string[]}[] || []).map(ct =>
@@ -220,17 +220,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         content.push({ id: 'summary', title: 'Résumé', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Résumé" />, content: renderContentWithKeywords(caseStudy.summary)});
       }
       if (caseStudy.patientSituation) {
-        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)});
+        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation.content)});
       }
     } else if (caseStudy.type !== 'pharmacologie') {
       if (caseStudy.patientSituation) {
-        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation)});
+        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation.content)});
       }
       if (caseStudy.keyQuestions && caseStudy.keyQuestions.length > 0) {
         content.push({ id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, content: renderContentWithKeywords(caseStudy.keyQuestions)});
       }
       if (caseStudy.pathologyOverview) {
-        content.push({ id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview)});
+        content.push({ id: "pathologyOverview", title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, content: renderContentWithKeywords(caseStudy.pathologyOverview.content)});
       }
       if (caseStudy.redFlags && caseStudy.redFlags.length > 0) {
         content.push({ id: "redFlags", title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, content: renderContentWithKeywords(caseStudy.redFlags, true)});
