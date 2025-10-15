@@ -54,6 +54,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       required: ['title', 'patientSituation', 'keyQuestions', 'customSections'],
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
+    fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Le texte à analyser est :\n\n${prompt}`;
     jsonStructure = {
       type: Type.OBJECT,
       properties: {
