@@ -5,19 +5,21 @@ interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddAppointment: (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => void;
+  clientId?: string;
+  clientName?: string;
 }
 
-const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClose, onAddAppointment }) => {
+const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClose, onAddAppointment, clientId, clientName }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [notes, setNotes] = useState('');
-  const [selectedClientId, setSelectedClientId] = useState('');
+  const [selectedClientId, setSelectedClientId] = useState(clientId || '');
   const [clients, setClients] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      // Fetch clients and prospects to populate the dropdown
+    setSelectedClientId(clientId || '');
+    if (isOpen && !clientId) {
       const fetchClients = async () => {
         try {
           const response = await fetch('/api/admin/crm/all-contacts');
@@ -29,27 +31,43 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
       };
       fetchClients();
     }
-  }, [isOpen]);
+  }, [isOpen, clientId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedClientId || !date || !title) {
-      setError('Veuillez remplir tous les champs.');
+    const finalClientId = clientId || selectedClientId;
+    if (!finalClientId || !date || !title) {
+      setError('Veuillez remplir tous les champs obligatoires.');
       return;
     }
-    const selectedClient = clients.find(c => c._id === selectedClientId);
-    if (!selectedClient) {
-        setError('Client non valide.');
-        return;
+
+    let finalClientName = clientName;
+    if (!finalClientName) {
+        const selectedClient = clients.find(c => c._id === finalClientId);
+        if (selectedClient) {
+            finalClientName = `${selectedClient.firstName} ${selectedClient.lastName}`;
+        } else {
+            setError('Client non valide.');
+            return;
+        }
     }
 
     onAddAppointment({
-      clientId: selectedClientId,
-      clientName: `${selectedClient.firstName} ${selectedClient.lastName}`,
+      clientId: finalClientId,
+      clientName: finalClientName,
       date,
       title,
       notes,
     });
+
+    // Reset form
+    setTitle('');
+    setDate('');
+    setNotes('');
+    if (!clientId) {
+        setSelectedClientId('');
+    }
+    setError(null);
   };
 
   if (!isOpen) return null;
@@ -63,17 +81,24 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Client / Prospect</label>
             <select 
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border rounded-md bg-gray-100 disabled:cursor-not-allowed"
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
               required
+              disabled={!!clientId}
             >
-              <option value="" disabled>Sélectionnez un client</option>
-              {clients.map(client => (
-                <option key={client._id} value={client._id}>
-                  {client.firstName} {client.lastName} ({client.email})
-                </option>
-              ))}
+              {clientId && clientName ? (
+                <option value={clientId}>{clientName}</option>
+              ) : (
+                <>
+                  <option value="" disabled>Sélectionnez un client</option>
+                  {clients.map(client => (
+                    <option key={client._id} value={client._id}>
+                      {client.firstName} {client.lastName} ({client.email})
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
           <div className="mb-4">
@@ -100,6 +125,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
             <label className="block text-gray-700 mb-1">Notes</label>
             <textarea
               className="w-full px-3 py-2 border rounded-md"
+              rows={4}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />

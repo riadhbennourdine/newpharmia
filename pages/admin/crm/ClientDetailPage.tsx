@@ -250,6 +250,8 @@ const ClientDetailPage = () => {
             isOpen={isAppointmentModalOpen}
             onClose={() => setIsAppointmentModalOpen(false)}
             onAddAppointment={handleAddAppointment}
+            clientId={client._id}
+            clientName={`${client.firstName} ${client.lastName}`}
           />
         )}
       </div>
