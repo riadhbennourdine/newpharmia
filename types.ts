@@ -80,9 +80,14 @@ export interface Flashcard {
   answer: string;
 }
 
+export interface MemoFicheSectionContent {
+  type: 'text' | 'image' | 'video';
+  value: string;
+}
+
 export interface MemoFicheSection {
   title: string;
-  content: string;
+  content: MemoFicheSectionContent[];
 }
 
 export interface Media {
