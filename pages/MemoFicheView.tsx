@@ -90,37 +90,81 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
+  const renderContentWithKeywords = (content: string | string[] | MemoFicheSectionContent[] | undefined, isRedKeywordSection: boolean = false) => {
     if (!content) return '';
-    const text = Array.isArray(content) ? content.join('\n') : content;
-    let html = text;
-    
-    const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
-    html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
-    
-    const lines = html.split('\n');
-    let inList = false;
-    const processedLines = lines.map(line => {
-        const trimmedLine = line.trim();
-        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
-            const listItem = `<li>${trimmedLine.substring(2)}</li>`;
-            if (!inList) {
-                inList = true;
-                return `<ul>${listItem}`;
+
+    if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
+        const text = Array.isArray(content) ? content.join('\n') : content;
+        let html = text;
+        
+        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+        
+        const lines = html.split('\n');
+        let inList = false;
+        const processedLines = lines.map(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
+                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
+                if (!inList) {
+                    inList = true;
+                    return `<ul>${listItem}`;
+                }
+                return listItem;
+            } else {
+                if (inList) {
+                    inList = false;
+                    return `</ul><p>${line}</p>`;
+                }
+                return line ? `<p>${line}</p>` : '';
             }
-            return listItem;
-        } else {
-            if (inList) {
-                inList = false;
-                return `</ul><p>${line}</p>`;
-            }
-            return line ? `<p>${line}</p>` : '';
+        });
+        if (inList) {
+            processedLines.push('</ul>');
         }
-    });
-    if (inList) {
-        processedLines.push('</ul>');
+        return processedLines.join('');
     }
-    return processedLines.join('');
+
+    const contentArray = content as MemoFicheSectionContent[];
+    return contentArray.map(item => {
+        if (item.type === 'image') {
+            return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
+        }
+        if (item.type === 'video') {
+            const embedUrl = getYoutubeEmbedUrl(item.value);
+            if (embedUrl) {
+                return `<div class="w-full" style="padding-bottom: 56.25%; position: relative; height: 0; margin-top: 1rem; margin-bottom: 1rem;"><iframe src="${embedUrl}" title="Vidéo YouTube" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-md"></iframe></div>`;
+            }
+            return '';
+        }
+        // Handle text
+        let html = item.value;
+        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+        const lines = html.split('\n');
+        let inList = false;
+        const processedLines = lines.map(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
+                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
+                if (!inList) {
+                    inList = true;
+                    return `<ul>${listItem}`;
+                }
+                return listItem;
+            } else {
+                if (inList) {
+                    inList = false;
+                    return `</ul><p>${line}</p>`;
+                }
+                return line ? `<p>${line}</p>` : '';
+            }
+        });
+        if (inList) {
+            processedLines.push('</ul>');
+        }
+        return processedLines.join('');
+    }).join('');
   };
 
   const memoContent = useMemo(() => {

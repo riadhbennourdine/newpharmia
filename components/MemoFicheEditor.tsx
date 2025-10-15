@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm } from '../types';
 import { ensureArray } from '../utils/array';
 import { TrashIcon, PlusCircleIcon } from './Icons';
+import CustomSectionEditor from './CustomSectionEditor';
 
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -14,13 +15,22 @@ interface MemoFicheEditorProps {
 const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
   const safeCustomSections = ensureArray(caseStudy?.customSections).map(section => {
     if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
-      return { title: section.title, content: section.content };
+      const content = ensureArray(section.content).map(item => {
+        if (typeof item === 'object' && item !== null && 'type' in item && 'value' in item) {
+          return { type: item.type, value: item.value };
+        }
+        if (typeof item === 'string') {
+          return { type: 'text', value: item };
+        }
+        return { type: 'text', value: '' };
+      });
+      return { title: section.title, content };
     }
     if (typeof section === 'string') {
-        return { title: 'Section', content: section };
+        return { title: 'Section', content: [{ type: 'text', value: section }] };
     }
     // This will handle malformed objects that might not have title or content.
-    return { title: (section as any)?.title || '', content: (section as any)?.content || '' };
+    return { title: (section as any)?.title || '', content: [] };
   });
 
   return {
@@ -167,12 +177,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     }
   };
 
-  const handleCustomSectionChange = (index: number, field: 'title' | 'content', value: string) => {
-    setCaseStudy(prev => {
-      const newCustomSections = [...(prev.customSections || [])];
-      newCustomSections[index] = { ...newCustomSections[index], [field]: value };
-      return { ...prev, customSections: newCustomSections };
-    });
+  const handleCustomSectionChange = (newCustomSections: MemoFicheSection[]) => {
+    setCaseStudy(prev => ({ ...prev, customSections: newCustomSections }));
   };
 
   const addCustomSection = () => {
@@ -452,19 +458,16 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         <FormSection title="Sections Personnalisées">
             <div className="space-y-4">
                 {caseStudy.customSections?.map((section, index) => (
-                    <div key={index} className="border p-3 rounded-md bg-slate-50 relative">
-                        <div className="flex items-start gap-2 mb-2">
-                            <div className="flex-grow">
-                                <Label htmlFor={`custom_title_${index}`}>Titre de la section</Label>
-                                <Input type="text" id={`custom_title_${index}`} value={section.title} onChange={e => handleCustomSectionChange(index, 'title', e.target.value)} />
-                            </div>
-                        </div>
-                        <div>
-                            <Label htmlFor={`custom_content_${index}`}>Contenu de la section</Label>
-                            <Textarea id={`custom_content_${index}`} value={section.content} onChange={e => handleCustomSectionChange(index, 'content', e.target.value)} rows={4}></Textarea>
-                        </div>
-                        <button type="button" onClick={() => removeCustomSection(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-                    </div>
+                    <CustomSectionEditor
+                        key={index}
+                        section={section}
+                        onChange={newSection => {
+                            const newCustomSections = [...(caseStudy.customSections || [])];
+                            newCustomSections[index] = newSection;
+                            handleCustomSectionChange(newCustomSections);
+                        }}
+                        onRemove={() => removeCustomSection(index)}
+                    />
                 ))}
                 <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
                   <PlusCircleIcon className="h-5 w-5 mr-2" />
