@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User, ClientStatus, Appointment } from '../../../types';
 import AddAppointmentModal from '../../../components/AddAppointmentModal';
+import AddNoteModal from '../../../components/AddNoteModal';
 
 const ClientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const ClientDetailPage = () => {
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
   const handleAddAppointment = async (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => {
     try {
@@ -78,6 +81,37 @@ const ClientDetailPage = () => {
         setStatus(clientData.status);
       }
 
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const openNoteModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleSaveNote = async (notes: string) => {
+    if (!selectedAppointment) return;
+
+    try {
+      const response = await fetch(`/api/admin/crm/appointments/${selectedAppointment._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save notes');
+      }
+
+      setIsNoteModalOpen(false);
+      // Refetch appointments to show the updated note
+      const appointmentsRes = await fetch(`/api/admin/crm/clients/${id}/appointments`);
+      if (appointmentsRes.ok) {
+        const appointmentsData = await appointmentsRes.json();
+        setAppointments(appointmentsData);
+      }
     } catch (err: any) {
       setError(err.message);
     }
@@ -232,9 +266,14 @@ const ClientDetailPage = () => {
               {appointments.length > 0 ? (
                 <div className="space-y-4">
                   {appointments.map(app => (
-                    <div key={app._id} className="p-4 border rounded-md bg-gray-50">
-                      <p className="font-bold text-gray-700">{app.title} - {new Date(app.date).toLocaleString()}</p>
-                      <p className="mt-2 text-sm text-gray-600">{app.notes || 'Aucune note pour ce rendez-vous.'}</p>
+                    <div key={app._id} className="p-4 border rounded-md bg-gray-50 flex justify-between items-center">
+                      <div>
+                        <p className="font-bold text-gray-700">{app.title}</p>
+                        <p className="text-sm text-gray-500">{new Date(app.date).toLocaleString()}</p>
+                      </div>
+                      <button onClick={() => openNoteModal(app)} className="text-teal-600 hover:text-teal-800 font-semibold">
+                        Voir le reporting
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -252,6 +291,15 @@ const ClientDetailPage = () => {
             onAddAppointment={handleAddAppointment}
             clientId={client._id}
             clientName={`${client.firstName} ${client.lastName}`}
+          />
+        )}
+
+        {selectedAppointment && (
+          <AddNoteModal
+            isOpen={isNoteModalOpen}
+            onClose={() => setIsNoteModalOpen(false)}
+            onSave={handleSaveNote}
+            appointment={selectedAppointment}
           />
         )}
       </div>
