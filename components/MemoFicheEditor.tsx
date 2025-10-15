@@ -11,6 +11,16 @@ interface MemoFicheEditorProps {
   onCancel: () => void;
 }
 
+const convertToSection = (field: string | MemoFicheSection | undefined, title: string): MemoFicheSection => {
+  if (typeof field === 'object' && field !== null && 'content' in field) {
+    return { ...field, content: ensureArray(field.content) };
+  }
+  if (typeof field === 'string') {
+    return { title, content: [{ type: 'text', value: field }] };
+  }
+  return { title, content: [] };
+};
+
 const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
   const safeCustomSections = ensureArray(caseStudy?.customSections).map(section => {
     if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
@@ -28,7 +38,6 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     if (typeof section === 'string') {
         return { title: 'Section', content: [{ type: 'text', value: section }] };
     }
-    // This will handle malformed objects that might not have title or content.
     return { title: (section as any)?.title || '', content: [] };
   });
 
@@ -45,9 +54,9 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     coverImageUrl: caseStudy?.coverImageUrl || '',
     youtubeLinks: ensureArray(caseStudy?.youtubeLinks),
     kahootUrl: caseStudy?.kahootUrl || '',
-    patientSituation: caseStudy?.patientSituation || '',
+    patientSituation: convertToSection(caseStudy?.patientSituation, 'Cas comptoir'),
     keyQuestions: ensureArray(caseStudy?.keyQuestions),
-    pathologyOverview: caseStudy?.pathologyOverview || '',
+    pathologyOverview: convertToSection(caseStudy?.pathologyOverview, 'Aperçu pathologie'),
     redFlags: ensureArray(caseStudy?.redFlags),
     recommendations: {
       mainTreatment: ensureArray(caseStudy?.recommendations?.mainTreatment),
@@ -63,14 +72,14 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     customSections: safeCustomSections,
 
     // Dispositifs médicaux
-    casComptoir: caseStudy?.casComptoir || '',
-    objectifsConseil: caseStudy?.objectifsConseil || '',
-    pathologiesConcernees: caseStudy?.pathologiesConcernees || '',
-    interetDispositif: caseStudy?.interetDispositif || '',
-    beneficesSante: caseStudy?.beneficesSante || '',
-    dispositifsAConseiller: caseStudy?.dispositifsAConseiller || '',
-    reponsesObjections: caseStudy?.reponsesObjections || '',
-    pagesSponsorisees: caseStudy?.pagesSponsorisees || '',
+    casComptoir: convertToSection(caseStudy?.casComptoir, 'Cas comptoir'),
+    objectifsConseil: convertToSection(caseStudy?.objectifsConseil, 'Objectifs de conseil'),
+    pathologiesConcernees: convertToSection(caseStudy?.pathologiesConcernees, 'Pathologies concernées'),
+    interetDispositif: convertToSection(caseStudy?.interetDispositif, 'Intérêt du dispositif'),
+    beneficesSante: convertToSection(caseStudy?.beneficesSante, 'Bénéfices pour la santé'),
+    dispositifsAConseiller: convertToSection(caseStudy?.dispositifsAConseiller, 'Dispositifs à conseiller ou à dispenser'),
+    reponsesObjections: convertToSection(caseStudy?.reponsesObjections, 'Réponses aux objections des clients'),
+    pagesSponsorisees: convertToSection(caseStudy?.pagesSponsorisees, 'Pages sponsorisées'),
     referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
 
     // Ordonnances
@@ -105,42 +114,45 @@ const Textarea: React.FC<any> = (props) => (
   <textarea {...props} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
 );
 
-interface CustomSectionEditorProps {
+interface RichContentSectionEditorProps {
   section: MemoFicheSection;
   onChange: (section: MemoFicheSection) => void;
-  onRemove: () => void;
+  showTitle?: boolean;
+  onRemove?: () => void;
 }
 
-const CustomSectionEditor: React.FC<CustomSectionEditorProps> = ({ section, onChange, onRemove }) => {
+const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
 
   const handleContentChange = (index: number, value: string) => {
-    const newContent = [...section.content];
+    const newContent = [...(section.content || [])];
     newContent[index] = { ...newContent[index], value };
     onChange({ ...section, content: newContent });
   };
 
   const addContentBlock = (type: 'text' | 'image' | 'video') => {
-    const newContent = [...section.content, { type, value: '' }];
+    const newContent = [...(section.content || []), { type, value: '' }];
     onChange({ ...section, content: newContent });
   };
 
   const removeContentBlock = (index: number) => {
-    const newContent = [...section.content];
+    const newContent = [...(section.content || [])];
     newContent.splice(index, 1);
     onChange({ ...section, content: newContent });
   };
 
   return (
     <div className="border p-3 rounded-md bg-slate-50 relative">
-      <div className="flex items-start gap-2 mb-2">
-        <div className="flex-grow">
-          <label htmlFor={`custom_title_${section.title}`}>Titre de la section</label>
-          <Input type="text" id={`custom_title_${section.title}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
+      {showTitle && (
+        <div className="flex items-start gap-2 mb-2">
+          <div className="flex-grow">
+            <label htmlFor={`custom_title_${section.title}`}>Titre de la section</label>
+            <Input type="text" id={`custom_title_${section.title}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
+          </div>
+          {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
         </div>
-        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-      </div>
+      )}
       <div className="space-y-2">
-        {section.content.map((item, index) => (
+        {(section.content || []).map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             {item.type === 'text' && <Textarea value={item.value} onChange={e => handleContentChange(index, e.target.value)} rows={3} className="flex-grow" />}
             {item.type === 'image' && <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />}
@@ -391,7 +403,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             <FormSection title="Contenu du Mémo (Maladie)">
               <div>
                 <Label htmlFor="patientSituation">Cas comptoir</Label>
-                <Textarea name="patientSituation" id="patientSituation" rows={5} value={caseStudy.patientSituation} onChange={handleChange} />
+                <RichContentSectionEditor section={caseStudy.patientSituation as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, patientSituation: newSection }))} showTitle={false} />
               </div>
               <div>
                 <Label htmlFor="keyQuestions">Questions clés à poser (une par ligne)</Label>
@@ -399,7 +411,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
               </div>
               <div>
                 <Label htmlFor="pathologyOverview">Aperçu pathologie</Label>
-                <Textarea name="pathologyOverview" id="pathologyOverview" rows={5} value={caseStudy.pathologyOverview} onChange={handleChange} />
+                <RichContentSectionEditor section={caseStudy.pathologyOverview as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologyOverview: newSection }))} showTitle={false} />
               </div>
               <div>
                 <Label htmlFor="redFlags">Signaux d'alerte (un par ligne)</Label>
@@ -412,35 +424,35 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           <FormSection title="Contenu du Mémo (Dispositifs Médicaux)">
             <div>
               <Label htmlFor="casComptoir">Cas comptoir</Label>
-              <Textarea name="casComptoir" id="casComptoir" rows={3} value={caseStudy.casComptoir} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.casComptoir as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, casComptoir: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="objectifsConseil">Objectifs de conseil</Label>
-              <Textarea name="objectifsConseil" id="objectifsConseil" rows={3} value={caseStudy.objectifsConseil} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.objectifsConseil as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, objectifsConseil: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="pathologiesConcernees">Pathologies concernées</Label>
-              <Textarea name="pathologiesConcernees" id="pathologiesConcernees" rows={3} value={caseStudy.pathologiesConcernees} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.pathologiesConcernees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologiesConcernees: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="interetDispositif">Intérêt du dispositif</Label>
-              <Textarea name="interetDispositif" id="interetDispositif" rows={3} value={caseStudy.interetDispositif} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.interetDispositif as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, interetDispositif: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="beneficesSante">Bénéfices pour la santé</Label>
-              <Textarea name="beneficesSante" id="beneficesSante" rows={3} value={caseStudy.beneficesSante} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.beneficesSante as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, beneficesSante: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="dispositifsAConseiller">Dispositifs à conseiller ou à dispenser</Label>
-              <Textarea name="dispositifsAConseiller" id="dispositifsAConseiller" rows={3} value={caseStudy.dispositifsAConseiller} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.dispositifsAConseiller as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, dispositifsAConseiller: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="reponsesObjections">Réponses aux objections des clients</Label>
-              <Textarea name="reponsesObjections" id="reponsesObjections" rows={3} value={caseStudy.reponsesObjections} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.reponsesObjections as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, reponsesObjections: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="pagesSponsorisees">Pages sponsorisées</Label>
-              <Textarea name="pagesSponsorisees" id="pagesSponsorisees" rows={3} value={caseStudy.pagesSponsorisees} onChange={handleChange} />
+              <RichContentSectionEditor section={caseStudy.pagesSponsorisees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pagesSponsorisees: newSection }))} showTitle={false} />
             </div>
             <div>
               <Label htmlFor="referencesBibliographiquesDM">Références bibliographiques (une par ligne)</Label>
@@ -519,7 +531,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         <FormSection title="Sections Personnalisées">
             <div className="space-y-4">
                 {caseStudy.customSections?.map((section, index) => (
-                    <CustomSectionEditor
+                    <RichContentSectionEditor
                         key={index}
                         section={section}
                         onChange={newSection => {

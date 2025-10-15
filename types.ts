@@ -106,9 +106,9 @@ export interface CaseStudy {
   system: string;
   creationDate: string;
   isLocked?: boolean;
-  patientSituation: string;
+  patientSituation: string | MemoFicheSection;
   keyQuestions: string[];
-  pathologyOverview: string;
+  pathologyOverview: string | MemoFicheSection;
   redFlags: string[];
   recommendations: {
     mainTreatment: string[];
@@ -136,14 +136,14 @@ export interface CaseStudy {
   customSections?: MemoFicheSection[];
 
   // Dispositifs médicaux
-  casComptoir?: string;
-  objectifsConseil?: string;
-  pathologiesConcernees?: string;
-  interetDispositif?: string;
-  beneficesSante?: string;
-  dispositifsAConseiller?: string;
-  reponsesObjections?: string;
-  pagesSponsorisees?: string;
+  casComptoir?: string | MemoFicheSection;
+  objectifsConseil?: string | MemoFicheSection;
+  pathologiesConcernees?: string | MemoFicheSection;
+  interetDispositif?: string | MemoFicheSection;
+  beneficesSante?: string | MemoFicheSection;
+  dispositifsAConseiller?: string | MemoFicheSection;
+  reponsesObjections?: string | MemoFicheSection;
+  pagesSponsorisees?: string | MemoFicheSection;
   referencesBibliographiquesDM?: string[];
 
   // Ordonnances
