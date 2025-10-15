@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Appointment } from '../../types';
 
 interface AddNoteModalProps {
@@ -9,7 +9,13 @@ interface AddNoteModalProps {
 }
 
 const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSave, appointment }) => {
-  const [notes, setNotes] = useState(appointment.notes || '');
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (appointment) {
+      setNotes(appointment.notes || '');
+    }
+  }, [appointment]);
 
   const handleSave = () => {
     onSave(notes);

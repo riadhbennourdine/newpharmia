@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
-import { CaseStudy, UserRole } from '../types';
+import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
 import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner } from '../components/Icons';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
@@ -168,7 +168,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   };
 
   const memoContent = useMemo(() => {
-    const content = [];
+    const content: any[] = [];
     if (caseStudy.type === 'dispositifs-medicaux') {
       content.push(
         { id: 'casComptoir', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.casComptoir)},
