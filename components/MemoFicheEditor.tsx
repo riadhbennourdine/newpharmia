@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm } from '../types';
 import { ensureArray } from '../utils/array';
 import { TrashIcon, PlusCircleIcon } from './Icons';
-import CustomSectionEditor from './CustomSectionEditor';
+import CustomSectionEditor from './CustomSectionEditor.tsx';
 
 import { TOPIC_CATEGORIES } from '../constants';
 
