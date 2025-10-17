@@ -90,6 +90,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     conseilsHygieneDeVie: ensureArray(caseStudy?.conseilsHygieneDeVie),
     conseilsAlimentaires: ensureArray(caseStudy?.conseilsAlimentaires),
     ventesAdditionnelles: caseStudy?.ventesAdditionnelles || {},
+    sectionOrder: ensureArray(caseStudy?.sectionOrder),
   };
 };
 
@@ -119,13 +120,9 @@ interface RichContentSectionEditorProps {
   onChange: (section: MemoFicheSection) => void;
   showTitle?: boolean;
   onRemove?: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  isFirst?: boolean;
-  isLast?: boolean;
 }
 
-const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove, onMoveUp, onMoveDown, isFirst, isLast }) => {
+const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
 
   const handleContentChange = (index: number, value: string) => {
     const newContent = [...(section.content || [])];
@@ -152,15 +149,7 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
             <label htmlFor={`custom_title_${section.title}`}>Titre de la section</label>
             <Input type="text" id={`custom_title_${section.title}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
           </div>
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-              <ChevronUpIcon className="h-5 w-5" />
-            </button>
-            <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-              <ChevronDownIcon className="h-5 w-5" />
-            </button>
-            {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
-          </div>
+          {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
         </div>
       )}
       <div className="space-y-2">
@@ -191,12 +180,139 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
   );
 };
 
+const Section: React.FC<{
+    title: string;
+    children: React.ReactNode;
+    onMoveUp: () => void;
+    onMoveDown: () => void;
+    isFirst: boolean;
+    isLast: boolean;
+    onRemove?: () => void;
+}> = ({ title, children, onMoveUp, onMoveDown, isFirst, isLast, onRemove }) => {
+    return (
+        <div className="border p-4 rounded-lg bg-white shadow-sm relative">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
+                <div className="flex items-center gap-2">
+                    <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <ChevronUpIcon className="h-5 w-5" />
+                    </button>
+                    <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <ChevronDownIcon className="h-5 w-5" />
+                    </button>
+                    {onRemove && (
+                        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700">
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    )}
+                </div>
+            </div>
+            <div className="space-y-4">{children}</div>
+        </div>
+    );
+};
+
+const Section: React.FC<{
+    title: string;
+    children: React.ReactNode;
+    onMoveUp: () => void;
+    onMoveDown: () => void;
+    isFirst: boolean;
+    isLast: boolean;
+    onRemove?: () => void;
+}> = ({ title, children, onMoveUp, onMoveDown, isFirst, isLast, onRemove }) => {
+    return (
+        <div className="border p-4 rounded-lg bg-white shadow-sm relative">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
+                <div className="flex items-center gap-2">
+                    <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <ChevronUpIcon className="h-5 w-5" />
+                    </button>
+                    <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <ChevronDownIcon className="h-5 w-5" />
+                    </button>
+                    {onRemove && (
+                        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700">
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    )}
+                </div>
+            </div>
+            <div className="space-y-4">{children}</div>
+        </div>
+    );
+};
+
 const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onSave, onCancel }) => {
   const [caseStudy, setCaseStudy] = useState<CaseStudy>(createSafeCaseStudy(initialCaseStudy));
+  const [displayedSections, setDisplayedSections] = useState<any[]>([]);
 
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
   }, [initialCaseStudy]);
+
+  useEffect(() => {
+    const buildSections = () => {
+        const sections: any[] = [];
+
+        if (caseStudy.type === 'maladie') {
+            sections.push({ id: 'patientSituation', title: 'Cas comptoir' });
+            sections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
+            sections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
+            sections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
+        } else if (caseStudy.type === 'dispositifs-medicaux') {
+            sections.push({ id: 'casComptoir', title: 'Cas comptoir' });
+            sections.push({ id: 'objectifsConseil', title: 'Objectifs de conseil' });
+            sections.push({ id: 'pathologiesConcernees', title: 'Pathologies concernées' });
+            sections.push({ id: 'interetDispositif', title: 'Intérêt du dispositif' });
+            sections.push({ id: 'beneficesSante', title: 'Bénéfices pour la santé' });
+            sections.push({ id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser' });
+            sections.push({ id: 'reponsesObjections', title: 'Réponses aux objections des clients' });
+            sections.push({ id: 'pagesSponsorisees', title: 'Pages sponsorisées' });
+            sections.push({ id: 'referencesBibliographiquesDM', title: 'Références bibliographiques' });
+        } else if (caseStudy.type === 'ordonnances') {
+            sections.push({ id: 'ordonnance', title: 'Ordonnance' });
+            sections.push({ id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance' });
+            sections.push({ id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux' });
+            sections.push({ id: 'informationsMaladie', title: 'Informations sur la maladie' });
+            sections.push({ id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie' });
+            sections.push({ id: 'conseilsAlimentaires', title: 'Conseils alimentaires' });
+            sections.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles' });
+        }
+
+        if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances') {
+            sections.push({ id: 'recommendations', title: 'Recommandations' });
+            sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
+        }
+
+        const customSections = caseStudy.customSections?.map((_, i) => ({ id: `custom-${i}`, title: ``, isCustom: true, index: i })) || [];
+        
+        const allSections = [...sections, ...customSections];
+
+        const orderedSections = caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0
+            ? caseStudy.sectionOrder.map(id => allSections.find(s => s.id === id)).filter(Boolean)
+            : allSections;
+        
+        const newSections = allSections.filter(s => !orderedSections.find(os => os.id === s.id));
+        
+        setDisplayedSections([...orderedSections, ...newSections]);
+    };
+
+    buildSections();
+  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder]);
+
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    const newSections = [...displayedSections];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= newSections.length) {
+        return;
+    }
+    const [movedSection] = newSections.splice(index, 1);
+    newSections.splice(newIndex, 0, movedSection);
+    setDisplayedSections(newSections);
+    setCaseStudy(prev => ({ ...prev, sectionOrder: newSections.map(s => s.id) }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -267,10 +383,11 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   };
 
   const addCustomSection = () => {
-    setCaseStudy(prev => ({
-      ...prev,
-      customSections: [...(prev.customSections || []), { title: 'Nouvelle Section', content: [] }],
-    }));
+    setCaseStudy(prev => {
+      const newCustomSections = [...(prev.customSections || []), { title: 'Nouvelle Section', content: [] }];
+      const newSectionOrder = [...(prev.sectionOrder || []), `custom-${newCustomSections.length - 1}`];
+      return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
+    });
   };
 
   const removeCustomSection = (index: number) => {
@@ -278,22 +395,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
       setCaseStudy(prev => {
         const newCustomSections = [...(prev.customSections || [])];
         newCustomSections.splice(index, 1);
-        return { ...prev, customSections: newCustomSections };
+        const newSectionOrder = prev.sectionOrder?.filter(id => id !== `custom-${index}`) || [];
+        return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
       });
     }
-  };
-
-  const moveCustomSection = (index: number, direction: 'up' | 'down') => {
-    setCaseStudy(prev => {
-      const newCustomSections = [...(prev.customSections || [])];
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= newCustomSections.length) {
-        return prev;
-      }
-      const [movedSection] = newCustomSections.splice(index, 1);
-      newCustomSections.splice(newIndex, 0, movedSection);
-      return { ...prev, customSections: newCustomSections };
-    });
   };
 
   const handleYoutubeLinkChange = (index: number, field: 'url' | 'title', value: string) => {
@@ -339,7 +444,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         <FormSection title="Informations Générales">
           <div>
             <Label htmlFor="type">Type de mémofiche</Label>
-            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-1 focus:ring-teal-500">
                 <option value="maladie">Maladie</option>
                 <option value="pharmacologie">Pharmacologie</option>
                 <option value="dermocosmetique">Dermocosmétique</option>
@@ -424,153 +529,124 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        {caseStudy.type === 'maladie' && (
-            <FormSection title="Contenu du Mémo (Maladie)">
-              <div>
-                <Label htmlFor="patientSituation">Cas comptoir</Label>
-                <RichContentSectionEditor section={caseStudy.patientSituation as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, patientSituation: newSection }))} showTitle={false} />
-              </div>
-              <div>
-                <Label htmlFor="keyQuestions">Questions clés à poser (une par ligne)</Label>
-                <Textarea name="keyQuestions" id="keyQuestions" rows={5} value={caseStudy.keyQuestions.join('\n')} onChange={(e) => handleArrayChange('keyQuestions', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="pathologyOverview">Aperçu pathologie</Label>
-                <RichContentSectionEditor section={caseStudy.pathologyOverview as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologyOverview: newSection }))} showTitle={false} />
-              </div>
-              <div>
-                <Label htmlFor="redFlags">Signaux d'alerte (un par ligne)</Label>
-                <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
-              </div>
-            </FormSection>
-        )}
-
-        {caseStudy.type === 'dispositifs-medicaux' && (
-          <FormSection title="Contenu du Mémo (Dispositifs Médicaux)">
-            <div>
-              <Label htmlFor="casComptoir">Cas comptoir</Label>
-              <RichContentSectionEditor section={caseStudy.casComptoir as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, casComptoir: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="objectifsConseil">Objectifs de conseil</Label>
-              <RichContentSectionEditor section={caseStudy.objectifsConseil as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, objectifsConseil: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="pathologiesConcernees">Pathologies concernées</Label>
-              <RichContentSectionEditor section={caseStudy.pathologiesConcernees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologiesConcernees: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="interetDispositif">Intérêt du dispositif</Label>
-              <RichContentSectionEditor section={caseStudy.interetDispositif as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, interetDispositif: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="beneficesSante">Bénéfices pour la santé</Label>
-              <RichContentSectionEditor section={caseStudy.beneficesSante as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, beneficesSante: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="dispositifsAConseiller">Dispositifs à conseiller ou à dispenser</Label>
-              <RichContentSectionEditor section={caseStudy.dispositifsAConseiller as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, dispositifsAConseiller: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="reponsesObjections">Réponses aux objections des clients</Label>
-              <RichContentSectionEditor section={caseStudy.reponsesObjections as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, reponsesObjections: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="pagesSponsorisees">Pages sponsorisées</Label>
-              <RichContentSectionEditor section={caseStudy.pagesSponsorisees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pagesSponsorisees: newSection }))} showTitle={false} />
-            </div>
-            <div>
-              <Label htmlFor="referencesBibliographiquesDM">Références bibliographiques (une par ligne)</Label>
-              <Textarea name="referencesBibliographiquesDM" id="referencesBibliographiquesDM" rows={4} value={(caseStudy.referencesBibliographiquesDM || []).join('\n')} onChange={(e) => handleArrayChange('referencesBibliographiquesDM', e.target.value)} />
-            </div>
-          </FormSection>
-        )}
-
-        {caseStudy.type === 'ordonnances' && (
-            <FormSection title="Contenu du Mémo (Ordonnances)">
-              <div>
-                <Label htmlFor="ordonnance">Ordonnance (une par ligne)</Label>
-                <Textarea name="ordonnance" id="ordonnance" rows={5} value={(caseStudy.ordonnance || []).join('\n')} onChange={(e) => handleArrayChange('ordonnance', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="analyseOrdonnance">Analyse de l'ordonnance (une par ligne)</Label>
-                <Textarea name="analyseOrdonnance" id="analyseOrdonnance" rows={5} value={(caseStudy.analyseOrdonnance || []).join('\n')} onChange={(e) => handleArrayChange('analyseOrdonnance', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="conseilsTraitement">Conseils sur le traitement médicamenteux (JSON)</Label>
-                <Textarea name="conseilsTraitement" id="conseilsTraitement" rows={5} value={JSON.stringify(caseStudy.conseilsTraitement, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, conseilsTraitement: JSON.parse(e.target.value) }))} />
-              </div>
-              <div>
-                <Label htmlFor="informationsMaladie">Informations sur la maladie (une par ligne)</Label>
-                <Textarea name="informationsMaladie" id="informationsMaladie" rows={5} value={(caseStudy.informationsMaladie || []).join('\n')} onChange={(e) => handleArrayChange('informationsMaladie', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="conseilsHygieneDeVie">Conseils hygiène de vie (une par ligne)</Label>
-                <Textarea name="conseilsHygieneDeVie" id="conseilsHygieneDeVie" rows={5} value={(caseStudy.conseilsHygieneDeVie || []).join('\n')} onChange={(e) => handleArrayChange('conseilsHygieneDeVie', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="conseilsAlimentaires">Conseils alimentaires (une par ligne)</Label>
-                <Textarea name="conseilsAlimentaires" id="conseilsAlimentaires" rows={5} value={(caseStudy.conseilsAlimentaires || []).join('\n')} onChange={(e) => handleArrayChange('conseilsAlimentaires', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor="ventesAdditionnelles">Ventes additionnelles (JSON)</Label>
-                <Textarea name="ventesAdditionnelles" id="ventesAdditionnelles" rows={5} value={JSON.stringify(caseStudy.ventesAdditionnelles, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, ventesAdditionnelles: JSON.parse(e.target.value) }))} />
-              </div>
-            </FormSection>
-        )}
-
-        {caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && (
-          <>
-            <FormSection title="Recommandations">
-                <div>
-                    <Label htmlFor="mainTreatment">Traitement principal (un par ligne)</Label>
-                    <Textarea name="mainTreatment" id="mainTreatment" rows={4} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="associatedProducts">Produits associés (un par ligne)</Label>
-                    <Textarea name="associatedProducts" id="associatedProducts" rows={4} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="lifestyleAdvice">Hygiène de vie (un par ligne)</Label>
-                    <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={4} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="dietaryAdvice">Conseils alimentaires (un par ligne)</Label>
-                    <Textarea name="dietaryAdvice" id="dietaryAdvice" rows={4} value={caseStudy.recommendations.dietaryAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'dietaryAdvice', e.target.value)} />
-                </div>
-            </FormSection>
-
-            <FormSection title="Points Clés & Références">
-                <div>
-                    <Label htmlFor="keyPoints">Points clés à retenir (un par ligne)</Label>
-                    <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="references">Références (une par ligne)</Label>
-                    <Textarea name="references" id="references" rows={4} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
-                </div>
-            </FormSection>
-          </>
-        )}
+        {displayedSections.map((section, index) => (
+            <Section
+                key={section.id}
+                title={section.isCustom ? (caseStudy.customSections[section.index] as MemoFicheSection).title : section.title}
+                onMoveUp={() => moveSection(index, 'up')}
+                onMoveDown={() => moveSection(index, 'down')}
+                isFirst={index === 0}
+                isLast={index === displayedSections.length - 1}
+                onRemove={section.isCustom ? () => removeCustomSection(section.index) : undefined}
+            >
+                {section.id === 'patientSituation' && (
+                    <RichContentSectionEditor section={caseStudy.patientSituation as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, patientSituation: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'keyQuestions' && (
+                    <Textarea name="keyQuestions" id="keyQuestions" rows={5} value={caseStudy.keyQuestions.join('\n')} onChange={(e) => handleArrayChange('keyQuestions', e.target.value)} />
+                )}
+                {section.id === 'pathologyOverview' && (
+                     <RichContentSectionEditor section={caseStudy.pathologyOverview as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologyOverview: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'redFlags' && (
+                    <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
+                )}
+                {section.id === 'casComptoir' && (
+                    <RichContentSectionEditor section={caseStudy.casComptoir as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, casComptoir: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'objectifsConseil' && (
+                    <RichContentSectionEditor section={caseStudy.objectifsConseil as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, objectifsConseil: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'pathologiesConcernees' && (
+                    <RichContentSectionEditor section={caseStudy.pathologiesConcernees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologiesConcernees: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'interetDispositif' && (
+                    <RichContentSectionEditor section={caseStudy.interetDispositif as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, interetDispositif: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'beneficesSante' && (
+                    <RichContentSectionEditor section={caseStudy.beneficesSante as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, beneficesSante: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'dispositifsAConseiller' && (
+                    <RichContentSectionEditor section={caseStudy.dispositifsAConseiller as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, dispositifsAConseiller: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'reponsesObjections' && (
+                    <RichContentSectionEditor section={caseStudy.reponsesObjections as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, reponsesObjections: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'pagesSponsorisees' && (
+                    <RichContentSectionEditor section={caseStudy.pagesSponsorisees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pagesSponsorisees: newSection }))} showTitle={false} />
+                )}
+                {section.id === 'referencesBibliographiquesDM' && (
+                    <Textarea name="referencesBibliographiquesDM" id="referencesBibliographiquesDM" rows={4} value={(caseStudy.referencesBibliographiquesDM || []).join('\n')} onChange={(e) => handleArrayChange('referencesBibliographiquesDM', e.target.value)} />
+                )}
+                {section.id === 'ordonnance' && (
+                    <Textarea name="ordonnance" id="ordonnance" rows={5} value={(caseStudy.ordonnance || []).join('\n')} onChange={(e) => handleArrayChange('ordonnance', e.target.value)} />
+                )}
+                {section.id === 'analyseOrdonnance' && (
+                    <Textarea name="analyseOrdonnance" id="analyseOrdonnance" rows={5} value={(caseStudy.analyseOrdonnance || []).join('\n')} onChange={(e) => handleArrayChange('analyseOrdonnance', e.target.value)} />
+                )}
+                {section.id === 'conseilsTraitement' && (
+                    <Textarea name="conseilsTraitement" id="conseilsTraitement" rows={5} value={JSON.stringify(caseStudy.conseilsTraitement, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, conseilsTraitement: JSON.parse(e.target.value) }))} />
+                )}
+                {section.id === 'informationsMaladie' && (
+                    <Textarea name="informationsMaladie" id="informationsMaladie" rows={5} value={(caseStudy.informationsMaladie || []).join('\n')} onChange={(e) => handleArrayChange('informationsMaladie', e.target.value)} />
+                )}
+                {section.id === 'conseilsHygieneDeVie' && (
+                    <Textarea name="conseilsHygieneDeVie" id="conseilsHygieneDeVie" rows={5} value={(caseStudy.conseilsHygieneDeVie || []).join('\n')} onChange={(e) => handleArrayChange('conseilsHygieneDeVie', e.target.value)} />
+                )}
+                {section.id === 'conseilsAlimentaires' && (
+                    <Textarea name="conseilsAlimentaires" id="conseilsAlimentaires" rows={5} value={(caseStudy.conseilsAlimentaires || []).join('\n')} onChange={(e) => handleArrayChange('conseilsAlimentaires', e.target.value)} />
+                )}
+                {section.id === 'ventesAdditionnelles' && (
+                    <Textarea name="ventesAdditionnelles" id="ventesAdditionnelles" rows={5} value={JSON.stringify(caseStudy.ventesAdditionnelles, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, ventesAdditionnelles: JSON.parse(e.target.value) }))} />
+                )}
+                {section.id === 'recommendations' && (
+                    <>
+                        <div>
+                            <Label htmlFor="mainTreatment">Traitement principal (un par ligne)</Label>
+                            <Textarea name="mainTreatment" id="mainTreatment" rows={4} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="associatedProducts">Produits associés (un par ligne)</Label>
+                            <Textarea name="associatedProducts" id="associatedProducts" rows={4} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="lifestyleAdvice">Hygiène de vie (un par ligne)</Label>
+                            <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={4} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="dietaryAdvice">Conseils alimentaires (un par ligne)</Label>
+                            <Textarea name="dietaryAdvice" id="dietaryAdvice" rows={4} value={caseStudy.recommendations.dietaryAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'dietaryAdvice', e.target.value)} />
+                        </div>
+                    </>
+                )}
+                {section.id === 'keyPoints' && (
+                    <>
+                        <div>
+                            <Label htmlFor="keyPoints">Points clés à retenir (un par ligne)</Label>
+                            <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="references">Références (une par ligne)</Label>
+                            <Textarea name="references" id="references" rows={4} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
+                        </div>
+                    </>
+                )}
+                {section.isCustom && (
+                    <RichContentSectionEditor
+                        section={caseStudy.customSections[section.index]}
+                        onChange={newSection => {
+                            const newCustomSections = [...(caseStudy.customSections || [])];
+                            newCustomSections[section.index] = newSection;
+                            handleCustomSectionChange(newCustomSections);
+                        }}
+                        showTitle={true}
+                    />
+                )}
+            </Section>
+        ))}
 
         <FormSection title="Sections Personnalisées">
             <div className="space-y-4">
-                {caseStudy.customSections?.map((section, index) => (
-                    <RichContentSectionEditor
-                        key={index}
-                        section={section}
-                        onChange={newSection => {
-                            const newCustomSections = [...(caseStudy.customSections || [])];
-                            newCustomSections[index] = newSection;
-                            handleCustomSectionChange(newCustomSections);
-                        }}
-                        onRemove={() => removeCustomSection(index)}
-                        onMoveUp={() => moveCustomSection(index, 'up')}
-                        onMoveDown={() => moveCustomSection(index, 'down')}
-                        isFirst={index === 0}
-                        isLast={index === (caseStudy.customSections?.length || 0) - 1}
-                    />
-                ))}
                 <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
                   <PlusCircleIcon className="h-5 w-5 mr-2" />
                   Ajouter une section

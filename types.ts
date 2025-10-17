@@ -134,6 +134,7 @@ export interface CaseStudy {
   knowledgeBaseUrl?: string;
   isFree?: boolean;
   customSections?: MemoFicheSection[];
+  sectionOrder?: string[];
 
   // Dispositifs médicaux
   casComptoir?: string | MemoFicheSection;
