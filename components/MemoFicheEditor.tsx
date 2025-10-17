@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent } from '../types';
 import { ensureArray } from '../utils/array';
-import { TrashIcon, PlusCircleIcon } from './Icons';
+import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
 
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -119,9 +119,13 @@ interface RichContentSectionEditorProps {
   onChange: (section: MemoFicheSection) => void;
   showTitle?: boolean;
   onRemove?: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
-const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
+const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove, onMoveUp, onMoveDown, isFirst, isLast }) => {
 
   const handleContentChange = (index: number, value: string) => {
     const newContent = [...(section.content || [])];
@@ -148,7 +152,15 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
             <label htmlFor={`custom_title_${section.title}`}>Titre de la section</label>
             <Input type="text" id={`custom_title_${section.title}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
           </div>
-          {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ChevronUpIcon className="h-5 w-5" />
+            </button>
+            <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ChevronDownIcon className="h-5 w-5" />
+            </button>
+            {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
+          </div>
         </div>
       )}
       <div className="space-y-2">
@@ -269,6 +281,19 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         return { ...prev, customSections: newCustomSections };
       });
     }
+  };
+
+  const moveCustomSection = (index: number, direction: 'up' | 'down') => {
+    setCaseStudy(prev => {
+      const newCustomSections = [...(prev.customSections || [])];
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= newCustomSections.length) {
+        return prev;
+      }
+      const [movedSection] = newCustomSections.splice(index, 1);
+      newCustomSections.splice(newIndex, 0, movedSection);
+      return { ...prev, customSections: newCustomSections };
+    });
   };
 
   const handleYoutubeLinkChange = (index: number, field: 'url' | 'title', value: string) => {
@@ -540,6 +565,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                             handleCustomSectionChange(newCustomSections);
                         }}
                         onRemove={() => removeCustomSection(index)}
+                        onMoveUp={() => moveCustomSection(index, 'up')}
+                        onMoveDown={() => moveCustomSection(index, 'down')}
+                        isFirst={index === 0}
+                        isLast={index === (caseStudy.customSections?.length || 0) - 1}
                     />
                 ))}
                 <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
