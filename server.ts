@@ -69,6 +69,12 @@ app.post('/api/auth/login', async (req, res) => {
             const isMatch = await bcrypt.compare(password, user.passwordHash);
 
             if (isMatch) {
+                // Check if subscription is still active
+                if (user.subscriptionEndDate && new Date(user.subscriptionEndDate) < new Date()) {
+                    await usersCollection.updateOne({ _id: user._id }, { $set: { hasActiveSubscription: false } });
+                    user.hasActiveSubscription = false;
+                }
+
                 // Passwords match, generate a token (using a mock for now)
                 // TODO: Replace with a real JWT implementation
                 const token = 'mock-jwt-token'; 
