@@ -180,39 +180,7 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
   );
 };
 
-const Section: React.FC<{
-    title: string;
-    children: React.ReactNode;
-    onMoveUp: () => void;
-    onMoveDown: () => void;
-    isFirst: boolean;
-    isLast: boolean;
-    onRemove?: () => void;
-}> = ({ title, children, onMoveUp, onMoveDown, isFirst, isLast, onRemove }) => {
-    return (
-        <div className="border p-4 rounded-lg bg-white shadow-sm relative">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
-                <div className="flex items-center gap-2">
-                    <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ChevronUpIcon className="h-5 w-5" />
-                    </button>
-                    <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ChevronDownIcon className="h-5 w-5" />
-                    </button>
-                    {onRemove && (
-                        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700">
-                            <TrashIcon className="h-5 w-5" />
-                        </button>
-                    )}
-                </div>
-            </div>
-            <div className="space-y-4">{children}</div>
-        </div>
-    );
-};
-
-const Section: React.FC<{
+const Section: React.FC <{
     title: string;
     children: React.ReactNode;
     onMoveUp: () => void;
@@ -444,7 +412,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         <FormSection title="Informations Générales">
           <div>
             <Label htmlFor="type">Type de mémofiche</Label>
-            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-1 focus:ring-teal-500">
+            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <option value="maladie">Maladie</option>
                 <option value="pharmacologie">Pharmacologie</option>
                 <option value="dermocosmetique">Dermocosmétique</option>
@@ -492,12 +460,12 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             </div>
           </div>
           <div>
-            <Label htmlFor="coverImageUrl">URL de l'image de couverture</Label>
+            <Label htmlFor="coverImageUrl">URL de l\'image de couverture</Label>
             <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} />
           </div>
           {caseStudy.coverImageUrl && (
             <div>
-              <Label htmlFor="coverImagePosition">Position de l'image de couverture</Label>
+              <Label htmlFor="coverImagePosition">Position de l\'image de couverture</Label>
               <select name="coverImagePosition" id="coverImagePosition" value={caseStudy.coverImagePosition || 'middle'} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <option value="top">Haut</option>
                 <option value="middle">Milieu</option>
