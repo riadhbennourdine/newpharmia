@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { User } from '../../../types';
 import { useNavigate } from 'react-router-dom';
+import ConvertToClientModal from '../../../components/ConvertToClientModal';
 
 const ProspectList = () => {
   const [prospects, setProspects] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProspectId, setSelectedProspectId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchProspects = async () => {
@@ -33,37 +36,18 @@ const ProspectList = () => {
     navigate(`/admin/crm/clients/${clientId}`);
   };
 
-  const handleConvertToClient = async (userId: string) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir convertir ce prospect en client ?')) {
-      return;
-    }
+  const handleOpenConvertModal = (userId: string) => {
+    setSelectedProspectId(userId);
+    setIsModalOpen(true);
+  };
 
-    try {
-      const oneYearFromNow = new Date();
-      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  const handleCloseConvertModal = () => {
+    setIsModalOpen(false);
+    setSelectedProspectId(null);
+  };
 
-      const response = await fetch(`/api/users/${userId}/subscription`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subscriptionEndDate: oneYearFromNow.toISOString(),
-          planName: 'Standard', // Default plan name
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Échec de la conversion du prospect en client.');
-      }
-
-      alert('Prospect converti en client avec succès !');
-      fetchProspects(); // Refresh the list
-    } catch (err: any) {
-      setError(err.message);
-      alert(`Erreur: ${err.message}`);
-    }
+  const handleConversionSuccess = () => {
+    fetchProspects(); // Refresh the list after successful conversion
   };
 
   const filteredProspects = useMemo(() => {
@@ -124,7 +108,7 @@ const ProspectList = () => {
                       Voir la fiche
                     </button>
                     <button
-                      onClick={() => handleConvertToClient(prospect._id as string)}
+                      onClick={() => handleOpenConvertModal(prospect._id as string)}
                       className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
                     >
                       Convertir en Client
@@ -135,6 +119,14 @@ const ProspectList = () => {
             </tbody>
           </table>
         </div>
+      )}
+      {isModalOpen && selectedProspectId && (
+        <ConvertToClientModal
+          isOpen={isModalOpen}
+          onClose={handleCloseConvertModal}
+          userId={selectedProspectId}
+          onConversionSuccess={handleConversionSuccess}
+        />
       )}
     </div>
   );
