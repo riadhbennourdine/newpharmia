@@ -40,7 +40,8 @@ const ProspectList = () => {
     return prospects.filter(prospect =>
       `${prospect.firstName} ${prospect.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       prospect.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (prospect.companyName && prospect.companyName.toLowerCase().includes(searchTerm.toLowerCase()))
+      (prospect.companyName && prospect.companyName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (prospect.city && prospect.city.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [prospects, searchTerm]);
 
@@ -53,7 +54,7 @@ const ProspectList = () => {
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Rechercher par nom, email, société..."
+          placeholder="Rechercher par nom, email, société, ville..."
           className="w-full p-2 border border-gray-300 rounded-md"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -71,6 +72,7 @@ const ProspectList = () => {
                 <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Nom</th>
                 <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
                 <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Société</th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Ville</th>
                 <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -80,6 +82,7 @@ const ProspectList = () => {
                   <td className="py-3 px-4 text-gray-800 font-medium">{prospect.firstName} {prospect.lastName}</td>
                   <td className="py-3 px-4 text-gray-600">{prospect.email}</td>
                   <td className="py-3 px-4 text-gray-600">{prospect.companyName || 'N/A'}</td>
+                  <td className="py-3 px-4 text-gray-600">{prospect.city || 'N/A'}</td>
                   <td className="py-3 px-4">
                     <button 
                       onClick={() => handleViewClient(prospect._id)}

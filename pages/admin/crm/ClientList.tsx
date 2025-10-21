@@ -70,6 +70,7 @@ const ClientList = () => {
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Statut</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Equipe</th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Ville</th>
               <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
@@ -84,6 +85,7 @@ const ClientList = () => {
                   </span>
                 </td>
                 <td className="py-3 px-4 text-gray-600">{client.teamSize}</td>
+                <td className="py-3 px-4 text-gray-600">{client.city || 'N/A'}</td>
                 <td className="py-3 px-4">
                   <button 
                     onClick={() => handleViewClient(client._id)}

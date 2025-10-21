@@ -108,7 +108,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
             <label className="block text-sm font-medium text-slate-700">Préparateurs</label>
             <input
               type="text"
-              placeholder="Rechercher un préparateur..."
+              placeholder="Rechercher par nom, email, ville..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mb-2"
@@ -120,7 +120,8 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
                   return (
                     p.firstName?.toLowerCase().includes(searchTermLower) ||
                     p.lastName?.toLowerCase().includes(searchTermLower) ||
-                    p.email.toLowerCase().includes(searchTermLower)
+                    p.email.toLowerCase().includes(searchTermLower) ||
+                    p.city?.toLowerCase().includes(searchTermLower)
                   );
                 })
                 .map(p => (
