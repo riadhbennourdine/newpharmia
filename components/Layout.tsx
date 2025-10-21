@@ -45,7 +45,7 @@ const Header: React.FC = () => {
               Tarifs
             </NavLink>
           )}
-          {user?.role === UserRole.ADMIN && (
+          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR && (
             <div className="relative group">
               <button className={navLinkClass({ isActive: false }) + " flex items-center"}>
                 Administration <span className="ml-1 text-xs">&#9662;</span>
@@ -102,7 +102,7 @@ const Header: React.FC = () => {
               Tarifs
             </NavLink>
           )}
-          {user?.role === UserRole.ADMIN && (
+          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR && (
             <div className="border-t border-gray-200 mt-2 pt-2">
               <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</p>
               <NavLink to="/admin" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
