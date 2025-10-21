@@ -45,17 +45,22 @@ const Header: React.FC = () => {
               Tarifs
             </NavLink>
           )}
-          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR && (
+          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR ? (
             <div className="relative group">
               <button className={navLinkClass({ isActive: false }) + " flex items-center"}>
                 Administration <span className="ml-1 text-xs">&#9662;</span>
               </button>
               <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md py-1 w-48 z-50 border border-slate-100">
-                <NavLink to="/admin" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
-                <NavLink to="/generateur" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
+                {user?.role === UserRole.ADMIN && (
+                  <NavLink to="/admin" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
+                )}
+                {user?.role === UserRole.ADMIN && (
+                  <NavLink to="/generateur" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
+                )}
+                <NavLink to="/admin/crm" className="block px-4 py-2 text-sm text-teal-800 hover:bg-gray-100 hover:text-teal-600" onClick={() => setIsMobileMenuOpen(false)}>CRM</NavLink>
               </div>
             </div>
-          )}
+          ) : null}
           <button
             onClick={handleLogout}
             className={navLinkClass({ isActive: false })}
@@ -102,13 +107,18 @@ const Header: React.FC = () => {
               Tarifs
             </NavLink>
           )}
-          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR && (
+          {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR ? (
             <div className="border-t border-gray-200 mt-2 pt-2">
               <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</p>
-              <NavLink to="/admin" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
-              <NavLink to="/generateur" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
+              {user?.role === UserRole.ADMIN && (
+                <NavLink to="/admin" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Panneau d'administration</NavLink>
+              )}
+              {user?.role === UserRole.ADMIN && (
+                <NavLink to="/generateur" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Générateur</NavLink>
+              )}
+              <NavLink to="/admin/crm" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>CRM</NavLink>
             </div>
-          )}
+          ) : null}
           <div className="border-t border-gray-200 mt-2 pt-2">
             <button
               onClick={handleLogout}
