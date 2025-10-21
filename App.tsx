@@ -80,12 +80,11 @@ const App: React.FC = () => (
                             <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
                         </Route>
 
-                        {/* Routes for Admins ONLY */}
-                        <Route element={<AdminOnlyRoute />}>
-                            <Route path="/generateur" element={<GeneratorView />} />
-                            <Route path="/admin" element={<AdminPanel />} />
-                            <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
-                            <Route path="/admin/newsletter" element={<NewsletterManager />} />
+                        {/* Routes for Formateurs & Admins */}
+                        <Route element={<FormateurOrAdminRoute />}>
+                            <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
+                            <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                            {/* CRM Routes for Formateurs & Admins */}
                             <Route path="/admin/crm" element={<CRMDashboard />}>
                                 <Route index element={<Navigate to="appointments" replace />} />
                                 <Route path="clients" element={<ClientList />} />
@@ -93,6 +92,14 @@ const App: React.FC = () => (
                                 <Route path="appointments" element={<AppointmentList />} />
                             </Route>
                             <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
+                        </Route>
+
+                        {/* Routes for Admins ONLY */}
+                        <Route element={<AdminOnlyRoute />}>
+                            <Route path="/generateur" element={<GeneratorView />} />
+                            <Route path="/admin" element={<AdminPanel />} />
+                            <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
+                            <Route path="/admin/newsletter" element={<NewsletterManager />} />
                         </Route>
                     </Route>
                     
