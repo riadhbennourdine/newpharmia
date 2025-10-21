@@ -9,28 +9,61 @@ const ProspectList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProspects = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/crm/prospects');
-        if (!response.ok) {
-          throw new Error('Failed to fetch prospects');
-        }
-        const data = await response.json();
-        setProspects(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchProspects = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/crm/prospects');
+      if (!response.ok) {
+        throw new Error('Failed to fetch prospects');
       }
-    };
+      const data = await response.json();
+      setProspects(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProspects();
   }, []);
 
   const handleViewClient = (clientId: string) => {
     navigate(`/admin/crm/clients/${clientId}`);
+  };
+
+  const handleConvertToClient = async (userId: string) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir convertir ce prospect en client ?')) {
+      return;
+    }
+
+    try {
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+      const response = await fetch(`/api/users/${userId}/subscription`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscriptionEndDate: oneYearFromNow.toISOString(),
+          planName: 'Standard', // Default plan name
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Échec de la conversion du prospect en client.');
+      }
+
+      alert('Prospect converti en client avec succès !');
+      fetchProspects(); // Refresh the list
+    } catch (err: any) {
+      setError(err.message);
+      alert(`Erreur: ${err.message}`);
+    }
   };
 
   const filteredProspects = useMemo(() => {
@@ -83,12 +116,18 @@ const ProspectList = () => {
                   <td className="py-3 px-4 text-gray-600">{prospect.email}</td>
                   <td className="py-3 px-4 text-gray-600">{prospect.companyName || 'N/A'}</td>
                   <td className="py-3 px-4 text-gray-600">{prospect.city || 'N/A'}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 flex space-x-2">
                     <button 
                       onClick={() => handleViewClient(prospect._id)}
-                      className="text-teal-600 hover:text-teal-800"
+                      className="text-teal-600 hover:text-teal-800 text-sm"
                     >
                       Voir la fiche
+                    </button>
+                    <button
+                      onClick={() => handleConvertToClient(prospect._id as string)}
+                      className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+                    >
+                      Convertir en Client
                     </button>
                   </td>
                 </tr>
