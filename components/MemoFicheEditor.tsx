@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent } from '../types';
+import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
 import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
+import { useAuth } from '../hooks/useAuth';
 
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -70,6 +71,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
     customSections: safeCustomSections,
+    status: caseStudy?.status || MemoFicheStatus.GENEREE, // Initialize status
 
     // Dispositifs médicaux
     casComptoir: convertToSection(caseStudy?.casComptoir, 'Cas comptoir'),
@@ -215,6 +217,7 @@ const Section: React.FC <{
 const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onSave, onCancel }) => {
   const [caseStudy, setCaseStudy] = useState<CaseStudy>(createSafeCaseStudy(initialCaseStudy));
   const [displayedSections, setDisplayedSections] = useState<any[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
@@ -404,6 +407,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     onSave(caseStudy);
   };
   
+  const canEditStatus = user && (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR);
+
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <h2 className="text-3xl font-bold text-slate-800 mb-6">{initialCaseStudy?._id ? 'Modifier la Mémofiche' : 'Créer une Nouvelle Mémofiche'}</h2>
@@ -490,225 +495,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     Ajouter un lien YouTube
                 </button>
             )}
-          </div>
-           <div>
-            <Label htmlFor="kahootUrl">URL Jeu Kahoot!</Label>
-            <Input type="text" name="kahootUrl" id="kahootUrl" value={caseStudy.kahootUrl} onChange={handleChange} />
-          </div>
-        </FormSection>
 
-        {displayedSections.map((section, index) => (
-            <Section
-                key={section.id}
-                title={section.isCustom ? (caseStudy.customSections[section.index] as MemoFicheSection).title : section.title}
-                onMoveUp={() => moveSection(index, 'up')}
-                onMoveDown={() => moveSection(index, 'down')}
-                isFirst={index === 0}
-                isLast={index === displayedSections.length - 1}
-                onRemove={section.isCustom ? () => removeCustomSection(section.index) : undefined}
-            >
-                {section.id === 'patientSituation' && (
-                    <RichContentSectionEditor section={caseStudy.patientSituation as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, patientSituation: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'keyQuestions' && (
-                    <Textarea name="keyQuestions" id="keyQuestions" rows={5} value={caseStudy.keyQuestions.join('\n')} onChange={(e) => handleArrayChange('keyQuestions', e.target.value)} />
-                )}
-                {section.id === 'pathologyOverview' && (
-                     <RichContentSectionEditor section={caseStudy.pathologyOverview as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologyOverview: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'redFlags' && (
-                    <Textarea name="redFlags" id="redFlags" rows={5} value={caseStudy.redFlags.join('\n')} onChange={(e) => handleArrayChange('redFlags', e.target.value)} />
-                )}
-                {section.id === 'casComptoir' && (
-                    <RichContentSectionEditor section={caseStudy.casComptoir as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, casComptoir: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'objectifsConseil' && (
-                    <RichContentSectionEditor section={caseStudy.objectifsConseil as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, objectifsConseil: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'pathologiesConcernees' && (
-                    <RichContentSectionEditor section={caseStudy.pathologiesConcernees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pathologiesConcernees: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'interetDispositif' && (
-                    <RichContentSectionEditor section={caseStudy.interetDispositif as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, interetDispositif: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'beneficesSante' && (
-                    <RichContentSectionEditor section={caseStudy.beneficesSante as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, beneficesSante: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'dispositifsAConseiller' && (
-                    <RichContentSectionEditor section={caseStudy.dispositifsAConseiller as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, dispositifsAConseiller: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'reponsesObjections' && (
-                    <RichContentSectionEditor section={caseStudy.reponsesObjections as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, reponsesObjections: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'pagesSponsorisees' && (
-                    <RichContentSectionEditor section={caseStudy.pagesSponsorisees as MemoFicheSection} onChange={newSection => setCaseStudy(prev => ({ ...prev, pagesSponsorisees: newSection }))} showTitle={false} />
-                )}
-                {section.id === 'referencesBibliographiquesDM' && (
-                    <Textarea name="referencesBibliographiquesDM" id="referencesBibliographiquesDM" rows={4} value={(caseStudy.referencesBibliographiquesDM || []).join('\n')} onChange={(e) => handleArrayChange('referencesBibliographiquesDM', e.target.value)} />
-                )}
-                {section.id === 'ordonnance' && (
-                    <Textarea name="ordonnance" id="ordonnance" rows={5} value={(caseStudy.ordonnance || []).join('\n')} onChange={(e) => handleArrayChange('ordonnance', e.target.value)} />
-                )}
-                {section.id === 'analyseOrdonnance' && (
-                    <Textarea name="analyseOrdonnance" id="analyseOrdonnance" rows={5} value={(caseStudy.analyseOrdonnance || []).join('\n')} onChange={(e) => handleArrayChange('analyseOrdonnance', e.target.value)} />
-                )}
-                {section.id === 'conseilsTraitement' && (
-                    <Textarea name="conseilsTraitement" id="conseilsTraitement" rows={5} value={JSON.stringify(caseStudy.conseilsTraitement, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, conseilsTraitement: JSON.parse(e.target.value) }))} />
-                )}
-                {section.id === 'informationsMaladie' && (
-                    <Textarea name="informationsMaladie" id="informationsMaladie" rows={5} value={(caseStudy.informationsMaladie || []).join('\n')} onChange={(e) => handleArrayChange('informationsMaladie', e.target.value)} />
-                )}
-                {section.id === 'conseilsHygieneDeVie' && (
-                    <Textarea name="conseilsHygieneDeVie" id="conseilsHygieneDeVie" rows={5} value={(caseStudy.conseilsHygieneDeVie || []).join('\n')} onChange={(e) => handleArrayChange('conseilsHygieneDeVie', e.target.value)} />
-                )}
-                {section.id === 'conseilsAlimentaires' && (
-                    <Textarea name="conseilsAlimentaires" id="conseilsAlimentaires" rows={5} value={(caseStudy.conseilsAlimentaires || []).join('\n')} onChange={(e) => handleArrayChange('conseilsAlimentaires', e.target.value)} />
-                )}
-                {section.id === 'ventesAdditionnelles' && (
-                    <Textarea name="ventesAdditionnelles" id="ventesAdditionnelles" rows={5} value={JSON.stringify(caseStudy.ventesAdditionnelles, null, 2)} onChange={(e) => setCaseStudy(prev => ({ ...prev, ventesAdditionnelles: JSON.parse(e.target.value) }))} />
-                )}
-                {section.id === 'recommendations' && (
-                    <>
-                        <div>
-                            <Label htmlFor="mainTreatment">Traitement principal (un par ligne)</Label>
-                            <Textarea name="mainTreatment" id="mainTreatment" rows={4} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
-                        </div>
-                        <div>
-                            <Label htmlFor="associatedProducts">Produits associés (un par ligne)</Label>
-                            <Textarea name="associatedProducts" id="associatedProducts" rows={4} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
-                        </div>
-                        <div>
-                            <Label htmlFor="lifestyleAdvice">Hygiène de vie (un par ligne)</Label>
-                            <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={4} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
-                        </div>
-                        <div>
-                            <Label htmlFor="dietaryAdvice">Conseils alimentaires (un par ligne)</Label>
-                            <Textarea name="dietaryAdvice" id="dietaryAdvice" rows={4} value={caseStudy.recommendations.dietaryAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'dietaryAdvice', e.target.value)} />
-                        </div>
-                    </>
-                )}
-                {section.id === 'keyPoints' && (
-                    <>
-                        <div>
-                            <Label htmlFor="keyPoints">Points clés à retenir (un par ligne)</Label>
-                            <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
-                        </div>
-                        <div>
-                            <Label htmlFor="references">Références (une par ligne)</Label>
-                            <Textarea name="references" id="references" rows={4} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
-                        </div>
-                    </>
-                )}
-                {section.isCustom && (
-                    <RichContentSectionEditor
-                        section={caseStudy.customSections[section.index]}
-                        onChange={newSection => {
-                            const newCustomSections = [...(caseStudy.customSections || [])];
-                            newCustomSections[section.index] = newSection;
-                            handleCustomSectionChange(newCustomSections);
-                        }}
-                        showTitle={true}
-                    />
-                )}
-            </Section>
-        ))}
 
-        <FormSection title="Sections Personnalisées">
-            <div className="space-y-4">
-                <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-                  <PlusCircleIcon className="h-5 w-5 mr-2" />
-                  Ajouter une section
-                </button>
-            </div>
-        </FormSection>
 
-        <FormSection title="Quiz">
-            <div className="space-y-4">
-                {caseStudy.quiz?.map((q, qIndex) => (
-                    <div key={qIndex} className="border p-3 rounded-md bg-slate-50 relative">
-                        <Label htmlFor={`quiz_question_${qIndex}`}>Question {qIndex + 1}</Label>
-                        <Textarea id={`quiz_question_${qIndex}`} value={q.question} onChange={e => handleItemChange('quiz', qIndex, 'question', e.target.value)} rows={2} />
-                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {q.options.map((opt, oIndex) => (
-                                <div key={oIndex}>
-                                    <Label htmlFor={`quiz_q${qIndex}_o${oIndex}`}>Option {oIndex + 1}</Label>
-                                    <Input type="text" id={`quiz_q${qIndex}_o${oIndex}`} value={opt} onChange={e => handleQuizOptionChange(qIndex, oIndex, e.target.value)} />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-2">
-                            <Label htmlFor={`quiz_answer_${qIndex}`}>Index de la bonne réponse (0-3)</Label>
-                            <Input type="number" id={`quiz_answer_${qIndex}`} value={q.correctAnswerIndex} onChange={e => handleItemChange('quiz', qIndex, 'correctAnswerIndex', parseInt(e.target.value, 10))} />
-                        </div>
-                        <div className="mt-2">
-                            <Label htmlFor={`quiz_explanation_${qIndex}`}>Explication</Label>
-                            <Textarea id={`quiz_explanation_${qIndex}`} value={q.explanation} onChange={e => handleItemChange('quiz', qIndex, 'explanation', e.target.value)} rows={2} />
-                        </div>
-                        <button type="button" onClick={() => handleRemoveItem('quiz', qIndex)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-                    </div>
-                ))}
-                <button type="button" onClick={() => handleAddItem('quiz')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-                  <PlusCircleIcon className="h-5 w-5 mr-2" />
-                  Ajouter une question de quiz
-                </button>
-            </div>
-        </FormSection>
-        
-        <FormSection title="Flashcards">
-            <div className="space-y-4">
-                {caseStudy.flashcards?.map((f, fIndex) => (
-                    <div key={fIndex} className="border p-3 rounded-md bg-slate-50 relative grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div>
-                            <Label htmlFor={`flash_question_${fIndex}`}>Question</Label>
-                            <Textarea id={`flash_question_${fIndex}`} value={f.question} onChange={e => handleItemChange('flashcards', fIndex, 'question', e.target.value)} rows={3} />
-                        </div>
-                        <div>
-                            <Label htmlFor={`flash_answer_${fIndex}`}>Réponse</Label>
-                            <Textarea id={`flash_answer_${fIndex}`} value={f.answer} onChange={e => handleItemChange('flashcards', fIndex, 'answer', e.target.value)} rows={3} />
-                        </div>
-                        <button type="button" onClick={() => handleRemoveItem('flashcards', fIndex)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-                    </div>
-                ))}
-                <button type="button" onClick={() => handleAddItem('flashcards')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-                  <PlusCircleIcon className="h-5 w-5 mr-2" />
-                  Ajouter une flashcard
-                </button>
-            </div>
-        </FormSection>
-
-        <FormSection title="Glossaire">
-            <div className="space-y-4">
-                {caseStudy.glossary?.map((g, gIndex) => (
-                    <div key={gIndex} className="border p-3 rounded-md bg-slate-50 relative grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div>
-                            <Label htmlFor={`glossary_term_${gIndex}`}>Terme</Label>
-                            <Input type="text" id={`glossary_term_${gIndex}`} value={g.term} onChange={e => handleItemChange('glossary', gIndex, 'term', e.target.value)} />
-                        </div>
-                        <div>
-                            <Label htmlFor={`glossary_def_${gIndex}`}>Définition</Label>
-                            <Textarea id={`glossary_def_${gIndex}`} value={g.definition} onChange={e => handleItemChange('glossary', gIndex, 'definition', e.target.value)} rows={2} />
-                        </div>
-                        <button type="button" onClick={() => handleRemoveItem('glossary', gIndex)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-                    </div>
-                ))}
-                <button type="button" onClick={() => handleAddItem('glossary')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-                  <PlusCircleIcon className="h-5 w-5 mr-2" />
-                  Ajouter un terme au glossaire
-                </button>
-            </div>
-        </FormSection>
-
-        <div className="flex justify-end space-x-4 pt-4">
-          <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            Annuler
-          </button>
-          <button type="submit" className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-teal-600 hover:bg-teal-700">
-            Sauvegarder la Mémofiche
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
-export default MemoFicheEditor;

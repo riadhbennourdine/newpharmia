@@ -18,6 +18,13 @@ export enum ClientStatus {
   FORMER_CLIENT = 'FORMER_CLIENT',
 }
 
+export enum MemoFicheStatus {
+  GENEREE = 'Générée',
+  EN_COURS_DE_REVISION = 'En cours de révision',
+  REVISEE = 'Révisée',
+  PUBLIEE = 'Publiée',
+}
+
 export interface User {
   _id: ObjectId | string;
   username?: string;
@@ -135,6 +142,7 @@ export interface CaseStudy {
   isFree?: boolean;
   customSections?: MemoFicheSection[];
   sectionOrder?: string[];
+  status: MemoFicheStatus; // New status field
 
   // Dispositifs médicaux
   casComptoir?: string | MemoFicheSection;

@@ -312,14 +312,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
               <div className="relative z-20">
                   <h2 className="text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>
                   <div className="mt-2 text-sm font-medium opacity-90">
-                      <span>{caseStudy.theme}</span><span className="mx-2">&bull;</span><span>{caseStudy.system}</span><span className="mx-2">&bull;</span><span>{`Créé le ${formattedDate}`}</span>
+                      <span>{caseStudy.theme}</span><span className="mx-2">&bull;</span><span>{caseStudy.system}</span><span className="mx-2">&bull;</span><span>{`Créé le ${formattedDate}`}</span><span className="mx-2">&bull;</span><span>Statut: {caseStudy.status}</span>
                   </div>
               </div>
           </div>
       ) : (
            <div className="text-center mb-8">
-              <div className="flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
                   <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">{caseStudy.title}</h2>
+                  <div className="mt-2 text-sm font-medium text-slate-600">
+                      <span>{caseStudy.theme}</span><span className="mx-2">&bull;</span><span>{caseStudy.system}</span><span className="mx-2">&bull;</span><span>{`Créé le ${formattedDate}`}</span><span className="mx-2">&bull;</span><span>Statut: {caseStudy.status}</span>
+                  </div>
               </div>
            </div>
       )}

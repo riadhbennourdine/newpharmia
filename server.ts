@@ -6,7 +6,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
-import { User, UserRole, CaseStudy, Group } from './types.js';
+import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 
@@ -527,6 +527,15 @@ app.get('/api/memofiches', async (req, res) => {
         }
         if (system !== 'all') {
             query.system = system;
+        }
+
+        // Add status filtering based on user role
+        if (user && (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR)) {
+            // Admins and Formateurs see all fiches regardless of status
+            // No additional status filter needed here
+        } else {
+            // Other roles (Apprenant, etc.) only see PUBLISHED fiches
+            query.status = MemoFicheStatus.PUBLISHED;
         }
 
         console.log('Query:', query);

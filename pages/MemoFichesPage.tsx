@@ -1,8 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useData } from '../context/DataContext';
-import { useAuth } from '../hooks/useAuth';
-import { CaseStudy, UserRole } from '../types';
 import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon, UserGroupIcon } from '../components/Icons';
 import { TOPIC_CATEGORIES } from '../constants';
 import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
@@ -57,6 +52,7 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{caseStudy.title}</h3>
                     <p className="text-xs font-semibold text-teal-600 uppercase tracking-wide mt-1">{caseStudy.theme} &bull; {caseStudy.system}</p>
                     <p className="text-xs text-slate-500 mt-1">Créé le {new Date(caseStudy.creationDate).toLocaleDateString('fr-FR')}</p>
+                    <p className="text-xs text-slate-500 mt-1">Statut: {caseStudy.status}</p>
                     <p className="mt-2 text-sm text-slate-600 line-clamp-2 flex-grow">{caseStudy.shortDescription}</p>
                 </div>
             </div>
@@ -118,6 +114,7 @@ const MemoFichesPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTheme, setSelectedTheme] = useState('all');
     const [selectedSystem, setSelectedSystem] = useState('all');
+    const [selectedStatus, setSelectedStatus] = useState('all'); // New state for status filter
     const [currentPage, setCurrentPage] = useState(1);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [selectedFiche, setSelectedFiche] = useState<CaseStudy | undefined>(undefined);
@@ -128,9 +125,10 @@ const MemoFichesPage: React.FC = () => {
             limit: 9, 
             search: searchTerm, 
             theme: selectedTheme, 
-            system: selectedSystem 
+            system: selectedSystem, 
+            status: selectedStatus // Pass status to fetchFiches
         });
-    }, [searchTerm, selectedTheme, selectedSystem, currentPage, fetchFiches]);
+    }, [searchTerm, selectedTheme, selectedSystem, selectedStatus, currentPage, fetchFiches]);
     
     const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedTheme(e.target.value);
@@ -139,6 +137,11 @@ const MemoFichesPage: React.FC = () => {
     
     const handleSystemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedSystem(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedStatus(e.target.value);
         setCurrentPage(1);
     };
 
@@ -162,6 +165,7 @@ const MemoFichesPage: React.FC = () => {
     };
 
     const isAdmin = user?.role === UserRole.ADMIN;
+    const isFormateur = user?.role === UserRole.FORMATEUR;
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -170,19 +174,19 @@ const MemoFichesPage: React.FC = () => {
                     <h1 className="text-3xl font-bold text-slate-800">Toutes les mémofiches</h1>
                     <p className="text-lg text-slate-600 mt-1">Explorez, recherchez et filtrez notre bibliothèque de contenu.</p>
                 </div>
-                {isAdmin && (
+                {(isAdmin || isFormateur) && (
                     <button
-                        onClick={() => navigate('/generateur')}
+                        onClick={() => navigate('/edit-memofiche')}
                         className="inline-flex items-center bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700"
                     >
                         <SparklesIcon className="h-5 w-5 mr-2" />
-                        Générateur IA
+                        Créer une mémofiche
                     </button>
                 )}
             </div>
             
             <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input
                         type="text"
                         placeholder="Rechercher une mémofiche..."
@@ -206,6 +210,18 @@ const MemoFichesPage: React.FC = () => {
                         <option value="all">Tous les systèmes/organes</option>
                         {TOPIC_CATEGORIES[1].topics.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
+                    {(isAdmin || isFormateur) && (
+                        <select
+                            value={selectedStatus}
+                            onChange={handleStatusChange}
+                            className="md:col-span-1 w-full border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                        >
+                            <option value="all">Tous les statuts</option>
+                            {Object.values(MemoFicheStatus).map(status => (
+                                <option key={status} value={status}>{status}</option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </div>
 
