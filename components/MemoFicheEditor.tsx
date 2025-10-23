@@ -71,7 +71,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
     customSections: safeCustomSections,
-    status: caseStudy?.status || MemoFicheStatus.GENEREE, // Initialize status
+    status: caseStudy?.status || MemoFicheStatus.DRAFT, // Initialize status
 
     // Dispositifs médicaux
     casComptoir: convertToSection(caseStudy?.casComptoir, 'Cas comptoir'),
@@ -495,6 +495,19 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     Ajouter un lien YouTube
                 </button>
             )}
+          </div>
+        </FormSection>
 
+        {/* Other sections will be rendered here based on displayedSections */}
 
+        <div className="flex justify-end space-x-4">
+          <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Annuler</button>
+          <button type="submit" className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">Enregistrer</button>
+        </div>
 
+      </form>
+    </div>
+  );
+};
+
+export default MemoFicheEditor;

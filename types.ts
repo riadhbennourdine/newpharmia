@@ -19,10 +19,8 @@ export enum ClientStatus {
 }
 
 export enum MemoFicheStatus {
-  GENEREE = 'Générée',
-  EN_COURS_DE_REVISION = 'En cours de révision',
-  REVISEE = 'Révisée',
-  PUBLIEE = 'Publiée',
+  DRAFT = 'Draft',
+  PUBLISHED = 'Published',
 }
 
 export interface User {

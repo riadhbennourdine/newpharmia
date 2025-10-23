@@ -168,7 +168,7 @@ ${prompt}`;
   const generatedData = JSON.parse(jsonText);
   console.log("Données générées brutes de Gemini :", JSON.stringify(generatedData, null, 2));
 
-  return { ...generatedData, status: MemoFicheStatus.GENEREE };
+  return { ...generatedData, status: MemoFicheStatus.DRAFT };
 };
 
 const learningToolsSchema = {
