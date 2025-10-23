@@ -89,38 +89,38 @@ const PricingPage: React.FC = () => {
     setError(null);
     setShowConfirmationModal(false); // Close the modal
 
-    try {
-      const response = await fetch('/api/konnect/initiate-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: totalAmount,
-          planName: planName,
-          isAnnual: isAnnual,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          phoneNumber: user.phoneNumber, // Assuming phoneNumber is available in user object
-          orderId: user._id // Use user ID as order ID for now
-        }),
-      });
+    // try {
+    //   const response = await fetch('/api/konnect/initiate-payment', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //       amount: totalAmount,
+    //       planName: planName,
+    //       isAnnual: isAnnual,
+    //       firstName: user.firstName,
+    //       lastName: user.lastName,
+    //       email: user.email,
+    //       phoneNumber: user.phoneNumber, // Assuming phoneNumber is available in user object
+    //       orderId: user._id // Use user ID as order ID for now
+    //     }),
+    //   });
 
-      const data = await response.json();
+    //   const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to initiate payment.');
-      }
+    //   if (!response.ok) {
+    //     throw new Error(data.message || 'Failed to initiate payment.');
+    //   }
 
-      // Redirect to Konnect payment page
-      window.location.href = data.payUrl;
+    //   // Redirect to Konnect payment page
+    //   window.location.href = data.payUrl;
       
-    } catch (err: any) {
-      console.error('Error initiating Konnect payment:', err);
-      setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement Konnect.');
-    } finally {
-      setLoadingPlan(null);
-      setSelectedPlanDetails(null);
-    }
+    // } catch (err: any) {
+    //   console.error('Error initiating Konnect payment:', err);
+    //   setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement Konnect.');
+    // } finally {
+    //   setLoadingPlan(null);
+    //   setSelectedPlanDetails(null);
+    // }
   };
 
   return (

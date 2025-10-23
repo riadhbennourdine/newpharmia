@@ -489,7 +489,8 @@ app.get('/api/memofiches', async (req, res) => {
             search = '',
             theme = 'all',
             system = 'all',
-            sortBy = 'default' // 'newest'
+            sortBy = 'default', // 'newest'
+            selectedStatus = 'all' // New query parameter for status filtering
         } = req.query as { [key: string]: string };
 
         const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
@@ -529,10 +530,11 @@ app.get('/api/memofiches', async (req, res) => {
             query.system = system;
         }
 
-        // Add status filtering based on user role
+        // Add status filtering based on user role and selectedStatus query param
         if (user && (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR)) {
-            // Admins and Formateurs see all fiches regardless of status
-            // No additional status filter needed here
+            if (selectedStatus !== 'all') {
+                query.status = selectedStatus;
+            }
         } else {
             // Other roles (Apprenant, etc.) only see PUBLISHED fiches
             query.status = MemoFicheStatus.PUBLISHED;
@@ -788,6 +790,7 @@ app.post('/api/gemini/chat', async (req, res) => {
     }
 });
 
+/*
 // KONNECT PAYMENT ROUTES
 app.post('/api/konnect/initiate-payment', async (req, res) => {
     try {
@@ -925,6 +928,7 @@ app.get('/api/konnect/webhook', async (req, res) => {
         res.status(500).json({ message: 'Erreur interne du serveur lors du traitement du webhook Konnect.' });
     }
 });
+*/
 
 app.post('/api/newsletter/send', async (req, res) => {
     try {
