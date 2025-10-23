@@ -927,9 +927,117 @@ app.get('/api/konnect/webhook', async (req, res) => {
         console.error('Error processing Konnect webhook:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors du traitement du webhook Konnect.' });
     }
-});
 */
 
+// GPG PAYMENT ROUTES
+app.post('/api/gpg/initiate-payment', async (req, res) => {
+    try {
+        const { amount, planName, isAnnual, firstName, lastName, email, phoneNumber, orderId: clientOrderId, city, country, zip } = req.body;
+
+        if (!amount || !planName || !email) {
+            return res.status(400).json({ message: 'Missing required payment details.' });
+        }
+
+        const { GPG_NUM_SITE, GPG_PASSWORD, GPG_VAD, GPG_TERMINAL } = process.env;
+
+        const missingVars = [];
+        if (!GPG_NUM_SITE) missingVars.push('GPG_NUM_SITE');
+        if (!GPG_PASSWORD) missingVars.push('GPG_PASSWORD');
+        if (!GPG_VAD) missingVars.push('GPG_VAD');
+        if (!GPG_TERMINAL) missingVars.push('GPG_TERMINAL');
+
+        if (missingVars.length > 0) {
+            const errorMessage = `GPG payment not configured. Missing environment variables: ${missingVars.join(', ')}`;
+            console.error(errorMessage);
+            return res.status(500).json({ message: errorMessage });
+        }
+
+        const orderID = `PHARMIA-${Date.now()}`;
+        const formattedAmount = Math.round(amount * 1000); // Convert to millimes
+        const currency = 'TND';
+
+        // Create signature
+        const signatureClear = GPG_NUM_SITE + GPG_PASSWORD + orderID + formattedAmount + currency;
+        const signature = crypto.createHash('sha1').update(signatureClear).digest('hex');
+
+        // Create MD5 password for the form
+        const md5Password = crypto.createHash('md5').update(GPG_PASSWORD).digest('hex');
+
+        const paymentUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php' 
+            : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
+
+        const paymentData = {
+            paymentUrl,
+            NumSite: GPG_NUM_SITE,
+            Password: md5Password,
+            orderID,
+            Amount: formattedAmount.toString(),
+            Currency: currency,
+            Language: 'fr',
+            EMAIL: email,
+            CustLastName: lastName,
+            CustFirstName: firstName,
+            CustAddress: 'N/A', // Or get from user profile
+            CustZIP: zip || '0000',
+            CustCity: city || 'N/A',
+            CustCountry: country || 'Tunisie',
+            CustTel: phoneNumber || '00000000',
+            PayementType: '1', // Direct Payment
+            signature,
+            vad: GPG_VAD,
+            Terminal: GPG_TERMINAL,
+            orderProducts: `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`,
+        };
+
+        res.json(paymentData);
+
+    } catch (error) {
+        console.error('Error initiating GPG payment:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'initialisation du paiement GPG.' });
+    }
+});
+
+app.post('/api/gpg/webhook', async (req, res) => {
+    try {
+        console.log("GPG Webhook received:", req.body);
+
+        const { TransStatus, PAYID, Signature } = req.body;
+        const { GPG_PASSWORD } = process.env;
+
+        if (!TransStatus || !PAYID || !Signature || !GPG_PASSWORD) {
+            console.error('GPG Webhook: Missing required parameters.');
+            return res.status(400).send('Missing parameters');
+        }
+
+        // Verify signature
+        const signatureClear = TransStatus + PAYID + GPG_PASSWORD;
+        const expectedSignature = crypto.createHash('sha1').update(signatureClear).digest('hex');
+
+        if (Signature.toLowerCase() !== expectedSignature.toLowerCase()) {
+            console.error(`GPG Webhook: Invalid signature. Received: ${Signature}, Expected: ${expectedSignature}`);
+            return res.status(400).send('Invalid signature');
+        }
+
+        if (TransStatus === '00') {
+            console.log(`GPG Webhook: Payment success for order ${PAYID}`);
+            // TODO: Find user/order by PAYID and update subscription status
+            // const orderId = PAYID; // This should contain the user ID or another identifier
+            // const client = await clientPromise;
+            // const db = client.db('pharmia');
+            // const usersCollection = db.collection<User>('users');
+            // await usersCollection.updateOne({ _id: new ObjectId(orderId) }, { $set: { hasActiveSubscription: true, ... } });
+        } else {
+            console.log(`GPG Webhook: Payment status for order ${PAYID}: ${TransStatus}`);
+        }
+
+        res.status(200).send('Webhook processed');
+
+    } catch (error) {
+        console.error('Error processing GPG webhook:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 app.post('/api/newsletter/send', async (req, res) => {
     try {
         const { subject, htmlContent, roles, cities, statuses } = req.body;

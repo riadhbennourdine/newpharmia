@@ -81,46 +81,64 @@ const PricingPage: React.FC = () => {
   };
 
   const confirmAndInitiatePayment = async (totalAmount: number) => {
-    if (!selectedPlanDetails || !user) return; // Ensure user is available
+    if (!selectedPlanDetails || !user) return;
 
     const { planName, isAnnual } = selectedPlanDetails;
 
     setLoadingPlan(planName);
     setError(null);
-    setShowConfirmationModal(false); // Close the modal
+    setShowConfirmationModal(false);
 
-    // try {
-    //   const response = await fetch('/api/konnect/initiate-payment', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       amount: totalAmount,
-    //       planName: planName,
-    //       isAnnual: isAnnual,
-    //       firstName: user.firstName,
-    //       lastName: user.lastName,
-    //       email: user.email,
-    //       phoneNumber: user.phoneNumber, // Assuming phoneNumber is available in user object
-    //       orderId: user._id // Use user ID as order ID for now
-    //     }),
-    //   });
+    try {
+      const response = await fetch('/api/gpg/initiate-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          planName: planName,
+          isAnnual: isAnnual,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          orderId: user._id, // Pass user ID to be used as orderId on GPG webhook
+          city: user.city,
+          country: 'Tunisie', // Assuming Tunisia, can be made dynamic
+          zip: user.zipCode, // Assuming user has zipCode
+        }),
+      });
 
-    //   const data = await response.json();
+      const paymentData = await response.json();
 
-    //   if (!response.ok) {
-    //     throw new Error(data.message || 'Failed to initiate payment.');
-    //   }
+      if (!response.ok) {
+        throw new Error(paymentData.message || 'Failed to initiate GPG payment.');
+      }
 
-    //   // Redirect to Konnect payment page
-    //   window.location.href = data.payUrl;
-      
-    // } catch (err: any) {
-    //   console.error('Error initiating Konnect payment:', err);
-    //   setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement Konnect.');
-    // } finally {
-    //   setLoadingPlan(null);
-    //   setSelectedPlanDetails(null);
-    // }
+      // Dynamically create and submit a form to redirect to GPG
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = paymentData.paymentUrl;
+
+      Object.keys(paymentData).forEach(key => {
+        if (key !== 'paymentUrl') {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = paymentData[key];
+          form.appendChild(input);
+        }
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
+    } catch (err: any) {
+      console.error('Error initiating GPG payment:', err);
+      setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement.');
+    } finally {
+      setLoadingPlan(null);
+      setSelectedPlanDetails(null);
+    }
   };
 
   return (
