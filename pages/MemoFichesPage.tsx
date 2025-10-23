@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useData } from '../context/DataContext';
+import { CaseStudy, UserRole, MemoFicheStatus } from '../types';
 import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon, UserGroupIcon } from '../components/Icons';
 import { TOPIC_CATEGORIES } from '../constants';
 import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
