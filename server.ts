@@ -537,7 +537,7 @@ app.get('/api/memofiches', async (req, res) => {
             }
         } else {
             // Other roles (Apprenant, etc.) only see PUBLISHED fiches
-            query.status = MemoFicheStatus.PUBLISHED;
+            query.status = { $in: [MemoFicheStatus.PUBLISHED, 'Publiée'] };
         }
 
         console.log('Query:', query);
