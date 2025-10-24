@@ -506,11 +506,15 @@ app.get('/api/memofiches', async (req, res) => {
 
         let user: User | null = null;
         let group: Group | null = null;
+        let pharmacist: User | null = null;
 
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
             if (user && user.groupId) {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                if (group && group.pharmacistId) {
+                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
+                }
             }
         }
 
@@ -567,11 +571,14 @@ app.get('/api/memofiches', async (req, res) => {
                 if(user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
                     hasAccess = true;
                 } else {
-                    const createdAt = new Date(user.createdAt);
-                    const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-                    if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
-                        hasAccess = true;
-                    }
+                const createdAt = new Date(user.createdAt);
+                const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+
+                const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
+
+                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+                    hasAccess = true;
+                }
                     if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
                         hasAccess = true;
                     }
@@ -624,8 +631,17 @@ app.get('/api/memofiches/:id', async (req, res) => {
         }
 
         let user: User | null = null;
+        let group: Group | null = null;
+        let pharmacist: User | null = null;
+
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (user && user.groupId) {
+                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                if (group && group.pharmacistId) {
+                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
+                }
+            }
         }
 
         let hasAccess = false;
@@ -635,15 +651,15 @@ app.get('/api/memofiches/:id', async (req, res) => {
             } else {
                 const createdAt = new Date(user.createdAt);
                 const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-                if (user.hasActiveSubscription || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+
+                const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
+
+                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
                     hasAccess = true;
                 }
 
-                if (!hasAccess && user.groupId) {
-                    const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                    if (group && group.assignedFiches.some(f => f.ficheId === id)) {
-                        hasAccess = true;
-                    }
+                if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === id)) {
+                    hasAccess = true;
                 }
             }
         }
