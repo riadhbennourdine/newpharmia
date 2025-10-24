@@ -435,6 +435,16 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             <Label htmlFor="shortDescription">Description Courte</Label>
             <Textarea name="shortDescription" id="shortDescription" rows={3} value={caseStudy.shortDescription} onChange={handleChange} />
           </div>
+          {canEditStatus && (
+            <div>
+              <Label htmlFor="status">Statut</Label>
+              <select name="status" id="status" value={caseStudy.status} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                  {Object.values(MemoFicheStatus).map(status => (
+                      <option key={status} value={status}>{status}</option>
+                  ))}
+              </select>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="theme">Thème Pédagogique</Label>
