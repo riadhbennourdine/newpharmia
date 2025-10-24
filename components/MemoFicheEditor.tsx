@@ -498,7 +498,92 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        {/* Other sections will be rendered here based on displayedSections */}
+        {displayedSections.map((sectionInfo, index) => {
+            let content;
+            switch (sectionInfo.id) {
+                case 'patientSituation':
+                case 'pathologyOverview':
+                case 'casComptoir':
+                case 'objectifsConseil':
+                case 'pathologiesConcernees':
+                case 'interetDispositif':
+                case 'beneficesSante':
+                case 'dispositifsAConseiller':
+                case 'reponsesObjections':
+                case 'pagesSponsorisees':
+                    content = <RichContentSectionEditor section={caseStudy[sectionInfo.id]} onChange={(newSection) => setCaseStudy(prev => ({ ...prev, [sectionInfo.id]: newSection }))} showTitle={false} />;
+                    break;
+                case 'keyQuestions':
+                case 'redFlags':
+                case 'referencesBibliographiquesDM':
+                case 'ordonnance':
+                case 'analyseOrdonnance':
+                case 'informationsMaladie':
+                case 'conseilsHygieneDeVie':
+                case 'conseilsAlimentaires':
+                    content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
+                    break;
+                case 'recommendations':
+                    content = (
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="mainTreatment">Traitement Principal</Label>
+                                <Textarea name="mainTreatment" id="mainTreatment" rows={3} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
+                            </div>
+                            <div>
+                                <Label htmlFor="associatedProducts">Produits Associés</Label>
+                                <Textarea name="associatedProducts" id="associatedProducts" rows={3} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
+                            </div>
+                            <div>
+                                <Label htmlFor="lifestyleAdvice">Conseils Hygiéno-diététiques</Label>
+                                <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={3} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
+                            </div>
+                        </div>
+                    );
+                    break;
+                case 'keyPoints':
+                     content = (
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="keyPoints">Points Clés</Label>
+                                <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
+                            </div>
+                            <div>
+                                <Label htmlFor="references">Références</Label>
+                                <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
+                            </div>
+                        </div>
+                    );
+                    break;
+                default:
+                    if (sectionInfo.isCustom) {
+                        content = <RichContentSectionEditor section={caseStudy.customSections[sectionInfo.index]} onChange={(newSection) => {
+                            const newCustomSections = [...caseStudy.customSections];
+                            newCustomSections[sectionInfo.index] = newSection;
+                            handleCustomSectionChange(newCustomSections);
+                        }} onRemove={() => removeCustomSection(sectionInfo.index)} />;
+                    }
+                    break;
+            }
+
+            return (
+                <Section
+                    key={sectionInfo.id}
+                    title={sectionInfo.title}
+                    onMoveUp={() => moveSection(index, 'up')}
+                    onMoveDown={() => moveSection(index, 'down')}
+                    isFirst={index === 0}
+                    isLast={index === displayedSections.length - 1}
+                >
+                    {content}
+                </Section>
+            );
+        })}
+
+        <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200">
+            <PlusCircleIcon className="h-5 w-5 mr-2" />
+            Ajouter une section personnalisée
+        </button>
 
         <div className="flex justify-end space-x-4">
           <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Annuler</button>
