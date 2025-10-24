@@ -536,8 +536,11 @@ app.get('/api/memofiches', async (req, res) => {
                 query.status = selectedStatus;
             }
         } else {
-            // Other roles (Apprenant, etc.) only see PUBLISHED fiches
-            query.status = { $in: [MemoFicheStatus.PUBLISHED, 'Publiée'] };
+            // Other roles (Apprenant, etc.) only see PUBLISHED fiches or fiches without a status
+            query.$or = [
+                { status: { $in: [MemoFicheStatus.PUBLISHED, 'Publiée'] } },
+                { status: { $exists: false } }
+            ];
         }
 
         console.log('Query:', query);
