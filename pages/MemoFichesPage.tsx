@@ -57,7 +57,9 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{caseStudy.title}</h3>
                     <p className="text-xs font-semibold text-teal-600 uppercase tracking-wide mt-1">{caseStudy.theme} &bull; {caseStudy.system}</p>
                     <p className="text-xs text-slate-500 mt-1">Créé le {new Date(caseStudy.creationDate).toLocaleDateString('fr-FR')}</p>
-                    <p className="text-xs text-slate-500 mt-1">Statut: {caseStudy.status}</p>
+                    {(isAdmin || isFormateur) && (
+                        <p className="text-xs text-slate-500 mt-1">Statut: {caseStudy.status}</p>
+                    )}
                     <p className="mt-2 text-sm text-slate-600 line-clamp-2 flex-grow">{caseStudy.shortDescription}</p>
                 </div>
             </div>
