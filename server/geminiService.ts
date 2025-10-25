@@ -4,7 +4,7 @@ import { CaseStudy, MemoFicheStatus } from "../types.js";
 // This file uses an older syntax for the Google GenAI SDK that is compatible with the project's dependencies.
 // The main class is GoogleGenAI and content is generated via ai.models.generateContent(...)
 
-export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string, theme?: string, system?: string): Promise<Partial<CaseStudy>> => {
+export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const API_KEY = process.env.GEMINI_API_KEY;
   if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
   const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -119,37 +119,28 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
-  } else if (memoFicheType === 'micronutrition') {
+  } else if (memoFicheType === 'communication') {
     jsonStructure = {
       type: Type.OBJECT,
       properties: {
         title: { type: Type.STRING },
-        theme: { type: Type.STRING },
-        system: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
+        summary: { type: Type.STRING },
         patientSituation: { type: Type.STRING },
-        keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
-        pathologyOverview: { type: Type.STRING },
-        redFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
-        recommendations: {
-          type: Type.OBJECT,
-          properties: {
-            mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
-            associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
-            lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
-            dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+        customSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
           },
-          required: ['mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice'],
         },
-        references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
-      required: ['title', 'theme', 'system', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'recommendations', 'references'],
+      required: ['title', 'shortDescription', 'summary', 'patientSituation', 'customSections'],
     };
-    fullPrompt = `En tant qu'expert en micronutrition pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'micronutrition'. La mémofiche doit inclure un titre pertinent, le thème et le système/organe concerné, et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : patientSituation, keyQuestions, pathologyOverview, redFlags, recommendations (mainTreatment, associatedProducts, lifestyleAdvice, dietaryAdvice), references. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
-
-${prompt}
-
-Thème: ${theme || 'Non spécifié'}
-Système/Organe: ${system || 'Non spécifié'}`;
   }
 
   if (memoFicheType === 'dispositifs-medicaux') {
