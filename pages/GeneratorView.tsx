@@ -363,7 +363,7 @@ ${formattingInstructions}
             </select>
         </div>
 
-        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances' || memoFicheType === 'communication') && (
+        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances' || memoFicheType === 'communication' || memoFicheType === 'micronutrition') && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
