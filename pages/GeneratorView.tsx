@@ -501,7 +501,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
       <div className="mt-6 text-center">
         <button
           onClick={handleGenerate}
-          disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem))}
+          disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'micronutrition' && (!selectedTheme || !selectedSystem))}
           className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
         >
           {isLoading ? (
