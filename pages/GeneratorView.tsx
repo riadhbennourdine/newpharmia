@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -358,6 +358,7 @@ ${formattingInstructions}
             <option value="dispositifs-medicaux">Dispositifs médicaux</option>
             <option value="ordonnances">Ordonnances</option>
             <option value="communication">Communication</option>
+            <option value="micronutrition">Micronutrition</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>
