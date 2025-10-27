@@ -151,3 +151,9 @@ export const ChevronDownIcon: React.FC<{ className?: string }> = ({ className })
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
     </svg>
 );
+
+export const ShareIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12 15.75a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM16.783 4.093a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12.75 6.168L9.32 8.49a2.25 2.25 0 000 3.02l3.43 2.322" />
+    </svg>
+);

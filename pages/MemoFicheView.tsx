@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
+import QRCode from 'qrcode.react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
-import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner } from '../components/Icons';
+import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon } from '../components/Icons';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 
@@ -62,9 +63,11 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const isAuthorized = user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR;
   const canEdit = isAuthorized && !isPreview;
   const canDelete = user?.role === UserRole.ADMIN && !isPreview;
+  const canGenerateQRCode = user?.role === UserRole.ADMIN && !isPreview;
 
   const [openSection, setOpenSection] = useState<string | null>('patientSituation');
   const [activeTab, setActiveTab] = useState<TabName>('memo');
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const handleToggle = (title: string) => setOpenSection(openSection === title ? null : title);
   
@@ -352,10 +355,21 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
               </div>
               <div key={activeTab} className="min-h-[300px] animate-fade-in">{renderContent()}</div>
                <div className="mt-8 flex items-center justify-center space-x-4"> 
-                  {onBack && <button onClick={onBack} className="px-6 py-3 text-base font-bold text-slate-700 bg-slate-200 rounded-lg hover:bg-slate-300">Retour</button>}
                   {canEdit && onEdit && <button onClick={onEdit} className="px-6 py-3 text-base font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 flex items-center"><PencilIcon className="h-5 w-5 mr-2" /> Modifier</button>}
                   {canDelete && onDelete && <button onClick={handleDelete} className="px-6 py-3 text-base font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center"><TrashIcon className="h-5 w-5 mr-2" /> Supprimer</button>}
+                  {canGenerateQRCode && (
+                    <button onClick={() => setShowQRCode(!showQRCode)} className="px-6 py-3 text-base font-bold text-white bg-slate-600 rounded-lg hover:bg-slate-700 flex items-center">
+                      <ShareIcon className="h-5 w-5 mr-2" /> Partager (QR)
+                    </button>
+                  )}
               </div>
+              {showQRCode && canGenerateQRCode && (
+                <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md animate-fade-in">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">Partagez cette fiche avec ce QR Code</h3>
+                  <QRCode value={window.location.href} size={256} />
+                  <p className="mt-4 text-sm text-slate-600">Scannez ce code pour ouvrir cette page sur un autre appareil.</p>
+                </div>
+              )}
           </div>
           <aside className="lg:col-span-1 z-10"><div className="sticky top-24"><CustomChatBot title={caseStudy.title} context={JSON.stringify(caseStudy)} /></div></aside>
       </div>
