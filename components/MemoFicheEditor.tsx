@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode.react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
-import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
+import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon } from './Icons';
 import { useAuth } from '../hooks/useAuth';
 
 import { TOPIC_CATEGORIES } from '../constants';
@@ -218,6 +219,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   const [caseStudy, setCaseStudy] = useState<CaseStudy>(createSafeCaseStudy(initialCaseStudy));
   const [displayedSections, setDisplayedSections] = useState<any[]>([]);
   const { user } = useAuth();
+  const [showQRCode, setShowQRCode] = useState(false);
+  const canGenerateQRCode = user && user.role === UserRole.ADMIN;
 
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
@@ -595,10 +598,28 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             Ajouter une section personnalisée
         </button>
 
-        <div className="flex justify-end space-x-4">
-          <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Annuler</button>
-          <button type="submit" className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">Enregistrer</button>
+        <div className="flex justify-between items-center">
+          <div>
+            {canGenerateQRCode && (
+              <button type="button" onClick={() => setShowQRCode(!showQRCode)} className="flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <ShareIcon className="h-5 w-5 mr-2" />
+                Partager (QR)
+              </button>
+            )}
+          </div>
+          <div className="flex space-x-4">
+            <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Annuler</button>
+            <button type="submit" className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">Enregistrer</button>
+          </div>
         </div>
+
+        {showQRCode && canGenerateQRCode && (
+          <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md border animate-fade-in">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Partagez cette fiche avec ce QR Code</h3>
+            <QRCode value={`${window.location.origin}/memofiche/${caseStudy._id}`} size={256} />
+            <p className="mt-4 text-sm text-slate-600">Ce code mène vers la page publique de la mémofiche.</p>
+          </div>
+        )}
 
       </form>
     </div>
