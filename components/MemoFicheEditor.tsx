@@ -414,12 +414,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="bg-yellow-100 p-4 mb-6 border border-yellow-400 rounded-md">
-        <h3 className="font-bold text-yellow-800">Debug Info (Temporary)</h3>
-        <p>User Role from Auth: <code>{user ? user.role : 'null'}</code></p>
-        <p>UserRole.ADMIN Constant: <code>{UserRole.ADMIN}</code></p>
-        <p>Comparison Result (user?.role === UserRole.ADMIN): <code>{user?.role === UserRole.ADMIN ? 'true' : 'false'}</code></p>
-      </div>
       <h2 className="text-3xl font-bold text-slate-800 mb-6">{initialCaseStudy?._id ? 'Modifier la Mémofiche' : 'Créer une Nouvelle Mémofiche'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
 
