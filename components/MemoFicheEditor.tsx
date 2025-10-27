@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QRCode } from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
 import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon } from './Icons';
@@ -622,7 +622,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         {showQRCode && canGenerateQRCode && (
           <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md border animate-fade-in">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Partagez cette fiche avec ce QR Code</h3>
-            <QRCode value={`${window.location.origin}/memofiche/${caseStudy._id}`} size={256} />
+            <QRCodeSVG value={`${window.location.origin}/memofiche/${caseStudy._id}`} size={256} />
             <p className="mt-4 text-sm text-slate-600">Ce code mène vers la page publique de la mémofiche.</p>
           </div>
         )}

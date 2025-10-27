@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Navigate } from 'react-router-dom';
-import { QRCode } from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
@@ -367,7 +367,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
               {showQRCode && canGenerateQRCode && (
                 <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md animate-fade-in">
                   <h3 className="text-lg font-bold text-slate-800 mb-4">Partagez cette fiche avec ce QR Code</h3>
-                  <QRCode value={window.location.href} size={256} />
+                  <QRCodeSVG value={window.location.href} size={256} />
                   <p className="mt-4 text-sm text-slate-600">Scannez ce code pour ouvrir cette page sur un autre appareil.</p>
                 </div>
               )}
