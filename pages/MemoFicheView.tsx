@@ -355,6 +355,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
               </div>
               <div key={activeTab} className="min-h-[300px] animate-fade-in">{renderContent()}</div>
                <div className="mt-8 flex items-center justify-center space-x-4"> 
+                  {onBack && <button onClick={onBack} className="px-6 py-3 text-base font-bold text-slate-700 bg-slate-200 rounded-lg hover:bg-slate-300">Retour</button>}
                   {canEdit && onEdit && <button onClick={onEdit} className="px-6 py-3 text-base font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 flex items-center"><PencilIcon className="h-5 w-5 mr-2" /> Modifier</button>}
                   {canDelete && onDelete && <button onClick={handleDelete} className="px-6 py-3 text-base font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center"><TrashIcon className="h-5 w-5 mr-2" /> Supprimer</button>}
                   {canGenerateQRCode && (
