@@ -598,6 +598,68 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             Ajouter une section personnalisée
         </button>
 
+        <FormSection title="Flashcards">
+          {caseStudy.flashcards.map((flashcard, index) => (
+            <div key={index} className="p-3 border rounded-md bg-slate-50 space-y-2">
+              <div className="flex justify-between items-center">
+                <p className="font-semibold">Flashcard {index + 1}</p>
+                <button type="button" onClick={() => handleRemoveItem('flashcards', index)} className="text-red-500 hover:text-red-700">
+                  <TrashIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div>
+                <Label htmlFor={`flashcard-q-${index}`}>Question</Label>
+                <Input id={`flashcard-q-${index}`} type="text" value={flashcard.question} onChange={(e) => handleItemChange('flashcards', index, 'question', e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor={`flashcard-a-${index}`}>Réponse</Label>
+                <Textarea id={`flashcard-a-${index}`} rows={2} value={flashcard.answer} onChange={(e) => handleItemChange('flashcards', index, 'answer', e.target.value)} />
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => handleAddItem('flashcards')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
+            <PlusCircleIcon className="h-5 w-5 mr-2" />
+            Ajouter une Flashcard
+          </button>
+        </FormSection>
+
+        <FormSection title="Quiz">
+          {caseStudy.quiz?.map((question, qIndex) => (
+            <div key={qIndex} className="p-3 border rounded-md bg-slate-50 space-y-3">
+              <div className="flex justify-between items-center">
+                <p className="font-semibold">Question {qIndex + 1}</p>
+                <button type="button" onClick={() => handleRemoveItem('quiz', qIndex)} className="text-red-500 hover:text-red-700">
+                  <TrashIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div>
+                <Label htmlFor={`quiz-q-${qIndex}`}>Question</Label>
+                <Input id={`quiz-q-${qIndex}`} type="text" value={question.question} onChange={(e) => handleItemChange('quiz', qIndex, 'question', e.target.value)} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {question.options.map((option, oIndex) => (
+                  <div key={oIndex}>
+                    <Label htmlFor={`quiz-q${qIndex}-o${oIndex}`}>Option {oIndex + 1}</Label>
+                    <Input id={`quiz-q${qIndex}-o${oIndex}`} type="text" value={option} onChange={(e) => handleQuizOptionChange(qIndex, oIndex, e.target.value)} />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <Label htmlFor={`quiz-a-${qIndex}`}>Index de la bonne réponse (0-3)</Label>
+                <Input id={`quiz-a-${qIndex}`} type="number" min="0" max="3" value={question.correctAnswerIndex} onChange={(e) => handleItemChange('quiz', qIndex, 'correctAnswerIndex', parseInt(e.target.value, 10))} />
+              </div>
+              <div>
+                <Label htmlFor={`quiz-exp-${qIndex}`}>Explication</Label>
+                <Textarea id={`quiz-exp-${qIndex}`} rows={2} value={question.explanation} onChange={(e) => handleItemChange('quiz', qIndex, 'explanation', e.target.value)} />
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => handleAddItem('quiz')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
+            <PlusCircleIcon className="h-5 w-5 mr-2" />
+            Ajouter une Question
+          </button>
+        </FormSection>
+
         <div className="flex justify-between items-center">
           <div>
             {canGenerateQRCode && (
