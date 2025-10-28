@@ -61,6 +61,9 @@ export interface Group {
   pharmacistId: ObjectId | string;
   preparatorIds: (ObjectId | string)[];
   assignedFiches: { ficheId: string; assignedAt: Date; }[];
+  pharmacistName?: string;
+  pharmacistCreatedAt?: Date;
+  pharmacistSubscriptionEndDate?: Date;
 }
 
 export interface Client extends User {

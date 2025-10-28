@@ -54,9 +54,36 @@ router.post('/', async (req, res) => {
 // Get all groups
 router.get('/', async (req, res) => {
   try {
-    const { groupsCollection } = await getCollections();
-    const groups = await groupsCollection.find({}).toArray();
-    res.json(groups);
+    const { groupsCollection, usersCollection } = await getCollections();
+    
+    // Fetch all groups and all pharmacists concurrently
+    const [groups, pharmacists] = await Promise.all([
+      groupsCollection.find({}).toArray(),
+      usersCollection.find({ role: UserRole.PHARMACIEN }).toArray(),
+    ]);
+
+    // Create a map of pharmacists for easy lookup
+    const pharmacistMap = new Map(pharmacists.map(p => [
+      (p._id as ObjectId).toString(),
+      {
+        name: `${p.firstName} ${p.lastName}`,
+        createdAt: p.createdAt,
+        subscriptionEndDate: p.subscriptionEndDate,
+      }
+    ]));
+
+    // Add pharmacistName and dates to each group
+    const populatedGroups = groups.map(group => {
+      const pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
+      return {
+        ...group,
+        pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
+        pharmacistCreatedAt: pharmacistInfo ? pharmacistInfo.createdAt : undefined,
+        pharmacistSubscriptionEndDate: pharmacistInfo ? pharmacistInfo.subscriptionEndDate : undefined,
+      };
+    });
+
+    res.json(populatedGroups);
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des groupes.", error });
   }

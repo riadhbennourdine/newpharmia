@@ -64,6 +64,8 @@ const GroupManagementPage = () => {
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du Groupe</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pharmacien</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date inscription</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membres</th>
               <th scope="col" className="relative px-6 py-3">
                 <span className="sr-only">Actions</span>
@@ -74,7 +76,9 @@ const GroupManagementPage = () => {
             {groups.map((group) => (
               <tr key={group._id as string}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{group.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistId}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistCreatedAt ? new Date(group.pharmacistCreatedAt).toLocaleDateString('fr-FR') : 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds.length}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">
