@@ -151,6 +151,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
         </tr>
         </tbody>
       </table>
+      </>
     );
 };
 
