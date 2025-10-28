@@ -82,12 +82,12 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
     }
 
     return (
-      <style type="text/css">
+      <style type="text/css" dangerouslySetInnerHTML={{ __html: `
         @media only screen and (max-width: 600px) {
           .email-container {
             width: 100% !important;
           }
-          h2 {
+          .mobile-title {
             font-size: 32px !important;
             line-height: 1.2 !important;
           }
@@ -102,8 +102,8 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
             font-size: 16px !important;
           }
         }
-      </style>
-      <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
+      `}} />
+      <table cellPadding="0" cellSpacing="0" border={0} class="email-container" style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
         <tbody>
         <tr>
           <td align="center" style={{ padding: '20px' }}>
