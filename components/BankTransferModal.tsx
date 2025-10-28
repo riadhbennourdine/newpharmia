@@ -13,10 +13,10 @@ const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
         <div className="text-gray-700 space-y-4">
             <p>Veuillez effectuer un virement bancaire aux coordonnées suivantes :</p>
             <div className="p-4 bg-gray-100 rounded-md">
-                <p><strong>Banque :</strong> Banque ZITOUNA</p>
-                <p><strong>RIB :</strong> 25044000000093276427</p>
-                <p><strong>IBAN :</strong> TN59 2504 4000 0000 9327 6427</p>
-                <p><strong>BIC/SWIFT :</strong> BZITTNTT</p>
+                <p><strong>Banque :</strong> Banque Nationale Agricole (BNA)</p>
+                <p><strong>RIB :</strong> 03 027 1570115004362 83</p>
+                <p><strong>IBAN :</strong> TN 59 03 027 157 0115 004362 83</p>
+                <p><strong>Domiciliation :</strong> BOUMHEL ELBASSATINE</p>
                 <p><strong>Bénéficiaire :</strong> PHARMACONSEIL BMB</p>
             </div>
             <p>Veuillez inclure votre adresse e-mail dans le libellé du virement.</p>
@@ -39,7 +39,7 @@ const BankTransferModal: React.FC<BankTransferModalProps> = ({ onClose }) => {
             </Link>
         </div>
         <div className="mt-4 image-zoom-container">
-            <img src="https://pharmaconseilbmb.com/photos/site/rib-pharmaconseil.png" alt="RIB PHARMACONSEIL BMB" className="w-full zoom-on-hover" />
+            <img src="https://pharmaconseilbmb.com/photos/site/rib-bna.png" alt="RIB BNA" className="w-full zoom-on-hover" />
         </div>
       </div>
     </div>
