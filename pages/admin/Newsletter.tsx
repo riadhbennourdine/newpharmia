@@ -95,13 +95,13 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                 <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>
                   <img src="https://pharmaconseilbmb.com/photos/site/23.png" alt="Favicon" width={30} style={{ marginRight: '10px', verticalAlign: 'middle' }} />
                   <img src="https://pharmaconseilbmb.com/photos/site/logo-pharmia.png" alt="PharmIA Logo" width={150} style={{ verticalAlign: 'middle' }} />
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0, marginTop: '10px' }}>Devenez un expert du conseil à l'officine.</p>
+                  <p style={{ fontSize: '16px', color: '#6b7280', margin: 0, marginTop: '10px' }}>Devenez un expert du conseil à l'officine.</p>
                 </td>
               </tr>
               {/* Main Content */}
               <tr>
                 <td style={{ padding: '24px 32px', fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }}>
-                  <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }} dangerouslySetInnerHTML={{ __html: `Bonjour ${recipientName},` }}></h2>
+                  <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginTop: 0, marginBottom: 16, fontFamily: 'Poppins, Arial, sans-serif', color: '#111827' }} dangerouslySetInnerHTML={{ __html: `Bonjour ${recipientName},` }}></h2>
                   {imageUrl && (
                     <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: 24 }}>
                      <tbody>
@@ -113,12 +113,12 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                       </tbody>
                     </table>
                   )}
-                  <div style={{ lineHeight: 1.6, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                  <div style={{ lineHeight: 1.8, color: '#4b5563', margin: 0, fontSize: '18px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
                 </td>
               </tr>
               {/* Footer */}
               <tr>
-                <td style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '12px', color: '#6b7280', fontFamily: 'Arial, sans-serif' }}>
+                <td style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '14px', color: '#6b7280', fontFamily: 'Arial, sans-serif' }}>
                   <p style={{ marginTop: 0, marginBottom: 8 }}><a href="https://newpharmia-production.up.railway.app/" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: 'bold' }}>PharmIA</a> | By PharmaConseil BMB - Formation continue à l'officine</p>
                   {/* FIX: Changed margin from a string to a number to resolve TypeScript error. */}
                   <p style={{ margin: 0 }}><a href={`/#/unsubscribe?email={{EMAIL_DESTINATAIRE}}`} style={{ color: '#0d9488', textDecoration: 'none' }}>Se désinscrire</a></p>
