@@ -88,21 +88,20 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
             .email-container {
               width: 100% !important;
             }
-            .mobile-title {
-              font-size: 32px !important;
-              line-height: 1.2 !important;
-            }
-            .main-content-text {
-              font-size: 20px !important;
-              line-height: 1.8 !important;
-            }
-            .header-slogan {
-              font-size: 18px !important;
-            }
-            .footer-text p {
-              font-size: 16px !important;
-            }
-          }
+                      .mobile-title {
+                        font-size: 36px !important;
+                        line-height: 1.2 !important;
+                      }
+                      .main-content-text {
+                        font-size: 22px !important;
+                        line-height: 1.8 !important;
+                      }
+                      .header-slogan {
+                        font-size: 20px !important;
+                      }
+                      .footer-text p {
+                        font-size: 18px !important;
+                      }          }
         `}} />
         <table cellPadding="0" cellSpacing="0" border={0} className="email-container" style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
         <tbody>
