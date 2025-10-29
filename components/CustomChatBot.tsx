@@ -194,9 +194,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                             type="button"
                             onClick={toggleRecording}
                             className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 hover:text-teal-600 focus:outline-none"
-                            aria-label={isRecording ? '''Arrêter l
-'''enregistrement''' : '''Démarrer l
-'''enregistrement'''}
+                            aria-label={isRecording ? 'Arrêter l\'enregistrement' : 'Démarrer l\'enregistrement'}
                         >
                             {isRecording ? <SpeakerIcon className="h-5 w-5 text-red-500" /> : <SpeakerIcon className="h-5 w-5" />}
                         </button>
