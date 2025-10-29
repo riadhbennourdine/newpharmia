@@ -189,22 +189,27 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
 
             <form onSubmit={handleFormSubmit} className="p-4 border-t border-slate-200/80 bg-slate-50 rounded-b-lg">
                 <div className="flex items-center space-x-2">
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Posez votre question ici..."
-                        className="flex-grow w-full px-4 py-2 border border-slate-300 rounded-full focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                        disabled={isLoading}
-                        aria-label="Votre question"
-                    />
+                    <div className="relative flex-grow">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <SpeakerIcon className="h-5 w-5 text-slate-400" />
+                        </div>
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder="Posez votre question ici..."
+                            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-full focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            disabled={isLoading}
+                            aria-label="Votre question"
+                        />
+                    </div>
                     <button
                         type="button"
                         onClick={toggleRecording}
                         className="p-2 rounded-full text-slate-500 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                         aria-label={isRecording ? 'Arrêter l\'enregistrement' : 'Démarrer l\'enregistrement'}
                     >
-                        {isRecording ? <SpeakerIcon className="h-6 w-6 text-red-500" /> : <SpeakerIcon className="h-6 w-6" />}
+                        {isRecording ? <MicOffIcon className="h-6 w-6 text-red-500" /> : <MicIcon className="h-6 w-6" />}
                     </button>
                     <button
                         type="submit"
