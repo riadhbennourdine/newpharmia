@@ -21,10 +21,16 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const recognitionRef = useRef<any>(null);
 
+    const stripMarkdown = (text: string) => {
+        // This will remove ** for bold, and could be extended for other markdown like *, _, etc.
+        return text.replace(/\*\*/g, '');
+    };
+
     const speakText = (text: string, lang = 'fr-FR') => {
         if (!window.speechSynthesis) return;
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        const cleanText = stripMarkdown(text);
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = lang;
         
         // A small hack to get voices loaded
@@ -88,7 +94,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     };
 
     const renderChatMessage = (text: string) => {
-        const html = text.replace(/\*\*(.*?)\*\*/g, `<strong class="font-semibold text-teal-600"></strong>`);
+        const html = text.replace(/\*\*(.*?)\*\*/g, `<strong class="font-semibold text-teal-600">$1</strong>`);
         return html;
     };
 
