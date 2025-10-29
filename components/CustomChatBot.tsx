@@ -20,10 +20,11 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     const [isRecording, setIsRecording] = useState(false);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const recognitionRef = useRef<any>(null);
+    const transcriptRef = useRef('');
 
     const stripMarkdown = (text: string) => {
-        // This will remove ** for bold, and could be extended for other markdown like *, _, etc.
-        return text.replace(/\*\*/g, '');
+        // This will remove ** for bold, and * for italic
+        return text.replace(/\*{1,2}(.*?)\*{1,2}/g, '$1');
     };
 
     const speakText = (text: string, lang = 'fr-FR') => {
@@ -32,17 +33,18 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         const cleanText = stripMarkdown(text);
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = lang;
-        utterance.rate = 1.2; // Faster speech
-        utterance.pitch = 1.1; // Slightly higher pitch
+        utterance.rate = 1.3; // A bit faster
+        utterance.pitch = 1.2; // A bit higher
 
-        // A small hack to get voices loaded
         const voices = window.speechSynthesis.getVoices();
+        console.log('Available French voices:', voices.filter(v => v.lang === 'fr-FR'));
+
         const frenchVoice = voices.find(voice => voice.lang === lang && voice.name.includes('Google'));
         if (frenchVoice) {
             utterance.voice = frenchVoice;
         }
 
-        window.speechSynthesis.cancel(); // Cancel any previous speech
+        window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
     };
 
@@ -56,7 +58,8 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
 
             recognitionRef.current.onresult = (event: any) => {
                 const transcript = event.results[event.results.length - 1][0].transcript;
-                setInputValue(prev => prev + transcript.trim() + ' ');
+                transcriptRef.current = transcript.trim();
+                setInputValue(transcript.trim());
             };
 
             recognitionRef.current.onerror = (event: any) => {
@@ -68,6 +71,10 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
 
             recognitionRef.current.onend = () => {
                 setIsRecording(false);
+                if (transcriptRef.current) {
+                    sendMessage(transcriptRef.current);
+                    transcriptRef.current = '';
+                }
             };
         } else {
             console.warn("Speech recognition not supported in this browser.");
@@ -106,9 +113,8 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         }
     }, [messages]);
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const trimmedInput = inputValue.trim();
+    const sendMessage = async (message: string) => {
+        const trimmedInput = message.trim();
         if (!trimmedInput || isLoading) return;
 
         const newUserMessage: Message = { role: 'user', text: trimmedInput };
@@ -130,6 +136,11 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        sendMessage(inputValue);
     };
 
     return (
@@ -176,7 +187,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                 )}
             </div>
 
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-200/80 bg-slate-50 rounded-b-lg">
+            <form onSubmit={handleFormSubmit} className="p-4 border-t border-slate-200/80 bg-slate-50 rounded-b-lg">
                 <div className="flex items-center space-x-2">
                     <input
                         type="text"
@@ -193,7 +204,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                         className="p-2 rounded-full text-slate-500 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                         aria-label={isRecording ? 'Arrêter l\'enregistrement' : 'Démarrer l\'enregistrement'}
                     >
-                        {isRecording ? <MicOffIcon className="h-6 w-6 text-red-500" /> : <MicIcon className="h-6 w-6" />}
+                        {isRecording ? <SpeakerIcon className="h-6 w-6 text-red-500" /> : <SpeakerIcon className="h-6 w-6" />}
                     </button>
                     <button
                         type="submit"
