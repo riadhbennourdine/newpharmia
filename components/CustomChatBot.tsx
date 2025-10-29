@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { sendChatMessage } from '../services/geminiService';
-import { BrainCircuitIcon, Spinner, MicIcon, MicOffIcon, SpeakerIcon } from './Icons';
+import { BrainCircuitIcon, Spinner, MicIcon, MicOffIcon, SpeakerIcon, XCircleIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
@@ -18,6 +18,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isRecording, setIsRecording] = useState(false);
+    const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const recognitionRef = useRef<any>(null);
     const transcriptRef = useRef('');
@@ -27,25 +28,40 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         return text.replace(/\*{1,2}(.*?)\*{1,2}/g, '$1');
     };
 
-    const speakText = (text: string, lang = 'fr-FR') => {
+    const speakText = (text: string, index: number, lang = 'fr-FR') => {
         if (!window.speechSynthesis) return;
 
         const cleanText = stripMarkdown(text);
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = lang;
-        utterance.rate = 1.3; // A bit faster
-        utterance.pitch = 1.2; // A bit higher
+        utterance.rate = 1; // Normal speed
+        utterance.pitch = 1.2;
 
         const voices = window.speechSynthesis.getVoices();
-        console.log('Available French voices:', voices.filter(v => v.lang === 'fr-FR'));
-
         const frenchVoice = voices.find(voice => voice.lang === lang && voice.name.includes('Google'));
         if (frenchVoice) {
             utterance.voice = frenchVoice;
         }
 
+        utterance.onstart = () => {
+            setSpeakingMessageIndex(index);
+        };
+
+        utterance.onend = () => {
+            setSpeakingMessageIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingMessageIndex(null);
+        };
+
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
+    };
+
+    const stopSpeaking = () => {
+        window.speechSynthesis.cancel();
+        setSpeakingMessageIndex(null);
     };
 
     useEffect(() => {
@@ -128,11 +144,11 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
             const response = await sendChatMessage(newMessages, context);
             const modelMessage: Message = { role: 'model', text: response.message };
             setMessages(prevMessages => [...prevMessages, modelMessage]);
-            speakText(response.message);
+            speakText(response.message, newMessages.length); // Index of the new message
         } catch (err: any) {
             const errorMessage: Message = { role: 'model', text: `Désolé, une erreur est survenue: ${err.message}` };
             setMessages(prevMessages => [...prevMessages, errorMessage]);
-            speakText(errorMessage.text);
+            speakText(errorMessage.text, newMessages.length); // Index of the new message
         } finally {
             setIsLoading(false);
         }
@@ -166,12 +182,16 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                                 dangerouslySetInnerHTML={{ __html: renderChatMessage(msg.text) }}
                             />
                              {msg.role === 'model' && (
-                                <button 
-                                    onClick={() => speakText(msg.text)}
+                                <button
+                                    onClick={() => speakingMessageIndex === index ? stopSpeaking() : speakText(msg.text, index)}
                                     className="absolute -bottom-2 -right-2 p-1 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-teal-500"
-                                    aria-label="Écouter le message"
+                                    aria-label={speakingMessageIndex === index ? "Arrêter la lecture" : "Écouter le message"}
                                 >
-                                    <SpeakerIcon className="h-4 w-4" />
+                                    {speakingMessageIndex === index ? (
+                                        <XCircleIcon className="h-5 w-5 text-red-500" />
+                                    ) : (
+                                        <SpeakerIcon className="h-4 w-4" />
+                                    )}
                                 </button>
                             )}
                         </div>
