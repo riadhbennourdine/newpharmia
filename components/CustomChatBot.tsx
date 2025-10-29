@@ -34,8 +34,8 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         const cleanText = stripMarkdown(text);
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = lang;
-        utterance.rate = 1; // Normal speed
-        utterance.pitch = 1.2;
+        utterance.rate = 1.15; // A bit faster
+        utterance.pitch = 1.1; // A bit lower pitch for fluency
 
         const voices = window.speechSynthesis.getVoices();
         const frenchVoice = voices.find(voice => voice.lang === lang && voice.name.includes('Google'));
