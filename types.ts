@@ -66,6 +66,8 @@ export interface Group {
   pharmacistSubscriptionEndDate?: Date;
   pharmacistPlanName?: string;
   pharmacistHasActiveSubscription?: boolean;
+  managedBy?: ObjectId | string;
+  subscriptionAmount?: number;
 }
 
 export interface Client extends User {

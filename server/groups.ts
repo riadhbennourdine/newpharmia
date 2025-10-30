@@ -19,7 +19,7 @@ async function getCollections() {
 // Create a new group
 router.post('/', async (req, res) => {
   try {
-    const { name, pharmacistId, preparatorIds } = req.body;
+    const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
     // Validate pharmacist
@@ -34,6 +34,8 @@ router.post('/', async (req, res) => {
       pharmacistId,
       preparatorIds,
       assignedFiches: [],
+      managedBy,
+      subscriptionAmount,
     };
 
     const result = await groupsCollection.insertOne(newGroup);
@@ -56,10 +58,11 @@ router.get('/', async (req, res) => {
   try {
     const { groupsCollection, usersCollection } = await getCollections();
     
-    // Fetch all groups and all pharmacists concurrently
-    const [groups, pharmacists] = await Promise.all([
+    // Fetch all groups, pharmacists, and managers concurrently
+    const [groups, pharmacists, managers] = await Promise.all([
       groupsCollection.find({}).toArray(),
       usersCollection.find({ role: UserRole.PHARMACIEN }).toArray(),
+      usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray(),
     ]);
 
     // Create a map of pharmacists for easy lookup
@@ -74,9 +77,20 @@ router.get('/', async (req, res) => {
       }
     ]));
 
+    // Create a map of managers for easy lookup
+    const managerMap = new Map(managers.map(m => [
+        (m._id as ObjectId).toString(),
+        `${m.firstName} ${m.lastName}`
+    ]));
+
     // Add pharmacistName and dates to each group
     const populatedGroups = groups.map(group => {
       const pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
+      let managerName = 'Non assigné';
+      if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
+        managerName = managerMap.get((group.managedBy as ObjectId).toString()) || 'Non assigné';
+      }
+
       return {
         ...group,
         pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
@@ -84,6 +98,7 @@ router.get('/', async (req, res) => {
         pharmacistSubscriptionEndDate: pharmacistInfo ? pharmacistInfo.subscriptionEndDate : undefined,
         pharmacistPlanName: pharmacistInfo ? pharmacistInfo.planName : undefined,
         pharmacistHasActiveSubscription: pharmacistInfo ? pharmacistInfo.hasActiveSubscription : false,
+        managedByName: managerName,
       };
     });
 
@@ -110,12 +125,24 @@ router.get('/:id', async (req, res) => {
 // Update a group
 router.put('/:id', async (req, res) => {
   try {
-    const { name, pharmacistId, preparatorIds } = req.body;
+    const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
+
+    const updateFields: any = {};
+    if (name) updateFields.name = name;
+    if (pharmacistId) updateFields.pharmacistId = pharmacistId;
+    if (preparatorIds) updateFields.preparatorIds = preparatorIds;
+    if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
+
+    if (managedBy) {
+      updateFields.managedBy = managedBy;
+    } else if (managedBy === '') {
+      updateFields.managedBy = undefined;
+    }
 
     const updatedGroup = await groupsCollection.findOneAndUpdate(
       { _id: new ObjectId(req.params.id) },
-      { $set: { name, pharmacistId, preparatorIds } },
+      { $set: updateFields },
       { returnDocument: 'after' }
     );
 

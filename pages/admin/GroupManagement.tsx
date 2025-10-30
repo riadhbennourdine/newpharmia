@@ -9,10 +9,22 @@ const GroupManagementPage = () => {
   const [groupedGroups, setGroupedGroups] = useState<Record<string, Group[]>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | undefined>(undefined);
+  const [managers, setManagers] = useState<User[]>([]);
 
   useEffect(() => {
     fetchGroups();
+    fetchManagers();
   }, []);
+
+  const fetchManagers = async () => {
+    try {
+      const response = await fetch('/api/users/managers');
+      const data = await response.json();
+      setManagers(data);
+    } catch (error) {
+      console.error('Error fetching managers:', error);
+    }
+  };
 
   const fetchGroups = async () => {
     try {
@@ -34,7 +46,21 @@ const GroupManagementPage = () => {
       setGroupedGroups(grouped);
 
     } catch (error) {
-      console.error('Error fetching groups:', error);
+      console.error('Error fetching managers:', error);
+    }
+  };
+
+  const handleManagerChange = async (groupId: string, managerId: string) => {
+    try {
+      await fetch(`/api/admin/groups/${groupId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ managedBy: managerId }),
+        });
+      fetchGroups();
+    } catch (error) {
+      console.error('Error updating manager:', error);
     }
   };
 
@@ -81,7 +107,7 @@ const GroupManagementPage = () => {
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pharmacien</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type d'abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin abonnement</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Géré par</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membres</th>
               <th scope="col" className="relative px-6 py-3">
                 <span className="sr-only">Actions</span>
@@ -99,13 +125,20 @@ const GroupManagementPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{group.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistName}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistPlanName || 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${group.pharmacistHasActiveSubscription ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {group.pharmacistHasActiveSubscription ? 'Actif' : 'Expiré'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds.length}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <select
+                    value={group.managedBy as string || ''}
+                    onChange={(e) => handleManagerChange(group._id as string, e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  >
+                    <option value="">Non assigné</option>
+                    {managers.map(m => (
+                      <option key={m._id as string} value={m._id as string}>{m.firstName} {m.lastName}</option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds.length}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">
                         <PencilIcon className="h-5 w-5" />
