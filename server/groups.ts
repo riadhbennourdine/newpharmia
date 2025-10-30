@@ -124,9 +124,16 @@ router.put('/:id', async (req, res) => {
     const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
+    const updateFields: Partial<Group> = {};
+    if (name) updateFields.name = name;
+    if (pharmacistId) updateFields.pharmacistId = pharmacistId;
+    if (preparatorIds) updateFields.preparatorIds = preparatorIds;
+    if (managedBy) updateFields.managedBy = managedBy;
+    if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
+
     const updatedGroup = await groupsCollection.findOneAndUpdate(
       { _id: new ObjectId(req.params.id) },
-      { $set: { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } },
+      { $set: updateFields },
       { returnDocument: 'after' }
     );
 
