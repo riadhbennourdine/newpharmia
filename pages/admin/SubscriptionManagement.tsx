@@ -61,8 +61,41 @@ const SubscriptionManagement: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [durationInDays, setDurationInDays] = useState<string>('30');
   const [planName, setPlanName] = useState<string>('Free Trial');
+  const [quantity, setQuantity] = useState<number>(1);
   const [showCollaboratorModal, setShowCollaboratorModal] = useState(false);
   const [currentCollaborators, setCurrentCollaborators] = useState<User[]>([]);
+
+  const pricing = {
+    solo: {
+      name: 'Solo',
+      monthly: 29.900,
+      annual: 269.100,
+    },
+    starter: {
+      name: 'Starter',
+      monthly: 79.400,
+      annual: 714.600,
+    },
+    gold: {
+      name: 'Gold',
+      monthly: 108.900,
+      annual: 980.100,
+    }
+  };
+
+  const calculateTotal = () => {
+    if (planName === 'Free Trial') return 0;
+
+    const planInfo = planName.split(' ');
+    const planKey = planInfo[0].toLowerCase() as keyof typeof pricing;
+    const isAnnual = planInfo.includes('année');
+
+    if (pricing[planKey]) {
+      const price = isAnnual ? pricing[planKey].annual : pricing[planKey].monthly;
+      return (price * quantity).toFixed(3);
+    }
+    return 0;
+  };
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -98,7 +131,14 @@ const SubscriptionManagement: React.FC = () => {
     if (!selectedUser || !durationInDays || !planName) return;
 
     try {
-        console.log('Granting subscription (mock):', { userId: selectedUser._id, durationInDays, planName });
+        console.log('Granting subscription (mock):', { 
+            userId: selectedUser._id, 
+            durationInDays, 
+            planName, 
+            quantity, 
+            total: calculateTotal(),
+            grantedBy: currentUser?.email 
+        });
         await new Promise(resolve => setTimeout(resolve, 500));
         alert('Abonnement octroyé avec succès ! (simulation)');
         setShowGrantModal(false);
@@ -116,6 +156,9 @@ const SubscriptionManagement: React.FC = () => {
 
   if (loading) return <div className="text-center p-4">Chargement des utilisateurs...</div>;
   if (error) return <div className="text-center p-4 text-red-600">Erreur: {error}</div>;
+
+  const freeTrialUsers = users.filter(u => u.planName === 'Free Trial');
+  const payingUsers = users.filter(u => u.planName !== 'Free Trial' && u.hasActiveSubscription);
 
   return (
     <div className="p-4">
@@ -135,7 +178,45 @@ const SubscriptionManagement: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {users.map(user => (
+            <tr className="bg-gray-100">
+              <td colSpan={8} className="px-6 py-3 text-left text-sm font-bold text-gray-700">Free Trial</td>
+            </tr>
+            {freeTrialUsers.map(user => (
+              <tr key={user._id?.toString()}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.hasActiveSubscription ? 'Oui' : 'Non'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.planName || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {user.subscriptionEndDate ? user.subscriptionEndDate.toLocaleDateString() : 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {user.collaborators && user.collaborators.length > 0 ? (
+                    <button
+                      onClick={() => openCollaboratorModal(user.collaborators || [])}
+                      className="text-teal-600 hover:text-teal-900 font-bold"
+                    >
+                      ({user.collaborators.length})
+                    </button>
+                  ) : (
+                    '(0)'
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => { setSelectedUser(user); setShowGrantModal(true); }}
+                    className="text-teal-600 hover:text-teal-900 mr-2"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            <tr className="bg-gray-100">
+              <td colSpan={8} className="px-6 py-3 text-left text-sm font-bold text-gray-700">Payeurs</td>
+            </tr>
+            {payingUsers.map(user => (
               <tr key={user._id?.toString()}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
@@ -173,18 +254,43 @@ const SubscriptionManagement: React.FC = () => {
 
       {showGrantModal && selectedUser && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full">
             <h3 className="text-xl font-bold mb-4">Octroyer un abonnement à {selectedUser.firstName} {selectedUser.lastName}</h3>
-            <div className="mb-4">
-              <label htmlFor="planName" className="block text-sm font-medium text-gray-700">Nom du plan</label>
-              <input
-                type="text"
-                id="planName"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                value={planName}
-                onChange={(e) => setPlanName(e.target.value)}
-              />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="planName" className="block text-sm font-medium text-gray-700">Abonnement</label>
+                <select
+                  id="planName"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  value={planName}
+                  onChange={(e) => setPlanName(e.target.value)}
+                >
+                  <option value="Free Trial">Free Trial</option>
+                  {Object.entries(pricing).flatMap(([key, plan]) => [
+                    <option key={`${key}-monthly`} value={`${plan.name} 1 mois`}>{`${plan.name} 1 mois`}</option>,
+                    <option key={`${key}-annual`} value={`${plan.name} 1 année`}>{`${plan.name} 1 année`}</option>
+                  ])}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantité</label>
+                <input
+                  type="number"
+                  id="quantity"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+                  min="1"
+                />
+              </div>
             </div>
+
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-700">Calcul du total :</p>
+              <p className="text-lg font-bold text-teal-600">{calculateTotal()} DT</p>
+            </div>
+
             <div className="mb-4">
               <label htmlFor="duration" className="block text-sm font-medium text-gray-700">Durée (jours)</label>
               <input
@@ -195,6 +301,12 @@ const SubscriptionManagement: React.FC = () => {
                 onChange={(e) => setDurationInDays(e.target.value)}
               />
             </div>
+
+            <div className="mb-4 p-2 bg-gray-100 rounded-md">
+                <p className="text-sm text-gray-600">Commande validée par :</p>
+                <p className="text-sm font-medium text-gray-800">{currentUser?.firstName} {currentUser?.lastName} (Admin)</p>
+            </div>
+
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setShowGrantModal(false)}
