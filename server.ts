@@ -367,12 +367,14 @@ app.get('/api/users/subscribers', async (req, res) => {
 
 import crmRoutes from './server/crm.js';
 import groupsRoutes from './server/groups.js';
+import usersRoutes from './server/users.js';
 
 // ===============================================
 // CRM API ROUTES
 // ===============================================
 app.use('/api/admin/crm', crmRoutes);
 app.use('/api/admin/groups', groupsRoutes);
+app.use('/api/users', usersRoutes);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
