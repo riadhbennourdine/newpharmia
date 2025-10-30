@@ -69,6 +69,8 @@ router.get('/', async (req, res) => {
         name: `${p.firstName} ${p.lastName}`,
         createdAt: p.createdAt,
         subscriptionEndDate: p.subscriptionEndDate,
+        planName: p.planName,
+        hasActiveSubscription: p.hasActiveSubscription,
       }
     ]));
 
@@ -80,6 +82,8 @@ router.get('/', async (req, res) => {
         pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
         pharmacistCreatedAt: pharmacistInfo ? pharmacistInfo.createdAt : undefined,
         pharmacistSubscriptionEndDate: pharmacistInfo ? pharmacistInfo.subscriptionEndDate : undefined,
+        pharmacistPlanName: pharmacistInfo ? pharmacistInfo.planName : undefined,
+        pharmacistHasActiveSubscription: pharmacistInfo ? pharmacistInfo.hasActiveSubscription : false,
       };
     });
 
