@@ -127,6 +127,7 @@ const GroupManagementPage = () => {
           onClose={handleCloseModal}
         />
       )}
+      </div>
     </div>
   );
 };
