@@ -85,7 +85,11 @@ router.get('/', async (req, res) => {
 
     // Add pharmacistName and dates to each group
     const populatedGroups = groups.map(group => {
-      const pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
+      let pharmacistInfo: any = {};
+      if (group.pharmacistId && ObjectId.isValid(group.pharmacistId as string)) {
+        pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
+      }
+
       let managerName = 'Non assigné';
       if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
         managerName = managerMap.get((group.managedBy as ObjectId).toString()) || 'Non assigné';
