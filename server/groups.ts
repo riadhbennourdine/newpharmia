@@ -86,10 +86,7 @@ router.get('/', async (req, res) => {
     // Add pharmacistName and dates to each group
     const populatedGroups = groups.map(group => {
       const pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
-      let managerName = 'Non assigné';
-      if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
-        managerName = managerMap.get((group.managedBy as ObjectId).toString()) || 'Non assigné';
-      }
+      const managerName = group.managedBy ? managerMap.get((group.managedBy as ObjectId).toString()) : 'Non assigné';
       return {
         ...group,
         pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
@@ -131,11 +128,7 @@ router.put('/:id', async (req, res) => {
     if (name) updateFields.name = name;
     if (pharmacistId) updateFields.pharmacistId = pharmacistId;
     if (preparatorIds) updateFields.preparatorIds = preparatorIds;
-    if (managedBy) {
-      updateFields.managedBy = managedBy;
-    } else if (managedBy === '') {
-      updateFields.managedBy = undefined;
-    }
+    if (managedBy) updateFields.managedBy = managedBy;
     if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
 
     const updatedGroup = await groupsCollection.findOneAndUpdate(
