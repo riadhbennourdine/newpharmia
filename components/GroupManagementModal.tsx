@@ -13,7 +13,6 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [name, setName] = useState(group?.name || '');
   const [pharmacistId, setPharmacistId] = useState(group?.pharmacistId || '');
   const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds as string[] || []);
-  const [subscriptionAmount, setSubscriptionAmount] = useState<number | undefined>(group?.subscriptionAmount);
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,7 +52,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const groupData = { name, pharmacistId, preparatorIds, subscriptionAmount };
+    const groupData = { name, pharmacistId, preparatorIds };
 
     try {
       const url = group ? `/api/admin/groups/${group._id}` : '/api/admin/groups';
@@ -141,16 +140,6 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
                 </div>
               ))}
             </div>
-          </div>
-          <div>
-            <label htmlFor="subscriptionAmount" className="block text-sm font-medium text-slate-700">Montant de l'abonnement</label>
-            <input
-              type="number"
-              id="subscriptionAmount"
-              value={subscriptionAmount || ''}
-              onChange={(e) => setSubscriptionAmount(parseFloat(e.target.value))}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-            />
           </div>
           <div className="border-t border-slate-200 pt-4 mt-4">
             <div className="flex justify-between items-center">
