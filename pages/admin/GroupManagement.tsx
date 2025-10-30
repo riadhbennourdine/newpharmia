@@ -119,6 +119,7 @@ const GroupManagementPage = () => {
               </React.Fragment>
             ))}
           </tbody>
+        </table>
 
       {isModalOpen && (
         <GroupManagementModal
