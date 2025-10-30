@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Group, User, UserRole } from '../../types';
 
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 
 interface GroupManagementModalProps {
   group?: Group;
