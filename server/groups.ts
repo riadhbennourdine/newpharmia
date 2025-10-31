@@ -4,7 +4,8 @@ import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { Group, User, UserRole } from '../types.js';
 
-const router = express.Router();
+const adminRouter = express.Router();
+const nonAdminRouter = express.Router();
 
 // Get the database and collection
 async function getCollections() {
@@ -16,8 +17,56 @@ async function getCollections() {
   };
 }
 
+// NON-ADMIN ROUTES
+
+// Get group for the current user
+nonAdminRouter.get('/', async (req, res) => {
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const { usersCollection, groupsCollection } = await getCollections();
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        if (!user || !user.groupId) {
+            return res.status(404).json({ message: 'Group not found for this user.' });
+        }
+
+        const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+        res.json(group);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de la récupération du groupe.", error });
+    }
+});
+
+
+// Update instruction for a group
+nonAdminRouter.put('/:id/instruction', async (req, res) => {
+    try {
+        const { instruction } = req.body;
+        const { groupsCollection } = await getCollections();
+
+        const result = await groupsCollection.updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { instruction } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: "Groupe non trouvé ou consigne non modifiée." });
+        }
+
+        res.status(200).json({ message: "Consigne mise à jour avec succès." });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de la mise à jour de la consigne.", error });
+    }
+});
+
+// ADMIN ROUTES
+
 // Create a new group
-router.post('/', async (req, res) => {
+adminRouter.post('/', async (req, res) => {
   try {
     const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
@@ -213,4 +262,25 @@ router.post('/:id/assign-fiche', async (req, res) => {
   }
 });
 
-export default router;
+// Update instruction for a group
+router.put('/:id/instruction', async (req, res) => {
+    try {
+        const { instruction } = req.body;
+        const { groupsCollection } = await getCollections();
+
+        const result = await groupsCollection.updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { instruction } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: "Groupe non trouvé ou consigne non modifiée." });
+        }
+
+        res.status(200).json({ message: "Consigne mise à jour avec succès." });
+    } catch (error) {
+    res.status(500).json({ message: "Erreur lors de l'assignation de la mémofiche.", error });
+  }
+});
+
+export { adminRouter, nonAdminRouter };
