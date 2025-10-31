@@ -1,12 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
-import { Group, User, UserRole } from '../../types';
-import { PlusCircleIcon, PencilIcon, TrashIcon } from '../../components/Icons';
-import GroupManagementModal from '../../components/GroupManagementModal';
-
-const GroupManagementPage = () => {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [groupedGroups, setGroupedGroups] = useState<Record<string, Group[]>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | undefined>(undefined);
   const [managers, setManagers] = useState<User[]>([]);
@@ -32,21 +25,6 @@ const GroupManagementPage = () => {
       const data: Group[] = await response.json();
       console.log('Fetched groups data:', data);
       setGroups(data);
-
-      // Grouping logic
-      const grouped = data.reduce((acc, group) => {
-        const plan = group.pharmacistPlanName || 'Non spécifié';
-        const duration = group.pharmacistSubscriptionEndDate ? (new Date(group.pharmacistSubscriptionEndDate).getTime() > new Date().getTime() ? 'Actif' : 'Expiré') : 'N/A';
-        const key = `${plan} - ${duration}`;
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(group);
-        return acc;
-      }, {} as Record<string, Group[]>);
-      console.log('Grouped groups:', grouped);
-      setGroupedGroups(grouped);
-
     } catch (error) {
       console.error('Error fetching groups:', error);
     }
@@ -119,47 +97,40 @@ const GroupManagementPage = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {Object.entries(groupedGroups).map(([groupKey, groups]) => (
-              <React.Fragment key={groupKey}>
-                <tr className="bg-gray-100">
-                  <td colSpan={9} className="px-6 py-3 text-left text-sm font-bold text-gray-700">{groupKey}</td>
-                </tr>
-                {groups.map((group) => (
-                  <tr key={group._id as string}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{group.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistPlanName || 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${group.pharmacistHasActiveSubscription ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {group.pharmacistHasActiveSubscription ? 'Actif' : 'Expiré'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <select
-                        value={group.managedBy as string || ''}
-                        onChange={(e) => handleManagerChange(group._id as string, e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                      >
-                        <option value="">Non assigné</option>
-                        {managers.map(m => (
-                          <option key={m._id as string} value={m._id as string}>{m.firstName} {m.lastName}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.subscriptionAmount ? `${group.subscriptionAmount.toFixed(3)} DT` : 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds ? group.preparatorIds.length : 0}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">
-                        <PencilIcon className="h-5 w-5" />
-                      </button>
-                      <button onClick={() => handleDeleteGroup(group._id as string)} className="text-red-600 hover:text-red-900 ml-4">
-                        <TrashIcon className="h-5 w-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
+            {groups.map((group) => (
+              <tr key={group._id as string}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{group.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistName}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistPlanName || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${group.pharmacistHasActiveSubscription ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {group.pharmacistHasActiveSubscription ? 'Actif' : 'Expiré'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <select
+                    value={group.managedBy as string || ''}
+                    onChange={(e) => handleManagerChange(group._id as string, e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  >
+                    <option value="">Non assigné</option>
+                    {managers.map(m => (
+                      <option key={m._id as string} value={m._id as string}>{m.firstName} {m.lastName}</option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.subscriptionAmount ? `${group.subscriptionAmount.toFixed(3)} DT` : 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds ? group.preparatorIds.length : 0}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">
+                    <PencilIcon className="h-5 w-5" />
+                  </button>
+                  <button onClick={() => handleDeleteGroup(group._id as string)} className="text-red-600 hover:text-red-900 ml-4">
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
