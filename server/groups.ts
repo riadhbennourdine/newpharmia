@@ -103,7 +103,7 @@ adminRouter.post('/', async (req, res) => {
 });
 
 // Get all groups
-router.get('/', async (req, res) => {
+adminRouter.get('/', async (req, res) => {
   try {
     const { groupsCollection, usersCollection } = await getCollections();
     
@@ -258,27 +258,6 @@ adminRouter.post('/:id/assign-fiche', async (req, res) => {
 
     res.status(200).json({ message: "Mémofiche assignée avec succès." });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de l'assignation de la mémofiche.", error });
-  }
-});
-
-// Update instruction for a group
-router.put('/:id/instruction', async (req, res) => {
-    try {
-        const { instruction } = req.body;
-        const { groupsCollection } = await getCollections();
-
-        const result = await groupsCollection.updateOne(
-            { _id: new ObjectId(req.params.id) },
-            { $set: { instruction } }
-        );
-
-        if (result.modifiedCount === 0) {
-            return res.status(404).json({ message: "Groupe non trouvé ou consigne non modifiée." });
-        }
-
-        res.status(200).json({ message: "Consigne mise à jour avec succès." });
-    } catch (error) {
     res.status(500).json({ message: "Erreur lors de l'assignation de la mémofiche.", error });
   }
 });
