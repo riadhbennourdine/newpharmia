@@ -16,6 +16,9 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds as string[] || []);
   const [subscriptionAmount, setSubscriptionAmount] = useState<number | undefined>(group?.subscriptionAmount);
   const [planName, setPlanName] = useState('');
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | undefined>(
+    group?.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toISOString().split('T')[0] : undefined
+  );
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,7 +76,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const groupData = { name, pharmacistId, preparatorIds, subscriptionAmount };
+    const groupData = { name, pharmacistId, preparatorIds, subscriptionAmount, pharmacistSubscriptionEndDate: subscriptionEndDate };
 
     try {
       const url = group ? `/api/admin/groups/${group._id}` : '/api/admin/groups';
@@ -147,7 +150,9 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
               onChange={(e) => {
                 const selectedPlan = e.target.value;
                 setPlanName(selectedPlan);
-                if (selectedPlan) {
+                if (selectedPlan === 'free-trial') {
+                  setSubscriptionAmount(0);
+                } else if (selectedPlan) {
                   const [planKey, period] = selectedPlan.split('-');
                   const price = pricing[planKey as keyof typeof pricing][period as 'monthly' | 'annual'];
                   setSubscriptionAmount(price);
@@ -158,6 +163,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             >
               <option value="">Sélectionner un abonnement</option>
+              <option value="free-trial">Free Trial</option>
               {Object.entries(pricing).map(([key, plan]) => (
                 <React.Fragment key={key}>
                   <option value={`${key}-monthly`}>{`${plan.name} - Mensuel`}</option>
@@ -173,6 +179,16 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
               id="subscriptionAmount"
               value={subscriptionAmount || ''}
               onChange={(e) => setSubscriptionAmount(parseFloat(e.target.value))}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="subscriptionEndDate" className="block text-sm font-medium text-slate-700">Date de fin d'abonnement</label>
+            <input
+              type="date"
+              id="subscriptionEndDate"
+              value={subscriptionEndDate || ''}
+              onChange={(e) => setSubscriptionEndDate(e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
