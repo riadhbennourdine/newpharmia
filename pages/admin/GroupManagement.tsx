@@ -109,6 +109,7 @@ const GroupManagementPage = () => {
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Pharmacien</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">Type d'abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin abonnement</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Géré par</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membres</th>
@@ -121,7 +122,7 @@ const GroupManagementPage = () => {
             {Object.entries(groupedGroups).map(([groupKey, groups]) => (
               <React.Fragment key={groupKey}>
                 <tr className="bg-gray-100">
-                  <td colSpan={8} className="px-6 py-3 text-left text-sm font-bold text-gray-700">{groupKey}</td>
+                  <td colSpan={9} className="px-6 py-3 text-left text-sm font-bold text-gray-700">{groupKey}</td>
                 </tr>
                 {groups.map((group) => (
                   <tr key={group._id as string}>
@@ -129,6 +130,11 @@ const GroupManagementPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistName}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistPlanName || 'N/A'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toLocaleDateString('fr-FR') : 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${group.pharmacistHasActiveSubscription ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {group.pharmacistHasActiveSubscription ? 'Actif' : 'Expiré'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <select
                         value={group.managedBy as string || ''}
