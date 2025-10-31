@@ -162,7 +162,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get a single group
-router.get('/:id', async (req, res) => {
+adminRouter.get('/:id', async (req, res) => {
   try {
     const { groupsCollection } = await getCollections();
     const group = await groupsCollection.findOne({ _id: new ObjectId(req.params.id) });
@@ -176,7 +176,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a group
-router.put('/:id', async (req, res) => {
+adminRouter.put('/:id', async (req, res) => {
   try {
     const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount, pharmacistSubscriptionEndDate } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
@@ -221,7 +221,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a group
-router.delete('/:id', async (req, res) => {
+adminRouter.delete('/:id', async (req, res) => {
   try {
     const { groupsCollection, usersCollection } = await getCollections();
     const groupId = new ObjectId(req.params.id);
@@ -242,7 +242,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Assign a memofiche to a group
-router.post('/:id/assign-fiche', async (req, res) => {
+adminRouter.post('/:id/assign-fiche', async (req, res) => {
   try {
     const { ficheId } = req.body;
     const { groupsCollection } = await getCollections();
