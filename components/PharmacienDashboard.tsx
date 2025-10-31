@@ -24,6 +24,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
     }, [selectedMenu, user?._id, getPharmacistTeam]);
 
     const handleSaveInstruction = async () => {
+        console.log('Saving instruction:', instruction);
         if (group) {
             await fetch(`/api/groups/${group._id}/instruction`, {
                 method: 'PUT',

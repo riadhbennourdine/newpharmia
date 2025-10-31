@@ -44,6 +44,7 @@ nonAdminRouter.get('/', async (req, res) => {
 
 // Update instruction for a group
 nonAdminRouter.put('/:id/instruction', async (req, res) => {
+    console.log('Updating instruction for group:', req.params.id);
     try {
         const { instruction } = req.body;
         const { groupsCollection } = await getCollections();
