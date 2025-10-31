@@ -110,6 +110,7 @@ const GroupManagementPage = () => {
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type d'abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Géré par</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant de l'abonnement</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membres</th>
               <th scope="col" className="relative px-6 py-3">
                 <span className="sr-only">Actions</span>
@@ -135,12 +136,13 @@ const GroupManagementPage = () => {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                   >
                     <option value="">Non assigné</option>
-                    {managers.map(m => (
-                      <option key={m._id as string} value={m._id as string}>{m.firstName} {m.lastName}</option>
-                    ))}
-                  </select>
-                </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds ? group.preparatorIds.length : 0}</td>                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            {managers.map(m => (
+                                              <option key={m._id as string} value={m._id as string}>{m.firstName} {m.lastName}</option>
+                                            ))}
+                                          </select>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.subscriptionAmount ? `${group.subscriptionAmount.toFixed(3)} DT` : 'N/A'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds ? group.preparatorIds.length : 0}</td>                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">
                         <PencilIcon className="h-5 w-5" />
                       </button>
