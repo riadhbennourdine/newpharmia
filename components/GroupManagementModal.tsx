@@ -6,9 +6,10 @@ import { useAuth } from '../hooks/useAuth';
 interface GroupManagementModalProps {
   group?: Group;
   onClose: () => void;
+  fetchGroups: () => void; // Add this line
 }
 
-const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onClose }) => {
+const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onClose, fetchGroups }) => {
   const { user: currentUser } = useAuth();
   const [name, setName] = useState(group?.name || '');
   const [pharmacistId, setPharmacistId] = useState(group?.pharmacistId || '');
@@ -85,6 +86,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
       });
 
       if (response.ok) {
+        fetchGroups(); // Refresh the groups list
         onClose();
       } else {
         const errorData = await response.json();

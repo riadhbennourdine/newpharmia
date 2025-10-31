@@ -168,6 +168,7 @@ const GroupManagementPage = () => {
         <GroupManagementModal
           group={selectedGroup}
           onClose={handleCloseModal}
+          fetchGroups={fetchGroups}
         />
       )}
       </div>
