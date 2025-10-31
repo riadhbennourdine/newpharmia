@@ -56,57 +56,9 @@ router.post('/', async (req, res) => {
 // Get all groups
 router.get('/', async (req, res) => {
   try {
-    const { groupsCollection, usersCollection } = await getCollections();
-    
-    // Fetch all groups, pharmacists, and managers concurrently
-    const [groups, pharmacists, managers] = await Promise.all([
-      groupsCollection.find({}).toArray(),
-      usersCollection.find({ role: UserRole.PHARMACIEN }).toArray(),
-      usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray(),
-    ]);
-
-    // Create a map of pharmacists for easy lookup
-    const pharmacistMap = new Map(pharmacists.map(p => [
-      (p._id as ObjectId).toString(),
-      {
-        name: `${p.firstName} ${p.lastName}`,
-        createdAt: p.createdAt,
-        subscriptionEndDate: p.subscriptionEndDate,
-        planName: p.planName,
-        hasActiveSubscription: p.hasActiveSubscription,
-      }
-    ]));
-
-    // Create a map of managers for easy lookup
-    const managerMap = new Map(managers.map(m => [
-        (m._id as ObjectId).toString(),
-        `${m.firstName} ${m.lastName}`
-    ]));
-
-    // Add pharmacistName and dates to each group
-    const populatedGroups = groups.map(group => {
-      let pharmacistInfo: any = {};
-      if (group.pharmacistId && ObjectId.isValid(group.pharmacistId as string)) {
-        pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
-      }
-
-      let managerName = 'Non assigné';
-      if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
-        managerName = managerMap.get((group.managedBy as ObjectId).toString()) || 'Non assigné';
-      }
-
-      return {
-        ...group,
-        pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
-        pharmacistCreatedAt: pharmacistInfo ? pharmacistInfo.createdAt : undefined,
-        pharmacistSubscriptionEndDate: pharmacistInfo ? pharmacistInfo.subscriptionEndDate : undefined,
-        pharmacistPlanName: pharmacistInfo ? pharmacistInfo.planName : undefined,
-        pharmacistHasActiveSubscription: pharmacistInfo ? pharmacistInfo.hasActiveSubscription : false,
-        managedByName: managerName,
-      };
-    });
-
-    res.json(populatedGroups);
+    const { groupsCollection } = await getCollections();
+    const groups = await groupsCollection.find({}).toArray();
+    res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des groupes.", error });
   }
