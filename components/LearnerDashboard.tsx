@@ -12,16 +12,15 @@ interface Props {
 }
 
 const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
-    console.log('group in LearnerDashboard:', group);
     const { user } = useAuth();
     const { fiches, isLoading } = useData();
     const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
 
     useEffect(() => {
         const fetchInstructionFiche = async () => {
-            if (group?.instructionFiches?.[0]) {
+            if (group?.instructionFiches?.[0] && user) {
                 try {
-                    const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`);
+                    const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`, { headers: { 'x-user-id': user._id as string } });
                     const data = await response.json();
                     setInstructionFiche(data);
                 } catch (error) {
@@ -30,7 +29,7 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
             }
         };
         fetchInstructionFiche();
-    }, [group]);
+    }, [group, user]);
 
     const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
