@@ -673,8 +673,10 @@ app.get('/api/memofiches/:id', async (req, res) => {
                     hasAccess = true;
                 }
 
-                if (!hasAccess && group && (group.assignedFiches.some(f => f.ficheId === id) || group.instructionFiches?.includes(id))) {
+                if (!hasAccess && group && (group.assignedFiches.some(f => f.ficheId === id) || group.instructionFiches?.map(String).includes(id))) {
+
                     hasAccess = true;
+
                 }            }
         }
 
