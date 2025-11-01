@@ -19,6 +19,7 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
     useEffect(() => {
         const fetchInstructionFiche = async () => {
             if (group?.instructionFiches?.[0] && user && user._id) {
+                console.log('User right before fetch:', user, 'User ID right before fetch:', user._id);
                 try {
                     const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`, { headers: { 'x-user-id': user._id as string } });
                     const data = await response.json();

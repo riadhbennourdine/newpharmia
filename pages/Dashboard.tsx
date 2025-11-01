@@ -34,7 +34,6 @@ const Dashboard: React.FC = () => {
     }, [fetchFiches]);
 
     console.log('group in Dashboard:', group);
-    console.log('User in Dashboard:', user);
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
