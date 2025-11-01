@@ -31,8 +31,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = useCallback(async (identifier: string, password: string) => {
