@@ -33,6 +33,8 @@ const Dashboard: React.FC = () => {
         fetchFiches({ page: 1, limit: 3, sortBy: 'newest' });
     }, [fetchFiches]);
 
+    console.log('group in Dashboard:', group);
+
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {user?.role === UserRole.PHARMACIEN ? (
