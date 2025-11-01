@@ -673,10 +673,12 @@ app.get('/api/memofiches/:id', async (req, res) => {
                     hasAccess = true;
                 }
 
+console.log('Checking access for fiche:', id, 'group:', group, 'instructionFiches:', group?.instructionFiches);
+                if (group && group.instructionFiches?.[0]) {
+                    console.log('Type of group.instructionFiches[0]:', typeof group.instructionFiches[0]);
+                }
                 if (!hasAccess && group && (group.assignedFiches.some(f => f.ficheId === id) || group.instructionFiches?.map(String).includes(id))) {
-
                     hasAccess = true;
-
                 }            }
         }
 
