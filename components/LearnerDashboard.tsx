@@ -12,16 +12,9 @@ interface Props {
 }
 
 const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const { fiches, isLoading: fichesLoading } = useData();
     const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
-    const [isUserLoaded, setIsUserLoaded] = useState(false);
-
-    useEffect(() => {
-        if (user) {
-            setIsUserLoaded(true);
-        }
-    }, [user]);
 
     useEffect(() => {
         const fetchInstructionFiche = async () => {
@@ -35,10 +28,10 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
                 }
             }
         };
-        if (isUserLoaded) {
+        if (!isLoading && user) { // Only fetch if authentication is not loading and user is available
             fetchInstructionFiche();
         }
-    }, [group, isUserLoaded]);
+    }, [group, user, isLoading]);
 
     const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
