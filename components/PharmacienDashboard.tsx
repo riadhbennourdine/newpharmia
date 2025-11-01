@@ -13,7 +13,7 @@ interface Props {
 
 const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, group: initialGroup }) => {
     const { user } = useAuth();
-    const [selectedMenu, setSelectedMenu] = useState('parcours');
+    const [selectedMenu, setSelectedMenu] = useState('equipe');
     const [preparators, setPreparators] = useState<User[]>([]);
     const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
 
@@ -38,16 +38,16 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
         <div>
             <div className="flex justify-center mb-8">
                 <button
-                    className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
-                    onClick={() => setSelectedMenu('parcours')}
-                >
-                    Parcours d'apprentissage
-                </button>
-                <button
-                    className={`px-4 py-2 font-semibold rounded-r-lg ${selectedMenu === 'equipe' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                    className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'equipe' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
                     onClick={() => setSelectedMenu('equipe')}
                 >
                     Gestion de l'équipe
+                </button>
+                <button
+                    className={`px-4 py-2 font-semibold rounded-r-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                    onClick={() => setSelectedMenu('parcours')}
+                >
+                    Parcours d'apprentissage
                 </button>
             </div>
 
