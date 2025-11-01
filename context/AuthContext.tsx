@@ -1,34 +1,6 @@
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
-  token: string | null;
-  login: (identifier: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (userData: Omit<User, '_id'>) => Promise<void>;
-  isLoading: boolean;
-  authError: string | null;
-  setUser: (user: User) => void;
-  markFicheAsRead: (ficheId: string) => Promise<void>;
-  saveQuizResult: (result: { quizId: string; score: number; completedAt: Date }) => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User } from '../types';
-
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
