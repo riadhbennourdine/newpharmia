@@ -18,7 +18,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
     const fetchPreparators = async () => {
         if (!initialGroup) return;
         try {
-            const response = await fetch(`/api/groups/${initialGroup._id}/preparateurs`);
+            const response = await fetch(`/api/users/groups/${initialGroup._id}/preparateurs`);
             const data = await response.json();
             setPreparators(data);
         } catch (error) {

@@ -1,6 +1,7 @@
 import express from 'express';
 import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
+import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
@@ -21,6 +22,17 @@ router.get('/managers', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des gestionnaires.", error });
   }
+});
+
+// Get preparateurs for a group
+router.get('/groups/:id/preparateurs', async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const preparateurs = await usersCollection.find({ groupId: new ObjectId(req.params.id), role: UserRole.PREPARATEUR }).toArray();
+        res.json(preparateurs);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de la récupération des préparateurs.", error });
+    }
 });
 
 export default router;
