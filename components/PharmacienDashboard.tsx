@@ -13,17 +13,38 @@ interface Props {
 }
 
 const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, group }) => {
+    const [selectedMenu, setSelectedMenu] = useState('parcours');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div>
-            <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="text-sm text-teal-600 hover:text-teal-800 font-semibold"
-            >
-                Ajouter des mémofiches
-            </button>
+            <div className="flex justify-center mb-8">
+                <button 
+                    className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                    onClick={() => setSelectedMenu('parcours')}
+                >
+                    Parcours d'apprentissage
+                </button>
+                <button 
+                    className={`px-4 py-2 font-semibold rounded-r-lg ${selectedMenu === 'equipe' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
+                    onClick={() => setSelectedMenu('equipe')}
+                >
+                    Gestion de l'équipe
+                </button>
+            </div>
+
+            {selectedMenu === 'parcours' && <div>Parcours</div>}
+            {selectedMenu === 'equipe' && 
+                <div>
+                    <button
+                        type="button"
+                        onClick={() => setIsModalOpen(true)}
+                        className="text-sm text-teal-600 hover:text-teal-800 font-semibold"
+                    >
+                        Ajouter des mémofiches
+                    </button>
+                </div>
+            }
         </div>
     );
 };
