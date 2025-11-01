@@ -3,6 +3,7 @@ import { Group, User, UserRole } from '../types';
 import LearnerDashboard from './LearnerDashboard';
 import { useAuth } from '../hooks/useAuth';
 import PreparatorCard from './PreparatorCard';
+import EditInstructionModal from './EditInstructionModal';
 
 interface Props {
     instruction: string;
@@ -14,6 +15,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
     const { user } = useAuth();
     const [selectedMenu, setSelectedMenu] = useState('parcours');
     const [preparators, setPreparators] = useState<User[]>([]);
+    const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
 
     const fetchPreparators = async () => {
         if (!initialGroup) return;
@@ -55,7 +57,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne de l'équipe</h2>
                         <p className="text-slate-700 font-semibold text-base">{instruction || 'Aucune consigne pour le moment.'}</p>
-                        <button className="text-sm text-teal-600 hover:text-teal-800 font-semibold mt-4">Modifier la consigne</button>
+                        <button onClick={() => setIsInstructionModalOpen(true)} className="text-sm text-teal-600 hover:text-teal-800 font-semibold mt-4">Modifier la consigne</button>
                     </div>
                     <h1 className="text-3xl font-bold text-slate-800 mb-6">Statistiques de l'équipe</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,6 +66,13 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
                         ))}
                     </div>
                 </div>
+            )}
+            {isInstructionModalOpen && (
+                <EditInstructionModal 
+                    group={initialGroup}
+                    onClose={() => setIsInstructionModalOpen(false)}
+                    setInstruction={setInstruction}
+                />
             )}
         </div>
     );
