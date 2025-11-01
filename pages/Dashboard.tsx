@@ -38,7 +38,7 @@ const Dashboard: React.FC = () => {
             {user?.role === UserRole.PHARMACIEN ? (
                 <PharmacienDashboard instruction={instruction} setInstruction={setInstruction} group={group} />
             ) : (
-                <LearnerDashboard instruction={instruction} />
+                <LearnerDashboard instruction={instruction} group={group} />
             )}
         </div>
     );

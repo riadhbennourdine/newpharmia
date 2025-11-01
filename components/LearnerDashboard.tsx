@@ -1,17 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
 import { Spinner, ArrowRightIcon } from './Icons';
 import MemoFichePreviewCard from './MemoFichePreviewCard';
+import { Group, CaseStudy } from '../types';
 
 interface Props {
     instruction: string;
+    group: Group | null;
 }
 
-const LearnerDashboard: React.FC<Props> = ({ instruction }) => {
+const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
     const { user } = useAuth();
     const { fiches, isLoading } = useData();
+    const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
+
+    useEffect(() => {
+        const fetchInstructionFiche = async () => {
+            if (group?.instructionFiches?.[0]) {
+                try {
+                    const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`);
+                    const data = await response.json();
+                    setInstructionFiche(data);
+                } catch (error) {
+                    console.error('Error fetching instruction fiche:', error);
+                }
+            }
+        };
+        fetchInstructionFiche();
+    }, [group]);
 
     const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
@@ -35,6 +53,8 @@ const LearnerDashboard: React.FC<Props> = ({ instruction }) => {
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne du Pharmacien</h2>
                     <p className="text-slate-700 font-semibold text-base">{instruction}</p>
+                    {group?.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(group.instructionDate).toLocaleDateString('fr-FR')}</p>}
+                    {instructionFiche && <p className="text-sm text-gray-500 mt-2">Mémofiche à lire: {instructionFiche.title}</p>}
                 </div>
             )}
             <div>
