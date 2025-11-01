@@ -45,12 +45,12 @@ nonAdminRouter.get('/', async (req, res) => {
 // Update instruction for a group
 nonAdminRouter.put('/:id/instruction', async (req, res) => {
     try {
-        const { instruction } = req.body;
+        const { instruction, instructionFiches } = req.body;
         const { groupsCollection } = await getCollections();
 
         const result = await groupsCollection.updateOne(
             { _id: new ObjectId(req.params.id) },
-            { $set: { instruction } }
+            { $set: { instruction, instructionFiches, instructionDate: new Date() } }
         );
 
         if (result.modifiedCount === 0) {

@@ -69,6 +69,8 @@ export interface Group {
   managedBy?: ObjectId | string;
   subscriptionAmount?: number;
   instruction?: string;
+  instructionDate?: Date;
+  instructionFiches?: ObjectId[];
 }
 
 export interface Client extends User {

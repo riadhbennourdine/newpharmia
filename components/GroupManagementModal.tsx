@@ -62,6 +62,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
       const data = await response.json();
       setAllPreparators(data);
       console.log('All preparators:', data);
+      console.log('All preparators:', data);
     } catch (error) {
       console.error('Error fetching preparators:', error);
     }
