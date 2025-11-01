@@ -11,6 +11,7 @@ const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction 
     const [newInstruction, setNewInstruction] = useState(group?.instruction || '');
     const [memofiches, setMemofiches] = useState<CaseStudy[]>([]);
     const [selectedFiche, setSelectedFiche] = useState<string>(group?.instructionFiches?.[0]?.toString() || '');
+    const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
     useEffect(() => {
         const fetchMemofiches = async () => {
@@ -35,12 +36,16 @@ const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction 
             });
             if (response.ok) {
                 setInstruction(newInstruction);
-                onClose();
+                setFeedback({ message: 'Consigne enregistrée avec succès!', type: 'success' });
+                setTimeout(() => {
+                    onClose();
+                }, 2000);
             } else {
-                console.error('Failed to update instruction');
+                setFeedback({ message: 'Erreur lors de l\'enregistrement de la consigne.', type: 'error' });
             }
         } catch (error) {
             console.error('Error updating instruction:', error);
+            setFeedback({ message: 'Erreur lors de l\'enregistrement de la consigne.', type: 'error' });
         }
     };
 
@@ -48,6 +53,11 @@ const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
                 <h2 className="text-2xl font-bold text-slate-800 mb-4">Modifier la consigne</h2>
+                {feedback && (
+                    <div className={`p-4 mb-4 text-sm text-white rounded-lg ${feedback.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                        {feedback.message}
+                    </div>
+                )}
                 <textarea
                     className="w-full p-2 border border-gray-300 rounded-md"
                     rows={4}
