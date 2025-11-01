@@ -15,7 +15,7 @@ const PreparatorCard: React.FC<Props> = ({ preparator }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">{preparator.firstName} {preparator.lastName}</h3>
+            <h3 className="text-xl font-bold text-teal-600 mb-4">{preparator.firstName} {preparator.lastName}</h3>
             <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col justify-center items-center">
                     <p className="text-4xl font-bold text-teal-600">{memofichesLues}</p>
