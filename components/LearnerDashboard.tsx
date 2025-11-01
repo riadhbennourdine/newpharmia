@@ -28,8 +28,10 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
                 }
             }
         };
-        fetchInstructionFiche();
-    }, [group, user]);
+        if (!isLoading) { // Only fetch if authentication is not loading
+            fetchInstructionFiche();
+        }
+    }, [group, user, isLoading]);
 
     const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
