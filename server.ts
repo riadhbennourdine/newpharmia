@@ -624,6 +624,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
+        console.log('Received request for /api/memofiches/:id. Fiche ID:', id, 'User ID:', userId);
 
         const client = await clientPromise;
         const db = client.db('pharmia');
@@ -651,6 +652,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
             if (user && user.groupId) {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
                 if (group && group.pharmacistId) {
