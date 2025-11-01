@@ -29,7 +29,6 @@ const GroupManagementPage = () => {
     try {
       const response = await fetch('/api/admin/groups');
       const data: Group[] = await response.json();
-      console.log('Fetched groups data:', data);
       setGroups(data);
 
       // Grouping logic

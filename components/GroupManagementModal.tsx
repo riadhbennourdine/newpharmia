@@ -23,9 +23,6 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  console.log('Search term:', searchTerm);
-  console.log('Preparator IDs:', preparatorIds);
-
   const pricing = {
     solo: {
       name: 'Solo',
@@ -114,8 +111,6 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
         p.city?.toLowerCase().includes(searchTermLower)
     );
   });
-
-  console.log('Filtered preparators:', filteredPreparators);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
