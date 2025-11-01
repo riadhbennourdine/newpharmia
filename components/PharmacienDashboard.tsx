@@ -3,6 +3,7 @@ import { Group, User } from '../types';
 import { PlusCircleIcon, PencilIcon, TrashIcon } from './Icons';
 import GroupManagementModal from './GroupManagementModal';
 import LearnerDashboard from './LearnerDashboard';
+import { useAuth } from '../hooks/useAuth';
 
 interface Props {
     instruction: string;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, group: initialGroup }) => {
+    const { user } = useAuth();
     const [selectedMenu, setSelectedMenu] = useState('parcours');
     const [groups, setGroups] = useState<Group[]>([]);
     const [groupedGroups, setGroupedGroups] = useState<Record<string, Group[]>>({});
@@ -36,12 +38,13 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
     };
 
     const fetchGroups = async () => {
+        if (!user) return;
         try {
-            const response = await fetch('/api/admin/groups');
-            const data: Group[] = await response.json();
-            setGroups(data);
+            const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+            const data: Group = await response.json();
+            setGroups([data]);
 
-            const grouped = data.reduce((acc, group) => {
+            const grouped = [data].reduce((acc, group) => {
                 const plan = group.pharmacistPlanName || 'Non spécifié';
                 const duration = group.pharmacistSubscriptionEndDate ? (new Date(group.pharmacistSubscriptionEndDate).getTime() > new Date().getTime() ? 'Actif' : 'Expiré') : 'N/A';
                 const key = `${plan} - ${duration}`;
@@ -95,7 +98,6 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
 
     return (
         <div>
-            <h2>Version 2</h2>
             <div className="flex justify-center mb-8">
                 <button
                     className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
