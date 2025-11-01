@@ -26,13 +26,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('AuthContext useEffect running');
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
+    console.log('Stored Token:', storedToken);
+    console.log('Stored User:', storedUser);
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+      console.log('User and token set from localStorage');
     }
     setIsLoading(false);
+    console.log('AuthContext isLoading set to false');
+    console.log('Current user state:', user);
+    console.log('Current token state:', token);
+    console.log('Current isLoading state:', isLoading);
   }, []);
 
   const login = async (identifier: string, password: string) => {
