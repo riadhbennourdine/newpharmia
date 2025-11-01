@@ -18,8 +18,7 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
 
     useEffect(() => {
         const fetchInstructionFiche = async () => {
-            console.log('User in fetchInstructionFiche:', user, 'User ID:', user?._id);
-            if (group?.instructionFiches?.[0] && user) {
+            if (group?.instructionFiches?.[0] && user?._id) {
                 try {
                     const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`, { headers: { 'x-user-id': user._id as string } });
                     const data = await response.json();
@@ -30,7 +29,7 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
             }
         };
         fetchInstructionFiche();
-    }, [group, user]);
+    }, [group, user?._id]);
 
     const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
