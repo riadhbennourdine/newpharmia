@@ -95,6 +95,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
 
     return (
         <div>
+            <h2>Version 2</h2>
             <div className="flex justify-center mb-8">
                 <button
                     className={`px-4 py-2 font-semibold rounded-l-lg ${selectedMenu === 'parcours' ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'}`}
