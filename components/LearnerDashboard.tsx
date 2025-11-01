@@ -12,6 +12,7 @@ interface Props {
 }
 
 const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
+    console.log('group in LearnerDashboard:', group);
     const { user } = useAuth();
     const { fiches, isLoading } = useData();
     const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
