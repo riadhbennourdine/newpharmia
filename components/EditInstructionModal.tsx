@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Group } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Group, CaseStudy } from '../types';
 
 interface Props {
     group: Group | null;
@@ -9,6 +9,21 @@ interface Props {
 
 const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction }) => {
     const [newInstruction, setNewInstruction] = useState(group?.instruction || '');
+    const [memofiches, setMemofiches] = useState<CaseStudy[]>([]);
+    const [selectedFiche, setSelectedFiche] = useState<string>(group?.instructionFiches?.[0]?.toString() || '');
+
+    useEffect(() => {
+        const fetchMemofiches = async () => {
+            try {
+                const response = await fetch('/api/memofiches/all');
+                const data = await response.json();
+                setMemofiches(data);
+            } catch (error) {
+                console.error('Error fetching memofiches:', error);
+            }
+        };
+        fetchMemofiches();
+    }, []);
 
     const handleSave = async () => {
         if (!group) return;
@@ -16,7 +31,7 @@ const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction 
             const response = await fetch(`/api/groups/${group._id}/instruction`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ instruction: newInstruction }),
+                body: JSON.stringify({ instruction: newInstruction, instructionFiches: [selectedFiche] }),
             });
             if (response.ok) {
                 setInstruction(newInstruction);
@@ -39,6 +54,21 @@ const EditInstructionModal: React.FC<Props> = ({ group, onClose, setInstruction 
                     value={newInstruction}
                     onChange={(e) => setNewInstruction(e.target.value)}
                 />
+                <div className="mt-4">
+                    <label htmlFor="memofiche" className="block text-sm font-medium text-gray-700">Mémofiche à lire</label>
+                    <select
+                        id="memofiche"
+                        name="memofiche"
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                        value={selectedFiche}
+                        onChange={(e) => setSelectedFiche(e.target.value)}
+                    >
+                        <option value="">Aucune</option>
+                        {memofiches.map(fiche => (
+                            <option key={fiche._id as string} value={fiche._id as string}>{fiche.title}</option>
+                        ))}
+                    </select>
+                </div>
                 <div className="flex justify-end mt-4">
                     <button
                         onClick={onClose}

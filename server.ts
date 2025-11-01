@@ -608,6 +608,18 @@ app.get('/api/memofiches', async (req, res) => {
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des mémofiches.' });
     }
 });
+app.get('/api/memofiches/all', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        const fiches = await memofichesCollection.find({}).toArray();
+        res.json(fiches);
+    } catch (error) {
+        console.error('Error fetching all memofiches:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de toutes les mémofiches.' });
+    }
+});
 app.get('/api/memofiches/:id', async (req, res) => {
     try {
         const { id } = req.params;

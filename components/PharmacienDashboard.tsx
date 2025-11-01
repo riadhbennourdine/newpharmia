@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Group, User, UserRole } from '../types';
+import { Group, User, CaseStudy } from '../types';
 import LearnerDashboard from './LearnerDashboard';
 import { useAuth } from '../hooks/useAuth';
 import PreparatorCard from './PreparatorCard';
@@ -16,6 +16,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
     const [selectedMenu, setSelectedMenu] = useState('equipe');
     const [preparators, setPreparators] = useState<User[]>([]);
     const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
+    const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
 
     const fetchPreparators = async () => {
         if (!initialGroup) return;
@@ -33,6 +34,21 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
             fetchPreparators();
         }
     }, [selectedMenu, initialGroup]);
+
+    useEffect(() => {
+        const fetchInstructionFiche = async () => {
+            if (initialGroup?.instructionFiches?.[0]) {
+                try {
+                    const response = await fetch(`/api/memofiches/${initialGroup.instructionFiches[0]}`);
+                    const data = await response.json();
+                    setInstructionFiche(data);
+                } catch (error) {
+                    console.error('Error fetching instruction fiche:', error);
+                }
+            }
+        };
+        fetchInstructionFiche();
+    }, [initialGroup]);
 
     return (
         <div>
@@ -57,6 +73,8 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne de l'équipe</h2>
                         <p className="text-slate-700 font-semibold text-base">{instruction || 'Aucune consigne pour le moment.'}</p>
+                        {initialGroup?.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(initialGroup.instructionDate).toLocaleDateString('fr-FR')}</p>}
+                        {instructionFiche && <p className="text-sm text-gray-500 mt-2">Mémofiche à lire: {instructionFiche.title}</p>}
                         <button onClick={() => setIsInstructionModalOpen(true)} className="text-sm text-teal-600 hover:text-teal-800 font-semibold mt-4">Modifier la consigne</button>
                     </div>
                     <h1 className="text-3xl font-bold text-slate-800 mb-6">Statistiques de l'équipe</h1>
