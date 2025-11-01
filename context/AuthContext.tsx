@@ -154,7 +154,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser: handleSetUser,
     markFicheAsRead,
     saveQuizResult,
-  }), [isAuthenticated, user, token, login, logout, register, isLoading, authError, handleSetUser, markFicheAsRead, saveQuizResult]);
+  }), [!!token, user, token, login, logout, register, isLoading, authError, handleSetUser, markFicheAsRead, saveQuizResult]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
