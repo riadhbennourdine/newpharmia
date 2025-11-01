@@ -1,6 +1,7 @@
-import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
@@ -34,7 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
-  const login = async (identifier: string, password: string) => {
+  const login = useCallback(async (identifier: string, password: string) => {
     setIsLoading(true);
     setAuthError(null);
     try {
@@ -60,22 +61,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (err: any) {
       setAuthError(err.message);
-      // Re-throw the error to be caught in the component
       throw err;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
-  };
+  }, [navigate]);
 
-  const register = async (userData: Omit<User, '_id'>) => {
+  const register = useCallback(async (userData: Omit<User, '_id'>) => {
     setIsLoading(true);
     setAuthError(null);
     try {
@@ -90,17 +90,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (err: any) {
       setAuthError(err.message);
-      // Re-throw the error to be caught in the component
       throw err;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
   
-  const handleSetUser = (updatedUser: User) => {
+  const handleSetUser = useCallback((updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
+  }, []);
 
   const markFicheAsRead = useCallback(async (ficheId: string) => {
     if (!user || user.readFicheIds?.includes(ficheId)) {
@@ -121,7 +120,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Error marking fiche as read:', error);
     }
-  }, [user]);
+  }, [user, handleSetUser]);
 
   const saveQuizResult = useCallback(async (result: { quizId: string; score: number; completedAt: Date }) => {
     if (!user) return;
@@ -139,145 +138,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Error saving quiz result:', error);
     }
-  }, [user]);
+  }, [user, handleSetUser]);
 
-  const value = { 
-    isAuthenticated: !!token, 
-    user, 
+  const value = useMemo(() => ({
+    isAuthenticated: !!token,
+    user,
     token,
-    login, 
-    logout, 
-    register, 
-    isLoading, 
+    login,
+    logout,
+    register,
+    isLoading,
     authError,
     setUser: handleSetUser,
     markFicheAsRead,
     saveQuizResult,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-  const login = async (identifier: string, password: string) => {
-    setIsLoading(true);
-    setAuthError(null);
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || 'La connexion a échoué.');
-      }
-      
-      setUser(data.user);
-      setToken(data.token);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      if (data.user.profileIncomplete) {
-        navigate('/complete-profile');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (err: any) {
-      setAuthError(err.message);
-      // Re-throw the error to be caught in the component
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
-  const register = async (userData: Omit<User, '_id'>) => {
-    setIsLoading(true);
-    setAuthError(null);
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || 'L\'inscription a échoué.');
-      }
-    } catch (err: any) {
-      setAuthError(err.message);
-      // Re-throw the error to be caught in the component
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleSetUser = (updatedUser: User) => {
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-  };
-
-  const markFicheAsRead = useCallback(async (ficheId: string) => {
-    if (!user || user.readFicheIds?.includes(ficheId)) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/users/${user._id}/read-fiches`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ficheId }),
-      });
-      const updatedUser = await response.json();
-      if (!response.ok) {
-        throw new Error(updatedUser.message || 'Failed to mark as read');
-      }
-      handleSetUser(updatedUser);
-    } catch (error) {
-      console.error('Error marking fiche as read:', error);
-    }
-  }, [user]);
-
-  const saveQuizResult = useCallback(async (result: { quizId: string; score: number; completedAt: Date }) => {
-    if (!user) return;
-    try {
-      const response = await fetch(`/api/users/${user._id}/quiz-history`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result),
-      });
-      const updatedUser = await response.json();
-      if (!response.ok) {
-        throw new Error(updatedUser.message || 'Failed to save quiz result');
-      }
-      handleSetUser(updatedUser);
-    } catch (error) {
-      console.error('Error saving quiz result:', error);
-    }
-  }, [user]);
-
-  const value = { 
-    isAuthenticated: !!token, 
-    user, 
-    token,
-    login, 
-    logout, 
-    register, 
-    isLoading, 
-    authError,
-    setUser: handleSetUser,
-    markFicheAsRead,
-    saveQuizResult,
-  };
+  }), [isAuthenticated, user, token, login, logout, register, isLoading, authError, handleSetUser, markFicheAsRead, saveQuizResult]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
