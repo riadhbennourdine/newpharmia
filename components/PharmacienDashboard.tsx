@@ -33,7 +33,7 @@ const PharmacienDashboard: React.FC<Props> = ({ instruction, setInstruction, gro
                 </button>
             </div>
 
-            {selectedMenu === 'parcours' && <div>Parcours</div>}
+            {selectedMenu === 'parcours' && <LearnerDashboard instruction={instruction} group={group} />}
             {selectedMenu === 'equipe' && 
                 <div>
                     <button
