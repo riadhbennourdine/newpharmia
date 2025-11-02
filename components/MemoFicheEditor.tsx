@@ -124,6 +124,7 @@ interface RichContentSectionEditorProps {
 }
 
 const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
+  console.log("RichContentSectionEditor received section:", section);
 
   const handleContentChange = (index: number, value: string) => {
     const newContent = [...(section.content || [])];
