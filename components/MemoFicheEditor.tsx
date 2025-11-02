@@ -348,10 +348,13 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   };
 
   const addCustomSection = () => {
+    console.log("addCustomSection called");
     setCaseStudy(prev => {
       const newId = `custom-${Date.now()}`;
       const newCustomSections = [...(prev.customSections || []), { id: newId, title: 'Nouvelle Section', content: [] }];
       const newSectionOrder = [...(prev.sectionOrder || []), newId];
+      console.log("newCustomSections", newCustomSections);
+      console.log("newSectionOrder", newSectionOrder);
       return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
     });
   };
