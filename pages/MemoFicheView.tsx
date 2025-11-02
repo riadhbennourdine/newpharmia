@@ -218,14 +218,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
           }
         }
       }
-    } else if (caseStudy.type === 'communication') {
-      if (caseStudy.summary) {
-        content.push({ id: 'summary', title: 'Résumé', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Résumé" />, content: renderContentWithKeywords(caseStudy.summary)});
-      }
-      if (caseStudy.patientSituation) {
-        content.push({ id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, content: renderContentWithKeywords(caseStudy.patientSituation.content)});
-      }
-    } else if (caseStudy.type !== 'pharmacologie') {
+    } else { // Default case for 'maladie', 'dermocosmetique', 'exhaustive', 'micronutrition'
       const sections = [
         { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
         { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
@@ -251,6 +244,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
           });
         }
       });
+    }
     if (caseStudy.customSections && caseStudy.customSections.length > 0) {
       caseStudy.customSections.forEach((section, index) => {
         content.push({
