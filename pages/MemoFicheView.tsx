@@ -227,22 +227,22 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       }
     } else if (caseStudy.type !== 'pharmacologie') {
       const sections = [
-        { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: caseStudy.patientSituation?.content },
-        { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions },
-        { id: 'pathologyOverview', title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: caseStudy.pathologyOverview?.content },
+        { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
+        { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
+        { id: 'pathologyOverview', title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : caseStudy.pathologyOverview?.content, isAlert: false },
         { id: 'redFlags', title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, data: caseStudy.redFlags, isAlert: true },
-        { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, data: caseStudy.mainTreatment || caseStudy.recommendations?.mainTreatment },
-        { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, data: caseStudy.associatedProducts || caseStudy.recommendations?.associatedProducts },
-        { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: caseStudy.lifestyleAdvice || caseStudy.recommendations?.lifestyleAdvice },
-        { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: caseStudy.dietaryAdvice || caseStudy.recommendations?.dietaryAdvice },
+        { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, data: caseStudy.mainTreatment || caseStudy.recommendations?.mainTreatment, isAlert: false },
+        { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, data: caseStudy.associatedProducts || caseStudy.recommendations?.associatedProducts, isAlert: false },
+        { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: caseStudy.lifestyleAdvice || caseStudy.recommendations?.lifestyleAdvice, isAlert: false },
+        { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: caseStudy.dietaryAdvice || caseStudy.recommendations?.dietaryAdvice, isAlert: false },
       ];
 
       const orderedSections = (caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0 ? caseStudy.sectionOrder : sections.map(s => s.id))
         .map(id => sections.find(s => s.id === id))
-        .filter(s => s && s.data && (Array.isArray(s.data) ? s.data.length > 0 : true));
+        .filter(Boolean);
 
       orderedSections.forEach(section => {
-        if (section) {
+        if (section && section.data !== undefined) {
           content.push({
             id: section.id,
             title: section.title,
@@ -251,7 +251,6 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
           });
         }
       });
-    }
     if (caseStudy.customSections && caseStudy.customSections.length > 0) {
       caseStudy.customSections.forEach((section, index) => {
         content.push({
