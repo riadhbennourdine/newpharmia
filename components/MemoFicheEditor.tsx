@@ -272,7 +272,9 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         
         const newSections = allSections.filter(s => !orderedSections.find(os => os.id === s.id));
         
-        setDisplayedSections([...orderedSections, ...newSections]);
+        const finalSections = [...orderedSections, ...newSections];
+        console.log("finalSections", finalSections);
+        setDisplayedSections(finalSections);
     };
 
     buildSections();
