@@ -225,6 +225,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   }, [initialCaseStudy]);
 
   useEffect(() => {
+    console.log("useEffect for displayedSections triggered");
     const buildSections = () => {
         const sections: any[] = [];
 
