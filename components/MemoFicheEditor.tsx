@@ -570,7 +570,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 >
                     {content}
                 </Section>
-                        );
+            );
+        })}
 
         <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200">
             <PlusCircleIcon className="h-5 w-5 mr-2" />
