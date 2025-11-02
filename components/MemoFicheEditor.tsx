@@ -124,7 +124,6 @@ interface RichContentSectionEditorProps {
 }
 
 const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
-  console.log("RichContentSectionEditor received section:", section);
 
   const handleContentChange = (index: number, value: string) => {
     const newContent = [...(section.content || [])];
@@ -226,7 +225,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   }, [initialCaseStudy]);
 
   useEffect(() => {
-    console.log("useEffect for displayedSections triggered");
     const buildSections = () => {
         const sections: any[] = [];
 
@@ -273,9 +271,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         
         const newSections = allSections.filter(s => !orderedSections.find(os => os.id === s.id));
         
-        const finalSections = [...orderedSections, ...newSections];
-        console.log("finalSections", finalSections);
-        setDisplayedSections(finalSections);
+        setDisplayedSections([...orderedSections, ...newSections]);
     };
 
     buildSections();
@@ -352,13 +348,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   };
 
   const addCustomSection = () => {
-    console.log("addCustomSection called");
     setCaseStudy(prev => {
       const newId = `custom-${Date.now()}`;
       const newCustomSections = [...(prev.customSections || []), { id: newId, title: 'Nouvelle Section', content: [] }];
       const newSectionOrder = [...(prev.sectionOrder || []), newId];
-      console.log("newCustomSections", newCustomSections);
-      console.log("newSectionOrder", newSectionOrder);
       return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
     });
   };
