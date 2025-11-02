@@ -35,12 +35,12 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
         }
         return { type: 'text', value: '' };
       });
-      return { title: section.title, content };
+      return { id: section.id || `custom-${Date.now()}`, title: section.title, content };
     }
     if (typeof section === 'string') {
-        return { title: 'Section', content: [{ type: 'text', value: section }] };
+        return { id: `custom-${Date.now()}`, title: 'Section', content: [{ type: 'text', value: section }] };
     }
-    return { title: (section as any)?.title || '', content: [] };
+    return { id: (section as any)?.id || `custom-${Date.now()}`, title: (section as any)?.title || '', content: [] };
   });
 
   return {
@@ -261,7 +261,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
         }
 
-        const customSections = caseStudy.customSections?.map((section, i) => ({ id: `custom-${i}`, title: section.title, isCustom: true, index: i })) || [];
+        const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
         
         const allSections = [...sections, ...customSections];
 
@@ -349,18 +349,18 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
   const addCustomSection = () => {
     setCaseStudy(prev => {
-      const newCustomSections = [...(prev.customSections || []), { title: 'Nouvelle Section', content: [] }];
-      const newSectionOrder = [...(prev.sectionOrder || []), `custom-${newCustomSections.length - 1}`];
+      const newId = `custom-${Date.now()}`;
+      const newCustomSections = [...(prev.customSections || []), { id: newId, title: 'Nouvelle Section', content: [] }];
+      const newSectionOrder = [...(prev.sectionOrder || []), newId];
       return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
     });
   };
 
-  const removeCustomSection = (index: number) => {
+  const removeCustomSection = (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette section personnalisée ?")) {
       setCaseStudy(prev => {
-        const newCustomSections = [...(prev.customSections || [])];
-        newCustomSections.splice(index, 1);
-        const newSectionOrder = prev.sectionOrder?.filter(id => id !== `custom-${index}`) || [];
+        const newCustomSections = prev.customSections?.filter(section => section.id !== id) || [];
+        const newSectionOrder = prev.sectionOrder?.filter(sectionId => sectionId !== id) || [];
         return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
       });
     }
@@ -547,11 +547,14 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     break;
                 default:
                     if (sectionInfo.isCustom) {
-                        content = <RichContentSectionEditor section={caseStudy.customSections[sectionInfo.index]} onChange={(newSection) => {
-                            const newCustomSections = [...caseStudy.customSections];
-                            newCustomSections[sectionInfo.index] = newSection;
-                            handleCustomSectionChange(newCustomSections);
-                        }} onRemove={() => removeCustomSection(sectionInfo.index)} />;
+                        const customSectionIndex = caseStudy.customSections.findIndex(cs => cs.id === sectionInfo.id);
+                        if (customSectionIndex > -1) {
+                            content = <RichContentSectionEditor section={caseStudy.customSections[customSectionIndex]} onChange={(newSection) => {
+                                const newCustomSections = [...caseStudy.customSections];
+                                newCustomSections[customSectionIndex] = newSection;
+                                handleCustomSectionChange(newCustomSections);
+                            }} onRemove={() => removeCustomSection(sectionInfo.id)} />;
+                        }
                     }
                     break;
             }
@@ -568,7 +571,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     {content}
                 </Section>
             );
-        })}
+        })}}
 
         <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200">
             <PlusCircleIcon className="h-5 w-5 mr-2" />

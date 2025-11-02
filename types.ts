@@ -101,6 +101,7 @@ export interface MemoFicheSectionContent {
 }
 
 export interface MemoFicheSection {
+  id?: string;
   title: string;
   content: MemoFicheSectionContent[];
 }
