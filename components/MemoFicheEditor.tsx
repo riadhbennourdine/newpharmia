@@ -60,12 +60,10 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     keyQuestions: ensureArray(caseStudy?.keyQuestions),
     pathologyOverview: convertToSection(caseStudy?.pathologyOverview, 'Aperçu pathologie'),
     redFlags: ensureArray(caseStudy?.redFlags),
-    recommendations: {
-      mainTreatment: ensureArray(caseStudy?.recommendations?.mainTreatment),
-      associatedProducts: ensureArray(caseStudy?.recommendations?.associatedProducts),
-      lifestyleAdvice: ensureArray(caseStudy?.recommendations?.lifestyleAdvice),
-      dietaryAdvice: ensureArray(caseStudy?.recommendations?.dietaryAdvice),
-    },
+    mainTreatment: ensureArray(caseStudy?.mainTreatment),
+    associatedProducts: ensureArray(caseStudy?.associatedProducts),
+    lifestyleAdvice: ensureArray(caseStudy?.lifestyleAdvice),
+    dietaryAdvice: ensureArray(caseStudy?.dietaryAdvice),
     keyPoints: ensureArray(caseStudy?.keyPoints),
     references: ensureArray(caseStudy?.references),
     flashcards: ensureArray(caseStudy?.flashcards),
@@ -256,7 +254,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         }
 
         if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances') {
-            sections.push({ id: 'recommendations', title: 'Recommandations' });
+            sections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
+            sections.push({ id: 'associatedProducts', title: 'Produits Associés' });
+            sections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
+            sections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
             sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
         }
 
@@ -299,16 +300,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     setCaseStudy(prev => ({ ...prev, [name]: arrayValue as any }));
   };
 
-  const handleNestedArrayChange = (parent: 'recommendations', child: string, value: string) => {
-    const arrayValue = value.split('\n').filter(item => item.trim() !== '');
-    setCaseStudy(prev => ({
-        ...prev,
-        [parent]: {
-            ...prev[parent],
-            [child]: arrayValue,
-        },
-    }));
-  };
 
   const handleItemChange = (listName: ListName, index: number, field: string, value: string | number) => {
     setCaseStudy(prev => {
@@ -534,25 +525,11 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 case 'informationsMaladie':
                 case 'conseilsHygieneDeVie':
                 case 'conseilsAlimentaires':
+                case 'mainTreatment':
+                case 'associatedProducts':
+                case 'lifestyleAdvice':
+                case 'dietaryAdvice':
                     content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
-                    break;
-                case 'recommendations':
-                    content = (
-                        <div className="space-y-4">
-                            <div>
-                                <Label htmlFor="mainTreatment">Traitement Principal</Label>
-                                <Textarea name="mainTreatment" id="mainTreatment" rows={3} value={caseStudy.recommendations.mainTreatment.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'mainTreatment', e.target.value)} />
-                            </div>
-                            <div>
-                                <Label htmlFor="associatedProducts">Produits Associés</Label>
-                                <Textarea name="associatedProducts" id="associatedProducts" rows={3} value={caseStudy.recommendations.associatedProducts.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'associatedProducts', e.target.value)} />
-                            </div>
-                            <div>
-                                <Label htmlFor="lifestyleAdvice">Conseils Hygiéno-diététiques</Label>
-                                <Textarea name="lifestyleAdvice" id="lifestyleAdvice" rows={3} value={caseStudy.recommendations.lifestyleAdvice.join('\n')} onChange={(e) => handleNestedArrayChange('recommendations', 'lifestyleAdvice', e.target.value)} />
-                            </div>
-                        </div>
-                    );
                     break;
                 case 'keyPoints':
                      content = (

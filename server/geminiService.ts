@@ -17,19 +17,13 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
       pathologyOverview: { type: Type.STRING },
       redFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
-      recommendations: {
-        type: Type.OBJECT,
-        properties: {
-          mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
-          associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
-          lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
-          dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
-        },
-        required: ['mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice'],
-      },
+      mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
+      associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
+      lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+      dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
       references: { type: Type.ARRAY, items: { type: Type.STRING } },
     },
-    required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'recommendations', 'references'],
+    required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'],
   };
 
   let fullPrompt = `
@@ -235,7 +229,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
         Situation: ${memoContent.patientSituation}
         Pathologie: ${memoContent.pathologyOverview}
         Points clés: ${(memoContent.keyPoints ?? []).join(', ')}
-        Traitements: ${(memoContent.recommendations?.mainTreatment ?? []).join(', ')}
+        Traitements: ${(memoContent.mainTreatment ?? []).join(', ')}
         Signaux d'alerte: ${(memoContent.redFlags ?? []).join(', ')}
     `;
 

@@ -62,11 +62,10 @@ Instructions spécifiques par section :
 - **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
 - **Aperçu pathologie**: Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
 - **Signaux d'alerte**: Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **recommendations**: Cet objet doit contenir quatre listes :
-  - **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères.
-  - **associatedProducts**: Liste des produits associés. Chaque élément doit être une chaîne de caractères. Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
-  - **lifestyleAdvice**: Liste des conseils d'hygiène de vie. Chaque élément doit être une chaîne de caractères.
-  - **dietaryAdvice**: Liste des conseils alimentaires. Chaque élément doit être une chaîne de caractères.
+- **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères.
+- **associatedProducts**: Liste des produits associés. Chaque élément doit être une chaîne de caractères. Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
+- **lifestyleAdvice**: Liste des conseils d'hygiène de vie. Chaque élément doit être une chaîne de caractères.
+- **dietaryAdvice**: Liste des conseils alimentaires. Chaque élément doit être une chaîne de caractères.
 `;
 
     const pharmacologieFormattingInstructions = `
@@ -225,12 +224,10 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         keyQuestions: [],
         pathologyOverview: '',
         redFlags: [],
-        recommendations: {
-          mainTreatment: [],
-          associatedProducts: [],
-          lifestyleAdvice: [],
-          dietaryAdvice: [],
-        },
+        mainTreatment: [],
+        associatedProducts: [],
+        lifestyleAdvice: [],
+        dietaryAdvice: [],
         references: [],
         keyPoints: [],
         glossary: [],

@@ -125,12 +125,10 @@ export interface CaseStudy {
   keyQuestions: string[];
   pathologyOverview: string | MemoFicheSection;
   redFlags: string[];
-  recommendations: {
-    mainTreatment: string[];
-    associatedProducts: string[];
-    lifestyleAdvice: string[];
-    dietaryAdvice: string[];
-  };
+  mainTreatment?: string[];
+  associatedProducts?: string[];
+  lifestyleAdvice?: string[];
+  dietaryAdvice?: string[];
   references: string[];
   keyPoints: string[];
   glossary: GlossaryTerm[];
