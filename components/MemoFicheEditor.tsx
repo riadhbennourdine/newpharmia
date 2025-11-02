@@ -261,7 +261,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
         }
 
-        const customSections = caseStudy.customSections?.map((_, i) => ({ id: `custom-${i}`, title: ``, isCustom: true, index: i })) || [];
+        const customSections = caseStudy.customSections?.map((section, i) => ({ id: `custom-${i}`, title: section.title, isCustom: true, index: i })) || [];
         
         const allSections = [...sections, ...customSections];
 
