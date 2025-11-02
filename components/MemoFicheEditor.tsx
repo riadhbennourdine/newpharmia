@@ -43,6 +43,21 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     return { id: (section as any)?.id || `custom-${Date.now()}`, title: (section as any)?.title || '', content: [] };
   });
 
+  const initialSections: any[] = [];
+  if (caseStudy?.type === 'maladie') {
+    initialSections.push({ id: 'patientSituation', title: 'Cas comptoir' });
+    initialSections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
+    initialSections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
+    initialSections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
+  }
+  if (caseStudy?.type !== 'dispositifs-medicaux' && caseStudy?.type !== 'dermocosmetique' && caseStudy?.type !== 'ordonnances') {
+    initialSections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
+    initialSections.push({ id: 'associatedProducts', title: 'Produits Associés' });
+    initialSections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
+    initialSections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
+    initialSections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
+  }
+
   return {
     _id: caseStudy?._id || '',
     id: caseStudy?.id || '',
@@ -91,7 +106,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     conseilsHygieneDeVie: ensureArray(caseStudy?.conseilsHygieneDeVie),
     conseilsAlimentaires: ensureArray(caseStudy?.conseilsAlimentaires),
     ventesAdditionnelles: caseStudy?.ventesAdditionnelles || {},
-    sectionOrder: ensureArray(caseStudy?.sectionOrder),
+    sectionOrder: caseStudy?.sectionOrder && caseStudy.sectionOrder.length > 0 ? ensureArray(caseStudy.sectionOrder) : initialSections.map(s => s.id),
   };
 };
 
@@ -366,6 +381,15 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     }
   };
 
+  const removeMainSection = (id: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette section ?")) {
+      setCaseStudy(prev => {
+        const newSectionOrder = prev.sectionOrder?.filter(sectionId => sectionId !== id) || [];
+        return { ...prev, sectionOrder: newSectionOrder };
+      });
+    }
+  };
+
   const handleYoutubeLinkChange = (index: number, field: 'url' | 'title', value: string) => {
     setCaseStudy(prev => {
       const newYoutubeLinks = [...(prev.youtubeLinks || [])];
@@ -567,6 +591,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     onMoveDown={() => moveSection(index, 'down')}
                     isFirst={index === 0}
                     isLast={index === displayedSections.length - 1}
+                    onRemove={() => sectionInfo.isCustom ? removeCustomSection(sectionInfo.id) : removeMainSection(sectionInfo.id)}
                 >
                     {content}
                 </Section>
