@@ -533,68 +533,70 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
         {displayedSections.map((sectionInfo, index) => {
             let content;
-            switch (sectionInfo.id) {
-                case 'patientSituation':
-                case 'pathologyOverview':
-                case 'casComptoir':
-                case 'objectifsConseil':
-                case 'pathologiesConcernees':
-                case 'interetDispositif':
-                case 'beneficesSante':
-                case 'dispositifsAConseiller':
-                case 'reponsesObjections':
-                case 'pagesSponsorisees':
-                    content = <RichContentSectionEditor section={caseStudy[sectionInfo.id]} onChange={(newSection) => setCaseStudy(prev => ({ ...prev, [sectionInfo.id]: newSection }))} showTitle={false} />;
-                    break;
-                case 'keyQuestions':
-                case 'redFlags':
-                case 'referencesBibliographiquesDM':
-                case 'ordonnance':
-                case 'analyseOrdonnance':
-                case 'informationsMaladie':
-                case 'conseilsHygieneDeVie':
-                case 'conseilsAlimentaires':
-                case 'mainTreatment':
-                case 'associatedProducts':
-                case 'lifestyleAdvice':
-                case 'dietaryAdvice':
-                    content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
-                    break;
-                case 'keyPoints':
-                     content = (
-                        <div className="space-y-4">
-                            <div>
-                                <Label htmlFor="keyPoints">Points Clés</Label>
-                                <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
+
+            if (sectionInfo.isCustom) {
+                const customSectionIndex = caseStudy.customSections.findIndex(cs => cs.id === sectionInfo.id);
+                if (customSectionIndex > -1) {
+                    content = <RichContentSectionEditor section={caseStudy.customSections[customSectionIndex]} onChange={(newSection) => {
+                        const newCustomSections = [...caseStudy.customSections];
+                        newCustomSections[customSectionIndex] = newSection;
+                        handleCustomSectionChange(newCustomSections);
+                    }} onRemove={() => removeCustomSection(sectionInfo.id)} />;
+                }
+            } else if (sectionInfo.isMemoSection) {
+                const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
+                if (memoSectionIndex > -1) {
+                    content = <RichContentSectionEditor section={caseStudy.memoSections[memoSectionIndex]} onChange={(newSection) => {
+                        const newMemoSections = [...caseStudy.memoSections];
+                        newMemoSections[memoSectionIndex] = newSection;
+                        setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
+                    }} showTitle={false} />;
+                }
+            } else {
+                switch (sectionInfo.id) {
+                    case 'patientSituation':
+                    case 'pathologyOverview':
+                    case 'casComptoir':
+                    case 'objectifsConseil':
+                    case 'pathologiesConcernees':
+                    case 'interetDispositif':
+                    case 'beneficesSante':
+                    case 'dispositifsAConseiller':
+                    case 'reponsesObjections':
+                    case 'pagesSponsorisees':
+                        content = <RichContentSectionEditor section={caseStudy[sectionInfo.id]} onChange={(newSection) => setCaseStudy(prev => ({ ...prev, [sectionInfo.id]: newSection }))} showTitle={false} />;
+                        break;
+                    case 'keyQuestions':
+                    case 'redFlags':
+                    case 'referencesBibliographiquesDM':
+                    case 'ordonnance':
+                    case 'analyseOrdonnance':
+                    case 'informationsMaladie':
+                    case 'conseilsHygieneDeVie':
+                    case 'conseilsAlimentaires':
+                    case 'mainTreatment':
+                    case 'associatedProducts':
+                    case 'lifestyleAdvice':
+                    case 'dietaryAdvice':
+                        content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
+                        break;
+                    case 'keyPoints':
+                         content = (
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="keyPoints">Points Clés</Label>
+                                    <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
+                                </div>
+                                <div>
+                                    <Label htmlFor="references">Références</Label>
+                                    <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
+                                </div>
                             </div>
-                            <div>
-                                <Label htmlFor="references">Références</Label>
-                                <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
-                            </div>
-                        </div>
-                    );
-                    break;
-                default:
-                    if (sectionInfo.isCustom) {
-                        const customSectionIndex = caseStudy.customSections.findIndex(cs => cs.id === sectionInfo.id);
-                        if (customSectionIndex > -1) {
-                            content = <RichContentSectionEditor section={caseStudy.customSections[customSectionIndex]} onChange={(newSection) => {
-                                const newCustomSections = [...caseStudy.customSections];
-                                newCustomSections[customSectionIndex] = newSection;
-                                handleCustomSectionChange(newCustomSections);
-                            }} onRemove={() => removeCustomSection(sectionInfo.id)} />;
-                    } else if (sectionInfo.isMemoSection) {
-                        const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
-                        if (memoSectionIndex > -1) {
-                            content = <RichContentSectionEditor section={caseStudy.memoSections[memoSectionIndex]} onChange={(newSection) => {
-                                const newMemoSections = [...caseStudy.memoSections];
-                                newMemoSections[memoSectionIndex] = newSection;
-                                setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
-                            }} showTitle={false} />;
-                        }
-                    }
-                    break;
+                        );
+                        break;
+                }
             }
+
 
             return (
                 <Section
