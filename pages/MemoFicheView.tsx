@@ -175,7 +175,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       const content = (caseStudy.memoSections || []).map((section, index) => ({
         id: section.id || `memoSection-${index}`,
         title: section.title,
-        icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-blue-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+        icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
         content: renderContentWithKeywords(section.content),
       }));
       content.push(

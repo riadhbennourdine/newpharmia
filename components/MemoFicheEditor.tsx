@@ -266,6 +266,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             sections.push({ id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie' });
             sections.push({ id: 'conseilsAlimentaires', title: 'Conseils alimentaires' });
             sections.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles' });
+        } else if (caseStudy.type === 'savoir') {
+            (caseStudy.memoSections || []).forEach(section => {
+                sections.push({ id: section.id, title: section.title, isMemoSection: true });
+            });
         }
 
         if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances') {
@@ -442,6 +446,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 <option value="dispositifs-medicaux">Dispositifs Médicaux</option>
                 <option value="ordonnances">Ordonnances</option>
                 <option value="communication">Communication</option>
+                <option value="savoir">Savoir</option>
                 <option value="exhaustive">Exhaustive</option>
             </select>
           </div>
@@ -578,6 +583,14 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                                 newCustomSections[customSectionIndex] = newSection;
                                 handleCustomSectionChange(newCustomSections);
                             }} onRemove={() => removeCustomSection(sectionInfo.id)} />;
+                    } else if (sectionInfo.isMemoSection) {
+                        const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
+                        if (memoSectionIndex > -1) {
+                            content = <RichContentSectionEditor section={caseStudy.memoSections[memoSectionIndex]} onChange={(newSection) => {
+                                const newMemoSections = [...caseStudy.memoSections];
+                                newMemoSections[memoSectionIndex] = newSection;
+                                setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
+                            }} showTitle={false} />;
                         }
                     }
                     break;
