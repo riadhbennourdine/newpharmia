@@ -126,7 +126,8 @@ export const TOPIC_CATEGORIES = [
         'Cardio & Circulation',
         'Santé Féminine',
         'Pédiatrie',
-        'Sommeil & Stress'
+        'Sommeil & Stress',
+        'Diabète'
     ]
   }
 ];
