@@ -115,7 +115,7 @@ export interface Media {
 export interface CaseStudy {
   _id: ObjectId | string;
   id: string;
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication';
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'savoir';
   title: string;
   shortDescription: string;
   theme: string;

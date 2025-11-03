@@ -17,7 +17,7 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition' | 'savoir'>('maladie');
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -132,6 +132,18 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".\nTu dois générer un objet JSON avec les clés suivantes : "ordonnance", "analyseOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".\nLe contenu de chaque clé doit être un tableau de chaînes de caractères.\nChaque chaîne de caractères doit correspondre à un point de la section.\n\nVoici le détail de chaque section :\n- **ordonnance**: Ordonnance. Contenant les détails du patient, la pathologie, la prescription et la durée.\n- **analyseOrdonnance**: Analyse de l'ordonnance. Contenant l'analyse de la prescription, la vérification essentielle et le profil du patient.\n- **conseilsTraitement**: Conseils sur le traitement médicamenteux. Pour chaque médicament de la prescription, créer un objet avec les clés "medicament" et "conseils". "medicament" est le nom du médicament. "conseils" est un tableau de chaînes de caractères contenant les conseils d'administration, les effets indésirables éventuels et les précautions d'emploi.\n- **informationsMaladie**: Informations sur la maladie. Ne pas commencer par le mot "Mécanisme". Commencer par le nom de la maladie en gras (par exemple, **Rhinite allergique**).\n- **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.\n- **conseilsAlimentaires**: Conseils alimentaires. Indiquer les aliments à consommer à privilégier, et les aliments à éviter. Ne pas lister de micronutriments.\n- **ventesAdditionnelles**: Ventes additionnelles. Répartir les produits dans les sous-rubriques suivantes (si pertinentes) : "complementsAlimentaires", "accessoires", "dispositifs", "cosmetiques". Pour chaque produit, inclure les doses, les posologies et les modes d'administration.\n\n${formattingInstructions}\n`;
     } else if (memoFicheType === 'micronutrition') {
         prompt = `Créer une mémofiche claire et concise pour initier les pharmaciens d'officine et leurs collaborateurs débutants à la micronutrition et son apport pour les patients souffrant de [maladie]. La mémofiche doit se concentrer sur le déclenchement de la discussion au comptoir et comment créer le besoin, puis explication de la [maladie] , les traitements conventionnels. Puis l'approche micronutritionnelle en expliquant simplement les mécanismes d'action de chaque micronutriment et en proposant des conseils alimentaires et des règles d'hygiène de vie. utiliser un langage accessible et encourageant. Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le sujet détaillé est : "${sourceText}".`;
+    } else if (memoFicheType === 'savoir') {
+        prompt = `En tant qu'expert en santé et pharmacie, analyse le texte brut suivant et génère une mémofiche de type 'Savoir'. L'objectif est de créer un focus sur un sujet de santé avec une approche pharmaceutique.
+
+Le processus est le suivant :
+1.  **Extraire les titres** : Identifie tous les titres présents dans le texte brut.
+2.  **Créer les sections Mémo** : Chaque titre identifié doit devenir le "title" d'une section dans le tableau "memoSections".
+3.  **Réécrire le contenu** : Pour chaque section, reprends le texte qui suit le titre correspondant dans le texte brut et réécris-le dans un style synthétique, professionnel et facile à comprendre pour un professionnel de la pharmacie. Le contenu réécrit doit être placé dans le champ "content" de la section correspondante. Le contenu doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+4.  **Générer les outils pédagogiques** : À partir du texte brut, génère également les sections "flashcards", "quiz" et "glossary".
+
+Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
+
+Le texte à analyser est :\n\n${sourceText}`;
     } else { // exhaustive
         prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
     }
@@ -342,6 +354,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
             <option value="ordonnances">Ordonnances</option>
             <option value="communication">Communication</option>
             <option value="micronutrition">Micronutrition</option>
+            <option value="savoir">Savoir</option>
             <option value="exhaustive">Synthèse exhaustive</option>
             </select>
         </div>

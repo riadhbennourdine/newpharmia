@@ -112,6 +112,25 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
+  } else if (memoFicheType === 'savoir') {
+    jsonStructure = {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
+        memoSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
+          },
+        },
+      },
+      required: ['title', 'shortDescription', 'memoSections'],
     };
   } else if (memoFicheType === 'communication') {
     jsonStructure = {
