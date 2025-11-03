@@ -267,6 +267,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 title: section.title,
                 isMemoSection: true
             }));
+            const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
+            allSections = [...allSections, ...customSections];
         } else {
             const sections: any[] = [];
             if (caseStudy.type === 'maladie') {
@@ -305,6 +307,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
             allSections = [...sections, ...customSections];
         }
+
+        allSections.push({ id: 'references', title: 'Références bibliographiques' });
         
         const orderedSections = caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0
             ? caseStudy.sectionOrder.map(id => allSections.find(s => s.id === id)).filter(Boolean)
@@ -613,8 +617,9 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                                     <Label htmlFor="references">Références</Label>
                                     <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
                                 </div>
-                            </div>
-                        );
+                        break;
+                    case "references":
+                        content = <Textarea rows={5} value={(caseStudy.references as string[] || []).join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />;
                         break;
                 }
             }
