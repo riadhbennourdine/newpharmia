@@ -112,7 +112,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
- else if (memoFicheType === 'communication') {
+  } else if (memoFicheType === 'communication') {
     jsonStructure = {
       type: Type.OBJECT,
       properties: {
