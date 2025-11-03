@@ -68,9 +68,12 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('caseStudy changed:', caseStudy);
     if (caseStudy.type === 'savoir' && caseStudy.memoSections && caseStudy.memoSections.length > 0) {
+      console.log('Setting open section to:', caseStudy.memoSections[0].id || 'memoSection-0');
       setOpenSection(caseStudy.memoSections[0].id || 'memoSection-0');
     } else {
+      console.log('Setting open section to: patientSituation');
       setOpenSection('patientSituation');
     }
   }, [caseStudy]);

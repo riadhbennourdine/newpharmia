@@ -272,7 +272,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             });
         }
 
-        if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances') {
+        if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && caseStudy.type !== 'savoir') {
             sections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
             sections.push({ id: 'associatedProducts', title: 'Produits Associés' });
             sections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
