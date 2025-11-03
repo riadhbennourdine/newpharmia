@@ -171,6 +171,19 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   };
 
   const memoContent = useMemo(() => {
+    if (caseStudy.type === 'savoir') {
+      const content = (caseStudy.memoSections || []).map((section, index) => ({
+        id: section.id || `memoSection-${index}`,
+        title: section.title,
+        icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-blue-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+        content: renderContentWithKeywords(section.content),
+      }));
+      content.push(
+        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+      );
+      return content;
+    }
+
     const mainSections = [
       { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
       { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
