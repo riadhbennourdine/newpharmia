@@ -261,7 +261,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     const buildSections = () => {
         let allSections: any[] = [];
 
-        if (caseStudy.type === 'savoir') {
+        if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
             allSections = (caseStudy.memoSections || []).map(section => ({
                 id: section.id,
                 title: section.title,
@@ -575,7 +575,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                         const newMemoSections = [...caseStudy.memoSections];
                         newMemoSections[memoSectionIndex] = newSection;
                         setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
-                    }} showTitle={false} />;
+                    }} showTitle={true} />;
                 }
             } else {
                 switch (sectionInfo.id) {
