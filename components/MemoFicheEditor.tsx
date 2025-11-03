@@ -267,8 +267,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 title: section.title,
                 isMemoSection: true
             }));
-            const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
-            allSections = [...allSections, ...customSections];
         } else {
             const sections: any[] = [];
             if (caseStudy.type === 'maladie') {
@@ -303,11 +301,12 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 sections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
                 sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
             }
-
-            const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
-            allSections = [...sections, ...customSections];
+            allSections = sections;
         }
 
+        const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
+        allSections = [...allSections, ...customSections];
+        
         allSections.push({ id: 'references', title: 'Références bibliographiques' });
         
         const orderedSections = caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0
@@ -617,8 +616,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                                     <Label htmlFor="references">Références</Label>
                                     <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
                                 </div>
+                            </div>
+                        );
                         break;
-                    case "references":
+                    case 'references':
                         content = <Textarea rows={5} value={(caseStudy.references as string[] || []).join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />;
                         break;
                 }
