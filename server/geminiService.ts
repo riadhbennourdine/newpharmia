@@ -30,14 +30,13 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     ${prompt}
     La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
 
-  if (memoFicheType === 'pharmacologie') {
+  if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
       type: Type.OBJECT,
       properties: {
         title: { type: Type.STRING },
-        patientSituation: { type: Type.STRING },
-        keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
-        customSections: {
+        shortDescription: { type: Type.STRING },
+        memoSections: {
           type: Type.ARRAY,
           items: {
             type: Type.OBJECT,
@@ -49,7 +48,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           },
         },
       },
-      required: ['title', 'patientSituation', 'keyQuestions', 'customSections'],
+      required: ['title', 'shortDescription', 'memoSections'],
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = {
@@ -113,27 +112,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
-  } else if (memoFicheType === 'savoir') {
-    jsonStructure = {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING },
-        shortDescription: { type: Type.STRING },
-        memoSections: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING },
-              content: { type: Type.STRING },
-            },
-            required: ['title', 'content'],
-          },
-        },
-      },
-      required: ['title', 'shortDescription', 'memoSections'],
-    };
-  } else if (memoFicheType === 'communication') {
+ else if (memoFicheType === 'communication') {
     jsonStructure = {
       type: Type.OBJECT,
       properties: {
@@ -159,6 +138,10 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   if (memoFicheType === 'dispositifs-medicaux') {
     fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
+
+${prompt}`;
+  } else if (memoFicheType === 'pharmacologie') {
+    fullPrompt = `En tant qu'expert en pharmacologie, analyse le texte suivant et génère une mémofiche de type 'pharmacologie'. La mémofiche doit inclure un titre pertinent, une courte description, et plusieurs sections (memoSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
 
 ${prompt}`;
   } else if (memoFicheType === 'communication') {
