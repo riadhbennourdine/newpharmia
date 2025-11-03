@@ -18,6 +18,7 @@ const GeneratorView: React.FC = () => {
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition' | 'savoir'>('maladie');
+  const [step, setStep] = useState(1); // 1: select type, 2: fill details
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
   const navigate = useNavigate();
@@ -310,14 +311,16 @@ Le texte à analyser est :\n\n${sourceText}`;
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in p-4 md:p-8">
-      <button onClick={() => navigate('/dashboard')} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-6 transition-colors">
+      <button onClick={() => step === 1 ? navigate('/dashboard') : setStep(1)} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-6 transition-colors">
         <ChevronLeftIcon className="h-4 w-4 mr-2" />
-        Retour au tableau de bord
+        {step === 1 ? 'Retour au tableau de bord' : 'Retour au choix du type'}
       </button>
 
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-slate-800 mb-2">Générateur de Mémofiches IA</h2>
-        <p className="text-lg text-slate-600">Choisissez un contexte, décrivez un sujet, et générez une mémofiche structurée.</p>
+        <p className="text-lg text-slate-600">
+          {step === 1 ? 'Choisissez un type de mémofiche pour commencer.' : 'Remplissez les détails pour générer votre mémofiche.'}
+        </p>
       </div>
       
       {error && (
@@ -327,214 +330,218 @@ Le texte à analyser est :\n\n${sourceText}`;
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <div className="mb-6">
-            <label htmlFor="memofiche-type-select" className="block text-lg font-medium text-slate-700 mb-2">
-            Type de Mémofiche
-            </label>
-            <select
-            id="memofiche-type-select"
-            value={memoFicheType}
-            onChange={(e) => {
-              const newMemoFicheType = e.target.value as any;
-              setMemoFicheType(newMemoFicheType);
-              if (newMemoFicheType === 'dispositifs-medicaux') {
-                setPharmaTheme('Dispositifs médicaux');
-              } else {
-                setPharmaTheme(''); // Clear if not 'dispositifs-medicaux'
-              }
-            }}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-            disabled={isLoading}
-            >
-            <option value="maladie">Maladie courante</option>
-            <option value="pharmacologie">Pharmacologie</option>
-            <option value="dermocosmetique">Dermocosmétique</option>
-            <option value="dispositifs-medicaux">Dispositifs médicaux</option>
-            <option value="ordonnances">Ordonnances</option>
-            <option value="communication">Communication</option>
-            <option value="micronutrition">Micronutrition</option>
-            <option value="savoir">Savoir</option>
-            <option value="exhaustive">Synthèse exhaustive</option>
-            </select>
+      {step === 1 ? (
+        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <div className="mb-6">
+              <label htmlFor="memofiche-type-select" className="block text-lg font-medium text-slate-700 mb-2">
+              Type de Mémofiche
+              </label>
+              <select
+              id="memofiche-type-select"
+              value={memoFicheType}
+              onChange={(e) => {
+                const newMemoFicheType = e.target.value as any;
+                setMemoFicheType(newMemoFicheType);
+                if (newMemoFicheType === 'dispositifs-medicaux') {
+                  setPharmaTheme('Dispositifs médicaux');
+                } else {
+                  setPharmaTheme(''); // Clear if not 'dispositifs-medicaux'
+                }
+              }}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+              disabled={isLoading}
+              >
+              <option value="maladie">Maladie courante</option>
+              <option value="pharmacologie">Pharmacologie</option>
+              <option value="dermocosmetique">Dermocosmétique</option>
+              <option value="dispositifs-medicaux">Dispositifs médicaux</option>
+              <option value="ordonnances">Ordonnances</option>
+              <option value="communication">Communication</option>
+              <option value="micronutrition">Micronutrition</option>
+              <option value="savoir">Savoir</option>
+              <option value="exhaustive">Synthèse exhaustive</option>
+              </select>
+          </div>
+          <button onClick={() => setStep(2)} className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300">
+            Suivant
+          </button>
         </div>
-
-        {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances' || memoFicheType === 'communication' || memoFicheType === 'micronutrition' || memoFicheType === 'savoir') && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
-                    Thème Pédagogique
-                    </label>
-                    <select
-                    id="theme-select"
-                    value={selectedTheme}
-                    onChange={(e) => setSelectedTheme(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    >
-                    <option value="">Sélectionnez un thème</option>
-                    {TOPIC_CATEGORIES[0].topics.map(topic => (
-                        <option key={topic} value={topic}>{topic}</option>
-                    ))}
-                    </select>
-                </div>
-                {memoFicheType !== 'communication' && (
-                <div>
-                    <label htmlFor="system-select" className="block text-lg font-medium text-slate-700 mb-2">
-                    Système/Organe
-                    </label>
-                    <select
-                    id="system-select"
-                    value={selectedSystem}
-                    onChange={(e) => setSelectedSystem(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    >
-                    <option value="">Sélectionnez un système/organe</option>
-                    {TOPIC_CATEGORIES[1].topics.map(topic => (
-                        <option key={topic} value={topic}>{topic}</option>
-                    ))}
-                    </select>
-                </div>
-                )}
-            </div>
-        )}
-
-        {(memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label htmlFor="pharma-theme-input" className="block text-lg font-medium text-slate-700 mb-2">
-                    Thème
-                    </label>
-                    <input
-                    id="pharma-theme-input"
-                    type="text"
-                    value={pharmaTheme}
-                    onChange={(e) => setPharmaTheme(e.target.value)}
-                    placeholder="Ex: Les antiulcéreux / Le matériel de pansement"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="pharma-pathology-select" className="block text-lg font-medium text-slate-700 mb-2">
-                    Indication principale
-                    </label>
-                    <select
-                    id="pharma-pathology-select"
-                    value={pharmaPathology}
-                    onChange={(e) => setPharmaPathology(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                    disabled={isLoading}
-                    >
-                    <option value="">Sélectionnez une indication</option>
-                    {TOPIC_CATEGORIES[1].topics.map(topic => (
-                        <option key={topic} value={topic}>{topic}</option>
-                    ))}
-                    </select>
-                </div>
-            </div>
-        )}
-
-
-
-        <div className="mb-6">
-            <label htmlFor="source-text" className="block text-lg font-medium text-slate-700 mb-2">
-            Sujet détaillé de la mémofiche
-            </label>
-            <textarea
-            id="source-text"
-            rows={10}
-            value={sourceText}
-            onChange={(e) => setSourceText(e.target.value)}
-            placeholder="Décrivez en détail la mémofiche à générer..."
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-            disabled={isLoading}
-            />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-                <label htmlFor="cover-image-url" className="block text-lg font-medium text-slate-700 mb-2">
-                URL de l'image de couverture (Optionnel)
-                </label>
-                <input
-                id="cover-image-url"
-                type="text"
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="https://exemple.com/image.jpg"
-                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                disabled={isLoading}
-                />
-            </div>
-            <div>
-                <label className="block text-lg font-medium text-slate-700 mb-2">
-                Liens Vidéo YouTube (Optionnel)
-                </label>
-                {youtubeLinks.map((link, index) => (
-                    <div key={index} className="flex items-center space-x-2 mb-2">
-                        <input
-                        type="text"
-                        placeholder="Titre de la vidéo"
-                        value={link.title}
-                        onChange={(e) => handleYoutubeLinkChange(index, 'title', e.target.value)}
-                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                        disabled={isLoading}
-                        />
-                        <input
-                        type="text"
-                        placeholder="URL de la vidéo"
-                        value={link.url}
-                        onChange={(e) => handleYoutubeLinkChange(index, 'url', e.target.value)}
-                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                        disabled={isLoading}
-                        />
-                        {youtubeLinks.length > 1 && (
-                            <button type="button" onClick={() => removeYoutubeLink(index)} className="text-red-500 hover:text-red-700" disabled={isLoading}>
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        )}
-                    </div>
-                ))}
-                {youtubeLinks.length < 3 && (
-                    <button type="button" onClick={addYoutubeLink} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2" disabled={isLoading}>
-                        <PlusCircleIcon className="h-5 w-5 mr-2" />
-                        Ajouter un lien YouTube
-                    </button>
-                )}
-            </div>
-        </div>
-
-      </div>
-
-      <div className="mt-6 text-center">
-        <button
-          onClick={handleGenerate}
-          disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'micronutrition' && (!selectedTheme || !selectedSystem))}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
-        >
-          {isLoading ? (
-            <>
-              <Spinner className="-ml-1 mr-3 h-5 w-5 text-white" />
-              <span>Génération en cours...</span>
-            </>
-          ) : (
-            <>
-              <SparklesIcon className="-ml-1 mr-3 h-5 w-5" />
-              <span>Générer l'ébauche</span>
-            </>
+      ) : (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          {(memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'ordonnances' || memoFicheType === 'communication' || memoFicheType === 'micronutrition' || memoFicheType === 'savoir') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                      <label htmlFor="theme-select" className="block text-lg font-medium text-slate-700 mb-2">
+                      Thème Pédagogique
+                      </label>
+                      <select
+                      id="theme-select"
+                      value={selectedTheme}
+                      onChange={(e) => setSelectedTheme(e.target.value)}
+                      className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                      disabled={isLoading}
+                      >
+                      <option value="">Sélectionnez un thème</option>
+                      {TOPIC_CATEGORIES[0].topics.map(topic => (
+                          <option key={topic} value={topic}>{topic}</option>
+                      ))}
+                      </select>
+                  </div>
+                  {memoFicheType !== 'communication' && (
+                  <div>
+                      <label htmlFor="system-select" className="block text-lg font-medium text-slate-700 mb-2">
+                      Système/Organe
+                      </label>
+                      <select
+                      id="system-select"
+                      value={selectedSystem}
+                      onChange={(e) => setSelectedSystem(e.target.value)}
+                      className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                      disabled={isLoading}
+                      >
+                      <option value="">Sélectionnez un système/organe</option>
+                      {TOPIC_CATEGORIES[1].topics.map(topic => (
+                          <option key={topic} value={topic}>{topic}</option>
+                      ))}
+                      </select>
+                  </div>
+                  )}
+              </div>
           )}
-        </button>
-        {!isLoading && !generatedCase && (
+
+          {(memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                      <label htmlFor="pharma-theme-input" className="block text-lg font-medium text-slate-700 mb-2">
+                      Thème
+                      </label>
+                      <input
+                      id="pharma-theme-input"
+                      type="text"
+                      value={pharmaTheme}
+                      onChange={(e) => setPharmaTheme(e.target.value)}
+                      placeholder="Ex: Les antiulcéreux / Le matériel de pansement"
+                      className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                      disabled={isLoading}
+                      />
+                  </div>
+                  <div>
+                      <label htmlFor="pharma-pathology-select" className="block text-lg font-medium text-slate-700 mb-2">
+                      Indication principale
+                      </label>
+                      <select
+                      id="pharma-pathology-select"
+                      value={pharmaPathology}
+                      onChange={(e) => setPharmaPathology(e.target.value)}
+                      className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                      disabled={isLoading}
+                      >
+                      <option value="">Sélectionnez une indication</option>
+                      {TOPIC_CATEGORIES[1].topics.map(topic => (
+                          <option key={topic} value={topic}>{topic}</option>
+                      ))}
+                      </select>
+                  </div>
+              </div>
+          )}
+
+          <div className="mb-6">
+              <label htmlFor="source-text" className="block text-lg font-medium text-slate-700 mb-2">
+              Sujet détaillé de la mémofiche
+              </label>
+              <textarea
+              id="source-text"
+              rows={10}
+              value={sourceText}
+              onChange={(e) => setSourceText(e.target.value)}
+              placeholder="Décrivez en détail la mémofiche à générer..."
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+              disabled={isLoading}
+              />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                  <label htmlFor="cover-image-url" className="block text-lg font-medium text-slate-700 mb-2">
+                  URL de l'image de couverture (Optionnel)
+                  </label>
+                  <input
+                  id="cover-image-url"
+                  type="text"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                  placeholder="https://exemple.com/image.jpg"
+                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                  disabled={isLoading}
+                  />
+              </div>
+              <div>
+                  <label className="block text-lg font-medium text-slate-700 mb-2">
+                  Liens Vidéo YouTube (Optionnel)
+                  </label>
+                  {youtubeLinks.map((link, index) => (
+                      <div key={index} className="flex items-center space-x-2 mb-2">
+                          <input
+                          type="text"
+                          placeholder="Titre de la vidéo"
+                          value={link.title}
+                          onChange={(e) => handleYoutubeLinkChange(index, 'title', e.target.value)}
+                          className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                          disabled={isLoading}
+                          />
+                          <input
+                          type="text"
+                          placeholder="URL de la vidéo"
+                          value={link.url}
+                          onChange={(e) => handleYoutubeLinkChange(index, 'url', e.target.value)}
+                          className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                          disabled={isLoading}
+                          />
+                          {youtubeLinks.length > 1 && (
+                              <button type="button" onClick={() => removeYoutubeLink(index)} className="text-red-500 hover:text-red-700" disabled={isLoading}>
+                                  <TrashIcon className="h-5 w-5" />
+                              </button>
+                          )}
+                      </div>
+                  ))}
+                  {youtubeLinks.length < 3 && (
+                      <button type="button" onClick={addYoutubeLink} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2" disabled={isLoading}>
+                          <PlusCircleIcon className="h-5 w-5 mr-2" />
+                          Ajouter un lien YouTube
+                      </button>
+                  )}
+              </div>
+          </div>
+
+          <div className="mt-6 text-center">
             <button
-                onClick={handleSaveManually}
-                className="ml-4 inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-teal-600 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
+              onClick={handleGenerate}
+              disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'micronutrition' && (!selectedTheme || !selectedSystem))}
+              className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
             >
-                Sauvegarder manuellement
+              {isLoading ? (
+                <>
+                  <Spinner className="-ml-1 mr-3 h-5 w-5 text-white" />
+                  <span>Génération en cours...</span>
+                </>
+              ) : (
+                <>
+                  <SparklesIcon className="-ml-1 mr-3 h-5 w-5" />
+                  <span>Générer l'ébauche</span>
+                </>
+              )}
             </button>
-        )}
-      </div>
+            {!isLoading && !generatedCase && (
+                <button
+                    onClick={handleSaveManually}
+                    className="ml-4 inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-teal-600 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
+                >
+                    Sauvegarder manuellement
+                </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

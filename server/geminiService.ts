@@ -167,6 +167,8 @@ ${prompt}`;
 ${prompt}`;
   }
     
+  console.log("memoFicheType:", memoFicheType);
+  console.log("jsonStructure:", JSON.stringify(jsonStructure, null, 2));
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
   const response = await ai.models.generateContent({
