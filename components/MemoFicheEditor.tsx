@@ -84,7 +84,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
-    memoSections: ensureArray(caseStudy?.memoSections).map(section => {
+    memoSections: ensureArray(caseStudy?.memoSections).map((section, index) => {
       if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
         const content = ensureArray(section.content).map(item => {
           if (typeof item === 'object' && item !== null && 'type' in item && 'value' in item) {
@@ -95,12 +95,12 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
           }
           return { type: 'text', value: '' };
         });
-        return { id: section.id || `memo-${Date.now()}`, title: section.title, content };
+        return { id: section.id || `memo-${index}`, title: section.title, content };
       }
       if (typeof section === 'string') {
-          return { id: `memo-${Date.now()}`, title: 'Section', content: [{ type: 'text', value: section }] };
+          return { id: `memo-${index}`, title: 'Section', content: [{ type: 'text', value: section }] };
       }
-      return { id: (section as any)?.id || `memo-${Date.now()}`, title: (section as any)?.title || '', content: [] };
+      return { id: (section as any)?.id || `memo-${index}`, title: (section as any)?.title || '', content: [] };
     }),
     customSections: safeCustomSections,
     status: caseStudy?.status || MemoFicheStatus.DRAFT, // Initialize status
@@ -259,49 +259,53 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
   useEffect(() => {
     const buildSections = () => {
-        const sections: any[] = [];
+        let allSections: any[] = [];
 
-        if (caseStudy.type === 'maladie') {
-            sections.push({ id: 'patientSituation', title: 'Cas comptoir' });
-            sections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
-            sections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
-            sections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
-        } else if (caseStudy.type === 'dispositifs-medicaux') {
-            sections.push({ id: 'casComptoir', title: 'Cas comptoir' });
-            sections.push({ id: 'objectifsConseil', title: 'Objectifs de conseil' });
-            sections.push({ id: 'pathologiesConcernees', title: 'Pathologies concernées' });
-            sections.push({ id: 'interetDispositif', title: 'Intérêt du dispositif' });
-            sections.push({ id: 'beneficesSante', title: 'Bénéfices pour la santé' });
-            sections.push({ id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser' });
-            sections.push({ id: 'reponsesObjections', title: 'Réponses aux objections des clients' });
-            sections.push({ id: 'pagesSponsorisees', title: 'Pages sponsorisées' });
-            sections.push({ id: 'referencesBibliographiquesDM', title: 'Références bibliographiques' });
-        } else if (caseStudy.type === 'ordonnances') {
-            sections.push({ id: 'ordonnance', title: 'Ordonnance' });
-            sections.push({ id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance' });
-            sections.push({ id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux' });
-            sections.push({ id: 'informationsMaladie', title: 'Informations sur la maladie' });
-            sections.push({ id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie' });
-            sections.push({ id: 'conseilsAlimentaires', title: 'Conseils alimentaires' });
-            sections.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles' });
-        } else if (caseStudy.type === 'savoir') {
-            (caseStudy.memoSections || []).forEach(section => {
-                sections.push({ id: section.id, title: section.title, isMemoSection: true });
-            });
+        if (caseStudy.type === 'savoir') {
+            allSections = (caseStudy.memoSections || []).map(section => ({
+                id: section.id,
+                title: section.title,
+                isMemoSection: true
+            }));
+        } else {
+            const sections: any[] = [];
+            if (caseStudy.type === 'maladie') {
+                sections.push({ id: 'patientSituation', title: 'Cas comptoir' });
+                sections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
+                sections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
+                sections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
+            } else if (caseStudy.type === 'dispositifs-medicaux') {
+                sections.push({ id: 'casComptoir', title: 'Cas comptoir' });
+                sections.push({ id: 'objectifsConseil', title: 'Objectifs de conseil' });
+                sections.push({ id: 'pathologiesConcernees', title: 'Pathologies concernées' });
+                sections.push({ id: 'interetDispositif', title: 'Intérêt du dispositif' });
+                sections.push({ id: 'beneficesSante', title: 'Bénéfices pour la santé' });
+                sections.push({ id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser' });
+                sections.push({ id: 'reponsesObjections', title: 'Réponses aux objections des clients' });
+                sections.push({ id: 'pagesSponsorisees', title: 'Pages sponsorisées' });
+                sections.push({ id: 'referencesBibliographiquesDM', title: 'Références bibliographiques' });
+            } else if (caseStudy.type === 'ordonnances') {
+                sections.push({ id: 'ordonnance', title: 'Ordonnance' });
+                sections.push({ id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance' });
+                sections.push({ id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux' });
+                sections.push({ id: 'informationsMaladie', title: 'Informations sur la maladie' });
+                sections.push({ id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie' });
+                sections.push({ id: 'conseilsAlimentaires', title: 'Conseils alimentaires' });
+                sections.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles' });
+            }
+
+            if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && caseStudy.type !== 'savoir') {
+                sections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
+                sections.push({ id: 'associatedProducts', title: 'Produits Associés' });
+                sections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
+                sections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
+                sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
+            }
+
+            const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
+            allSections = [...sections, ...customSections];
         }
-
-        if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && caseStudy.type !== 'savoir') {
-            sections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
-            sections.push({ id: 'associatedProducts', title: 'Produits Associés' });
-            sections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
-            sections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
-            sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
-        }
-
-        const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
         
-        const allSections = [...sections, ...customSections];
-
         const orderedSections = caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0
             ? caseStudy.sectionOrder.map(id => allSections.find(s => s.id === id)).filter(Boolean)
             : allSections;
@@ -312,7 +316,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     };
 
     buildSections();
-  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder]);
+  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder, caseStudy.memoSections]);
 
   const moveSection = (index: number, direction: 'up' | 'down') => {
     const newSections = [...displayedSections];
