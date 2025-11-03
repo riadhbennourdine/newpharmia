@@ -65,7 +65,15 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const canDelete = user?.role === UserRole.ADMIN && !isPreview;
   const canGenerateQRCode = user?.role === UserRole.ADMIN && !isPreview;
 
-  const [openSection, setOpenSection] = useState<string | null>('patientSituation');
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (caseStudy.type === 'savoir' && caseStudy.memoSections && caseStudy.memoSections.length > 0) {
+      setOpenSection(caseStudy.memoSections[0].id || 'memoSection-0');
+    } else {
+      setOpenSection('patientSituation');
+    }
+  }, [caseStudy]);
   const [activeTab, setActiveTab] = useState<TabName>('memo');
   const [showQRCode, setShowQRCode] = useState(false);
 
