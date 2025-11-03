@@ -181,7 +181,7 @@ const MemoFichesPage: React.FC = () => {
                     <h1 className="text-3xl font-bold text-slate-800">Toutes les mémofiches</h1>
                     <p className="text-lg text-slate-600 mt-1">Explorez, recherchez et filtrez notre bibliothèque de contenu.</p>
                 </div>
-                {(isAdmin || isFormateur) && (
+                {isAdmin && (
                     <button
                         onClick={() => navigate('/edit-memofiche')}
                         className="inline-flex items-center bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700"
