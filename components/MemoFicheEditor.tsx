@@ -84,6 +84,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
+    memoSections: ensureArray(caseStudy?.memoSections),
     customSections: safeCustomSections,
     status: caseStudy?.status || MemoFicheStatus.DRAFT, // Initialize status
 
