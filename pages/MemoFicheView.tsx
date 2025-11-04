@@ -192,6 +192,18 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
       );
       return content;
+    } else if (caseStudy.type === 'ordonnances') {
+      const content = [
+        { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance) },
+        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance) },
+        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: renderContentWithKeywords(caseStudy.conseilsTraitement as any) },
+        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie) },
+        { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie) },
+        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires) },
+        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: renderContentWithKeywords(caseStudy.ventesAdditionnelles as any) },
+        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+      ];
+      return content;
     }
 
     const mainSections = [

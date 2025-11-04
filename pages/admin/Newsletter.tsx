@@ -93,7 +93,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                         line-height: 1.2 !important;
                       }
                       .main-content-text {
-                        font-size: 22px !important;
+                        font-size: 20px !important;
                         line-height: 1.8 !important;
                       }
                       .header-slogan {
@@ -133,7 +133,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                       </tbody>
                     </table>
                   )}
-                  <div class="main-content-text" style={{ lineHeight: 1.8, color: '#4b5563', margin: 0, fontSize: '18px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                  <div class="main-content-text" style={{ lineHeight: 1.8, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
                 </td>
               </tr>
               {/* Footer */}
