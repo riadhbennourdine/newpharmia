@@ -28,9 +28,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   let fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de 
-```json
-). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
@@ -226,7 +224,7 @@ const learningToolsSchema = {
                     options: {
                         type: Type.ARRAY, 
                         items: { type: Type.STRING },
-                        description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être [\'Vrai\', \'Faux\']."
+                        description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
                     },
                     correctAnswerIndex: { type: Type.INTEGER },
                     explanation: { type: Type.STRING }
