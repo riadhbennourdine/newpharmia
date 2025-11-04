@@ -172,6 +172,14 @@ Le texte à analyser est :\n\n${sourceText}`;
         },
         coverImageUrl: coverImageUrl.trim() || undefined,
         youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
+        // Ordonnances
+        ordonnance: draft.ordonnance || [],
+        analyseOrdonnance: draft.analyseOrdonnance || [],
+        conseilsTraitement: draft.conseilsTraitement || [],
+        informationsMaladie: draft.informationsMaladie || [],
+        conseilsHygieneDeVie: draft.conseilsHygieneDeVie || [],
+        conseilsAlimentaires: draft.conseilsAlimentaires || [],
+        ventesAdditionnelles: draft.ventesAdditionnelles || {},
       } as CaseStudy;
 
       setGeneratedCase(finalMemoFiche);
