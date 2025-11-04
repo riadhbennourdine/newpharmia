@@ -103,8 +103,38 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  const renderContentWithKeywords = (content: string | string[] | MemoFicheSectionContent[] | undefined, isRedKeywordSection: boolean = false) => {
+  const renderContentWithKeywords = (content: any, isRedKeywordSection: boolean = false) => {
     if (!content) return '';
+
+    if (Array.isArray(content) && content.every(item => typeof item === 'object' && item !== null && 'medicament' in item && 'conseils' in item)) {
+        return (content as { medicament: string; conseils: string[] }[]).map(item => {
+            const conseilsHtml = item.conseils.map(c => `<li>${c}</li>`).join('');
+            return `<h4>${item.medicament}</h4><ul>${conseilsHtml}</ul>`;
+        }).join('');
+    }
+
+    if (typeof content === 'object' && !Array.isArray(content) && content !== null) {
+        const ventes = content as {
+            complementsAlimentaires?: string[];
+            accessoires?: string[];
+            dispositifs?: string[];
+            cosmetiques?: string[];
+        };
+        let html = '';
+        if (ventes.complementsAlimentaires) {
+            html += '<h4>Compléments Alimentaires</h4><ul>' + ventes.complementsAlimentaires.map(c => `<li>${c}</li>`).join('') + '</ul>';
+        }
+        if (ventes.accessoires) {
+            html += '<h4>Accessoires</h4><ul>' + ventes.accessoires.map(a => `<li>${a}</li>`).join('') + '</ul>';
+        }
+        if (ventes.dispositifs) {
+            html += '<h4>Dispositifs</h4><ul>' + ventes.dispositifs.map(d => `<li>${d}</li>`).join('') + '</ul>';
+        }
+        if (ventes.cosmetiques) {
+            html += '<h4>Cosmétiques</h4><ul>' + ventes.cosmetiques.map(c => `<li>${c}</li>`).join('') + '</ul>';
+        }
+        return html;
+    }
 
     if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
         const text = Array.isArray(content) ? content.join('\n') : content;
