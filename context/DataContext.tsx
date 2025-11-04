@@ -16,7 +16,7 @@ interface DataContextType {
   isLoading: boolean;
   error: string | null;
   team: User[];
-  fetchFiches: (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; }) => Promise<void>;
+  fetchFiches: (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string; }) => Promise<void>;
   getCaseStudyById: (id: string) => Promise<CaseStudy | undefined>;
   saveCaseStudy: (caseStudy: CaseStudy) => Promise<CaseStudy>;
   deleteCaseStudy: (id: string) => Promise<void>;
@@ -36,7 +36,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string }) => {
+  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string }) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -47,6 +47,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (params.theme) queryParams.append('theme', params.theme);
       if (params.system) queryParams.append('system', params.system);
       if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params.status) queryParams.append('selectedStatus', params.status);
 
       const headers: HeadersInit = {};
       if (user) {

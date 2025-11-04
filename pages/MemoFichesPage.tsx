@@ -133,7 +133,8 @@ const MemoFichesPage: React.FC = () => {
             search: searchTerm, 
             theme: selectedTheme, 
             system: selectedSystem, 
-            status: selectedStatus // Pass status to fetchFiches
+            status: selectedStatus, // Pass status to fetchFiches
+            sortBy: 'newest' // Sort by newest
         });
     }, [searchTerm, selectedTheme, selectedSystem, selectedStatus, currentPage, fetchFiches]);
     
