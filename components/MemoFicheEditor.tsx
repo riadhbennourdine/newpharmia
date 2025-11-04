@@ -629,7 +629,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             return (
                 <Section
                     key={sectionInfo.id}
-                    title={sectionInfo.title}
+                    title={sectionInfo.isMemoSection ? '' : sectionInfo.title}
                     onMoveUp={() => moveSection(index, 'up')}
                     onMoveDown={() => moveSection(index, 'down')}
                     isFirst={index === 0}
