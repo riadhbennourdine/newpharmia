@@ -16,6 +16,7 @@ const RegisterView: React.FC = () => {
     const [role, setRole] = useState<UserRole>(UserRole.PREPARATEUR);
     const [pharmacistId, setPharmacistId] = useState('');
     const [pharmacists, setPharmacists] = useState<User[]>([]);
+    const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
 
     useEffect(() => {
         if (role === UserRole.PREPARATEUR) {
@@ -173,21 +174,44 @@ const RegisterView: React.FC = () => {
                         )}
                         {role === UserRole.PREPARATEUR && (
                             <div>
-                                <label htmlFor="pharmacist-select" className="sr-only">Pharmacien Référent</label>
-                                <select
-                                    id="pharmacist-select"
-                                    name="pharmacistId"
-                                    required
+                                <label htmlFor="pharmacist-search" className="sr-only">Pharmacien Référent</label>
+                                <input
+                                    id="pharmacist-search"
+                                    type="text"
+                                    placeholder="Rechercher un pharmacien référent"
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
-                                    value={pharmacistId}
-                                    onChange={(e) => setPharmacistId(e.target.value)}
-                                    disabled={pharmacists.length === 0}
-                                >
-                                    <option value="">Sélectionnez un pharmacien référent</option>
-                                    {pharmacists.map(p => (
-                                        <option key={p._id} value={p._id}>{p.firstName} {p.lastName}</option>
-                                    ))}
-                                </select>
+                                    value={pharmacistSearchTerm}
+                                    onChange={(e) => {
+                                        setPharmacistSearchTerm(e.target.value);
+                                        setPharmacistId('');
+                                    }}
+                                    required={!pharmacistId}
+                                />
+                                {pharmacistSearchTerm && (
+                                    <div className="border border-slate-300 rounded-md mt-1 max-h-40 overflow-y-auto">
+                                        {pharmacists
+                                            .filter(p => {
+                                                const searchTermLower = pharmacistSearchTerm.toLowerCase();
+                                                return (
+                                                    p.firstName?.toLowerCase().includes(searchTermLower) ||
+                                                    p.lastName?.toLowerCase().includes(searchTermLower) ||
+                                                    p.email.toLowerCase().includes(searchTermLower)
+                                                );
+                                            })
+                                            .map(p => (
+                                                <div
+                                                    key={p._id}
+                                                    className="p-2 hover:bg-slate-100 cursor-pointer"
+                                                    onClick={() => {
+                                                        setPharmacistId(p._id as string);
+                                                        setPharmacistSearchTerm(`${p.firstName} ${p.lastName}`);
+                                                    }}
+                                                >
+                                                    {p.firstName} {p.lastName}
+                                                </div>
+                                            ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div>
