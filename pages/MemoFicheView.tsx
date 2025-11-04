@@ -108,8 +108,11 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
     if (Array.isArray(content) && content.every(item => typeof item === 'object' && item !== null && 'medicament' in item && 'conseils' in item)) {
         return (content as { medicament: string; conseils: string[] }[]).map(item => {
-            const conseilsHtml = item.conseils.map(c => `<li>${c}</li>`).join('');
-            return `<h4>${item.medicament}</h4><ul>${conseilsHtml}</ul>`;
+            const conseilsHtml = item.conseils.map(c => {
+                let conseilHtml = c.replace(/\*\*(.*?)\*\*/g, `<span class="font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300">$1</span>`);
+                return `<li>${conseilHtml}</li>`;
+            }).join('');
+            return `<h4><strong>${item.medicament}</strong></h4><ul>${conseilsHtml}</ul>`;
         }).join('');
     }
 
@@ -121,17 +124,19 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
             cosmetiques?: string[];
         };
         let html = '';
+        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+
         if (ventes.complementsAlimentaires) {
-            html += '<h4>Compléments Alimentaires</h4><ul>' + ventes.complementsAlimentaires.map(c => `<li>${c}</li>`).join('') + '</ul>';
+            html += `<h4><strong>Compléments Alimentaires</strong></h4><ul>` + ventes.complementsAlimentaires.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
         if (ventes.accessoires) {
-            html += '<h4>Accessoires</h4><ul>' + ventes.accessoires.map(a => `<li>${a}</li>`).join('') + '</ul>';
+            html += `<h4><strong>Accessoires</strong></h4><ul>` + ventes.accessoires.map(a => `<li>${a.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
         if (ventes.dispositifs) {
-            html += '<h4>Dispositifs</h4><ul>' + ventes.dispositifs.map(d => `<li>${d}</li>`).join('') + '</ul>';
+            html += `<h4><strong>Dispositifs</strong></h4><ul>` + ventes.dispositifs.map(d => `<li>${d.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
         if (ventes.cosmetiques) {
-            html += '<h4>Cosmétiques</h4><ul>' + ventes.cosmetiques.map(c => `<li>${c}</li>`).join('') + '</ul>';
+            html += `<h4><strong>Cosmétiques</strong></h4><ul>` + ventes.cosmetiques.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
         return html;
     }
