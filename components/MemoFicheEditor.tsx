@@ -180,8 +180,8 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
       {showTitle && (
         <div className="flex items-start gap-2 mb-2">
           <div className="flex-grow">
-            <label htmlFor={`custom_title_${section.title}`}>Titre de la section</label>
-            <Input type="text" id={`custom_title_${section.title}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
+            <label htmlFor={`custom_title_${section.id}`}>Titre de la section</label>
+            <Input type="text" id={`custom_title_${section.id}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
           </div>
           {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
         </div>
