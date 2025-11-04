@@ -234,14 +234,25 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     return content;
   }, [caseStudy]);
 
-  const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = [
-      { id: 'memo', label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
-      { id: 'flashcards', label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
+  const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
+    const hasMedia = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
+    const baseItems = [
+      { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
+      { id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
       ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
       ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
-      { id: 'glossary', label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
-      { id: 'media', label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }
-  ];
+      { id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
+      { id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }
+    ];
+
+    if (hasMedia) {
+      const mediaItem = baseItems.find(item => item.id === 'media');
+      const otherItems = baseItems.filter(item => item.id !== 'media');
+      return [mediaItem!, ...otherItems];
+    }
+
+    return baseItems;
+  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview]);
 
   const renderContent = () => {
     switch (activeTab) {
