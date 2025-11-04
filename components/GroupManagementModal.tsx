@@ -22,6 +22,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
 
   const pricing = {
     solo: {
@@ -44,7 +45,13 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   useEffect(() => {
     fetchPharmacists();
     fetchPreparators();
-  }, []);
+    if (group && group.pharmacistId) {
+      const pharmacist = allPharmacists.find(p => p._id === group.pharmacistId);
+      if (pharmacist) {
+        setPharmacistSearchTerm(`${pharmacist.firstName} ${pharmacist.lastName} (${pharmacist.email})`);
+      }
+    }
+  }, [group]);
 
   const fetchPharmacists = async () => {
     try {
@@ -131,18 +138,42 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
           </div>
           <div>
             <label htmlFor="pharmacist" className="block text-sm font-medium text-slate-700">Pharmacien Responsable</label>
-            <select
+            <input
+              type="text"
               id="pharmacist"
-              value={pharmacistId as string}
-              onChange={(e) => setPharmacistId(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+              value={pharmacistSearchTerm}
+              onChange={(e) => {
+                setPharmacistSearchTerm(e.target.value);
+                setPharmacistId('');
+              }}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               required
-            >
-              <option value="">Sélectionner un pharmacien</option>
-              {allPharmacists.map(p => (
-                <option key={p._id as string} value={p._id as string}>{p.firstName} {p.lastName} ({p.email})</option>
-              ))}
-            </select>
+            />
+            {pharmacistSearchTerm && (
+              <div className="mt-2 border p-2 rounded-md max-h-40 overflow-y-auto">
+                {allPharmacists
+                  .filter(p => {
+                    const searchTermLower = pharmacistSearchTerm.toLowerCase();
+                    return (
+                      p.firstName?.toLowerCase().includes(searchTermLower) ||
+                      p.lastName?.toLowerCase().includes(searchTermLower) ||
+                      p.email.toLowerCase().includes(searchTermLower)
+                    );
+                  })
+                  .map(p => (
+                    <div
+                      key={p._id as string}
+                      className="p-2 hover:bg-slate-100 cursor-pointer"
+                      onClick={() => {
+                        setPharmacistId(p._id as string);
+                        setPharmacistSearchTerm(`${p.firstName} ${p.lastName} (${p.email})`);
+                      }}
+                    >
+                      {p.firstName} {p.lastName} ({p.email})
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">Préparateurs</label>
