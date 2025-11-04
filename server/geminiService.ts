@@ -28,7 +28,9 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   let fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de \`\`\`json). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, pas de 
+```json
+). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
@@ -136,7 +138,28 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   }
 
-  if (memoFicheType === \'pharmacologie\' || memoFicheType === \'savoir\') {\n    const expertRole = memoFicheType === \'pharmacologie\' ? \'pharmacologie\' : \'connaissances pharmaceutiques\';\n    fullPrompt = `En tant qu\'expert en ${expertRole}, votre tâche est de transformer le texte brut suivant en une mémofiche structurée de type \'${memoFicheType}\'. L\'objectif est de conserver toute la richesse et le détail du texte original tout en l\'organisant de manière claire et logique pour un professionnel de la pharmacie.\n\nLa mémofiche doit inclure :\n1.  Un **titre** pertinent qui résume le sujet.\n2.  Une **courte description** qui introduit le thème.\n3.  Plusieurs **sections (memoSections)** qui décomposent le sujet.\n\nInstructions pour les \`memoSections\`:\n-   **Fidélité au texte source :** Le contenu de chaque section doit refléter fidèlement les informations, le niveau de détail et la terminologie du texte original. Ne simplifiez pas excessivement l\'information.\n-   **Structure et clarté :** Chaque section doit avoir un titre et un contenu. Le contenu doit être structuré sous forme de liste à puces pour une meilleure lisibilité.\n-   **Formatage :** Chaque point de la liste doit commencer par un point (•) suivi d\'un espace, et être sur une nouvelle ligne (en utilisant \'\\\\n\'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).\n\nLe texte à analyser est :\n\n${prompt}`;\n  } else if (memoFicheType === \'dispositifs-medicaux\') {
+  if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
+    const expertRole = memoFicheType === 'pharmacologie' ? 'pharmacologie' : 'connaissances pharmaceutiques';
+    fullPrompt = `En tant qu'expert en ${expertRole}, votre tâche est de transformer le texte brut suivant en une mémofiche structurée de type '${memoFicheType}'. L'objectif est de conserver toute la richesse et le détail du texte original tout en l'organisant de manière claire et logique pour un professionnel de la pharmacie.
+
+La mémofiche doit inclure :
+1.  Un **titre** pertinent qui résume le sujet.
+2.  Une **courte description** qui introduit le thème.
+3.  Plusieurs **sections (memoSections)** qui décomposent le sujet.
+
+Instructions pour les 
+```
+memoSections
+```
+:
+-   **Fidélité au texte source :** Le contenu de chaque section doit refléter fidèlement les informations, le niveau de détail et la terminologie du texte original. Ne simplifiez pas excessivement l'information.
+-   **Structure et clarté :** Chaque section doit avoir un titre et un contenu. Le contenu doit être structuré sous forme de liste à puces pour une meilleure lisibilité.
+-   **Formatage :** Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+
+Le texte à analyser est :
+
+${prompt}`; 
+ } else if (memoFicheType === 'dispositifs-medicaux') {
     fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
 
 ${prompt}`;
