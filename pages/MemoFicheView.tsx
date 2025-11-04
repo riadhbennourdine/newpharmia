@@ -129,6 +129,54 @@ const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) =>
     );
 };
 
+const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseils }) => {
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+    const handleToggle = (title: string) => {
+        setOpenAccordion(openAccordion === title ? null : title);
+    };
+
+    const aPrivilegier = conseils.filter(c => c.toLowerCase().includes('privilégier'));
+    const aEviter = conseils.filter(c => c.toLowerCase().includes('éviter'));
+
+    const renderList = (items: string[] | undefined) => {
+        if (!items || items.length === 0) return null;
+        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        return (
+            <ul>
+                {items.map((item, index) => (
+                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                ))}
+            </ul>
+        );
+    };
+
+    return (
+        <div>
+            {aPrivilegier.length > 0 && (
+                <AccordionSection
+                    title="Aliments à privilégier"
+                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
+                    isOpen={openAccordion === 'privilegier'}
+                    onToggle={() => handleToggle('privilegier')}
+                >
+                    {renderList(aPrivilegier)}
+                </AccordionSection>
+            )}
+            {aEviter.length > 0 && (
+                <AccordionSection
+                    title="Aliments à éviter"
+                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-red-600 text-white rounded-full font-bold text-sm">-</div>}
+                    isOpen={openAccordion === 'eviter'}
+                    onToggle={() => handleToggle('eviter')}
+                >
+                    {renderList(aEviter)}
+                </AccordionSection>
+            )}
+        </div>
+    );
+};
+
 interface DetailedMemoFicheViewProps {
   caseStudy: CaseStudy;
   onBack?: () => void;
@@ -286,7 +334,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} /> },
         { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie) },
         { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie) },
-        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires) },
+        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: <ConseilsAlimentairesSection conseils={caseStudy.conseilsAlimentaires as string[]} /> },
         { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} /> },
         { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
       ];
