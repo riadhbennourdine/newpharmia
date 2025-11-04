@@ -77,7 +77,6 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       setOpenSection('patientSituation');
     }
   }, [caseStudy]);
-  const [activeTab, setActiveTab] = useState<TabName>('memo');
   const [showQRCode, setShowQRCode] = useState(false);
 
   const handleToggle = (title: string) => setOpenSection(openSection === title ? null : title);
@@ -253,6 +252,8 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
     return baseItems;
   }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview]);
+
+  const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
 
   const renderContent = () => {
     switch (activeTab) {
