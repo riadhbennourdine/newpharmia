@@ -415,15 +415,18 @@ Le texte à analyser est :\n\n${sourceText}`;
                       <label htmlFor="pharma-theme-input" className="block text-lg font-medium text-slate-700 mb-2">
                       Thème
                       </label>
-                      <input
-                      id="pharma-theme-input"
-                      type="text"
+                      <select
+                      id="pharma-theme-select"
                       value={pharmaTheme}
                       onChange={(e) => setPharmaTheme(e.target.value)}
-                      placeholder="Ex: Les antiulcéreux / Le matériel de pansement"
                       className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
                       disabled={isLoading}
-                      />
+                      >
+                      <option value="">Sélectionnez un thème</option>
+                      {TOPIC_CATEGORIES[0].topics.map(topic => (
+                          <option key={topic} value={topic}>{topic}</option>
+                      ))}
+                      </select>
                   </div>
                   <div>
                       <label htmlFor="pharma-pathology-select" className="block text-lg font-medium text-slate-700 mb-2">
