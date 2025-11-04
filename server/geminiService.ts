@@ -147,19 +147,15 @@ La mémofiche doit inclure :
 2.  Une **courte description** qui introduit le thème.
 3.  Plusieurs **sections (memoSections)** qui décomposent le sujet.
 
-Instructions pour les 
-```
-memoSections
-```
-:
+Instructions pour les memoSections:
 -   **Fidélité au texte source :** Le contenu de chaque section doit refléter fidèlement les informations, le niveau de détail et la terminologie du texte original. Ne simplifiez pas excessivement l'information.
 -   **Structure et clarté :** Chaque section doit avoir un titre et un contenu. Le contenu doit être structuré sous forme de liste à puces pour une meilleure lisibilité.
 -   **Formatage :** Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 
 Le texte à analyser est :
 
-${prompt}`; 
- } else if (memoFicheType === 'dispositifs-medicaux') {
+${prompt}`;
+  } else if (memoFicheType === 'dispositifs-medicaux') {
     fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
 
 ${prompt}`;
@@ -230,7 +226,7 @@ const learningToolsSchema = {
                     options: {
                         type: Type.ARRAY, 
                         items: { type: Type.STRING },
-                        description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
+                        description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être [\'Vrai\', \'Faux\']."
                     },
                     correctAnswerIndex: { type: Type.INTEGER },
                     explanation: { type: Type.STRING }
