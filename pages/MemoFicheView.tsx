@@ -126,16 +126,16 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         let html = '';
         const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
 
-        if (ventes.complementsAlimentaires) {
+        if (ventes.complementsAlimentaires && ventes.complementsAlimentaires.length > 0) {
             html += `<h4><strong>Compléments Alimentaires</strong></h4><ul>` + ventes.complementsAlimentaires.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
-        if (ventes.accessoires) {
+        if (ventes.accessoires && ventes.accessoires.length > 0) {
             html += `<h4><strong>Accessoires</strong></h4><ul>` + ventes.accessoires.map(a => `<li>${a.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
-        if (ventes.dispositifs) {
+        if (ventes.dispositifs && ventes.dispositifs.length > 0) {
             html += `<h4><strong>Dispositifs</strong></h4><ul>` + ventes.dispositifs.map(d => `<li>${d.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
-        if (ventes.cosmetiques) {
+        if (ventes.cosmetiques && ventes.cosmetiques.length > 0) {
             html += `<h4><strong>Cosmétiques</strong></h4><ul>` + ventes.cosmetiques.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
         }
         return html;
