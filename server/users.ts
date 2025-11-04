@@ -35,4 +35,18 @@ router.get('/groups/:id/preparateurs', async (req, res) => {
     }
 });
 
+// Get user by email
+router.get('/by-email/:email', async (req, res) => {
+  try {
+    const { usersCollection } = await getCollections();
+    const user = await usersCollection.findOne({ email: req.params.email });
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération de l'utilisateur.", error });
+  }
+});
+
 export default router;
