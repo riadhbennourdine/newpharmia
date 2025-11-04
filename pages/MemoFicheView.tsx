@@ -93,6 +93,42 @@ const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
     );
 };
 
+const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) => {
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+    const handleToggle = (title: string) => {
+        setOpenAccordion(openAccordion === title ? null : title);
+    };
+
+    const renderList = (items: string[] | undefined) => {
+        if (!items || items.length === 0) return null;
+        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        return (
+            <ul>
+                {items.map((item, index) => (
+                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                ))}
+            </ul>
+        );
+    };
+
+    return (
+        <div>
+            {(conseils as { medicament: string; conseils: string[] }[] || []).map((item, index) => (
+                <AccordionSection
+                    key={index}
+                    title={item.medicament}
+                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
+                    isOpen={openAccordion === item.medicament}
+                    onToggle={() => handleToggle(item.medicament)}
+                >
+                    {renderList(item.conseils)}
+                </AccordionSection>
+            ))}
+        </div>
+    );
+};
+
 interface DetailedMemoFicheViewProps {
   caseStudy: CaseStudy;
   onBack?: () => void;
@@ -247,13 +283,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       const content = [
         { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance) },
         { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance) },
-        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: (caseStudy.conseilsTraitement as { medicament: string; conseils: string[] }[] || []).map(item => {
-            const conseilsHtml = item.conseils.map(c => {
-                let conseilHtml = c.replace(/\*\*(.*?)\*\*/g, `<span class="font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300">$1</span>`);
-                return `<li>${conseilHtml}</li>`;
-            }).join('');
-            return `<h4><strong>${item.medicament}</strong></h4><ul>${conseilsHtml}</ul>`;
-        }).join('') },
+        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} /> },
         { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie) },
         { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie) },
         { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires) },
