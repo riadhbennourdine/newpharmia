@@ -36,11 +36,62 @@ const AccordionSection: React.FC<{
         </button>
         <div
             className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
-            <div className={`p-4 pt-0 pl-12 space-y-2 prose max-w-none ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`} dangerouslySetInnerHTML={{ __html: children as string }}>
-            </div>
+            {typeof children === 'string' ? (
+                <div className={`p-4 pt-0 pl-12 space-y-2 prose max-w-none ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`} dangerouslySetInnerHTML={{ __html: children }}>
+                </div>
+            ) : (
+                <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
+                    {children}
+                </div>
+            )}
         </div>
     </div>
 );
+
+const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+    const handleToggle = (title: string) => {
+        setOpenAccordion(openAccordion === title ? null : title);
+    };
+
+    const renderList = (items: string[] | undefined) => {
+        if (!items || items.length === 0) return null;
+        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        return (
+            <ul>
+                {items.map((item, index) => (
+                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                ))}
+            </ul>
+        );
+    };
+
+    const sections = [
+        { title: 'Compléments Alimentaires', content: renderList(ventes.complementsAlimentaires) },
+        { title: 'Accessoires', content: renderList(ventes.accessoires) },
+        { title: 'Dispositifs', content: renderList(ventes.dispositifs) },
+        { title: 'Cosmétiques', content: renderList(ventes.cosmetiques) },
+    ];
+
+    return (
+        <div>
+            {sections.map(section => (
+                section.content && (
+                    <AccordionSection
+                        key={section.title}
+                        title={section.title}
+                        icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
+                        isOpen={openAccordion === section.title}
+                        onToggle={() => handleToggle(section.title)}
+                    >
+                        {section.content}
+                    </AccordionSection>
+                )
+            ))}
+        </div>
+    );
+};
 
 interface DetailedMemoFicheViewProps {
   caseStudy: CaseStudy;
@@ -103,43 +154,8 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  const renderContentWithKeywords = (content: any, isRedKeywordSection: boolean = false) => {
+  const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
     if (!content) return '';
-
-    if (Array.isArray(content) && content.every(item => typeof item === 'object' && item !== null && 'medicament' in item && 'conseils' in item)) {
-        return (content as { medicament: string; conseils: string[] }[]).map(item => {
-            const conseilsHtml = item.conseils.map(c => {
-                let conseilHtml = c.replace(/\*\*(.*?)\*\*/g, `<span class="font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300">$1</span>`);
-                return `<li>${conseilHtml}</li>`;
-            }).join('');
-            return `<h4><strong>${item.medicament}</strong></h4><ul>${conseilsHtml}</ul>`;
-        }).join('');
-    }
-
-    if (typeof content === 'object' && !Array.isArray(content) && content !== null) {
-        const ventes = content as {
-            complementsAlimentaires?: string[];
-            accessoires?: string[];
-            dispositifs?: string[];
-            cosmetiques?: string[];
-        };
-        let html = '';
-        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
-
-        if (ventes.complementsAlimentaires && ventes.complementsAlimentaires.length > 0) {
-            html += `<h4><strong>Compléments Alimentaires</strong></h4><ul>` + ventes.complementsAlimentaires.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
-        }
-        if (ventes.accessoires && ventes.accessoires.length > 0) {
-            html += `<h4><strong>Accessoires</strong></h4><ul>` + ventes.accessoires.map(a => `<li>${a.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
-        }
-        if (ventes.dispositifs && ventes.dispositifs.length > 0) {
-            html += `<h4><strong>Dispositifs</strong></h4><ul>` + ventes.dispositifs.map(d => `<li>${d.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
-        }
-        if (ventes.cosmetiques && ventes.cosmetiques.length > 0) {
-            html += `<h4><strong>Cosmétiques</strong></h4><ul>` + ventes.cosmetiques.map(c => `<li>${c.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`)}</li>`).join('') + '</ul>';
-        }
-        return html;
-    }
 
     if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
         const text = Array.isArray(content) ? content.join('\n') : content;
@@ -231,11 +247,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       const content = [
         { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance) },
         { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance) },
-        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: renderContentWithKeywords(caseStudy.conseilsTraitement as any) },
+        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: (caseStudy.conseilsTraitement as { medicament: string; conseils: string[] }[] || []).map(item => {
+            const conseilsHtml = item.conseils.map(c => {
+                let conseilHtml = c.replace(/\*\*(.*?)\*\*/g, `<span class="font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300">$1</span>`);
+                return `<li>${conseilHtml}</li>`;
+            }).join('');
+            return `<h4><strong>${item.medicament}</strong></h4><ul>${conseilsHtml}</ul>`;
+        }).join('') },
         { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie) },
         { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie) },
         { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: renderContentWithKeywords(caseStudy.conseilsAlimentaires) },
-        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: renderContentWithKeywords(caseStudy.ventesAdditionnelles as any) },
+        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} /> },
         { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
       ];
       return content;
