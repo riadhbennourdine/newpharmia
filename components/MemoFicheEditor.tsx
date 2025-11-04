@@ -603,24 +603,77 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     case 'associatedProducts':
                     case 'lifestyleAdvice':
                     case 'dietaryAdvice':
+                    case 'keyPoints':
+                    case 'references':
                         content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
                         break;
-                    case 'keyPoints':
-                         content = (
+                    case 'conseilsTraitement':
+                        content = (
                             <div className="space-y-4">
-                                <div>
-                                    <Label htmlFor="keyPoints">Points Clés</Label>
-                                    <Textarea name="keyPoints" id="keyPoints" rows={5} value={caseStudy.keyPoints.join('\n')} onChange={(e) => handleArrayChange('keyPoints', e.target.value)} />
-                                </div>
-                                <div>
-                                    <Label htmlFor="references">Références</Label>
-                                    <Textarea name="references" id="references" rows={3} value={caseStudy.references.join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />
-                                </div>
+                                {(caseStudy.conseilsTraitement as { medicament: string; conseils: string[] }[] || []).map((item, itemIndex) => (
+                                    <div key={itemIndex} className="p-3 border rounded-md bg-slate-50 space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <Label htmlFor={`medicament-${itemIndex}`}>Médicament</Label>
+                                            <button type="button" onClick={() => {
+                                                setCaseStudy(prev => {
+                                                    const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
+                                                    newConseils.splice(itemIndex, 1);
+                                                    return { ...prev, conseilsTraitement: newConseils };
+                                                });
+                                            }} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
+                                        </div>
+                                        <Input id={`medicament-${itemIndex}`} type="text" value={item.medicament} onChange={(e) => {
+                                            setCaseStudy(prev => {
+                                                const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
+                                                newConseils[itemIndex] = { ...newConseils[itemIndex], medicament: e.target.value };
+                                                return { ...prev, conseilsTraitement: newConseils };
+                                            });
+                                        }} />
+                                        <Label htmlFor={`conseils-${itemIndex}`}>Conseils (une ligne par conseil)</Label>
+                                        <Textarea id={`conseils-${itemIndex}`} rows={5} value={item.conseils.join('\n')} onChange={(e) => {
+                                            setCaseStudy(prev => {
+                                                const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
+                                                newConseils[itemIndex] = { ...newConseils[itemIndex], conseils: e.target.value.split('\n').filter(c => c.trim() !== '') };
+                                                return { ...prev, conseilsTraitement: newConseils };
+                                            });
+                                        }} />
+                                    </div>
+                                ))}
+                                <button type="button" onClick={() => {
+                                    setCaseStudy(prev => ({
+                                        ...prev,
+                                        conseilsTraitement: [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || []), { medicament: '', conseils: [] }],
+                                    }));
+                                }} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
+                                    <PlusCircleIcon className="h-5 w-5 mr-2" />
+                                    Ajouter un médicament
+                                </button>
                             </div>
                         );
                         break;
-                    case 'references':
-                        content = <Textarea rows={5} value={(caseStudy.references as string[] || []).join('\n')} onChange={(e) => handleArrayChange('references', e.target.value)} />;
+                    case 'ventesAdditionnelles':
+                        content = (
+                            <div className="space-y-4">
+                                {Object.entries(caseStudy.ventesAdditionnelles || {}).map(([category, items]) => (
+                                    <div key={category} className="p-3 border rounded-md bg-slate-50 space-y-2">
+                                        <Label>{category}</Label>
+                                        <Textarea
+                                            rows={5}
+                                            value={(items as string[] || []).join('\n')}
+                                            onChange={(e) => {
+                                                setCaseStudy(prev => ({
+                                                    ...prev,
+                                                    ventesAdditionnelles: {
+                                                        ...(prev.ventesAdditionnelles as any),
+                                                        [category]: e.target.value.split('\n').filter(item => item.trim() !== ''),
+                                                    },
+                                                }));
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        );
                         break;
                 }
             }
