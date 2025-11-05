@@ -1271,6 +1271,43 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Server is running on http://localhost:${port}`);
+    await ensureAdminUserExists();
 });
+
+async function ensureAdminUserExists() {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const adminUser = await usersCollection.findOne({ email: 'admin@example.com' });
+
+        if (!adminUser) {
+            console.log('Admin user not found, creating default admin user...');
+            const password = 'password'; // Default password for admin
+            const salt = await bcrypt.genSalt(10);
+            const passwordHash = await bcrypt.hash(password, salt);
+
+            const newAdmin: User = {
+                _id: new ObjectId(),
+                email: 'admin@example.com',
+                username: 'admin',
+                passwordHash,
+                role: UserRole.ADMIN,
+                firstName: 'Admin',
+                lastName: 'User',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                hasActiveSubscription: true, // Admin always has active subscription
+                profileIncomplete: false,
+            };
+
+            await usersCollection.insertOne(newAdmin);
+            console.log('Default admin user created successfully.');
+        }
+    } catch (error) {
+        console.error('Error ensuring admin user exists:', error);
+    }
+}

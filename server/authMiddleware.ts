@@ -11,9 +11,6 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    console.log('Auth Middleware: authHeader =', authHeader);
-    console.log('Auth Middleware: token =', token);
-
     if (token == null) {
         return res.status(401).json({ message: 'Access Token is required' });
     }
