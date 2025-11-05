@@ -165,7 +165,7 @@ const WebinarManagement: React.FC = () => {
 
             {isModalOpen && currentWebinar && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl">
+                    <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl overflow-y-auto" style={{ maxHeight: '90vh' }}>
                         <h2 className="text-2xl font-bold mb-6">{currentWebinar._id ? 'Modifier' : 'Créer'} un Webinaire</h2>
                         <form onSubmit={handleSaveWebinar}>
                             <div className="mb-4">
@@ -190,7 +190,7 @@ const WebinarManagement: React.FC = () => {
                                 {isUploading && <Spinner className="h-5 w-5 mt-2" />}
                                 {currentWebinar.imageUrl && (
                                     <div className="mt-4">
-                                        <img src={currentWebinar.imageUrl} alt="Preview" className="w-full h-auto rounded-lg shadow-sm" />
+                                        <img src={currentWebinar.imageUrl} alt="Preview" className="w-full h-auto max-h-64 object-contain rounded-lg shadow-sm" />
                                     </div>
                                 )}
                             </div>
