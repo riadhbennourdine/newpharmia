@@ -2,6 +2,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Webinar, UserRole } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
+import ImageGalleryModal from '../../components/ImageGalleryModal';
 
 const WebinarManagement: React.FC = () => {
     const [webinars, setWebinars] = useState<Webinar[]>([]);
@@ -10,6 +11,7 @@ const WebinarManagement: React.FC = () => {
     const { token } = useAuth();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
 
     const fetchWebinars = async () => {
@@ -188,14 +190,16 @@ const WebinarManagement: React.FC = () => {
                                 </div>
                                                             <div className="mb-4">
                                                                 <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
-                                                                <div className="mt-1 flex rounded-md shadow-sm">
-                                                                    <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="flex-1 block w-full min-w-0 rounded-none rounded-l-md border-slate-300" />
-                                                                    <label htmlFor="imageUpload" className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 rounded-r-md cursor-pointer hover:bg-slate-100">
-                                                                        <span>{uploadingImage ? 'Chargement...' : 'Téléverser'}</span>
-                                                                        <input id="imageUpload" name="imageUpload" type="file" className="sr-only" onChange={handleImageUpload} disabled={uploadingImage} />
-                                                                    </label>
-                                                                </div>
-                                                            </div>                                <div className="mb-4">
+                                                                                                <div className="mt-1 flex rounded-md shadow-sm">
+                                                                                                    <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="flex-1 block w-full min-w-0 rounded-none rounded-l-md border-slate-300" placeholder="https://..." />
+                                                                                                    <label htmlFor="imageUpload" className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100">
+                                                                                                        <span>{uploadingImage ? 'Chargement...' : 'Téléverser'}</span>
+                                                                                                        <input id="imageUpload" name="imageUpload" type="file" className="sr-only" onChange={handleImageUpload} disabled={uploadingImage} />
+                                                                                                    </label>
+                                                                                                    <button type="button" onClick={() => setIsGalleryOpen(true)} className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 rounded-r-md hover:bg-slate-100">
+                                                                                                        Galerie
+                                                                                                    </button>
+                                                                                                </div>                                                            </div>                                <div className="mb-4">
                                     <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
                                     <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
                                 </div>
@@ -208,6 +212,16 @@ const WebinarManagement: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ImageGalleryModal 
+                isOpen={isGalleryOpen}
+                onClose={() => setIsGalleryOpen(false)}
+                onSelectImage={(url) => {
+                    setCurrentWebinar(prev => prev ? { ...prev, imageUrl: url } : null);
+                    setIsGalleryOpen(false); // Close gallery after selection
+                }}
+            />
+        </div>
         </div>
     );
 };
