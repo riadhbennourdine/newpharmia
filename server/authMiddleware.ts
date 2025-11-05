@@ -1,49 +1,47 @@
 import { Request, Response, NextFunction } from 'express';
 import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
-import { ObjectId } from 'mongodb';
 
 // Extend the Express Request type to include the user property
 interface AuthenticatedRequest extends Request {
     user?: User;
 }
 
-export type { AuthenticatedRequest };
-
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     console.log('Auth Middleware: authHeader =', authHeader);
     console.log('Auth Middleware: token =', token);
 
-    if (token == null) return res.status(401).json({ message: 'Access Token is required' });
-    // This is a temporary, insecure solution based on the existing pattern in the app
-    const userId = req.headers['x-user-id'] as string;
-
-    if (!userId) {
-        // For real JWT, you'd check for 'Authorization' header
+    if (token == null) {
         return res.status(401).json({ message: 'Access Token is required' });
     }
 
-    if (!ObjectId.isValid(userId)) {
-        return res.status(403).json({ message: 'Invalid User ID format' });
+    // This is where real token verification would happen.
+    // For this demo, we'll just check if the token is the mock token.
+    if (token !== 'mock-jwt-token') {
+        return res.status(403).json({ message: 'Invalid or expired token' });
     }
 
+    // If the token is valid, fetch the user associated with it.
+    // In a real app, the user ID would be in the JWT payload.
+    // For this demo, we'll just fetch the hardcoded admin user.
     try {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        // In a real app, you'd find the user based on info from the decoded token.
+        const user = await usersCollection.findOne({ email: 'admin@example.com' });
 
         if (!user) {
-            return res.status(403).json({ message: 'Invalid or expired token' });
+            return res.status(403).json({ message: 'User for token not found' });
         }
 
-        req.user = user;
+        req.user = user; // Attach user to the request
         next();
     } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('Authentication database error:', error);
         res.status(500).json({ message: 'Internal server error during authentication' });
     }
 };
