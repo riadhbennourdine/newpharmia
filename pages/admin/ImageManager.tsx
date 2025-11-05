@@ -19,27 +19,42 @@ const ImageManager: React.FC = () => {
     // State for theme management
     const [imageThemes, setImageThemes] = useState<ImageTheme[]>([]);
     const [newThemeName, setNewThemeName] = useState('');
-    const [newThemeCategory, setNewThemeCategory] = useState(TOPIC_CATEGORIES[0].category);
+    const [newThemeCategory, setNewThemeCategory] = useState<'Thèmes Pédagogiques' | 'Systèmes et Organes'>('Thèmes Pédagogiques');
     const [isThemeLoading, setIsThemeLoading] = useState(false);
 
     const fetchImages = async () => {
         try {
-            setIsLoading(true);
             const response = await fetch('/api/upload/images');
             if (!response.ok) {
                 throw new Error('Failed to fetch images');
             }
             const data = await response.json();
             setImages(data);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
-        } finally {
-            setIsLoading(false);
+        }
+    };
+
+    const fetchImageThemes = async () => {
+        try {
+            const response = await fetch('/api/image-themes');
+            if (!response.ok) {
+                throw new Error('Failed to fetch image themes');
+            }
+            const data = await response.json();
+            setImageThemes(data);
+        } catch (err: any) {
+            setError(err.message);
         }
     };
 
     useEffect(() => {
-        fetchImages();
+        const fetchAllData = async () => {
+            setIsLoading(true);
+            await Promise.all([fetchImages(), fetchImageThemes()]);
+            setIsLoading(false);
+        };
+        fetchAllData();
     }, []);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +62,7 @@ const ImageManager: React.FC = () => {
             setSelectedFile(e.target.files[0]);
         }
     };
-
+    
     const handleUpload = async () => {
         if (!selectedFile || !newImageName || !newImageTheme) {
             setError('Le nom, le thème et le fichier sont requis.');
@@ -78,36 +93,16 @@ const ImageManager: React.FC = () => {
             // Reset form and refresh list
             setNewImageName('');
             setSelectedFile(null);
+            const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
+            if(fileInput) fileInput.value = "";
             await fetchImages();
 
-        } catch (err) {
-            setError(err.message);
-            } finally {
-                setIsUploading(false);
-            }
-        }
-    };
-
-    const fetchImageThemes = async () => {
-        setIsThemeLoading(true);
-        try {
-            const response = await fetch('/api/image-themes');
-            if (!response.ok) {
-                throw new Error('Failed to fetch image themes');
-            }
-            const data = await response.json();
-            setImageThemes(data);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
-            setIsThemeLoading(false);
+            setIsUploading(false);
         }
     };
-
-    useEffect(() => {
-        fetchImages();
-        fetchImageThemes(); // Fetch themes on component mount
-    }, []);
 
     const handleAddTheme = async () => {
         if (!newThemeName || !newThemeCategory) {
@@ -134,7 +129,7 @@ const ImageManager: React.FC = () => {
 
             setNewThemeName('');
             await fetchImageThemes();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setIsThemeLoading(false);
@@ -160,7 +155,7 @@ const ImageManager: React.FC = () => {
             }
 
             await fetchImageThemes();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setIsThemeLoading(false);
@@ -184,9 +179,9 @@ const ImageManager: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
                     <div className="md:col-span-1">
                         <label htmlFor="newThemeName" className="block text-sm font-medium text-slate-600">Nom du nouveau thème</label>
-                        <input 
-                            type="text" 
-                            id="newThemeName" 
+                        <input
+                            type="text"
+                            id="newThemeName"
                             value={newThemeName}
                             onChange={(e) => setNewThemeName(e.target.value)}
                             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
@@ -195,8 +190,8 @@ const ImageManager: React.FC = () => {
                     </div>
                     <div className="md:col-span-1">
                         <label htmlFor="newThemeCategory" className="block text-sm font-medium text-slate-600">Catégorie</label>
-                        <select 
-                            id="newThemeCategory" 
+                        <select
+                            id="newThemeCategory"
                             value={newThemeCategory}
                             onChange={(e) => setNewThemeCategory(e.target.value as 'Thèmes Pédagogiques' | 'Systèmes et Organes')}
                             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
@@ -208,7 +203,7 @@ const ImageManager: React.FC = () => {
                         </select>
                     </div>
                     <div className="md:col-span-1">
-                        <button 
+                        <button
                             onClick={handleAddTheme}
                             className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
                             disabled={isThemeLoading || !newThemeName}
@@ -225,7 +220,7 @@ const ImageManager: React.FC = () => {
                             {imageThemes.map(theme => (
                                 <li key={theme._id} className="flex items-center bg-slate-100 rounded-full px-3 py-1 text-sm text-slate-700">
                                     {theme.name} ({theme.category})
-                                    <button 
+                                    <button
                                         onClick={() => handleDeleteTheme(theme._id.toString())}
                                         className="ml-2 text-red-500 hover:text-red-700"
                                         disabled={isThemeLoading}
@@ -245,9 +240,9 @@ const ImageManager: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                     <div className="md:col-span-1">
                         <label htmlFor="imageName" className="block text-sm font-medium text-slate-600">Nom de l'image</label>
-                        <input 
-                            type="text" 
-                            id="imageName" 
+                        <input
+                            type="text"
+                            id="imageName"
                             value={newImageName}
                             onChange={(e) => setNewImageName(e.target.value)}
                             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
@@ -255,8 +250,8 @@ const ImageManager: React.FC = () => {
                     </div>
                     <div className="md:col-span-1">
                         <label htmlFor="imageTheme" className="block text-sm font-medium text-slate-600">Thème</label>
-                        <select 
-                            id="imageTheme" 
+                        <select
+                            id="imageTheme"
                             value={newImageTheme}
                             onChange={(e) => setNewImageTheme(e.target.value)}
                             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
@@ -272,23 +267,23 @@ const ImageManager: React.FC = () => {
                             {imageThemes.length > 0 && (
                                 <optgroup label="Thèmes personnalisés">
                                     {imageThemes.map(theme => (
-                                        <option key={theme._id.toString()} value={theme.name}>{theme.name} ({theme.category})</option>
+                                        <option key={theme._id.toString()} value={theme.name}>{theme.name}</option>
                                     ))}
                                 </optgroup>
                             )}
                         </select>
                     </div>
                     <div className="md:col-span-1">
-                         <input 
-                            type="file" 
-                            id="imageUpload" 
-                            onChange={handleFileSelect} 
+                         <input
+                            type="file"
+                            id="imageUpload"
+                            onChange={handleFileSelect}
                             className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                             disabled={isUploading}
                         />
                     </div>
                 </div>
-                 <button 
+                 <button
                     onClick={handleUpload}
                     className="mt-4 w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400"
                     disabled={isUploading || !selectedFile || !newImageName || !newImageTheme}
@@ -306,9 +301,9 @@ const ImageManager: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {images.map(image => (
                             <div key={image._id.toString()} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                                <img 
-                                    src={image.url} 
-                                    alt={image.name} 
+                                <img
+                                    src={image.url}
+                                    alt={image.name}
                                     className="w-full h-32 object-cover"
                                 />
                                 <div className="p-3 flex-grow">
@@ -316,7 +311,7 @@ const ImageManager: React.FC = () => {
                                     <p className="text-xs text-teal-600 bg-teal-50 rounded-full px-2 py-1 inline-block mt-1">{image.theme}</p>
                                 </div>
                                 <div className="p-2 text-center border-t">
-                                    <button 
+                                    <button
                                         onClick={() => handleCopyUrl(image.url)}
                                         className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                                     >
