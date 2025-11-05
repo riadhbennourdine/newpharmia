@@ -30,18 +30,26 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
   }
 
   const handleAnswerSelect = (optionIndex: number) => {
-    if (submittedAnswer !== null) return;
+    console.log('handleAnswerSelect called with optionIndex:', optionIndex);
+    if (submittedAnswer !== null) {
+        console.log('Answer already submitted, returning.');
+        return;
+    }
     const newAnswers = [...selectedAnswers];
     newAnswers[currentQuestionIndex] = optionIndex;
     setSelectedAnswers(newAnswers);
     setSubmittedAnswer(optionIndex);
+    console.log('submittedAnswer set to:', optionIndex);
   };
 
   const handleNext = async () => {
+    console.log('handleNext called. Current index:', currentQuestionIndex, 'Questions length:', questions.length);
     setSubmittedAnswer(null);
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      console.log('setCurrentQuestionIndex to:', currentQuestionIndex + 1);
     } else {
+      console.log('Quiz completed. Showing results.');
       setShowResults(true);
       if (user && quizId) {
         const rawScore = calculateScore();
@@ -154,6 +162,8 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  console.log('QuizView Render. currentQuestionIndex:', currentQuestionIndex, 'questions.length:', questions.length, 'submittedAnswer:', submittedAnswer);
+
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg animate-fade-in">
       <button onClick={onBack} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-4 transition-colors">
@@ -212,5 +222,8 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
     </div>
   );
 };
+
+export default QuizView;
+
 
 export default QuizView;
