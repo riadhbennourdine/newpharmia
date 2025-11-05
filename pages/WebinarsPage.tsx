@@ -61,6 +61,7 @@ const WebinarsPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {webinars.map(webinar => (
                         <Link to={`/webinars/${webinar._id}`} key={webinar._id} className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+                            <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
                             <div className="p-4 flex-grow flex flex-col">
                                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
                                 <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mt-1">Animé par {webinar.presenter}</p>

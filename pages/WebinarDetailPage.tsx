@@ -115,7 +115,19 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription</h2>
                             {isUserRegistered ? (
-                                <p className="text-green-600 font-semibold">Vous êtes déjà inscrit à ce webinaire.</p>
+                                <div className="text-center">
+                                    <p className="text-green-600 font-semibold mb-4">Vous êtes déjà inscrit à ce webinaire.</p>
+                                    {webinar.googleMeetLink && (
+                                        <a 
+                                            href={webinar.googleMeetLink} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+                                        >
+                                            Rejoindre avec Google Meet
+                                        </a>
+                                    )}
+                                </div>
                             ) : (
                                 <button 
                                     onClick={handleRegister}

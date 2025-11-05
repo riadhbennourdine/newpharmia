@@ -207,6 +207,8 @@ export interface Webinar {
   description: string;
   date: Date;
   presenter: string;
+  imageUrl?: string;
+  googleMeetLink?: string;
   registrationLink?: string;
   attendees: (ObjectId | string)[];
   createdAt: Date;

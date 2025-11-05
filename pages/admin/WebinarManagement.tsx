@@ -150,6 +150,14 @@ const WebinarManagement: React.FC = () => {
                                 <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
                                 <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
                             </div>
+                            <div className="mb-4">
+                                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
+                                <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
+                                <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                            </div>
                             <div className="flex justify-end gap-4 mt-8">
                                 <button type="button" onClick={handleCloseModal} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300">Annuler</button>
                                 <button type="submit" className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700">Enregistrer</button>
