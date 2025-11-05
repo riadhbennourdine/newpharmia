@@ -371,6 +371,7 @@ import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from
 import usersRoutes from './server/users.js';
 import webinarsRouter from './server/webinars.js';
 import uploadRouter from './server/upload.js';
+import imageThemesRouter from './server/imageThemes.js';
 
 // ===============================================
 // API ROUTES
@@ -381,6 +382,7 @@ app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/image-themes', imageThemesRouter);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {

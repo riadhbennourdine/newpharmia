@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner } from '../../components/Icons';
 import { TOPIC_CATEGORIES } from '../../constants';
-import { Image } from '../../types';
+import { Image, ImageTheme } from '../../types';
 
 const ImageManager: React.FC = () => {
     const [images, setImages] = useState<Image[]>([]);
@@ -15,6 +15,12 @@ const ImageManager: React.FC = () => {
     const [newImageName, setNewImageName] = useState('');
     const [newImageTheme, setNewImageTheme] = useState(TOPIC_CATEGORIES[0].topics[0]);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    // State for theme management
+    const [imageThemes, setImageThemes] = useState<ImageTheme[]>([]);
+    const [newThemeName, setNewThemeName] = useState('');
+    const [newThemeCategory, setNewThemeCategory] = useState(TOPIC_CATEGORIES[0].category);
+    const [isThemeLoading, setIsThemeLoading] = useState(false);
 
     const fetchImages = async () => {
         try {
@@ -76,8 +82,88 @@ const ImageManager: React.FC = () => {
 
         } catch (err) {
             setError(err.message);
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
+    const fetchImageThemes = async () => {
+        setIsThemeLoading(true);
+        try {
+            const response = await fetch('/api/image-themes');
+            if (!response.ok) {
+                throw new Error('Failed to fetch image themes');
+            }
+            const data = await response.json();
+            setImageThemes(data);
+        } catch (err) {
+            setError(err.message);
         } finally {
-            setIsUploading(false);
+            setIsThemeLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchImages();
+        fetchImageThemes(); // Fetch themes on component mount
+    }, []);
+
+    const handleAddTheme = async () => {
+        if (!newThemeName || !newThemeCategory) {
+            setError('Le nom et la catégorie du thème sont requis.');
+            return;
+        }
+
+        setIsThemeLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/image-themes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ name: newThemeName, category: newThemeCategory }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add theme');
+            }
+
+            setNewThemeName('');
+            await fetchImageThemes();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsThemeLoading(false);
+        }
+    };
+
+    const handleDeleteTheme = async (id: string) => {
+        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce thème ?')) return;
+
+        setIsThemeLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`/api/image-themes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete theme');
+            }
+
+            await fetchImageThemes();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsThemeLoading(false);
         }
     };
 
@@ -90,6 +176,70 @@ const ImageManager: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold text-slate-800 mb-6">Gestionnaire d'images</h1>
 
+            {error && <p className="text-red-500 mb-4">Erreur : {error}</p>}
+
+            {/* Theme Management Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                <h2 className="text-xl font-semibold text-slate-700 mb-4">Gérer les Thèmes d'images</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+                    <div className="md:col-span-1">
+                        <label htmlFor="newThemeName" className="block text-sm font-medium text-slate-600">Nom du nouveau thème</label>
+                        <input 
+                            type="text" 
+                            id="newThemeName" 
+                            value={newThemeName}
+                            onChange={(e) => setNewThemeName(e.target.value)}
+                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
+                            disabled={isThemeLoading}
+                        />
+                    </div>
+                    <div className="md:col-span-1">
+                        <label htmlFor="newThemeCategory" className="block text-sm font-medium text-slate-600">Catégorie</label>
+                        <select 
+                            id="newThemeCategory" 
+                            value={newThemeCategory}
+                            onChange={(e) => setNewThemeCategory(e.target.value as 'Thèmes Pédagogiques' | 'Systèmes et Organes')}
+                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
+                            disabled={isThemeLoading}
+                        >
+                            {TOPIC_CATEGORIES.map(cat => (
+                                <option key={cat.category} value={cat.category}>{cat.category}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="md:col-span-1">
+                        <button 
+                            onClick={handleAddTheme}
+                            className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
+                            disabled={isThemeLoading || !newThemeName}
+                        >
+                            {isThemeLoading ? 'Ajout...' : 'Ajouter le thème'}
+                        </button>
+                    </div>
+                </div>
+
+                {imageThemes.length > 0 && (
+                    <div className="mt-6">
+                        <h3 className="text-lg font-semibold text-slate-700 mb-2">Thèmes personnalisés existants</h3>
+                        <ul className="flex flex-wrap gap-2">
+                            {imageThemes.map(theme => (
+                                <li key={theme._id} className="flex items-center bg-slate-100 rounded-full px-3 py-1 text-sm text-slate-700">
+                                    {theme.name} ({theme.category})
+                                    <button 
+                                        onClick={() => handleDeleteTheme(theme._id.toString())}
+                                        className="ml-2 text-red-500 hover:text-red-700"
+                                        disabled={isThemeLoading}
+                                    >
+                                        &times;
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
+            {/* Image Upload Section */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-8">
                 <h2 className="text-xl font-semibold text-slate-700 mb-4">Téléverser une nouvelle image</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -111,9 +261,21 @@ const ImageManager: React.FC = () => {
                             onChange={(e) => setNewImageTheme(e.target.value)}
                             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
                         >
-                            {TOPIC_CATEGORIES[0].topics.map(theme => (
-                                <option key={theme} value={theme}>{theme}</option>
+                            {/* Combine TOPIC_CATEGORIES and custom image themes */}
+                            {TOPIC_CATEGORIES.map(cat => (
+                                <optgroup key={cat.category} label={cat.category}>
+                                    {cat.topics.map(topic => (
+                                        <option key={topic} value={topic}>{topic}</option>
+                                    ))}
+                                </optgroup>
                             ))}
+                            {imageThemes.length > 0 && (
+                                <optgroup label="Thèmes personnalisés">
+                                    {imageThemes.map(theme => (
+                                        <option key={theme._id.toString()} value={theme.name}>{theme.name} ({theme.category})</option>
+                                    ))}
+                                </optgroup>
+                            )}
                         </select>
                     </div>
                     <div className="md:col-span-1">
@@ -129,13 +291,13 @@ const ImageManager: React.FC = () => {
                  <button 
                     onClick={handleUpload}
                     className="mt-4 w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400"
-                    disabled={isUploading || !selectedFile}
+                    disabled={isUploading || !selectedFile || !newImageName || !newImageTheme}
                 >
                     {isUploading ? 'Téléversement...' : 'Téléverser et Enregistrer'}
                 </button>
-                {error && <p className="text-red-500 mt-2">Erreur : {error}</p>}
             </div>
 
+            {/* Existing Images Section */}
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-xl font-semibold text-slate-700 mb-4">Images existantes</h2>
                 {isLoading ? (
@@ -143,7 +305,7 @@ const ImageManager: React.FC = () => {
                 ) : images.length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {images.map(image => (
-                            <div key={image._id} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                            <div key={image._id.toString()} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
                                 <img 
                                     src={image.url} 
                                     alt={image.name} 

@@ -201,6 +201,12 @@ export interface Appointment {
   createdAt: Date;
 }
 
+export interface ImageTheme {
+  _id: ObjectId | string;
+  name: string;
+  category: 'Thèmes Pédagogiques' | 'Systèmes et Organes';
+}
+
 export interface Webinar {
   _id: ObjectId | string;
   title: string;
