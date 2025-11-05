@@ -65,7 +65,7 @@ const App: React.FC = () => (
                         <Route path="/apercu-memofiche" element={<MemoFichePreview />} /> {/* Add the preview route */}
                     </Route>
                     <Route path="/login" element={<LoginView />} />
-                    <Route path="/register" element="<RegisterView />" />
+                    <Route path="/register" element={<RegisterView />} />
                     <Route path="/forgot-password" element={<ForgotPasswordView />} />
                     <Route path="/reset-password" element={<ResetPasswordView />} />
                     <Route path="/activate-account" element={<ActivateAccountView />} />
