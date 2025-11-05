@@ -224,6 +224,3 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, caseTitle, onBack, quizI
 };
 
 export default QuizView;
-
-
-export default QuizView;
