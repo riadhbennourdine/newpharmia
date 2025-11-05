@@ -2,6 +2,8 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import clientPromise from './mongo.js';
+import { Image } from '../types.js';
 
 const router = express.Router();
 
@@ -21,38 +23,56 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // The upload endpoint
-router.post('/image', upload.single('webinarImage'), (req, res) => {
+router.post('/image', upload.single('imageFile'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
+    const { name, theme } = req.body;
+    if (!name || !theme) {
+        // Clean up the uploaded file if metadata is missing
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ message: 'Name and theme are required.' });
+    }
 
-    // The file is saved by multer. We return the public URL.
-    // Note: The server must be configured to serve the 'public' directory statically.
     const imageUrl = `/uploads/${req.file.filename}`;
-    res.json({ imageUrl });
+
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const imagesCollection = db.collection<Image>('images');
+
+        const newImage: Omit<Image, '_id'> = {
+            name,
+            theme,
+            url: imageUrl,
+            createdAt: new Date(),
+        };
+
+        await imagesCollection.insertOne(newImage as Image);
+
+        res.status(201).json({ imageUrl });
+
+    } catch (error) {
+        console.error('Error saving image metadata:', error);
+        // Clean up the uploaded file if db insertion fails
+        fs.unlinkSync(req.file.path);
+        res.status(500).json({ message: 'Error saving image metadata.' });
+    }
 });
 
 // Endpoint to get all uploaded images
-router.get('/images', (req, res) => {
-    const uploadDirectory = '/data/uploads/';
+router.get('/images', async (req, res) => {
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const imagesCollection = db.collection<Image>('images');
 
-    fs.readdir(uploadDirectory, (err, files) => {
-        if (err) {
-            // If the directory doesn't exist, return an empty array
-            if (err.code === 'ENOENT') {
-                return res.json([]);
-            }
-            console.error("Failed to read upload directory:", err);
-            return res.status(500).json({ message: 'Failed to list images.' });
-        }
-
-        const imageUrls = files
-            .filter(file => /\.(jpe?g|png|gif|webp)$/i.test(file)) // Filter for common image extensions
-            .map(file => `/uploads/${file}`)
-            .sort((a, b) => b.localeCompare(a)); // Sort by name, newest first if filenames are timestamped
-
-        res.json(imageUrls);
-    });
+        const images = await imagesCollection.find({}).sort({ createdAt: -1 }).toArray();
+        res.json(images);
+    } catch (error) {
+        console.error("Failed to fetch images from db:", error);
+        return res.status(500).json({ message: 'Failed to list images.' });
+    }
 });
 
 export default router;

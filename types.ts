@@ -214,3 +214,11 @@ export interface Webinar {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Image {
+  _id: ObjectId | string;
+  name: string;
+  theme: string;
+  url: string;
+  createdAt: Date;
+}
