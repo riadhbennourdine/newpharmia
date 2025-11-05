@@ -16,26 +16,32 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
     const deck = useMemo(() => flashcards.slice(0, 10), [flashcards]);
 
     useEffect(() => {
+        console.log('FlashcardDeck useEffect: deck.length =', deck.length);
         const handleKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement;
             if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
+                console.log('ArrowRight pressed.');
                 setCurrentIndex(prevIndex => {
                     if (prevIndex < deck.length - 1) {
                         setIsFlipped(false);
+                        console.log('setCurrentIndex to:', prevIndex + 1);
                         return prevIndex + 1;
                     } else {
                         setIsCompleted(true);
+                        console.log('Flashcards completed via ArrowRight.');
                         return prevIndex;
                     }
                 });
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
+                console.log('ArrowLeft pressed.');
                 setCurrentIndex(prevIndex => {
                     if (prevIndex > 0) {
                         setIsFlipped(false);
+                        console.log('setCurrentIndex to:', prevIndex - 1);
                         return prevIndex - 1;
                     } else {
                         return prevIndex;
@@ -44,6 +50,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
             } else if (e.key === ' ' || e.key === 'Enter') {
                 if (document.activeElement?.classList.contains('flashcard-container')) {
                     e.preventDefault();
+                    console.log('Space/Enter pressed. Flipping card.');
                     setIsFlipped(prev => !prev);
                 }
             }
@@ -54,6 +61,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
     }, [deck.length]);
 
     const handleRestart = () => {
+        console.log('Restarting flashcards.');
         setCurrentIndex(0);
         setIsFlipped(false);
         setIsCompleted(false);
@@ -94,11 +102,16 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
     
     const currentCard = deck[currentIndex];
 
+    console.log('FlashcardDeck Render. currentIndex:', currentIndex, 'deck.length:', deck.length);
+
     return (
         <div className="w-full max-w-xl mx-auto p-4">
             <div 
                 className={`flashcard-container w-full h-80 cursor-pointer mb-4 ${isFlipped ? 'flipped' : ''}`} 
-                onClick={() => setIsFlipped(!isFlipped)}
+                onClick={() => {
+                    console.log('Flashcard container clicked. Flipping card.');
+                    setIsFlipped(!isFlipped);
+                }}
                 role="button"
                 tabIndex={0}
                 aria-label={`Flashcard ${currentIndex + 1} sur ${deck.length}. Question: ${currentCard.question}.`}
@@ -116,9 +129,11 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
             <div className="flex items-center justify-between">
                 <button 
                     onClick={() => {
+                        console.log('Previous button clicked.');
                         setCurrentIndex(prevIndex => {
                             if (prevIndex > 0) {
                                 setIsFlipped(false);
+                                console.log('setCurrentIndex to:', prevIndex - 1);
                                 return prevIndex - 1;
                             } else {
                                 return prevIndex;
@@ -134,7 +149,10 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
                 
                 <div className="flex flex-col items-center">
                     <button 
-                        onClick={() => setIsFlipped(!isFlipped)}
+                        onClick={() => {
+                            console.log('Flip button clicked.');
+                            setIsFlipped(!isFlipped);
+                        }}
                         className="flex items-center px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
                         aria-label="Retourner la carte"
                     >
@@ -148,12 +166,15 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards, memoFicheId }
 
                 <button 
                     onClick={() => {
+                        console.log('Next button clicked.');
                         setCurrentIndex(prevIndex => {
                             if (prevIndex < deck.length - 1) {
                                 setIsFlipped(false);
+                                console.log('setCurrentIndex to:', prevIndex + 1);
                                 return prevIndex + 1;
                             } else {
                                 setIsCompleted(true);
+                                console.log('Flashcards completed via Next button.');
                                 return prevIndex;
                             }
                         });
