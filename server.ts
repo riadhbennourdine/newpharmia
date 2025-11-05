@@ -1282,7 +1282,12 @@ async function ensureAdminUserExists() {
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        const adminUser = await usersCollection.findOne({ email: 'admin@example.com' });
+        const adminUser = await usersCollection.findOne({ 
+            $or: [
+                { email: 'admin@example.com' },
+                { username: 'admin' }
+            ]
+        });
 
         if (!adminUser) {
             console.log('Admin user not found, creating default admin user...');
