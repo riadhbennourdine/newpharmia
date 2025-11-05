@@ -100,6 +100,41 @@ const WebinarManagement: React.FC = () => {
         setCurrentWebinar({ ...currentWebinar, date: new Date(e.target.value) });
     };
 
+    const [uploadingImage, setUploadingImage] = useState(false);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const formData = new FormData();
+            formData.append('imageFile', file);
+
+            setUploadingImage(true);
+            setError(null);
+
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Image upload failed');
+                }
+
+                const data = await response.json();
+                setCurrentWebinar(prev => prev ? { ...prev, imageUrl: data.imageUrl } : null);
+
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setUploadingImage(false);
+            }
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
@@ -151,11 +186,16 @@ const WebinarManagement: React.FC = () => {
                                     <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
                                     <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
                                 </div>
-                                <div className="mb-4">
-                                    <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
-                                    <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
-                                </div>
-                                <div className="mb-4">
+                                                            <div className="mb-4">
+                                                                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
+                                                                <div className="mt-1 flex rounded-md shadow-sm">
+                                                                    <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="flex-1 block w-full min-w-0 rounded-none rounded-l-md border-slate-300" />
+                                                                    <label htmlFor="imageUpload" className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 rounded-r-md cursor-pointer hover:bg-slate-100">
+                                                                        <span>{uploadingImage ? 'Chargement...' : 'Téléverser'}</span>
+                                                                        <input id="imageUpload" name="imageUpload" type="file" className="sr-only" onChange={handleImageUpload} disabled={uploadingImage} />
+                                                                    </label>
+                                                                </div>
+                                                            </div>                                <div className="mb-4">
                                     <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
                                     <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
                                 </div>
