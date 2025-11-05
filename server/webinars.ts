@@ -2,7 +2,7 @@ import express from 'express';
 import { Webinar, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
-import { authenticateToken, checkRole } from './users.js';
+import { authenticateToken, checkRole, AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
 
@@ -146,9 +146,12 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
 
 
 // POST to register the current user for a webinar
-router.post('/:id/register', authenticateToken, async (req: any, res) => {
+router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
         const userId = req.user._id;
 
         if (!ObjectId.isValid(id)) {
