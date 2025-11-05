@@ -1,13 +1,16 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
 
 // Configure multer for file storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/data/uploads/');
+        const destPath = '/data/uploads/';
+        fs.mkdirSync(destPath, { recursive: true });
+        cb(null, destPath);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
