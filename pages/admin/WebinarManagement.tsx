@@ -130,39 +130,41 @@ const WebinarManagement: React.FC = () => {
             </div>
 
             {isModalOpen && currentWebinar && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl">
-                        <h2 className="text-2xl font-bold mb-6">{currentWebinar._id ? 'Modifier' : 'Créer'} un Webinaire</h2>
-                        <form onSubmit={handleSaveWebinar}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
-                                <input type="text" name="title" id="title" value={currentWebinar.title} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="presenter" className="block text-sm font-medium text-slate-700">Présentateur</label>
-                                <input type="text" name="presenter" id="presenter" value={currentWebinar.presenter} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date</label>
-                                <input type="datetime-local" name="date" id="date" value={currentWebinar.date ? new Date(currentWebinar.date).toISOString().substring(0, 16) : ''} onChange={handleDateChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
-                                <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
-                                <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
-                                <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
-                            </div>
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button type="button" onClick={handleCloseModal} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300">Annuler</button>
-                                <button type="submit" className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700">Enregistrer</button>
-                            </div>
-                        </form>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
+                        <div className="p-4 sm:p-6">
+                            <h2 className="text-2xl font-bold mb-6">{currentWebinar._id ? 'Modifier' : 'Créer'} un Webinaire</h2>
+                            <form onSubmit={handleSaveWebinar}>
+                                <div className="mb-4">
+                                    <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
+                                    <input type="text" name="title" id="title" value={currentWebinar.title} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="presenter" className="block text-sm font-medium text-slate-700">Présentateur</label>
+                                    <input type="text" name="presenter" id="presenter" value={currentWebinar.presenter} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date</label>
+                                    <input type="datetime-local" name="date" id="date" value={currentWebinar.date ? new Date(currentWebinar.date).toISOString().substring(0, 16) : ''} onChange={handleDateChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
+                                    <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
+                                    <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
+                                    <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                                </div>
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button type="button" onClick={handleCloseModal} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300">Annuler</button>
+                                    <button type="submit" className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700">Enregistrer</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
