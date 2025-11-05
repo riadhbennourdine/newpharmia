@@ -3,7 +3,7 @@ import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 
 // Extend the Express Request type to include the user property
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
     user?: User;
 }
 

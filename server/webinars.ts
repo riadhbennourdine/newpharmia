@@ -2,7 +2,8 @@ import express from 'express';
 import { Webinar, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
-import { authenticateToken, checkRole, AuthenticatedRequest } from './authMiddleware.js';
+import { authenticateToken, checkRole } from './authMiddleware.js';
+import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
 
