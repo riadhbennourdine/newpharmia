@@ -8,7 +8,7 @@ interface AuthenticatedRequest extends Request {
     user?: User;
 }
 
-export { AuthenticatedRequest };
+export type { AuthenticatedRequest };
 
 export const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     // This is a temporary, insecure solution based on the existing pattern in the app
