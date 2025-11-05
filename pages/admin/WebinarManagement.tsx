@@ -11,6 +11,40 @@ const WebinarManagement: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const formData = new FormData();
+            formData.append('webinarImage', file);
+
+            setIsUploading(true);
+            setError(null);
+
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('File upload failed');
+                }
+
+                const data = await response.json();
+                setCurrentWebinar({ ...currentWebinar, imageUrl: data.imageUrl });
+
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
 
     const fetchWebinars = async () => {
         try {
@@ -151,8 +185,14 @@ const WebinarManagement: React.FC = () => {
                                 <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
-                                <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">Image</label>
+                                <input type="file" id="imageUrl" onChange={handleFileChange} className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                                {isUploading && <Spinner className="h-5 w-5 mt-2" />}
+                                {currentWebinar.imageUrl && (
+                                    <div className="mt-4">
+                                        <img src={currentWebinar.imageUrl} alt="Preview" className="w-full h-auto rounded-lg shadow-sm" />
+                                    </div>
+                                )}
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>

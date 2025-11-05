@@ -21,6 +21,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 // In production, serve static files from the build directory
 if (process.env.NODE_ENV === 'production') {
@@ -369,6 +370,7 @@ import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
 import usersRoutes from './server/users.js';
 import webinarsRouter from './server/webinars.js';
+import uploadRouter from './server/upload.js';
 
 // ===============================================
 // API ROUTES
@@ -378,6 +380,7 @@ app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
+app.use('/api/upload', uploadRouter);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
