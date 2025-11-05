@@ -50,8 +50,6 @@ const WebinarManagement: React.FC = () => {
         const method = currentWebinar._id ? 'PUT' : 'POST';
         const url = currentWebinar._id ? `/api/webinars/${currentWebinar._id}` : '/api/webinars';
 
-        alert('Debugging Token: ' + token);
-
         try {
             const response = await fetch(url, {
                 method,
