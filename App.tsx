@@ -42,6 +42,11 @@ import ClientList from './pages/admin/crm/ClientList';
 import ProspectList from './pages/admin/crm/ProspectList';
 import AppointmentList from './pages/admin/crm/AppointmentList';
 
+// Webinar Pages
+import WebinarsPage from './pages/WebinarsPage';
+import WebinarDetailPage from './pages/WebinarDetailPage';
+import WebinarManagement from './pages/admin/WebinarManagement';
+
 // Other
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -73,6 +78,8 @@ const App: React.FC = () => (
                         <Route path="/memofiche/:id" element={<MemoFichePage />} />
                         <Route path="/quiz/:id" element={<QuizPage />} />
                         <Route path="/complete-profile" element={<ProfileCompletionView />} />
+                        <Route path="/webinars" element={<WebinarsPage />} />
+                        <Route path="/webinars/:id" element={<WebinarDetailPage />} />
 
                         {/* Routes for Formateurs & Admins */}
                         <Route element={<FormateurOrAdminRoute />}>
@@ -100,6 +107,7 @@ const App: React.FC = () => (
                             <Route path="/admin" element={<AdminPanel />} />
                             <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                             <Route path="/admin/newsletter" element={<NewsletterManager />} />
+                            <Route path="/admin/webinars" element={<WebinarManagement />} />
                         </Route>
                     </Route>
                     

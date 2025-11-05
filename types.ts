@@ -200,3 +200,15 @@ export interface Appointment {
   notes?: string;
   createdAt: Date;
 }
+
+export interface Webinar {
+  _id: ObjectId | string;
+  title: string;
+  description: string;
+  date: Date;
+  presenter: string;
+  registrationLink?: string;
+  attendees: (ObjectId | string)[];
+  createdAt: Date;
+  updatedAt: Date;
+}

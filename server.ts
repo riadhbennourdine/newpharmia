@@ -368,6 +368,7 @@ app.get('/api/users/subscribers', async (req, res) => {
 import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
 import usersRoutes from './server/users.js';
+import webinarsRouter from './server/webinars.js';
 
 // ===============================================
 // API ROUTES
@@ -376,6 +377,7 @@ app.use('/api/admin/crm', crmRoutes);
 app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
+app.use('/api/webinars', webinarsRouter);
 
 
 app.put('/api/users/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
