@@ -46,6 +46,7 @@ import AppointmentList from './pages/admin/crm/AppointmentList';
 import WebinarsPage from './pages/WebinarsPage';
 import WebinarDetailPage from './pages/WebinarDetailPage';
 import WebinarManagement from './pages/admin/WebinarManagement';
+import ImageManager from './pages/admin/ImageManager';
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -64,7 +65,7 @@ const App: React.FC = () => (
                         <Route path="/apercu-memofiche" element={<MemoFichePreview />} /> {/* Add the preview route */}
                     </Route>
                     <Route path="/login" element={<LoginView />} />
-                    <Route path="/register" element={<RegisterView />} />
+                    <Route path="/register" element="<RegisterView />" />
                     <Route path="/forgot-password" element={<ForgotPasswordView />} />
                     <Route path="/reset-password" element={<ResetPasswordView />} />
                     <Route path="/activate-account" element={<ActivateAccountView />} />
@@ -108,6 +109,7 @@ const App: React.FC = () => (
                             <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                             <Route path="/admin/newsletter" element={<NewsletterManager />} />
                             <Route path="/admin/webinars" element={<WebinarManagement />} />
+                            <Route path="/admin/image-manager" element={<ImageManager />} />
                         </Route>
                     </Route>
                     

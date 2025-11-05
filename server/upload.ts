@@ -32,4 +32,27 @@ router.post('/image', upload.single('webinarImage'), (req, res) => {
     res.json({ imageUrl });
 });
 
+// Endpoint to get all uploaded images
+router.get('/images', (req, res) => {
+    const uploadDirectory = '/data/uploads/';
+
+    fs.readdir(uploadDirectory, (err, files) => {
+        if (err) {
+            // If the directory doesn't exist, return an empty array
+            if (err.code === 'ENOENT') {
+                return res.json([]);
+            }
+            console.error("Failed to read upload directory:", err);
+            return res.status(500).json({ message: 'Failed to list images.' });
+        }
+
+        const imageUrls = files
+            .filter(file => /\.(jpe?g|png|gif|webp)$/i.test(file)) // Filter for common image extensions
+            .map(file => `/uploads/${file}`)
+            .sort((a, b) => b.localeCompare(a)); // Sort by name, newest first if filenames are timestamped
+
+        res.json(imageUrls);
+    });
+});
+
 export default router;
