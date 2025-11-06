@@ -87,18 +87,31 @@ const ReadFichesPage: React.FC = () => {
                     <p className="text-slate-500">Aucune mémofiche lue pour le moment.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {readFiches.map(fiche => (
-                        <div key={fiche._id as string} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                            <Link to={`/memofiche/${fiche._id}`}>
-                                <img src={fiche.coverImageUrl || 'https://via.placeholder.com/300x200?text=MemoFiche'} alt={fiche.title} className="w-full h-48 object-cover" />
-                                <div className="p-4">
-                                    <h3 className="font-bold text-lg text-slate-800 mb-2">{fiche.title}</h3>
-                                    <p className="text-sm text-slate-600">{fiche.shortDescription}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {readFiches.map(fiche => {
+                        const quizResult = currentUser?.quizHistory?.find(q => q.quizId === fiche._id);
+                        const score = quizResult ? quizResult.score : null;
+                        const date = quizResult ? new Date(quizResult.completedAt) : null;
+
+                        return (
+                            <div key={fiche._id as string} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl flex flex-col">
+                                <Link to={`/memofiche/${fiche._id}`} className="flex-grow">
+                                    <img src={fiche.coverImageUrl || 'https://via.placeholder.com/300x200?text=MemoFiche'} alt={fiche.title} className="w-full h-24 object-cover" />
+                                    <div className="p-2">
+                                        <h3 className="font-bold text-sm text-slate-800 mb-1 truncate">{fiche.title}</h3>
+                                        {date && <p className="text-xs text-slate-500">{date.toLocaleDateString('fr-FR')}</p>}
+                                    </div>
+                                </Link>
+                                <div className="p-2 text-center bg-slate-50">
+                                    {score !== null ? (
+                                        <p className="text-2xl font-bold text-teal-600">{score}%</p>
+                                    ) : (
+                                        <p className="text-xs text-slate-400">Quiz non fait</p>
+                                    )}
                                 </div>
-                            </Link>
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>
