@@ -1127,54 +1127,8 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-async function runMigration() {
-    console.log('Checking if data migration is needed...');
-    try {
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection('users');
-
-        const userToMigrate = await usersCollection.findOne({
-            readFicheIds: { $exists: true, $ne: [] }
-        });
-
-        if (!userToMigrate) {
-            console.log('No migration needed.');
-            return;
-        }
-
-        console.log('Starting data migration for read fiches...');
-        const usersToMigrate = await usersCollection.find({
-            readFicheIds: { $exists: true, $ne: [] }
-        }).toArray();
-
-        const bulkOps = usersToMigrate.map(user => {
-            const newReadFiches = user.readFicheIds.map(id => ({
-                ficheId: id,
-                readAt: new Date()
-            }));
-            return {
-                updateOne: {
-                    filter: { _id: user._id },
-                    update: {
-                        $set: { readFiches: newReadFiches },
-                        $unset: { readFicheIds: "" }
-                    }
-                }
-            };
-        });
-
-        const result = await usersCollection.bulkWrite(bulkOps);
-        console.log(`Successfully migrated ${result.modifiedCount} users.`);
-
-    } catch (error) {
-        console.error('Data migration failed:', error);
-    }
-}
-
 
 app.listen(port, async () => {
-    await runMigration();
     console.log(`Server is running on http://localhost:${port}`);
     await ensureAdminUserExists();
 });
