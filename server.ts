@@ -316,6 +316,7 @@ app.post('/api/users/:userId/quiz-history', async (req, res) => {
 });
 
 app.get('/api/users/:userId/read-fiches', async (req, res) => {
+    console.log('Received request for /api/users/:userId/read-fiches. User ID:', req.params.userId);
     try {
         const { userId } = req.params;
 
@@ -343,6 +344,7 @@ app.get('/api/users/:userId/read-fiches', async (req, res) => {
 });
 
 app.get('/api/users/:userId/quiz-history', async (req, res) => {
+    console.log('Received request for /api/users/:userId/quiz-history. User ID:', req.params.userId);
     try {
         const { userId } = req.params;
 
