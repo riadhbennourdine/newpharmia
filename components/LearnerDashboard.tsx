@@ -15,6 +15,35 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
     const { fiches, isLoading: fichesLoading } = useData();
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
+    const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFicheIds?.length || 0);
+
+    useEffect(() => {
+        const validateReadFiches = async () => {
+            if (user?.readFicheIds && user.readFicheIds.length > 0) {
+                try {
+                    const response = await fetch('/api/memofiches/validate-ids', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ids: user.readFicheIds })
+                    });
+                    if (response.ok) {
+                        const { validIds } = await response.json();
+                        setValidReadFichesCount(validIds.length);
+                    } else {
+                        // Fallback to the old count if the endpoint fails
+                        setValidReadFichesCount(user.readFicheIds.length);
+                    }
+                } catch (error) {
+                    console.error('Error validating read fiches:', error);
+                    setValidReadFichesCount(user.readFicheIds.length);
+                }
+            }
+        };
+
+        if (!isLoading && user) {
+            validateReadFiches();
+        }
+    }, [user, isLoading]);
 
     useEffect(() => {
         const fetchInstructionFiches = async () => {
@@ -65,7 +94,6 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
         }
     }, [group, user, isLoading]);
 
-    const memofichesLues = user?.readFicheIds?.length || 0;
     const quizHistory = user?.quizHistory || [];
     const quizRealises = quizHistory.length;
     
@@ -119,7 +147,7 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
                         <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
-                            {memofichesLues}
+                            {validReadFichesCount}
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Mémofiches lues</h1>
                         {user?._id && (

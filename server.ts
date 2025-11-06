@@ -611,6 +611,34 @@ app.delete('/api/memofiches/:id', async (req, res) => {
     }
 });
 
+app.post('/api/memofiches/validate-ids', async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) {
+            return res.status(400).json({ message: 'Request body must be an array of IDs.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        const { ObjectId } = await import('mongodb');
+
+        const objectIds = ids.filter(id => ObjectId.isValid(id)).map(id => new ObjectId(id));
+
+        const query = { _id: { $in: objectIds } };
+        const projection = { _id: 1 }; // We only need the IDs
+
+        const validFiches = await memofichesCollection.find(query).project(projection).toArray();
+        const validIds = validFiches.map(fiche => fiche._id.toString());
+
+        res.json({ validIds });
+
+    } catch (error) {
+        console.error('Error validating fiche IDs:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 
 // GEMINI ROUTES
 app.post('/api/gemini/generate-draft', async (req, res) => {
