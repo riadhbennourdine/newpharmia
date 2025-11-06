@@ -101,4 +101,9 @@ router.get('/:userId/quiz-history', async (req, res) => {
     }
 });
 
+router.get('/test', (req, res) => {
+    console.log('Test route /api/users/test reached!');
+    res.json({ message: 'Test route successful!' });
+});
+
 export default router;
