@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
 import { Spinner, ArrowRightIcon } from './Icons';
@@ -19,7 +18,11 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
 
     useEffect(() => {
         const fetchInstructionFiches = async () => {
-            if (!group || !user || !user._id) return;
+            console.log('fetchInstructionFiches called. User:', user, 'User ID:', user?._id);
+            if (!group || !user || !user._id) {
+                console.log('Skipping fetchInstructionFiches: group, user, or user._id is missing.');
+                return;
+            }
 
             const ficheIdsToFetch: string[] = [];
             if (group.primaryMemoFicheId) {
