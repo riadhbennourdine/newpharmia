@@ -42,7 +42,7 @@ export interface User {
   updatedAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
-  readFicheIds?: string[];
+  readFiches?: { ficheId: string; readAt: Date; }[];
   quizHistory?: any[];
   viewedMediaIds?: string[];
   phoneNumber?: string;

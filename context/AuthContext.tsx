@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const markFicheAsRead = useCallback(async (ficheId: string) => {
-    if (!user || user.readFicheIds?.includes(ficheId)) {
+    if (!user || user.readFiches?.some(f => f.ficheId === ficheId)) {
       return;
     }
 

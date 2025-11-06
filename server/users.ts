@@ -222,7 +222,7 @@ router.get('/:userId/read-fiches', async (req, res) => {
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        res.json({ readFicheIds: user.readFicheIds || [] });
+        res.json({ readFiches: user.readFiches || [] });
 
     } catch (error) {
         console.error('Error fetching read fiches:', error);
@@ -276,9 +276,10 @@ router.post('/:userId/read-fiches', async (req, res) => {
 
         const { usersCollection } = await getCollections();
 
+        // Only add the fiche to the set if it's not already there
         await usersCollection.updateOne(
-            { _id: new ObjectId(userId) as any },
-            { $addToSet: { readFicheIds: ficheId } as any }
+            { _id: new ObjectId(userId), 'readFiches.ficheId': { $ne: ficheId } },
+            { $push: { readFiches: { ficheId: ficheId, readAt: new Date() } } as any }
         );
 
         const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });

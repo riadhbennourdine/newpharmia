@@ -595,11 +595,11 @@ app.delete('/api/memofiches/:id', async (req, res) => {
         const result = await memofichesCollection.deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount > 0) {
-            // Also remove this ficheId from all users' readFicheIds array
+            // Also remove this ficheId from all users' readFiches array
             const usersCollection = db.collection<User>('users');
             await usersCollection.updateMany(
-                { readFicheIds: id },
-                { $pull: { readFicheIds: id } as any }
+                { 'readFiches.ficheId': id },
+                { $pull: { readFiches: { ficheId: id } } as any }
             );
             res.status(204).send();
         } else {

@@ -15,27 +15,28 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
     const { fiches, isLoading: fichesLoading } = useData();
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
-    const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFicheIds?.length || 0);
+    const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
 
     useEffect(() => {
         const validateReadFiches = async () => {
-            if (user?.readFicheIds && user.readFicheIds.length > 0) {
+            if (user?.readFiches && user.readFiches.length > 0) {
                 try {
+                    const idsToValidate = user.readFiches.map(f => f.ficheId);
                     const response = await fetch('/api/memofiches/validate-ids', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ids: user.readFicheIds })
+                        body: JSON.stringify({ ids: idsToValidate })
                     });
                     if (response.ok) {
                         const { validIds } = await response.json();
                         setValidReadFichesCount(validIds.length);
                     } else {
                         // Fallback to the old count if the endpoint fails
-                        setValidReadFichesCount(user.readFicheIds.length);
+                        setValidReadFichesCount(user.readFiches.length);
                     }
                 } catch (error) {
                     console.error('Error validating read fiches:', error);
-                    setValidReadFichesCount(user.readFicheIds.length);
+                    setValidReadFichesCount(user.readFiches.length);
                 }
             }
         };

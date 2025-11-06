@@ -7,7 +7,7 @@ import { Spinner, ArrowLeftIcon } from '../components/Icons';
 const ReadFichesPage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
     const { user: currentUser } = useAuth();
-    const [readFiches, setReadFiches] = useState<CaseStudy[]>([]);
+    const [readFiches, setReadFiches] = useState<(CaseStudy & { readAt: Date; })[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [userName, setUserName] = useState<string>('');
@@ -30,25 +30,26 @@ const ReadFichesPage: React.FC = () => {
                 const userData = await userResponse.json();
                 setUserName(userData.firstName ? `${userData.firstName} ${userData.lastName}` : userData.email);
 
-                // Fetch the user's read fiche IDs
-                const readFicheIdsResponse = await fetch(`/api/users/${userId}/read-fiches`);
-                if (!readFicheIdsResponse.ok) {
-                    throw new Error('Failed to fetch read fiche IDs.');
+                // Fetch the user's read fiches (now with dates)
+                const readFichesResponse = await fetch(`/api/users/${userId}/read-fiches`);
+                if (!readFichesResponse.ok) {
+                    throw new Error('Failed to fetch read fiches.');
                 }
-                const { readFicheIds } = await readFicheIdsResponse.json();
+                const { readFiches: userReadFiches } = await readFichesResponse.json();
 
-                if (readFicheIds && readFicheIds.length > 0) {
-                    const fichesPromises = readFicheIds.map((ficheId: string) =>
-                        fetch(`/api/memofiches/${ficheId}`).then(res => {
-                            if (res.ok) {
-                                return res.json();
-                            }
-                            console.error(`Failed to fetch fiche ${ficheId}: ${res.status}`);
-                            return null;
-                        })
-                    );
+                if (userReadFiches && userReadFiches.length > 0) {
+                    // Fetch details for each read fiche
+                    const fichesPromises = userReadFiches.map(async (readInfo: { ficheId: string; readAt: Date; }) => {
+                        const res = await fetch(`/api/memofiches/${readInfo.ficheId}`);
+                        if (res.ok) {
+                            const ficheDetails = await res.json();
+                            return { ...ficheDetails, readAt: new Date(readInfo.readAt) }; // Combine details with read date
+                        }
+                        return null;
+                    });
+
                     const fichesDetails = await Promise.all(fichesPromises);
-                    setReadFiches(fichesDetails.filter(Boolean)); // Filter out any null results
+                    setReadFiches(fichesDetails.filter(Boolean) as (CaseStudy & { readAt: Date; })[]); // Filter out any null results
                 } else {
                     setReadFiches([]);
                 }
@@ -96,7 +97,7 @@ const ReadFichesPage: React.FC = () => {
                     {readFiches.map(fiche => {
                         const quizResult = currentUser?.quizHistory?.find(q => q.quizId === fiche._id);
                         const score = quizResult ? quizResult.score : null;
-                        const date = quizResult ? new Date(quizResult.completedAt) : null;
+                        const date = fiche.readAt; // Use the new readAt date
 
                         return (
                             <div key={fiche._id as string} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl flex flex-col">
