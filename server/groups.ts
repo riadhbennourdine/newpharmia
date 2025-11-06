@@ -59,7 +59,7 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
             updateFields.primaryMemoFicheId = undefined; // Clear if not provided
         }
 
-        if (additionalMemoFicheIds && Array.isArray(additionalMemoFiches)) {
+        if (additionalMemoFicheIds && Array.isArray(additionalMemoFicheIds)) {
             updateFields.instructionFiches = additionalMemoFicheIds.map((id: string) => new ObjectId(id));
         } else {
             updateFields.instructionFiches = []; // Clear if not provided or invalid
