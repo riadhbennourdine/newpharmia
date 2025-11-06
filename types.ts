@@ -70,7 +70,8 @@ export interface Group {
   subscriptionAmount?: number;
   instruction?: string;
   instructionDate?: Date;
-  instructionFiches?: ObjectId[];
+  primaryMemoFicheId?: ObjectId | string;
+  instructionFiches?: (ObjectId | string)[];
 }
 
 export interface Client extends User {

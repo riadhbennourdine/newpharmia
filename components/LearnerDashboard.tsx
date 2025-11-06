@@ -7,30 +7,57 @@ import MemoFichePreviewCard from './MemoFichePreviewCard';
 import { Group, CaseStudy } from '../types';
 
 interface Props {
-    instruction: string;
     group: Group | null;
 }
 
-const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
+const LearnerDashboard: React.FC<Props> = ({ group }) => {
     const { user, isLoading } = useAuth();
     const { fiches, isLoading: fichesLoading } = useData();
-    const [instructionFiche, setInstructionFiche] = useState<CaseStudy | null>(null);
+    const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
+    const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
 
     useEffect(() => {
-        const fetchInstructionFiche = async () => {
-            if (group?.instructionFiches?.[0] && user && user._id) {
-                console.log('User right before fetch:', user, 'User ID right before fetch:', user._id);
-                try {
-                    const response = await fetch(`/api/memofiches/${group.instructionFiches[0]}`, { headers: { 'x-user-id': user._id as string } });
-                    const data = await response.json();
-                    setInstructionFiche(data);
-                } catch (error) {
-                    console.error('Error fetching instruction fiche:', error);
+        const fetchInstructionFiches = async () => {
+            if (!group || !user || !user._id) return;
+
+            const ficheIdsToFetch: string[] = [];
+            if (group.primaryMemoFicheId) {
+                ficheIdsToFetch.push(group.primaryMemoFicheId.toString());
+            }
+            if (group.instructionFiches && group.instructionFiches.length > 0) {
+                ficheIdsToFetch.push(...group.instructionFiches.map(id => id.toString()));
+            }
+
+            if (ficheIdsToFetch.length === 0) return;
+
+            try {
+                // Fetch all required memo fiches in parallel
+                const responses = await Promise.all(
+                    ficheIdsToFetch.map(ficheId => 
+                        fetch(`/api/memofiches/${ficheId}`, { headers: { 'x-user-id': user._id as string } })
+                    )
+                );
+
+                const data = await Promise.all(responses.map(res => res.json()));
+
+                // Distribute fetched data
+                if (group.primaryMemoFicheId) {
+                    const primary = data.find(d => d._id === group.primaryMemoFicheId.toString());
+                    setPrimaryFicheDetails(primary || null);
                 }
+
+                const additional = data.filter(d => 
+                    group.instructionFiches?.map(id => id.toString()).includes(d._id) && 
+                    d._id !== group.primaryMemoFicheId?.toString()
+                );
+                setAdditionalFicheDetails(additional);
+
+            } catch (error) {
+                console.error('Error fetching instruction fiches:', error);
             }
         };
-        if (!isLoading && user) { // Only fetch if authentication is not loading and user is available
-            fetchInstructionFiche();
+        if (!isLoading && user) { 
+            fetchInstructionFiches();
         }
     }, [group, user, isLoading]);
 
@@ -52,12 +79,35 @@ const LearnerDashboard: React.FC<Props> = ({ instruction, group }) => {
 
     return (
         <>
-            {instruction && (
+            {group?.instruction && (
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne du Pharmacien</h2>
-                    <p className="text-slate-700 font-semibold text-base">{instruction}</p>
-                    {group?.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(group.instructionDate).toLocaleDateString('fr-FR')}</p>}
-                    {instructionFiche && <p className="text-sm text-gray-500 mt-2">Mémofiche à lire: {instructionFiche.title}</p>}
+                    <p className="text-slate-700 font-semibold text-base">{group.instruction}</p>
+                    {group.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(group.instructionDate).toLocaleDateString('fr-FR')}</p>}
+                    
+                    {primaryFicheDetails && (
+                        <div className="mt-4">
+                            <p className="text-sm text-gray-600">Mémofiche principale :</p>
+                            <Link to={`/memofiche/${primaryFicheDetails._id}`} className="text-teal-600 hover:underline font-medium">
+                                {primaryFicheDetails.title}
+                            </Link>
+                        </div>
+                    )}
+
+                    {additionalFicheDetails.length > 0 && (
+                        <div className="mt-4">
+                            <p className="text-sm text-gray-600">Mémofiches additionnelles :</p>
+                            <ul className="list-disc list-inside text-left mx-auto w-fit">
+                                {additionalFicheDetails.map(fiche => (
+                                    <li key={fiche._id as string}>
+                                        <Link to={`/memofiche/${fiche._id}`} className="text-teal-600 hover:underline font-medium">
+                                            {fiche.title}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             )}
             <div>

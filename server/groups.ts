@@ -45,12 +45,29 @@ nonAdminRouter.get('/', async (req, res) => {
 // Update instruction for a group
 nonAdminRouter.put('/:id/instruction', async (req, res) => {
     try {
-        const { instruction, instructionFiches } = req.body;
+        const { instruction, primaryMemoFicheId, additionalMemoFicheIds } = req.body;
         const { groupsCollection } = await getCollections();
+
+        const updateFields: any = {
+            instruction,
+            instructionDate: new Date(),
+        };
+
+        if (primaryMemoFicheId) {
+            updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
+        } else {
+            updateFields.primaryMemoFicheId = undefined; // Clear if not provided
+        }
+
+        if (additionalMemoFicheIds && Array.isArray(additionalMemoFiches)) {
+            updateFields.instructionFiches = additionalMemoFicheIds.map((id: string) => new ObjectId(id));
+        } else {
+            updateFields.instructionFiches = []; // Clear if not provided or invalid
+        }
 
         const result = await groupsCollection.updateOne(
             { _id: new ObjectId(req.params.id) },
-            { $set: { instruction, instructionFiches, instructionDate: new Date() } }
+            { $set: updateFields }
         );
 
         if (result.modifiedCount === 0) {
@@ -59,6 +76,7 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
 
         res.status(200).json({ message: "Consigne mise à jour avec succès." });
     } catch (error) {
+        console.error("Erreur lors de la mise à jour de la consigne:", error);
         res.status(500).json({ message: "Erreur lors de la mise à jour de la consigne.", error });
     }
 });
