@@ -594,10 +594,16 @@ app.delete('/api/memofiches/:id', async (req, res) => {
         const { ObjectId } = await import('mongodb');
         const result = await memofichesCollection.deleteOne({ _id: new ObjectId(id) });
 
-        if (result.deletedCount === 0) {
-            res.status(404).json({ message: 'Mémofiche non trouvée' });
-        } else {
+        if (result.deletedCount > 0) {
+            // Also remove this ficheId from all users' readFicheIds array
+            const usersCollection = db.collection<User>('users');
+            await usersCollection.updateMany(
+                { readFicheIds: id },
+                { $pull: { readFicheIds: id } as any }
+            );
             res.status(204).send();
+        } else {
+            res.status(404).json({ message: 'Mémofiche non trouvée' });
         }
     } catch (error) {
         console.error('Error deleting memofiche:', error);

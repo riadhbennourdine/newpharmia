@@ -38,12 +38,17 @@ const ReadFichesPage: React.FC = () => {
                 const { readFicheIds } = await readFicheIdsResponse.json();
 
                 if (readFicheIds && readFicheIds.length > 0) {
-                    // Fetch details for each read fiche
                     const fichesPromises = readFicheIds.map((ficheId: string) =>
-                        fetch(`/api/memofiches/${ficheId}`).then(res => res.json())
+                        fetch(`/api/memofiches/${ficheId}`).then(res => {
+                            if (res.ok) {
+                                return res.json();
+                            }
+                            console.error(`Failed to fetch fiche ${ficheId}: ${res.status}`);
+                            return null;
+                        })
                     );
                     const fichesDetails = await Promise.all(fichesPromises);
-                    setReadFiches(fichesDetails.filter(Boolean)); // Filter out any null/undefined results
+                    setReadFiches(fichesDetails.filter(Boolean)); // Filter out any null results
                 } else {
                     setReadFiches([]);
                 }
