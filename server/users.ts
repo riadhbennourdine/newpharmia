@@ -86,6 +86,31 @@ router.get('/by-email/:email', async (req, res) => {
   }
 });
 
+router.get('/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json(user);
+
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 router.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
     try {
         const { preparateurId } = req.params;
