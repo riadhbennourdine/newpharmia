@@ -104,4 +104,78 @@ router.get('/:userId/quiz-history', async (req, res) => {
     }
 });
 
+router.post('/:userId/read-fiches', async (req, res) => {
+    console.log('Attempting to reach /api/users/:userId/read-fiches (POST). Params:', req.params);
+    try {
+        const { userId } = req.params;
+        const { ficheId } = req.body;
+
+        if (!ficheId) {
+            return res.status(400).json({ message: 'ficheId is required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any },
+            { $addToSet: { readFicheIds: ficheId } as any }
+        );
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found after update.' });
+        }
+
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error marking fiche as read:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+router.post('/:userId/quiz-history', async (req, res) => {
+    console.log('Attempting to reach /api/users/:userId/quiz-history (POST). Params:', req.params);
+    try {
+        const { userId } = req.params;
+        const { quizId, score, completedAt } = req.body;
+
+        if (quizId === undefined || score === undefined || completedAt === undefined) {
+            return res.status(400).json({ message: 'quizId, score, and completedAt are required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const quizResult = { quizId, score, completedAt: new Date(completedAt) };
+
+        await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any },
+            { $push: { quizHistory: quizResult } as any }
+        );
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found after update.' });
+        }
+
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error saving quiz history:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 export default router;
