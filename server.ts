@@ -315,62 +315,6 @@ app.post('/api/users/:userId/quiz-history', async (req, res) => {
     }
 });
 
-app.get('/api/users/:userId/read-fiches', async (req, res) => {
-    console.log('Received request for /api/users/:userId/read-fiches. User ID:', req.params.userId);
-    try {
-        const { userId } = req.params;
-
-        const { ObjectId } = await import('mongodb');
-        if (!ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: 'Invalid userId.' });
-        }
-
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection<User>('users');
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        res.json({ readFicheIds: user.readFicheIds || [] });
-
-    } catch (error) {
-        console.error('Error fetching read fiches:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
-
-app.get('/api/users/:userId/quiz-history', async (req, res) => {
-    console.log('Received request for /api/users/:userId/quiz-history. User ID:', req.params.userId);
-    try {
-        const { userId } = req.params;
-
-        const { ObjectId } = await import('mongodb');
-        if (!ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: 'Invalid userId.' });
-        }
-
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection<User>('users');
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        res.json({ quizHistory: user.quizHistory || [] });
-
-    } catch (error) {
-        console.error('Error fetching quiz history:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
-
 // USER ROUTES
 app.get('/api/users/pharmacists', async (req, res) => {
     try {
