@@ -123,11 +123,11 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Mémofiches lues</h1>
                         {user?._id && (
-                            <Link to={`/read-fiches/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                            <a href={`/#/read-fiches/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                            </Link>
+                            </a>
                         )}
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
@@ -136,11 +136,11 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Quiz réalisés</h1>
                         {user?._id && (
-                            <Link to={`/quiz-history/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                            <a href={`/#/quiz-history/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                            </Link>
+                            </a>
                         )}
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
