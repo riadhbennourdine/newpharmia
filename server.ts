@@ -292,6 +292,7 @@ app.get('/api/users/subscribers', async (req, res) => {
 import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
 import usersRoutes from './server/users.js';
+console.log('server.ts: usersRoutes imported successfully.');
 import webinarsRouter from './server/webinars.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';

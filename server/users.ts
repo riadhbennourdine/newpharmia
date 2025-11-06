@@ -3,6 +3,8 @@ import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 
+console.log('server/users.ts: Initializing users router.');
+
 const router = express.Router();
 
 async function getCollections() {
