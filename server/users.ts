@@ -76,12 +76,14 @@ router.get('/:userId/read-fiches', async (req, res) => {
 });
 
 router.get('/:userId/quiz-history', async (req, res) => {
-    console.log('Received request for /api/users/:userId/quiz-history. User ID:', req.params.userId);
+    console.log('Attempting to reach /api/users/:userId/quiz-history. Params:', req.params);
     try {
         const { userId } = req.params;
+        console.log('Inside /api/users/:userId/quiz-history. userId:', userId);
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(userId)) {
+            console.log('Invalid ObjectId for quiz-history. userId:', userId);
             return res.status(400).json({ message: 'Invalid userId.' });
         }
 
@@ -90,6 +92,7 @@ router.get('/:userId/quiz-history', async (req, res) => {
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
+            console.log('User not found for quiz-history. userId:', userId);
             return res.status(404).json({ message: 'User not found.' });
         }
 
@@ -99,11 +102,6 @@ router.get('/:userId/quiz-history', async (req, res) => {
         console.error('Error fetching quiz history:', error);
         res.status(500).json({ message: 'Erreur interne du serveur.' });
     }
-});
-
-router.get('/test', (req, res) => {
-    console.log('Test route /api/users/test reached!');
-    res.json({ message: 'Test route successful!' });
 });
 
 export default router;
