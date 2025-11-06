@@ -668,34 +668,51 @@ app.get('/api/memofiches/:id', async (req, res) => {
             }
         }
 
-        let hasAccess = false;
-        if (user) {
-            if(user.role === UserRole.ADMIN) {
-                hasAccess = true;
-            } else {
-                const createdAt = new Date(user.createdAt);
-                const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-
-                const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
-
-                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
-                    hasAccess = true;
-                }
-
-console.log('Checking access for fiche:', id, 'group:', group, 'instructionFiches:', group?.instructionFiches);
-                if (group && group.instructionFiches?.[0]) {
-                    console.log('Type of group.instructionFiches[0]:', typeof group.instructionFiches[0]);
-                }
-                if (!hasAccess && group && (group.assignedFiches.some(f => f.ficheId === id) || group.instructionFiches?.map(String).includes(id))) {
-                    hasAccess = true;
-                }            }
+            return res.status(403).json({ message: 'Accès refusé: Utilisateur non authentifié.' });
         }
 
-        if (hasAccess) {
-            res.json({ ...fiche, isLocked: false });
-        } else {
-            res.status(403).json({ message: 'Accès non autorisé. Veuillez vous abonner.', isLocked: true });
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        if (!user) {
+            console.log(`403: User ${userId} not found.`);
+            return res.status(403).json({ message: 'Accès refusé: Utilisateur introuvable.' });
         }
+
+        console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
+
+        // Admin and Formateur can access all non-free memofiches
+        if (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
+            console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Admin/Formateur).`);
+            return res.json(memofiche);
+        }
+
+        // Apprenant and Preparateur need an active subscription or group access
+        if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR) {
+            // Check for active subscription
+            if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
+                console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Active Subscription).`);
+                return res.json(memofiche);
+            }
+
+            // Check for group access
+            if (user.groupId) {
+                const groupsCollection = db.collection<Group>('groups');
+                const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+
+                if (group && group.assignedFiches.some(f => f.ficheId === id)) {
+                    console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Group Assigned).`);
+                    return res.json(memofiche);
+                }
+            }
+
+            // If no active subscription and no group access
+            console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Subscription: ${user.hasActiveSubscription}, Group ID: ${user.groupId}, Assigned: ${user.groupId ? 'No' : 'N/A'}.`);
+            return res.status(403).json({ message: 'Accès refusé: Abonnement inactif ou mémofiche non assignée.' });
+        }
+
+        // Other roles (e.g., VISITEUR) cannot access non-free memofiches
+        console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Insufficient role.`);
+        return res.status(403).json({ message: 'Accès refusé: Rôle utilisateur insuffisant.' });
 
     } catch (error) {
         console.error('Error fetching memofiche by ID:', error);
