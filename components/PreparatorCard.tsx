@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { User } from '../types';
 
 interface Props {
@@ -22,22 +22,22 @@ const PreparatorCard: React.FC<Props> = ({ preparator }) => {
                     <p className="text-4xl font-bold text-teal-600">{memofichesLues}</p>
                     <p className="text-sm text-slate-600">Mémofiches lues</p>
                     {preparator._id && (
-                        <Link to={`/read-fiches/${preparator._id}`} className="absolute top-0 right-0 text-teal-600 hover:text-teal-800">
+                        <a href={`/#/read-fiches/${preparator._id}`} className="absolute top-0 right-0 text-teal-600 hover:text-teal-800">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
-                        </Link>
+                        </a>
                     )}
                 </div>
                 <div className="flex flex-col justify-center items-center relative">
                     <p className="text-4xl font-bold text-teal-600">{quizRealises}</p>
                     <p className="text-sm text-slate-600">Quiz réalisés</p>
                     {preparator._id && (
-                        <Link to={`/quiz-history/${preparator._id}`} className="absolute top-0 right-0 text-teal-600 hover:text-teal-800">
+                        <a href={`/#/quiz-history/${preparator._id}`} className="absolute top-0 right-0 text-teal-600 hover:text-teal-800">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
-                        </Link>
+                        </a>
                     )}
                 </div>
                 <div className="flex flex-col justify-center items-center">
