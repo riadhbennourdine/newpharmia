@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Group, User, CaseStudy } from '../types';
 import LearnerDashboard from './LearnerDashboard';
 import { useAuth } from '../hooks/useAuth';
