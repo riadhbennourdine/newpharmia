@@ -19,19 +19,19 @@ const PreparatorCard: React.FC<Props> = ({ preparator }) => {
             <h3 className="text-xl font-bold text-teal-600 mb-4">{preparator.firstName} {preparator.lastName}</h3>
             <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col justify-center items-center relative">
-                    <a href={`/#/read-fiches/${preparator._id}`} className="text-4xl font-bold text-teal-600 hover:text-teal-800 font-mono">
+                    <a href={`/#/read-fiches/${preparator._id}`} className="text-4xl font-bold text-teal-600 hover:text-teal-800">
                         {memofichesLues}
                     </a>
-                    <p className="text-sm text-slate-600">Mémofiches lues</p>
+                    <p className="text-sm text-slate-600">Mémofiches</p>
                 </div>
                 <div className="flex flex-col justify-center items-center relative">
-                    <a href={`/#/quiz-history/${preparator._id}`} className="text-4xl font-bold text-teal-600 hover:text-teal-800 font-mono">
+                    <a href={`/#/quiz-history/${preparator._id}`} className="text-4xl font-bold text-teal-600 hover:text-teal-800">
                         {quizRealises}
                     </a>
                     <p className="text-sm text-slate-600">Quiz réalisés</p>
                 </div>
                 <div className="flex flex-col justify-center items-center">
-                    <p className="text-4xl font-bold text-teal-600 font-mono">{averageScore}%</p>
+                    <p className="text-4xl font-bold text-teal-600">{averageScore}%</p>
                     <p className="text-sm text-slate-600">Score moyen</p>
                 </div>
             </div>
