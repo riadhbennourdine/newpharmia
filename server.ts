@@ -650,6 +650,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
         }
 
         if (fiche.isFree) {
+            console.log(`200: Memofiche ${id} is free. Access granted.`);
             return res.json({ ...fiche, isLocked: false });
         }
 
@@ -657,21 +658,12 @@ app.get('/api/memofiches/:id', async (req, res) => {
         let group: Group | null = null;
         let pharmacist: User | null = null;
 
-        if (userId && ObjectId.isValid(userId)) {
-            user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-            console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
-            if (user && user.groupId) {
-                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                if (group && group.pharmacistId) {
-                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
-                }
-            }
-        }
-
+        if (!userId || !ObjectId.isValid(userId)) {
+            console.log(`403: Access denied for memofiche ${id}. User not authenticated.`);
             return res.status(403).json({ message: 'Accès refusé: Utilisateur non authentifié.' });
         }
 
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
             console.log(`403: User ${userId} not found.`);
@@ -683,7 +675,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
         // Admin and Formateur can access all non-free memofiches
         if (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
             console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Admin/Formateur).`);
-            return res.json(memofiche);
+            return res.json({ ...fiche, isLocked: false });
         }
 
         // Apprenant and Preparateur need an active subscription or group access
@@ -691,28 +683,27 @@ app.get('/api/memofiches/:id', async (req, res) => {
             // Check for active subscription
             if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
                 console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Active Subscription).`);
-                return res.json(memofiche);
+                return res.json({ ...fiche, isLocked: false });
             }
 
             // Check for group access
             if (user.groupId) {
-                const groupsCollection = db.collection<Group>('groups');
-                const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
 
                 if (group && group.assignedFiches.some(f => f.ficheId === id)) {
                     console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Group Assigned).`);
-                    return res.json(memofiche);
+                    return res.json({ ...fiche, isLocked: false });
                 }
             }
 
             // If no active subscription and no group access
             console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Subscription: ${user.hasActiveSubscription}, Group ID: ${user.groupId}, Assigned: ${user.groupId ? 'No' : 'N/A'}.`);
-            return res.status(403).json({ message: 'Accès refusé: Abonnement inactif ou mémofiche non assignée.' });
+            return res.status(403).json({ message: 'Accès refusé: Abonnement inactif ou mémofiche non assignée.', isLocked: true });
         }
 
         // Other roles (e.g., VISITEUR) cannot access non-free memofiches
         console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Insufficient role.`);
-        return res.status(403).json({ message: 'Accès refusé: Rôle utilisateur insuffisant.' });
+        return res.status(403).json({ message: 'Accès refusé: Rôle utilisateur insuffisant.', isLocked: true });
 
     } catch (error) {
         console.error('Error fetching memofiche by ID:', error);
