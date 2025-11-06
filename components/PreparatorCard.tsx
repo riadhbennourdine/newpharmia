@@ -7,7 +7,7 @@ interface Props {
 }
 
 const PreparatorCard: React.FC<Props> = ({ preparator }) => {
-    const memofichesLues = preparator.readFicheIds?.length || 0;
+    const memofichesLues = preparator.readFiches?.length || 0;
     const quizHistory = preparator.quizHistory || [];
     const quizRealises = quizHistory.length;
     const averageScore = quizRealises > 0
