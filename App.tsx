@@ -29,6 +29,8 @@ import Dashboard from './pages/Dashboard';
 import MemoFichesPage from './pages/MemoFichesPage';
 import MemoFichePage from './pages/MemoFicheView';
 import QuizPage from './pages/QuizView';
+import ReadFichesPage from './pages/ReadFichesPage';
+import QuizHistoryPage from './pages/QuizHistoryPage';
 
 // Admin & Formateur Pages
 import GeneratorView from './pages/GeneratorView';
@@ -78,6 +80,8 @@ const App: React.FC = () => (
                         <Route path="/memofiches" element={<MemoFichesPage />} />
                         <Route path="/memofiche/:id" element={<MemoFichePage />} />
                         <Route path="/quiz/:id" element={<QuizPage />} />
+                        <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
+                        <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
                         <Route path="/complete-profile" element={<ProfileCompletionView />} />
                         <Route path="/webinars" element={<WebinarsPage />} />
                         <Route path="/webinars/:id" element={<WebinarDetailPage />} />

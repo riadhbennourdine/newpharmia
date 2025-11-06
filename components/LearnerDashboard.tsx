@@ -113,17 +113,31 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
             <div>
                 <h2 className="text-2xl font-bold text-teal-600 mb-4">Statistiques d'apprentissage</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
                         <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
                             {memofichesLues}
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Mémofiches lues</h1>
+                        {user?._id && (
+                            <Link to={`/read-fiches/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </Link>
+                        )}
                     </div>
-                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
                         <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
                             {quizRealises}
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Quiz réalisés</h1>
+                        {user?._id && (
+                            <Link to={`/quiz-history/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </Link>
+                        )}
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
