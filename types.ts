@@ -132,6 +132,12 @@ export interface CaseStudy {
   lifestyleAdvice?: string[];
   dietaryAdvice?: string[];
   references: string[];
+  recommendations?: {
+    mainTreatment?: string[];
+    associatedProducts?: string[];
+    lifestyleAdvice?: string[];
+    dietaryAdvice?: string[];
+  };
   keyPoints: string[];
   glossary: GlossaryTerm[];
   flashcards: Flashcard[];
