@@ -573,33 +573,49 @@ app.get('/api/memofiches/:id', async (req, res) => {
             return res.status(404).json({ message: 'Mémofiche non trouvée' });
         }
 
-        if (fiche.isFree) {
-            console.log(`200: Memofiche ${id} is free. Access granted.`);
-            return res.json({ ...fiche, isLocked: false });
-        }
-
-        let user: User | null = null;
-        let group: Group | null = null;
-        let pharmacist: User | null = null;
+            return res.json({
+                ...fiche,
+                isLocked: false,
+                mainTreatment: fiche.recommendations?.mainTreatment || [],
+                associatedProducts: fiche.recommendations?.associatedProducts || [],
+                lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
+                dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+            });
 
         if (!userId || !ObjectId.isValid(userId)) {
             console.log(`403: Access denied for memofiche ${id}. User not authenticated.`);
             return res.status(403).json({ message: 'Accès refusé: Utilisateur non authentifié.' });
         }
 
-        user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
             console.log(`403: User ${userId} not found.`);
             return res.status(403).json({ message: 'Accès refusé: Utilisateur introuvable.' });
         }
 
+        let group: Group | null = null;
+        let pharmacist: User | null = null;
+
         console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
+        if (user && user.groupId) {
+            group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+            if (group && group.pharmacistId) {
+                pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
+            }
+        }
 
         // Admin and Formateur can access all non-free memofiches
         if (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
             console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Admin/Formateur).`);
-            return res.json({ ...fiche, isLocked: false });
+            return res.json({
+                ...fiche,
+                isLocked: false,
+                mainTreatment: fiche.recommendations?.mainTreatment || [],
+                associatedProducts: fiche.recommendations?.associatedProducts || [],
+                lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
+                dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+            });
         }
 
         // Apprenant and Preparateur need an active subscription or group access
@@ -607,7 +623,14 @@ app.get('/api/memofiches/:id', async (req, res) => {
             // Check for active subscription
             if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
                 console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Active Subscription).`);
-                return res.json({ ...fiche, isLocked: false });
+                return res.json({
+                    ...fiche,
+                    isLocked: false,
+                    mainTreatment: fiche.recommendations?.mainTreatment || [],
+                    associatedProducts: fiche.recommendations?.associatedProducts || [],
+                    lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
+                    dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                });
             }
 
             // Check for group access
@@ -616,7 +639,14 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
                 if (group && group.assignedFiches.some(f => f.ficheId === id)) {
                     console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Group Assigned).`);
-                    return res.json({ ...fiche, isLocked: false });
+                    return res.json({
+                        ...fiche,
+                        isLocked: false,
+                        mainTreatment: fiche.recommendations?.mainTreatment || [],
+                        associatedProducts: fiche.recommendations?.associatedProducts || [],
+                        lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
+                        dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                    });
                 }
             }
 
