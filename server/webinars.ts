@@ -173,12 +173,16 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
-        // Check if user is already registered
-        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
-        if (webinar && webinar.attendees.some(attendee => attendee.userId.toString() === userId.toString())) {
-            return res.status(409).json({ message: 'You are already registered for this webinar.' });
-        }
-
+                const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        
+                if (!webinar) {
+                    return res.status(404).json({ message: 'Webinaire non trouvé.' });
+                }
+        
+                console.log(`POST /:id/register: Webinar ${id} fetched. Attendees:`, webinar.attendees);
+        
+                // Check if user is already registered
+                const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
         const newAttendee = {
             userId: new ObjectId(userId),
             status: 'PENDING' as 'PENDING' | 'CONFIRMED',
