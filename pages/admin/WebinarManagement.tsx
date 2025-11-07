@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Webinar } from '../../types';
+import { Webinar, UserRole } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
@@ -14,6 +14,7 @@ const WebinarManagement: React.FC = () => {
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
 
     const fetchWebinars = async () => {
         try {
@@ -92,6 +93,35 @@ const WebinarManagement: React.FC = () => {
         }
     };
 
+    const handleConfirmPayment = async (webinarId: string, userId: string) => {
+        if (!window.confirm('Êtes-vous sûr de vouloir confirmer le paiement pour cet utilisateur ?')) {
+            return;
+        }
+
+        setIsConfirmingPayment(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/attendees/${userId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to confirm payment');
+            }
+
+            await fetchWebinars(); // Refresh the list
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsConfirmingPayment(false);
+        }
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (!currentWebinar) return;
         const { name, value } = e.target;
@@ -151,15 +181,46 @@ const WebinarManagement: React.FC = () => {
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <ul className="divide-y divide-slate-200">
                     {webinars.map(webinar => (
-                        <li key={webinar._id} className="p-4 flex justify-between items-center">
-                            <div>
-                                <p className="font-semibold text-slate-800">{webinar.title}</p>
-                                <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleDateString('fr-FR')} - {webinar.presenter}</p>
+                        <li key={webinar._id.toString()} className="p-4 border-b border-slate-200 last:border-b-0">
+                            <div className="flex justify-between items-center mb-2">
+                                <div>
+                                    <p className="font-semibold text-slate-800">{webinar.title}</p>
+                                    <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleDateString('fr-FR')} - {webinar.presenter}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon /></button>
+                                    <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon /></button>
+                                </div>
                             </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon /></button>
-                                <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon /></button>
-                            </div>
+
+                            {webinar.attendees && webinar.attendees.length > 0 && (
+                                <div className="mt-4 p-3 bg-slate-50 rounded-md">
+                                    <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({webinar.attendees.length})</h3>
+                                    <ul className="space-y-2">
+                                        {webinar.attendees.map(attendee => (
+                                            <li key={attendee.userId.toString()} className="flex items-center justify-between text-sm text-slate-600">
+                                                <span>
+                                                    {attendee.userId.toString()} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
+                                                    {attendee.proofUrl && (
+                                                        <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
+                                                            (Voir justificatif)
+                                                        </a>
+                                                    )}
+                                                </span>
+                                                {attendee.status === 'PAYMENT_SUBMITTED' && (
+                                                    <button
+                                                        onClick={() => handleConfirmPayment(webinar._id.toString(), attendee.userId.toString())}
+                                                        disabled={isConfirmingPayment}
+                                                        className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
+                                                    >
+                                                        {isConfirmingPayment ? 'Confirmation...' : 'Confirmer Paiement'}
+                                                    </button>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
