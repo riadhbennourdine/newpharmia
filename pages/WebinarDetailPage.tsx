@@ -1,8 +1,109 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Webinar, User, UserRole } from '../types';
 import { useAuth } from '../hooks/useAuth';
-import { Spinner, CalendarIcon, UserIcon, ClockIcon } from '../components/Icons';
+import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
+
+// New component for the payment submission step
+const SubmitPayment: React.FC<{ 
+    webinarId: string; 
+    token: string | null; 
+    onPaymentSubmitted: () => void; 
+}> = ({ webinarId, token, onPaymentSubmitted }) => {
+    
+    const [file, setFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!file) {
+            setError('Veuillez sélectionner un fichier.');
+            return;
+        }
+
+        setIsUploading(true);
+        setError(null);
+
+        try {
+            // 1. Upload the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const uploadResponse = await fetch('/api/upload/file', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error('File upload failed');
+            }
+            const uploadData = await uploadResponse.json();
+            const proofUrl = uploadData.fileUrl;
+
+            // 2. Submit the payment proof URL
+            const paymentResponse = await fetch(`/api/webinars/${webinarId}/submit-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ proofUrl }),
+            });
+
+            if (!paymentResponse.ok) {
+                throw new Error('Failed to submit proof of payment');
+            }
+
+            // 3. Notify parent component
+            onPaymentSubmitted();
+
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    return (
+        <div>
+            <h3 className="text-lg font-semibold text-slate-800">Finaliser l'inscription</h3>
+            <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
+                <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement (RIB, etc.) dans la description du webinaire ci-dessus.</p>
+            </div>
+            
+            <div className="mt-4">
+                <label htmlFor="proof" className="block text-sm font-medium text-slate-700">Téléverser votre justificatif</label>
+                <div className="mt-1 flex items-center gap-4">
+                    <input 
+                        type="file" 
+                        name="proof" 
+                        id="proof" 
+                        onChange={handleFileChange} 
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" 
+                    />
+                </div>
+            </div>
+
+            <button 
+                onClick={handleSubmit} 
+                disabled={isUploading || !file}
+                className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+            >
+                <UploadIcon className="h-5 w-5 mr-2" />
+                {isUploading ? 'Envoi en cours...' : 'Soumettre le justificatif'}
+            </button>
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        </div>
+    );
+};
 
 const WebinarDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -14,25 +115,24 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchWebinar = async () => {
-            try {
-                const response = await fetch(`/api/webinars/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch webinar details');
-                }
-                const data = await response.json();
-                setWebinar(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setIsLoading(false);
+    const fetchWebinar = async () => {
+        if (!id) return;
+        try {
+            const response = await fetch(`/api/webinars/${id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch webinar details');
             }
-        };
-
-        if (id) {
-            fetchWebinar();
+            const data = await response.json();
+            setWebinar(data);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
         }
+    };
+
+    useEffect(() => {
+        fetchWebinar();
     }, [id]);
 
     const handleRegister = async () => {
@@ -60,19 +160,19 @@ const WebinarDetailPage: React.FC = () => {
             }
 
             setRegistrationMessage(data.message || 'Successfully registered!');
-            // Refresh webinar data to show updated attendee list if needed
-            const updatedWebinarResponse = await fetch(`/api/webinars/${id}`);
-            const updatedWebinarData = await updatedWebinarResponse.json();
-            setWebinar(updatedWebinarData);
+            await fetchWebinar(); // Refresh webinar data
 
-        } catch (err) {
+        } catch (err: any) {
             setRegistrationMessage(err.message);
         } finally {
             setIsRegistering(false);
         }
     };
 
-    const isUserRegistered = webinar && user && webinar.attendees.includes(user._id);
+    const registration = useMemo(() => {
+        if (!webinar || !user) return null;
+        return webinar.attendees.find(att => att.userId.toString() === user._id.toString());
+    }, [webinar, user]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center h-screen"><Spinner className="h-16 w-16 text-teal-600" /></div>;
@@ -108,16 +208,27 @@ const WebinarDetailPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="prose prose-lg max-w-none text-slate-700 mb-8">
-                           {webinar.description}
-                        </div>
+                        <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription</h2>
-                            {isUserRegistered ? (
+                            
+                            {!registration ? (
+                                <button 
+                                    onClick={handleRegister}
+                                    disabled={isRegistering}
+                                    className="w-full bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors"
+                                >
+                                    {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
+                                </button>
+                            ) : registration.status === 'PENDING' ? (
+                                <SubmitPayment webinarId={id!} token={token} onPaymentSubmitted={fetchWebinar} />
+                            ) : registration.status === 'PAYMENT_SUBMITTED' ? (
+                                <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
+                            ) : registration.status === 'CONFIRMED' ? (
                                 <div className="text-center">
-                                    <p className="text-green-600 font-semibold mb-4">Vous êtes déjà inscrit à ce webinaire.</p>
-                                    {webinar.googleMeetLink && (
+                                    <p className="text-green-600 font-semibold mb-4">Votre inscription est confirmée !</p>
+                                    {webinar.googleMeetLink ? (
                                         <a 
                                             href={webinar.googleMeetLink} 
                                             target="_blank" 
@@ -126,27 +237,24 @@ const WebinarDetailPage: React.FC = () => {
                                         >
                                             Rejoindre avec Google Meet
                                         </a>
+                                    ) : (
+                                        <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
                                     )}
                                 </div>
-                            ) : (
-                                <button 
-                                    onClick={handleRegister}
-                                    disabled={isRegistering}
-                                    className="w-full bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors"
-                                >
-                                    {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
-                                </button>
-                            )}
+                            ) : null}
+
                             {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
                         </div>
 
                         {user?.role === UserRole.ADMIN && (
                              <div className="mt-8 p-4 border-t border-gray-200">
                                 <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
-                                {/* In a real app, you'd fetch user details for these IDs */}
                                 <ul className="list-disc list-inside mt-2 text-slate-600">
-                                    {webinar.attendees.map(attendeeId => (
-                                        <li key={attendeeId.toString()}>{attendeeId.toString()}</li>
+                                    {webinar.attendees.map(attendee => (
+                                        <li key={attendee.userId.toString()}>
+                                            {attendee.userId.toString()} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
+                                            {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
+                                        </li>
                                     ))}
                                 </ul>
                             </div>

@@ -60,6 +60,15 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
     }
 });
 
+// Generic file upload endpoint
+router.post('/file', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.status(201).json({ fileUrl });
+});
+
 // Endpoint to get all uploaded images
 router.get('/images', async (req, res) => {
     try {

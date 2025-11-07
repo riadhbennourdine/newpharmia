@@ -169,19 +169,92 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
+        // Check if user is already registered
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        if (webinar && webinar.attendees.some(attendee => attendee.userId.toString() === userId.toString())) {
+            return res.status(409).json({ message: 'You are already registered for this webinar.' });
+        }
+
+        const newAttendee = {
+            userId: new ObjectId(userId),
+            status: 'PENDING' as 'PENDING' | 'CONFIRMED',
+            registeredAt: new Date()
+        };
+
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
-            { $addToSet: { attendees: new ObjectId(userId) } } // Use $addToSet to prevent duplicate registrations
+            { $push: { attendees: newAttendee } }
         );
 
         if (result.matchedCount === 0) {
             return res.status(404).json({ message: 'Webinar not found.' });
         }
 
-        res.json({ message: 'Successfully registered for the webinar.' });
+        res.json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
     } catch (error) {
         console.error('Error registering for webinar:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de l\'inscription au webinaire.' });
+    }
+});
+
+// POST for a user to submit their proof of payment
+router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+        const { id } = req.params;
+        const { proofUrl } = req.body;
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        const userId = req.user._id;
+
+        if (!proofUrl) {
+            return res.status(400).json({ message: 'Proof of payment URL is required.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(id), "attendees.userId": new ObjectId(userId) },
+            { $set: { "attendees.$.proofUrl": proofUrl, "attendees.$.status": 'PAYMENT_SUBMITTED' as any } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar or registration not found.' });
+        }
+
+        res.json({ message: 'Proof of payment submitted successfully.' });
+
+    } catch (error) {
+        console.error('Error submitting payment proof:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+// POST for an admin to confirm a payment
+router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { webinarId, userId } = req.params;
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(webinarId), "attendees.userId": new ObjectId(userId) },
+            { $set: { "attendees.$.status": 'CONFIRMED' } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar or registration not found.' });
+        }
+
+        res.json({ message: 'Payment confirmed successfully.' });
+
+    } catch (error) {
+        console.error('Error confirming payment:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
     }
 });
 

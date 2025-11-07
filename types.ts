@@ -223,7 +223,12 @@ export interface Webinar {
   imageUrl?: string;
   googleMeetLink?: string;
   registrationLink?: string;
-  attendees: (ObjectId | string)[];
+  attendees: { 
+    userId: ObjectId | string;
+    status: 'PENDING' | 'CONFIRMED';
+    proofUrl?: string;
+    registeredAt: Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
