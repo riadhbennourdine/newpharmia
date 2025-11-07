@@ -2,7 +2,7 @@ import express from 'express';
 import { Webinar, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
-import { authenticateToken, checkRole } from './authMiddleware.js';
+import { authenticateToken, checkRole, softAuthenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET a single webinar by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', softAuthenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         if (!ObjectId.isValid(id)) {
@@ -38,6 +38,16 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
+        // Check user's role and registration status to conditionally return the Google Meet link
+        const authReq = req as AuthenticatedRequest;
+        const isConfirmedAttendee = webinar.attendees.some(
+            attendee => attendee.userId.toString() === authReq.user?._id.toString() && attendee.status === 'CONFIRMED'
+        );
+
+        if (authReq.user?.role !== UserRole.ADMIN && !isConfirmedAttendee) {
+            delete webinar.googleMeetLink;
+        }
+        
         res.setHeader('Cache-Control', 'no-store');
         res.json(webinar);
 
