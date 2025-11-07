@@ -149,34 +149,6 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
     }
 });
 
-// DELETE all attendees for a webinar (Admin only - TEMPORARY)
-router.delete('/:id/attendees', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
-    try {
-        const { id } = req.params;
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid webinar ID.' });
-        }
-
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const webinarsCollection = db.collection<Webinar>('webinars');
-
-        const result = await webinarsCollection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: { attendees: [] } }
-        );
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ message: 'Webinar not found.' });
-        }
-
-        res.status(200).json({ message: 'Attendees cleared successfully.' });
-    } catch (error) {
-        console.error('Error clearing webinar attendees:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
-
 
 // POST to register the current user for a webinar
 router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest, res) => {
