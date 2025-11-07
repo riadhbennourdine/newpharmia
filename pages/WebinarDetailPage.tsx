@@ -118,7 +118,7 @@ const WebinarDetailPage: React.FC = () => {
     const fetchWebinar = async () => {
         if (!id) return;
         try {
-            const response = await fetch(`/api/webinars/${id}`);
+            const response = await fetch(`/api/webinars/${id}?cacheBust=${new Date().getTime()}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch webinar details');
             }
