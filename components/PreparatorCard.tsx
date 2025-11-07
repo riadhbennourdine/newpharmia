@@ -15,8 +15,9 @@ const PreparatorCard: React.FC<Props> = ({ preparator }) => {
         : 0;
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-            <h3 className="text-xl font-bold text-teal-600 mb-4">{preparator.firstName} {preparator.lastName}</h3>
+        <div className="group bg-white rounded-xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+            <h3 className="text-2xl font-bold text-teal-600 group-hover:text-black">{preparator.firstName} {preparator.lastName}</h3>
+            <div className="border-t border-slate-200 my-4"></div>
             <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col justify-center items-center relative">
                     <a href={`/#/read-fiches/${preparator._id}`} className="text-4xl font-bold text-teal-600 hover:text-teal-800">
