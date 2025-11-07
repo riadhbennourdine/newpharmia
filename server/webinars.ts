@@ -38,8 +38,6 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
-        console.log(`Webinar ${id} fetched. Attendees:`, webinar.attendees);
-
         res.json(webinar);
 
     } catch (error) {
@@ -179,10 +177,12 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
                     return res.status(404).json({ message: 'Webinaire non trouvé.' });
                 }
         
-                console.log(`POST /:id/register: Webinar ${id} fetched. Attendees:`, webinar.attendees);
-        
                 // Check if user is already registered
                 const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
+        if (isRegistered) {
+            return res.status(409).json({ message: 'Vous êtes déjà inscrit à ce webinaire.' });
+        }
+
         const newAttendee = {
             userId: new ObjectId(userId),
             status: 'PENDING' as 'PENDING' | 'CONFIRMED',
