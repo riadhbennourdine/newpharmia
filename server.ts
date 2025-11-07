@@ -1125,10 +1125,57 @@ if (process.env.NODE_ENV === 'production') {
     app.get(/.*/, (req, res) => {
         res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
     });
+    }
+}
+
+async function migrateWebinars() {
+    console.log('Checking if webinar migration is needed...');
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection('webinars');
+
+        // Find webinars where the first attendee is a string or ObjectId, not an object
+        const webinarsToMigrate = await webinarsCollection.find({
+            $or: [
+                { "attendees.0": { $type: "string" } },
+                { "attendees.0": { $type: "objectId" } }
+            ]
+        }).toArray();
+
+        if (webinarsToMigrate.length === 0) {
+            console.log('No webinars to migrate.');
+            return;
+        }
+
+        console.log(`Found ${webinarsToMigrate.length} webinars to migrate.`);
+
+        const bulkOps = webinarsToMigrate.map(webinar => {
+            const newAttendees = webinar.attendees.map(attendeeId => ({
+                userId: attendeeId,
+                status: 'CONFIRMED', // Assume old registrations are confirmed
+                registeredAt: webinar.createdAt || new Date() // Use webinar creation date or now
+            }));
+            return {
+                updateOne: {
+                    filter: { _id: webinar._id },
+                    update: { $set: { attendees: newAttendees } }
+                }
+            };
+        });
+
+        const result = await webinarsCollection.bulkWrite(bulkOps);
+        console.log(`Successfully migrated ${result.modifiedCount} webinars.`);
+
+    } catch (error) {
+        console.error('Webinar migration failed:', error);
+    }
 }
 
 
 app.listen(port, async () => {
+    await runMigration();
+    await migrateWebinars();
     console.log(`Server is running on http://localhost:${port}`);
     await ensureAdminUserExists();
 });
