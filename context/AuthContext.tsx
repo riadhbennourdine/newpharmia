@@ -25,8 +25,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  console.log('AuthContext user state:', user);
-
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
@@ -57,7 +55,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(data.token);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      console.log('AuthContext user changed (login):', data.user);
       
       if (data.user.profileIncomplete) {
         navigate('/complete-profile');
@@ -77,7 +74,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    console.log('AuthContext user changed (logout):', null);
     navigate('/', { replace: true });
   }, [navigate]);
 
@@ -146,7 +142,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [user, handleSetUser]);
 
-  const value = useMemo(() => ({
+  const value = {
     isAuthenticated: !!token,
     user,
     token,
@@ -158,7 +154,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser: handleSetUser,
     markFicheAsRead,
     saveQuizResult,
-  }), [!!token, user, token, login, logout, register, isLoading, authError, handleSetUser, markFicheAsRead, saveQuizResult]);
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
