@@ -172,16 +172,19 @@ const WebinarDetailPage: React.FC = () => {
 
             const data = await response.json();
 
-            if (!response.ok) {
+            if (response.ok) {
+                // New registration successful
+                setLocalRegStatus('PENDING');
+                setRegistrationMessage(data.message);
+                await fetchWebinar(); // Refetch in background
+            } else if (response.status === 409) {
+                // User is already registered, move them to the payment step
+                setLocalRegStatus('PENDING');
+                setRegistrationMessage(data.message); // Show "You are already registered"
+            } else {
+                // Other errors
                 throw new Error(data.message || 'Registration failed');
             }
-            
-            // Immediately update the UI state to show the next step
-            setLocalRegStatus('PENDING');
-            setRegistrationMessage(data.message || 'Successfully registered!');
-            
-            // Fetch fresh data from server in the background to ensure consistency
-            await fetchWebinar();
 
         } catch (err: any) {
             setRegistrationMessage(err.message);
