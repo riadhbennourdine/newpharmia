@@ -97,7 +97,8 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req, r
             return res.status(400).json({ message: 'Invalid webinar ID.' });
         }
 
-        // Remove attendees from updates, should be handled by register/unregister endpoints
+        // Remove fields that should not be updated from the payload
+        delete updates._id;
         delete updates.attendees; 
         updates.updatedAt = new Date();
         if(updates.date) {
