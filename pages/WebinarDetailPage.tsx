@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Webinar, User, UserRole } from '../types';
+import { Webinar, UserRole } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 
@@ -115,29 +115,20 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
-    // This derived state will be the base truth from the server
-    const serverRegistration = useMemo(() => {
-        if (!webinar || !user) return null;
-        console.log('user from auth:', user);
-        console.log('webinar from fetch:', webinar);
-        return webinar.attendees.find(att => att.userId.toString() === user._id.toString());
-    }, [webinar, user]);
-
-    // This local state will drive the UI for a more responsive experience
-    const [localRegStatus, setLocalRegStatus] = useState<string | null>(null);
-
-    useEffect(() => {
-        // Sync local state with server state whenever webinar data changes
-        setLocalRegStatus(serverRegistration?.status || null);
-    }, [serverRegistration]);
-
-
     const fetchWebinar = async () => {
         if (!id) return;
-        // Set loading to true only on initial load
         if (!webinar) setIsLoading(true);
+        
         try {
-            const response = await fetch(`/api/webinars/${id}?cacheBust=${new Date().getTime()}`);
+            const headers: HeadersInit = {
+                'Cache-Control': 'no-cache',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`/api/webinars/${id}`, { headers });
+
             if (!response.ok) {
                 throw new Error('Failed to fetch webinar details');
             }
@@ -152,7 +143,10 @@ const WebinarDetailPage: React.FC = () => {
 
     useEffect(() => {
         fetchWebinar();
-    }, [id]);
+    }, [id, token]);
+
+    // The webinar object from the server now contains the authoritative registration status.
+    // No need for complex client-side state management anymore.
 
     const handleRegister = async () => {
         if (!user) {
@@ -174,15 +168,11 @@ const WebinarDetailPage: React.FC = () => {
 
             const data = await response.json();
 
-            if (response.ok) {
-                // New registration successful
-                setLocalRegStatus('PENDING');
+            if (response.ok || response.status === 409) {
+                // On successful registration or if already registered, just refetch the webinar data.
+                // The server will return the updated status.
                 setRegistrationMessage(data.message);
-                await fetchWebinar(); // Refetch in background
-            } else if (response.status === 409) {
-                // User is already registered, move them to the payment step
-                setLocalRegStatus('PENDING');
-                setRegistrationMessage(data.message); // Show "You are already registered"
+                await fetchWebinar(); 
             } else {
                 // Other errors
                 throw new Error(data.message || 'Registration failed');
@@ -207,7 +197,8 @@ const WebinarDetailPage: React.FC = () => {
         return <div className="text-center py-20">Webinar not found.</div>;
     }
 
-    const isRegistered = !!serverRegistration;
+    // The registration status is now the single source of truth from the server.
+    const registrationStatus = webinar.registrationStatus;
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -236,7 +227,7 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription</h2>
                             
-                            {!isRegistered && localRegStatus !== 'PENDING' ? (
+                            {!registrationStatus ? (
                                 <button 
                                     onClick={handleRegister}
                                     disabled={isRegistering}
@@ -244,11 +235,11 @@ const WebinarDetailPage: React.FC = () => {
                                 >
                                     {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
                                 </button>
-                            ) : localRegStatus === 'PENDING' ? (
+                            ) : registrationStatus === 'PENDING' ? (
                                 <SubmitPayment webinarId={id!} token={token} onPaymentSubmitted={fetchWebinar} />
-                            ) : localRegStatus === 'PAYMENT_SUBMITTED' ? (
+                            ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
                                 <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
-                            ) : localRegStatus === 'CONFIRMED' ? (
+                            ) : registrationStatus === 'CONFIRMED' ? (
                                 <div className="text-center">
                                     <p className="text-green-600 font-semibold mb-4">Votre inscription est confirmée !</p>
                                     {webinar.googleMeetLink ? (
@@ -269,7 +260,7 @@ const WebinarDetailPage: React.FC = () => {
                             {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
                         </div>
 
-                        {user?.role === UserRole.ADMIN && (
+                        {user?.role === UserRole.ADMIN && webinar.attendees && (
                              <div className="mt-8 p-4 border-t border-gray-200">
                                 <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
                                 <ul className="list-disc list-inside mt-2 text-slate-600">

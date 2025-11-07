@@ -38,19 +38,36 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
-        // Check user's role and registration status to conditionally return the Google Meet link
-        const authReq = req as AuthenticatedRequest;
-        const isConfirmedAttendee = webinar.attendees.some(
-            attendee => attendee.userId.toString() === authReq.user?._id.toString() && attendee.status === 'CONFIRMED'
-        );
+        // Create a response object that can be modified
+        const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null };
 
-        if (authReq.user?.role !== UserRole.ADMIN && !isConfirmedAttendee) {
-            delete webinar.googleMeetLink;
+        const authReq = req as AuthenticatedRequest;
+        if (authReq.user) {
+            const attendee = webinar.attendees.find(
+                att => att.userId.toString() === authReq.user?._id.toString()
+            );
+
+            webinarResponse.isRegistered = !!attendee;
+            webinarResponse.registrationStatus = attendee?.status || null;
+
+            // Hide the meet link if the user is not confirmed
+            if (attendee?.status !== 'CONFIRMED') {
+                delete webinarResponse.googleMeetLink;
+            }
+        } else {
+            // User is not logged in
+            webinarResponse.isRegistered = false;
+            webinarResponse.registrationStatus = null;
+            delete webinarResponse.googleMeetLink;
+        }
+
+        // Admins can see the full list of attendees, others cannot.
+        if (authReq.user?.role !== UserRole.ADMIN) {
+            delete webinarResponse.attendees;
         }
         
-        console.log('Sending webinar data:', webinar);
         res.setHeader('Cache-Control', 'no-store');
-        res.json(webinar);
+        res.json(webinarResponse);
 
     } catch (error) {
         console.error('Error fetching webinar:', error);
