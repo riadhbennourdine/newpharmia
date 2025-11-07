@@ -124,6 +124,7 @@ const WebinarDetailPage: React.FC = () => {
             }
             const data = await response.json();
             setWebinar(data);
+            console.log('Webinar state updated:', data);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -171,7 +172,9 @@ const WebinarDetailPage: React.FC = () => {
 
     const registration = useMemo(() => {
         if (!webinar || !user) return null;
-        return webinar.attendees.find(att => att.userId.toString() === user._id.toString());
+        const foundRegistration = webinar.attendees.find(att => att.userId.toString() === user._id.toString());
+        console.log('Registration object:', foundRegistration);
+        return foundRegistration;
     }, [webinar, user]);
 
     if (isLoading) {
