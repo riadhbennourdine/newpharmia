@@ -29,7 +29,7 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
         // In a real app, you'd find the user based on info from the decoded token.
-        const user = await usersCollection.findOne({ email: 'admin@example.com' });
+        const user = await usersCollection.findOne({ role: UserRole.ADMIN });
 
         if (!user) {
             return res.status(403).json({ message: 'User for token not found' });
