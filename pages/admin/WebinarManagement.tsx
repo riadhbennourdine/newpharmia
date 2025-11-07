@@ -138,6 +138,8 @@ const WebinarManagement: React.FC = () => {
             const file = e.target.files[0];
             const formData = new FormData();
             formData.append('imageFile', file);
+            formData.append('name', currentWebinar?.title || 'Image de wébinaire');
+            formData.append('theme', 'Wébinaire');
 
             setUploadingImage(true);
             setError(null);
