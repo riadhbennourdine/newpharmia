@@ -115,6 +115,8 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
+    console.log('Current user in WebinarDetailPage:', user);
+
     const fetchWebinar = async () => {
         if (!id) return;
         try {
