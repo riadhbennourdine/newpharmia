@@ -156,5 +156,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     saveQuizResult,
   };
 
+  console.log('AuthContext value object:', value);
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
