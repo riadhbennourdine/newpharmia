@@ -118,6 +118,8 @@ const WebinarDetailPage: React.FC = () => {
     // This derived state will be the base truth from the server
     const serverRegistration = useMemo(() => {
         if (!webinar || !user) return null;
+        console.log('user from auth:', user);
+        console.log('webinar from fetch:', webinar);
         return webinar.attendees.find(att => att.userId.toString() === user._id.toString());
     }, [webinar, user]);
 

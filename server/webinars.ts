@@ -48,6 +48,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             delete webinar.googleMeetLink;
         }
         
+        console.log('Sending webinar data:', webinar);
         res.setHeader('Cache-Control', 'no-store');
         res.json(webinar);
 
