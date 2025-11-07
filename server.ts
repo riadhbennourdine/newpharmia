@@ -1173,7 +1173,6 @@ async function migrateWebinars() {
 
 
 app.listen(port, async () => {
-    await runMigration();
     await migrateWebinars();
     console.log(`Server is running on http://localhost:${port}`);
     await ensureAdminUserExists();
