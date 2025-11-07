@@ -188,8 +188,8 @@ const WebinarManagement: React.FC = () => {
                                     <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleDateString('fr-FR')} - {webinar.presenter}</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon /></button>
-                                    <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon /></button>
+                                    <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
+                                    <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
                                 </div>
                             </div>
 
