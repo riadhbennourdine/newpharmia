@@ -115,8 +115,25 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
+    // This derived state will be the base truth from the server
+    const serverRegistration = useMemo(() => {
+        if (!webinar || !user) return null;
+        return webinar.attendees.find(att => att.userId.toString() === user._id.toString());
+    }, [webinar, user]);
+
+    // This local state will drive the UI for a more responsive experience
+    const [localRegStatus, setLocalRegStatus] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Sync local state with server state whenever webinar data changes
+        setLocalRegStatus(serverRegistration?.status || null);
+    }, [serverRegistration]);
+
+
     const fetchWebinar = async () => {
         if (!id) return;
+        // Set loading to true only on initial load
+        if (!webinar) setIsLoading(true);
         try {
             const response = await fetch(`/api/webinars/${id}?cacheBust=${new Date().getTime()}`);
             if (!response.ok) {
@@ -158,9 +175,13 @@ const WebinarDetailPage: React.FC = () => {
             if (!response.ok) {
                 throw new Error(data.message || 'Registration failed');
             }
-
+            
+            // Immediately update the UI state to show the next step
+            setLocalRegStatus('PENDING');
             setRegistrationMessage(data.message || 'Successfully registered!');
-            await fetchWebinar(); // Refresh webinar data
+            
+            // Fetch fresh data from server in the background to ensure consistency
+            await fetchWebinar();
 
         } catch (err: any) {
             setRegistrationMessage(err.message);
@@ -168,12 +189,6 @@ const WebinarDetailPage: React.FC = () => {
             setIsRegistering(false);
         }
     };
-
-    const registration = useMemo(() => {
-        if (!webinar || !user) return null;
-        const foundRegistration = webinar.attendees.find(att => att.userId.toString() === user._id.toString());
-        return foundRegistration;
-    }, [webinar, user]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center h-screen"><Spinner className="h-16 w-16 text-teal-600" /></div>;
@@ -186,6 +201,8 @@ const WebinarDetailPage: React.FC = () => {
     if (!webinar) {
         return <div className="text-center py-20">Webinar not found.</div>;
     }
+
+    const isRegistered = !!serverRegistration;
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -214,7 +231,7 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription</h2>
                             
-                            {!registration ? (
+                            {!isRegistered && localRegStatus !== 'PENDING' ? (
                                 <button 
                                     onClick={handleRegister}
                                     disabled={isRegistering}
@@ -222,11 +239,11 @@ const WebinarDetailPage: React.FC = () => {
                                 >
                                     {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
                                 </button>
-                            ) : registration.status === 'PENDING' ? (
+                            ) : localRegStatus === 'PENDING' ? (
                                 <SubmitPayment webinarId={id!} token={token} onPaymentSubmitted={fetchWebinar} />
-                            ) : registration.status === 'PAYMENT_SUBMITTED' ? (
+                            ) : localRegStatus === 'PAYMENT_SUBMITTED' ? (
                                 <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
-                            ) : registration.status === 'CONFIRMED' ? (
+                            ) : localRegStatus === 'CONFIRMED' ? (
                                 <div className="text-center">
                                     <p className="text-green-600 font-semibold mb-4">Votre inscription est confirmée !</p>
                                     {webinar.googleMeetLink ? (
