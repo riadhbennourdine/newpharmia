@@ -35,9 +35,13 @@ router.get('/:id', async (req, res) => {
         const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
 
         if (!webinar) {
-            return res.status(404).json({ message: 'Webinar not found.' });
+            return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
+
+        console.log(`Webinar ${id} fetched. Attendees:`, webinar.attendees);
+
         res.json(webinar);
+
     } catch (error) {
         console.error('Error fetching webinar:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération du webinaire.' });
