@@ -32,7 +32,7 @@ router.get('/:id', async (req, res) => {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
-        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) }, { readPreference: 'primary' });
 
         if (!webinar) {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
