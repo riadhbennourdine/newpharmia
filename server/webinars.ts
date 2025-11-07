@@ -38,6 +38,7 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
+        res.setHeader('Cache-Control', 'no-store');
         res.json(webinar);
 
     } catch (error) {
