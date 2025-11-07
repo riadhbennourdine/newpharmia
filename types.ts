@@ -225,7 +225,7 @@ export interface Webinar {
   registrationLink?: string;
   attendees: { 
     userId: ObjectId | string;
-    status: 'PENDING' | 'CONFIRMED';
+    status: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
     proofUrl?: string;
     registeredAt: Date;
   }[];
