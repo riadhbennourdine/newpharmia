@@ -26,15 +26,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    const verifyUser = async () => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        try {
+          const response = await fetch('/api/auth/me', {
+            headers: {
+              'Authorization': `Bearer ${storedToken}`,
+            },
+          });
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData);
+            setToken(storedToken);
+          } else {
+            // Token is invalid or expired
+            localStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
+          }
+        } catch (error) {
+          console.error('Error verifying token:', error);
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        }
+      }
       setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
+    };
+
+    verifyUser();
   }, []);
 
   const login = useCallback(async (identifier: string, password: string) => {
@@ -54,7 +75,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
       
       if (data.user.profileIncomplete) {
         navigate('/complete-profile');
@@ -73,7 +93,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     navigate('/', { replace: true });
   }, [navigate]);
 
@@ -100,18 +119,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const handleSetUser = useCallback((updatedUser: User) => {
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    // No longer saving user to localStorage to prevent stale data
   }, []);
 
   const markFicheAsRead = useCallback(async (ficheId: string) => {
-    if (!user || user.readFiches?.some(f => f.ficheId === ficheId)) {
+    if (!user || !token || user.readFiches?.some(f => f.ficheId === ficheId)) {
       return;
     }
 
     try {
       const response = await fetch(`/api/users/${user._id}/read-fiches`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({ ficheId }),
       });
       const updatedUser = await response.json();
@@ -122,14 +144,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Error marking fiche as read:', error);
     }
-  }, [user, handleSetUser]);
+  }, [user, token, handleSetUser]);
 
   const saveQuizResult = useCallback(async (result: { quizId: string; score: number; completedAt: Date }) => {
-    if (!user) return;
+    if (!user || !token) return;
     try {
       const response = await fetch(`/api/users/${user._id}/quiz-history`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(result),
       });
       const updatedUser = await response.json();
@@ -140,9 +165,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Error saving quiz result:', error);
     }
-  }, [user, handleSetUser]);
+  }, [user, token, handleSetUser]);
 
-  const value = {
+  const value = useMemo(() => ({
     isAuthenticated: !!token,
     user,
     token,
@@ -154,9 +179,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser: handleSetUser,
     markFicheAsRead,
     saveQuizResult,
-  };
-
-  console.log('AuthContext value object:', value);
+  }), [user, token, isLoading, authError, login, logout, register, handleSetUser, markFicheAsRead, saveQuizResult]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

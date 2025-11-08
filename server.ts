@@ -5,6 +5,7 @@ import cors from 'cors';
 // FIX: Added imports for ES module scope __dirname
 import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
+import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
@@ -38,6 +39,7 @@ const mockUsers: User[] = [
     { _id: 'pharmacien1', email: 'pharmacien@pharmia.com', role: UserRole.PHARMACIEN, firstName: 'Pharmacien', lastName: 'User', passwordHash: 'hashedpassword' },
 ];
 
+import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sendBrevoEmail } from './server/emailService.js';
 import multer from 'multer';
@@ -76,9 +78,8 @@ app.post('/api/auth/login', async (req, res) => {
                     user.hasActiveSubscription = false;
                 }
 
-                // Passwords match, generate a token (using a mock for now)
-                // TODO: Replace with a real JWT implementation
-                const token = 'mock-jwt-token'; 
+                // Passwords match, generate a real JWT
+                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your_default_secret', { expiresIn: '24h' });
                 res.json({ token, user });
             } else {
                 // Passwords do not match
@@ -201,6 +202,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     }
 });
 
+import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
+
 app.post('/api/auth/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
@@ -235,6 +238,14 @@ app.post('/api/auth/reset-password', async (req, res) => {
     } catch (error) {
         console.error('Reset password error:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la réinitialisation du mot de passe.' });
+    }
+});
+
+app.get('/api/auth/me', authenticateToken, (req: AuthenticatedRequest, res) => {
+    if (req.user) {
+        res.json(req.user);
+    } else {
+        res.status(404).json({ message: 'User not found.' });
     }
 });
 
