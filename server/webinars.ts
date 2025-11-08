@@ -1,3 +1,4 @@
+import express from 'express';
 import { Webinar, UserRole, WebinarGroup } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
