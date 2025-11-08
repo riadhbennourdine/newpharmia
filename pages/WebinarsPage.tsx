@@ -6,14 +6,16 @@ import { Spinner, SparklesIcon } from '../components/Icons';
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12 p-6 bg-white rounded-lg shadow-md">
-        <div className="flex flex-col items-center text-center gap-4">
-            <img 
-                src="https://pharmaconseilbmb.com/photos/site/crop/crop-tunis.png" 
-                alt="CROP Tunis Logo" 
-                className="w-32 h-32 object-contain"
-            />
-            <div>
-                <h2 className="text-xl font-bold text-slate-800 mb-3">Projet "Préparateurs en Ligne"</h2>
+        <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-shrink-0">
+                <img 
+                    src="https://pharmaconseilbmb.com/photos/site/crop/crop-tunis.png" 
+                    alt="CROP Tunis Logo" 
+                    className="w-32 h-32 object-contain"
+                />
+            </div>
+            <div className="flex-grow">
+                <h2 className="text-xl font-bold text-slate-800 mb-3 text-center md:text-left">Projet "Préparateurs en Ligne"</h2>
                 <div className="text-sm text-slate-600 space-y-2">
                     <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
                     <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
