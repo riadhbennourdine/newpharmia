@@ -204,13 +204,14 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
 router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
-        const { timeSlot } = req.body; // Get timeSlot from body
+        const { timeSlots } = req.body; // Expect an array of time slots
 
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });
         }
-        if (!timeSlot) {
-            return res.status(400).json({ message: 'Time slot is required.' });
+        // Validate that timeSlots is a non-empty array
+        if (!Array.isArray(timeSlots) || timeSlots.length === 0) {
+            return res.status(400).json({ message: 'At least one time slot is required.' });
         }
         const userId = req.user._id;
 
@@ -241,12 +242,12 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
             userId: new ObjectId(userId),
             status: 'PENDING' as 'PENDING' | 'CONFIRMED',
             registeredAt: new Date(),
-            timeSlot: timeSlot, // Add the selected time slot
+            timeSlots: timeSlots, // Add the array of selected time slots
         };
 
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
-            { $push: { attendees: newAttendee as any } } // Use 'as any' to bypass strict type issue if needed
+            { $push: { attendees: newAttendee as any } }
         );
 
         if (result.matchedCount === 0) {

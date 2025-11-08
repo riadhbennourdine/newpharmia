@@ -203,7 +203,7 @@ const WebinarManagement: React.FC = () => {
                                             <li key={attendee.userId.toString()} className="flex items-center justify-between text-sm text-slate-600">
                                                 <span>
                                                     {attendee.userId.toString()} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
-                                                    {attendee.timeSlot && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlot})</span>}
+                                                    {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
                                                     {attendee.proofUrl && (
                                                         <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
                                                             (Voir justificatif)

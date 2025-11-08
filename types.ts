@@ -239,7 +239,7 @@ export interface Webinar {
     status: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
     proofUrl?: string;
     registeredAt: Date;
-    timeSlot?: WebinarTimeSlot;
+    timeSlots?: WebinarTimeSlot[];
   }[];
   createdAt: Date;
   updatedAt: Date;

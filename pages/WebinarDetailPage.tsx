@@ -107,30 +107,39 @@ const SubmitPayment: React.FC<{
 
 const RegistrationForm: React.FC<{
     isRegistering: boolean;
-    onRegister: (timeSlot: WebinarTimeSlot) => void;
+    onRegister: (timeSlots: WebinarTimeSlot[]) => void;
 }> = ({ isRegistering, onRegister }) => {
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState<WebinarTimeSlot | null>(null);
+    const [selectedTimeSlots, setSelectedTimeSlots] = useState<WebinarTimeSlot[]>([]);
+
+    const handleCheckboxChange = (slot: WebinarTimeSlot) => {
+        setSelectedTimeSlots(prev =>
+            prev.includes(slot)
+                ? prev.filter(s => s !== slot)
+                : [...prev, slot]
+        );
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedTimeSlot) {
-            onRegister(selectedTimeSlot);
+        if (selectedTimeSlots.length > 0) {
+            onRegister(selectedTimeSlots);
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Choisissez votre créneau</h3>
+            <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
+            <p className="text-sm text-slate-500 mb-3">Vous pouvez sélectionner un ou plusieurs créneaux.</p>
             <div className="space-y-2">
                 {Object.values(WebinarTimeSlot).map((slot) => (
                     <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
                         <input
-                            type="radio"
+                            type="checkbox"
                             name="timeSlot"
                             value={slot}
-                            checked={selectedTimeSlot === slot}
-                            onChange={() => setSelectedTimeSlot(slot)}
-                            className="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"
+                            checked={selectedTimeSlots.includes(slot)}
+                            onChange={() => handleCheckboxChange(slot)}
+                            className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                         />
                         <span className="ml-3 font-medium text-slate-700">{slot}</span>
                     </label>
@@ -138,7 +147,7 @@ const RegistrationForm: React.FC<{
             </div>
             <button
                 type="submit"
-                disabled={isRegistering || !selectedTimeSlot}
+                disabled={isRegistering || selectedTimeSlots.length === 0}
                 className="w-full mt-4 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors"
             >
                 {isRegistering ? 'Inscription en cours...' : 'Confirmer l\'inscription'}
@@ -202,7 +211,7 @@ const WebinarDetailPage: React.FC = () => {
     }, [webinar?.registrationStatus, fetchWebinar]);
 
 
-    const handleRegister = async (timeSlot: WebinarTimeSlot) => {
+    const handleRegister = async (timeSlots: WebinarTimeSlot[]) => {
         if (!user) {
             navigate('/login');
             return;
@@ -218,7 +227,7 @@ const WebinarDetailPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ timeSlot }),
+                body: JSON.stringify({ timeSlots }),
             });
 
             const data = await response.json();
@@ -289,8 +298,8 @@ const WebinarDetailPage: React.FC = () => {
                             ) : registrationStatus === 'CONFIRMED' ? (
                                 <div className="text-center">
                                     <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
-                                    {registeredAttendee?.timeSlot && (
-                                        <p className="text-slate-600 font-medium mb-4">Créneau horaire : <span className="font-bold text-teal-700">{registeredAttendee.timeSlot}</span></p>
+                                    {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                        <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
                                     )}
                                     {webinar.googleMeetLink ? (
                                         <><button
