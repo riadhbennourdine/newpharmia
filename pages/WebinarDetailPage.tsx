@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Webinar, UserRole } from '../types';
+import { Webinar, UserRole, WebinarTimeSlot } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 
@@ -105,6 +105,48 @@ const SubmitPayment: React.FC<{
     );
 };
 
+const RegistrationForm: React.FC<{
+    isRegistering: boolean;
+    onRegister: (timeSlot: WebinarTimeSlot) => void;
+}> = ({ isRegistering, onRegister }) => {
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState<WebinarTimeSlot | null>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (selectedTimeSlot) {
+            onRegister(selectedTimeSlot);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <h3 className="text-lg font-semibold text-slate-800 mb-3">Choisissez votre créneau</h3>
+            <div className="space-y-2">
+                {Object.values(WebinarTimeSlot).map((slot) => (
+                    <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
+                        <input
+                            type="radio"
+                            name="timeSlot"
+                            value={slot}
+                            checked={selectedTimeSlot === slot}
+                            onChange={() => setSelectedTimeSlot(slot)}
+                            className="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"
+                        />
+                        <span className="ml-3 font-medium text-slate-700">{slot}</span>
+                    </label>
+                ))}
+            </div>
+            <button
+                type="submit"
+                disabled={isRegistering || !selectedTimeSlot}
+                className="w-full mt-4 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors"
+            >
+                {isRegistering ? 'Inscription en cours...' : 'Confirmer l\'inscription'}
+            </button>
+        </form>
+    );
+};
+
 const WebinarDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const webinarId = id;
@@ -160,7 +202,7 @@ const WebinarDetailPage: React.FC = () => {
     }, [webinar?.registrationStatus, fetchWebinar]);
 
 
-    const handleRegister = async () => {
+    const handleRegister = async (timeSlot: WebinarTimeSlot) => {
         if (!user) {
             navigate('/login');
             return;
@@ -176,6 +218,7 @@ const WebinarDetailPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
+                body: JSON.stringify({ timeSlot }),
             });
 
             const data = await response.json();
@@ -207,6 +250,8 @@ const WebinarDetailPage: React.FC = () => {
     }
 
     const registrationStatus = webinar.registrationStatus;
+    const registeredAttendee = webinar.attendees?.find(att => att.userId.toString() === user?._id.toString());
+
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -236,20 +281,17 @@ const WebinarDetailPage: React.FC = () => {
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
                             
                             {!registrationStatus ? (
-                                <button 
-                                    onClick={handleRegister}
-                                    disabled={isRegistering}
-                                    className="w-full bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors"
-                                >
-                                    {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
-                                </button>
+                                <RegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
                             ) : registrationStatus === 'PENDING' ? (
                                 <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
                             ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
                                 <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
                             ) : registrationStatus === 'CONFIRMED' ? (
                                 <div className="text-center">
-                                    <p className="text-green-600 font-semibold mb-4">Votre inscription est confirmée !</p>
+                                    <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
+                                    {registeredAttendee?.timeSlot && (
+                                        <p className="text-slate-600 font-medium mb-4">Créneau horaire : <span className="font-bold text-teal-700">{registeredAttendee.timeSlot}</span></p>
+                                    )}
                                     {webinar.googleMeetLink ? (
                                         <><button
     onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}

@@ -204,8 +204,13 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
 router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
+        const { timeSlot } = req.body; // Get timeSlot from body
+
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });
+        }
+        if (!timeSlot) {
+            return res.status(400).json({ message: 'Time slot is required.' });
         }
         const userId = req.user._id;
 
@@ -219,15 +224,15 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
 
         const client = await clientPromise;
         const db = client.db('pharmia');
-                const webinarsCollection = db.collection<Webinar>('webinars');
+        const webinarsCollection = db.collection<Webinar>('webinars');
         
-                const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) }, { readPreference: 'primary' });
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) }, { readPreference: 'primary' });
         
-                if (!webinar) {
-                    return res.status(404).json({ message: 'Webinaire non trouvé.' });
-                }        
-                // Check if user is already registered
-                const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinaire non trouvé.' });
+        }        
+        // Check if user is already registered
+        const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
         if (isRegistered) {
             return res.status(409).json({ message: 'Vous êtes déjà inscrit à ce webinaire.' });
         }
@@ -235,12 +240,13 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         const newAttendee = {
             userId: new ObjectId(userId),
             status: 'PENDING' as 'PENDING' | 'CONFIRMED',
-            registeredAt: new Date()
+            registeredAt: new Date(),
+            timeSlot: timeSlot, // Add the selected time slot
         };
 
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
-            { $push: { attendees: newAttendee } }
+            { $push: { attendees: newAttendee as any } } // Use 'as any' to bypass strict type issue if needed
         );
 
         if (result.matchedCount === 0) {

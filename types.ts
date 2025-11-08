@@ -219,6 +219,12 @@ export enum WebinarGroup {
   PHARMIA = 'PharmIA',
 }
 
+export enum WebinarTimeSlot {
+  MORNING = '09:00',
+  LUNCH = '13:30',
+  AFTERNOON = '15:30',
+}
+
 export interface Webinar {
   _id: ObjectId | string;
   title: string;
@@ -233,6 +239,7 @@ export interface Webinar {
     status: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
     proofUrl?: string;
     registeredAt: Date;
+    timeSlot?: WebinarTimeSlot;
   }[];
   createdAt: Date;
   updatedAt: Date;
