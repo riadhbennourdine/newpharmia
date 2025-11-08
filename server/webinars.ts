@@ -1,5 +1,4 @@
-import express from 'express';
-import { Webinar, UserRole } from '../types.js';
+import { Webinar, UserRole, WebinarGroup } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 import { authenticateToken, checkRole, softAuthenticateToken } from './authMiddleware.js';
@@ -7,13 +6,21 @@ import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
 
-// GET all webinars
+// GET all webinars, optionally filtered by group
 router.get('/', async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
-        const webinars = await webinarsCollection.find({}).sort({ date: -1 }).toArray();
+        
+        const { group } = req.query;
+        
+        const query: any = {};
+        if (group) {
+            query.group = group;
+        }
+
+        const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
         res.json(webinars);
     } catch (error) {
         console.error('Error fetching webinars:', error);
@@ -89,7 +96,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
 // POST to create a new webinar (Admin only)
 router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
-        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink } = req.body;
+        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group } = req.body;
 
         if (!title || !description || !date || !presenter) {
             return res.status(400).json({ message: 'Title, description, date, and presenter are required.' });
@@ -107,6 +114,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res
             registrationLink: registrationLink || '',
             imageUrl: imageUrl || '',
             googleMeetLink: googleMeetLink || '',
+            group: group || WebinarGroup.PHARMIA,
             attendees: [],
             createdAt: new Date(),
             updatedAt: new Date(),

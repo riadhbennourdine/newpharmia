@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Webinar, UserRole } from '../../types';
+import { Webinar, UserRole, WebinarGroup } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
@@ -35,7 +35,7 @@ const WebinarManagement: React.FC = () => {
     }, []);
 
     const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
-        setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '' });
+        setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });
         setIsModalOpen(true);
     };
 
@@ -122,7 +122,7 @@ const WebinarManagement: React.FC = () => {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         if (!currentWebinar) return;
         const { name, value } = e.target;
         setCurrentWebinar({ ...currentWebinar, [name]: value });
@@ -241,6 +241,20 @@ const WebinarManagement: React.FC = () => {
                                 <div className="mb-4">
                                     <label htmlFor="presenter" className="block text-sm font-medium text-slate-700">Présentateur</label>
                                     <input type="text" name="presenter" id="presenter" value={currentWebinar.presenter} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="group" className="block text-sm font-medium text-slate-700">Groupe</label>
+                                    <select
+                                        name="group"
+                                        id="group"
+                                        value={currentWebinar.group}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
+                                        required
+                                    >
+                                        <option value={WebinarGroup.PHARMIA}>{WebinarGroup.PHARMIA}</option>
+                                        <option value={WebinarGroup.CROP_TUNIS}>{WebinarGroup.CROP_TUNIS}</option>
+                                    </select>
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date</label>

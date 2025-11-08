@@ -214,6 +214,11 @@ export interface ImageTheme {
   category: 'Thèmes Pédagogiques' | 'Systèmes et Organes';
 }
 
+export enum WebinarGroup {
+  CROP_TUNIS = 'CROP Tunis',
+  PHARMIA = 'PharmIA',
+}
+
 export interface Webinar {
   _id: ObjectId | string;
   title: string;
@@ -231,6 +236,8 @@ export interface Webinar {
   }[];
   createdAt: Date;
   updatedAt: Date;
+  group: WebinarGroup;
+  registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
 }
 
 export interface Image {

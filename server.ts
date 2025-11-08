@@ -1180,9 +1180,45 @@ async function migrateWebinars() {
     }
 }
 
+async function migrateWebinarGroup() {
+    console.log('Checking if webinar group migration is needed...');
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection('webinars');
+        const { WebinarGroup } = await import('./types.js');
+
+        // Find the first webinar ever created that does not have a group
+        const firstWebinar = await webinarsCollection.findOne(
+            { group: { $exists: false } },
+            { sort: { createdAt: 1 } }
+        );
+
+        if (!firstWebinar) {
+            console.log('No webinars need a group assignment.');
+            return;
+        }
+
+        console.log(`Assigning group to webinar "${firstWebinar.title}"...`);
+
+        const result = await webinarsCollection.updateOne(
+            { _id: firstWebinar._id },
+            { $set: { group: WebinarGroup.CROP_TUNIS } }
+        );
+
+        if (result.modifiedCount > 0) {
+            console.log('Successfully assigned webinar to CROP Tunis group.');
+        }
+
+    } catch (error) {
+        console.error('Webinar group migration failed:', error);
+    }
+}
+
 
 app.listen(port, async () => {
     await migrateWebinars();
+    await migrateWebinarGroup();
     console.log(`Server is running on http://localhost:${port}`);
     await ensureAdminUserExists();
 });
