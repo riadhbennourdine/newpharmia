@@ -38,14 +38,24 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
-        // Create a response object that can be modified
+        console.log('[Webinar Debug] Entering GET /:id handler.');
         const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null };
 
         const authReq = req as AuthenticatedRequest;
         if (authReq.user) {
+            const userIdString = authReq.user._id.toString();
+            console.log(`[Webinar Debug] Authenticated user ID: ${userIdString}`);
+            console.log('[Webinar Debug] Webinar attendees:', JSON.stringify(webinar.attendees, null, 2));
+
             const attendee = webinar.attendees.find(
-                att => att.userId.toString() === authReq.user?._id.toString()
+                att => att.userId.toString() === userIdString
             );
+
+            if (attendee) {
+                console.log(`[Webinar Debug] Match found! Attendee status: ${attendee.status}`);
+            } else {
+                console.log('[Webinar Debug] No match found for user in attendees list.');
+            }
 
             webinarResponse.isRegistered = !!attendee;
             webinarResponse.registrationStatus = attendee?.status || null;
@@ -55,6 +65,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
                 delete webinarResponse.googleMeetLink;
             }
         } else {
+            console.log('[Webinar Debug] No authenticated user found.');
             // User is not logged in
             webinarResponse.isRegistered = false;
             webinarResponse.registrationStatus = null;
