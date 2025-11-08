@@ -225,7 +225,7 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
                         <div className="bg-slate-50 p-6 rounded-lg">
-                            <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription</h2>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-4">Inscription v2</h2>
                             
                             {!registrationStatus ? (
                                 <button 
