@@ -6,22 +6,18 @@ import { Spinner, SparklesIcon } from '../components/Icons';
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12 p-6 bg-white rounded-lg shadow-md">
-        <div className="flex flex-col md:flex-row items-center gap-6">
+        <div className="flex flex-col items-center text-center gap-4">
             <img 
                 src="https://pharmaconseilbmb.com/photos/site/crop/crop-tunis.png" 
                 alt="CROP Tunis Logo" 
                 className="w-32 h-32 object-contain"
             />
             <div>
-                <h2 className="text-2xl font-bold text-slate-800 mb-3">Projet "Préparateurs en Ligne"</h2>
-                <div className="prose max-w-none text-slate-600">
-                    <p>Les cours en ligne pour Préparateurs en Pharmacie sont de retour.</p>
-                    <p><strong>Chères Consœurs, Chers Confrères,</strong></p>
-                    <p>La deuxième session 2025/2026 des "Préparateurs en Ligne" reprend avec 16 nouvelles séances, planifiées chaque mardi à partir du 11 Novembre 2025.</p>
-                    <p>Notre priorité : votre flexibilité. Chaque thème sera présenté 3 fois par jour pour garantir la participation de tous vos préparateurs, sans perturber l'organisation de votre officine.</p>
-                    <p>Ces cours sont l'outil idéal pour la formation continue et l'amélioration des connaissances de votre personnel.</p>
-                    <p>Planifiez la montée en compétence de votre équipe. Inscrivez-vous maintenant !</p>
-                    <p>👉 Consultez le programme et inscrivez vos préparateurs !</p>
+                <h2 className="text-xl font-bold text-slate-800 mb-3">Projet "Préparateurs en Ligne"</h2>
+                <div className="text-sm text-slate-600 space-y-2">
+                    <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
+                    <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
+                    <p>L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.</p>
                 </div>
             </div>
         </div>
