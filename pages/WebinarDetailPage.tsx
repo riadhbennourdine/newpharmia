@@ -119,9 +119,6 @@ const WebinarDetailPage: React.FC = () => {
     const fetchWebinar = useCallback(async () => {
         if (!webinarId) return;
         
-        // Don't set loading to true for background refreshes
-        if (!webinar) setIsLoading(true);
-        
         try {
             const headers: HeadersInit = { 'Cache-Control': 'no-cache' };
             if (token) {
@@ -137,27 +134,27 @@ const WebinarDetailPage: React.FC = () => {
             setWebinar(data);
         } catch (err: any) {
             setError(err.message);
-        } finally {
-            // Only stop loading if it was the initial load
-            if (isLoading) setIsLoading(false);
         }
-    }, [webinarId, token, webinar, isLoading]);
+    }, [webinarId, token]);
 
-    // Initial fetch
+    // Initial fetch and loading management
     useEffect(() => {
-        fetchWebinar();
+        const initialLoad = async () => {
+            setIsLoading(true);
+            await fetchWebinar();
+            setIsLoading(false);
+        };
+        initialLoad();
     }, [fetchWebinar]);
 
     // Polling mechanism for pending payment validation
     useEffect(() => {
         // If the status is PAYMENT_SUBMITTED, start polling
         if (webinar?.registrationStatus === 'PAYMENT_SUBMITTED') {
-            const intervalId = setInterval(() => {
-                fetchWebinar();
-            }, 5000); // Poll every 5 seconds
+            const intervalId = setInterval(fetchWebinar, 5000); // Poll every 5 seconds
 
             // Cleanup function to stop polling when the component unmounts
-            // or when the status changes, which will cause this effect to re-run and clear the old interval.
+            // or when the status changes.
             return () => clearInterval(intervalId);
         }
     }, [webinar?.registrationStatus, fetchWebinar]);
