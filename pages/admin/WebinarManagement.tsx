@@ -73,9 +73,14 @@ const WebinarManagement: React.FC = () => {
     const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
 
     const fetchWebinars = async () => {
+        if (!token) return;
         try {
             setIsLoading(true);
-            const response = await fetch('/api/webinars');
+            const response = await fetch('/api/webinars', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             if (!response.ok) throw new Error('Failed to fetch webinars');
             const data = await response.json();
             setWebinars(data);
@@ -88,7 +93,7 @@ const WebinarManagement: React.FC = () => {
 
     useEffect(() => {
         fetchWebinars();
-    }, []);
+    }, [token]);
 
     const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
         setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });
