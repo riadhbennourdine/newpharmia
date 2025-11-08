@@ -251,14 +251,16 @@ const WebinarDetailPage: React.FC = () => {
                                 <div className="text-center">
                                     <p className="text-green-600 font-semibold mb-4">Votre inscription est confirmée !</p>
                                     {webinar.googleMeetLink ? (
-                                        <a 
-                                            href={webinar.googleMeetLink} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center justify-center bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-                                        >
-                                            Rejoindre avec Google Meet
-                                        </a>
+                                        <><button
+    onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
+    className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+>
+    Rejoindre avec
+</button><div className="mt-4">
+        <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
+            <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
+        </a>
+    </div></>
                                     ) : (
                                         <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
                                     )}
