@@ -29,9 +29,15 @@ export const softAuthenticateToken = async (req: AuthenticatedRequest, res: Resp
         if (user) {
             req.user = user; // Attach user to the request
         }
-    } catch (error) {
-        // Invalid token, just continue without authenticating
-        console.error('Soft authentication error:', error);
+    } catch (error: any) {
+        // If it's a JWT error, log the problematic header for debugging
+        if (error.name === 'JsonWebTokenError') {
+            console.error('Soft authentication JWT Error. Malformed token received.');
+            console.error('Problematic Auth Header:', authHeader);
+        } else {
+            // For other errors (e.g., DB connection), log the full error
+            console.error('Soft authentication error:', error);
+        }
     }
 
     next();
