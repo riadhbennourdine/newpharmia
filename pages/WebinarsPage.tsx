@@ -125,8 +125,19 @@ const WebinarsPage: React.FC = () => {
                                 <p className="text-xs text-slate-500 mt-1">Le {new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
                             </div>
-                            <div className="mt-auto p-3 border-t border-slate-100 bg-slate-50 text-center">
-                                <span className="text-teal-600 font-bold">Voir les détails</span>
+                            <div className="mt-auto p-3 border-t border-slate-100 bg-slate-50 text-center flex flex-col items-center">
+                                <p className="text-lg font-bold text-slate-800 mb-2">
+                                    {new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                </p>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault(); // Prevent Link navigation
+                                        navigate(`/webinars/${webinar._id}`);
+                                    }}
+                                    className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                                >
+                                    S'inscrire
+                                </button>
                             </div>
                         </Link>
                     ))}
