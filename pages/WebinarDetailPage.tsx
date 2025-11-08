@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -107,6 +107,7 @@ const SubmitPayment: React.FC<{
 
 const WebinarDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const webinarId = id;
     const [webinar, setWebinar] = useState<Webinar | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -115,19 +116,19 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
-    const fetchWebinar = async () => {
-        if (!id) return;
+    const fetchWebinar = useCallback(async () => {
+        if (!webinarId) return;
+        
+        // Don't set loading to true for background refreshes
         if (!webinar) setIsLoading(true);
         
         try {
-            const headers: HeadersInit = {
-                'Cache-Control': 'no-cache',
-            };
+            const headers: HeadersInit = { 'Cache-Control': 'no-cache' };
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`/api/webinars/${id}`, { headers });
+            const response = await fetch(`/api/webinars/${webinarId}`, { headers });
 
             if (!response.ok) {
                 throw new Error('Failed to fetch webinar details');
@@ -137,16 +138,30 @@ const WebinarDetailPage: React.FC = () => {
         } catch (err: any) {
             setError(err.message);
         } finally {
-            setIsLoading(false);
+            // Only stop loading if it was the initial load
+            if (isLoading) setIsLoading(false);
         }
-    };
+    }, [webinarId, token, webinar, isLoading]);
 
+    // Initial fetch
     useEffect(() => {
         fetchWebinar();
-    }, [id, token]);
+    }, [fetchWebinar]);
 
-    // The webinar object from the server now contains the authoritative registration status.
-    // No need for complex client-side state management anymore.
+    // Polling mechanism for pending payment validation
+    useEffect(() => {
+        // If the status is PAYMENT_SUBMITTED, start polling
+        if (webinar?.registrationStatus === 'PAYMENT_SUBMITTED') {
+            const intervalId = setInterval(() => {
+                fetchWebinar();
+            }, 5000); // Poll every 5 seconds
+
+            // Cleanup function to stop polling when the component unmounts
+            // or when the status changes, which will cause this effect to re-run and clear the old interval.
+            return () => clearInterval(intervalId);
+        }
+    }, [webinar?.registrationStatus, fetchWebinar]);
+
 
     const handleRegister = async () => {
         if (!user) {
@@ -158,7 +173,7 @@ const WebinarDetailPage: React.FC = () => {
         setRegistrationMessage(null);
 
         try {
-            const response = await fetch(`/api/webinars/${id}/register`, {
+            const response = await fetch(`/api/webinars/${webinarId}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -169,12 +184,9 @@ const WebinarDetailPage: React.FC = () => {
             const data = await response.json();
 
             if (response.ok || response.status === 409) {
-                // On successful registration or if already registered, just refetch the webinar data.
-                // The server will return the updated status.
                 setRegistrationMessage(data.message);
                 await fetchWebinar(); 
             } else {
-                // Other errors
                 throw new Error(data.message || 'Registration failed');
             }
 
@@ -197,7 +209,6 @@ const WebinarDetailPage: React.FC = () => {
         return <div className="text-center py-20">Webinar not found.</div>;
     }
 
-    // The registration status is now the single source of truth from the server.
     const registrationStatus = webinar.registrationStatus;
 
     return (
@@ -236,7 +247,7 @@ const WebinarDetailPage: React.FC = () => {
                                     {isRegistering ? 'Inscription en cours...' : 'S\'inscrire à ce webinaire'}
                                 </button>
                             ) : registrationStatus === 'PENDING' ? (
-                                <SubmitPayment webinarId={id!} token={token} onPaymentSubmitted={fetchWebinar} />
+                                <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
                             ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
                                 <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
                             ) : registrationStatus === 'CONFIRMED' ? (
