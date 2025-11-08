@@ -235,7 +235,7 @@ export interface Webinar {
   googleMeetLink?: string;
   registrationLink?: string;
   attendees: { 
-    userId: ObjectId | string;
+    userId: ObjectId | string | Partial<User>;
     status: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
     proofUrl?: string;
     registeredAt: Date;

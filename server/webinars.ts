@@ -8,11 +8,12 @@ import type { AuthenticatedRequest } from './authMiddleware.js';
 const router = express.Router();
 
 // GET all webinars, optionally filtered by group
-router.get('/', async (req, res) => {
+router.get('/', softAuthenticateToken, async (req, res) => {
     try {
         const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
+        const usersCollection = db.collection('users');
         
         const { group } = req.query;
         
@@ -22,6 +23,37 @@ router.get('/', async (req, res) => {
         }
 
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
+
+        // If the user is an admin, populate attendee details
+        const authReq = req as AuthenticatedRequest;
+        if (authReq.user?.role === UserRole.ADMIN) {
+            const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
+            const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
+
+            if (uniqueUserIds.length > 0) {
+                const users = await usersCollection.find(
+                    { _id: { $in: uniqueUserIds } },
+                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+                ).toArray();
+
+                const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
+
+                webinars.forEach(webinar => {
+                    webinar.attendees.forEach(attendee => {
+                        const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
+                        if (userDetails) {
+                            attendee.userId = userDetails;
+                        }
+                    });
+                });
+            }
+        } else {
+            // For non-admins, don't send attendee details
+            webinars.forEach(webinar => {
+                delete (webinar as Partial<Webinar>).attendees;
+            });
+        }
+
         res.json(webinars);
     } catch (error) {
         console.error('Error fetching webinars:', error);
@@ -81,7 +113,23 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         }
 
         // Admins can see the full list of attendees, others cannot.
-        if (authReq.user?.role !== UserRole.ADMIN) {
+        if (authReq.user?.role === UserRole.ADMIN) {
+            const userIds = webinar.attendees.map(a => new ObjectId(a.userId as string));
+            if (userIds.length > 0) {
+                const usersCollection = db.collection('users');
+                const users = await usersCollection.find(
+                    { _id: { $in: userIds } },
+                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+                ).toArray();
+                const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
+                webinarResponse.attendees.forEach(attendee => {
+                    const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
+                    if (userDetails) {
+                        attendee.userId = userDetails;
+                    }
+                });
+            }
+        } else {
             delete webinarResponse.attendees;
         }
         

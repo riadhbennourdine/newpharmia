@@ -1,8 +1,64 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Webinar, UserRole, WebinarGroup } from '../../types';
+import { Webinar, UserRole, WebinarGroup, User } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
+
+const getUserDisplayName = (user: Partial<User>): string => {
+    if (typeof user !== 'object' || user === null) return 'ID Inconnu';
+    if (user.firstName && user.lastName) {
+        return `${user.firstName} ${user.lastName}`;
+    }
+    return user.username || user.email || 'Utilisateur inconnu';
+};
+
+const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, onConfirmPayment, isConfirmingPayment }) => {
+    const groupedByTimeSlot = attendees.reduce((acc, attendee) => {
+        const slots = attendee.timeSlots && attendee.timeSlots.length > 0 ? attendee.timeSlots : ['Non spécifié'];
+        slots.forEach(slot => {
+            if (!acc[slot]) {
+                acc[slot] = [];
+            }
+            acc[slot].push(attendee);
+        });
+        return acc;
+    }, {} as Record<string, Webinar['attendees']>);
+
+    return (
+        <div className="mt-4 p-3 bg-slate-50 rounded-md">
+            <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({attendees.length})</h3>
+            {Object.entries(groupedByTimeSlot).map(([timeSlot, groupAttendees]) => (
+                <div key={timeSlot} className="mt-3">
+                    <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot}</p>
+                    <ul className="space-y-2">
+                        {groupAttendees.map(attendee => (
+                            <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
+                                <span>
+                                    {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
+                                    {attendee.proofUrl && (
+                                        <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
+                                            (Voir justificatif)
+                                        </a>
+                                    )}
+                                </span>
+                                {attendee.status === 'PAYMENT_SUBMITTED' && (
+                                    <button
+                                        onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
+                                        disabled={isConfirmingPayment}
+                                        className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
+                                    >
+                                        {isConfirmingPayment ? 'Confirmation...' : 'Confirmer Paiement'}
+                                    </button>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    );
+};
+
 
 const WebinarManagement: React.FC = () => {
     const [webinars, setWebinars] = useState<Webinar[]>([]);
@@ -196,33 +252,12 @@ const WebinarManagement: React.FC = () => {
                             </div>
 
                             {webinar.attendees && webinar.attendees.length > 0 && (
-                                <div className="mt-4 p-3 bg-slate-50 rounded-md">
-                                    <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({webinar.attendees.length})</h3>
-                                    <ul className="space-y-2">
-                                        {webinar.attendees.map(attendee => (
-                                            <li key={attendee.userId.toString()} className="flex items-center justify-between text-sm text-slate-600">
-                                                <span>
-                                                    {attendee.userId.toString()} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
-                                                    {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
-                                                    {attendee.proofUrl && (
-                                                        <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
-                                                            (Voir justificatif)
-                                                        </a>
-                                                    )}
-                                                </span>
-                                                {attendee.status === 'PAYMENT_SUBMITTED' && (
-                                                    <button
-                                                        onClick={() => handleConfirmPayment(webinar._id.toString(), attendee.userId.toString())}
-                                                        disabled={isConfirmingPayment}
-                                                        className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
-                                                    >
-                                                        {isConfirmingPayment ? 'Confirmation...' : 'Confirmer Paiement'}
-                                                    </button>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                <AttendeesList 
+                                    attendees={webinar.attendees} 
+                                    webinarId={webinar._id.toString()}
+                                    onConfirmPayment={handleConfirmPayment}
+                                    isConfirmingPayment={isConfirmingPayment}
+                                />
                             )}
                         </li>
                     ))}
