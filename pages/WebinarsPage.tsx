@@ -126,7 +126,7 @@ const WebinarsPage: React.FC = () => {
                                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
                             </div>
                             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
-                                <p className="text-xl font-bold text-teal-600">
+                                <p className="text-xl font-bold text-teal-600 py-2">
                                     {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                                 </p>
                                 <button
