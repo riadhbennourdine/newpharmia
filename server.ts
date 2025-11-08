@@ -202,8 +202,6 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     }
 });
 
-import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
-
 app.post('/api/auth/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
