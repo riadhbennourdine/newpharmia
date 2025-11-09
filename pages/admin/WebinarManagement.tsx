@@ -32,7 +32,7 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                     <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot}</p>
                     <ul className="space-y-2">
                         {groupAttendees.map(attendee => {
-                            console.log('Rendering attendee userId:', attendee.userId); // DEBUG
+
                             return (
                                 <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
                                     <span>
