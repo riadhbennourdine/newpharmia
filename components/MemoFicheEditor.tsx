@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
-import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon } from './Icons';
+import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon, ImageIcon } from './Icons';
 import { useAuth } from '../hooks/useAuth';
+import ImageUploadModal from './ImageUploadModal';
 
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -154,9 +155,10 @@ interface RichContentSectionEditorProps {
   onChange: (section: MemoFicheSection) => void;
   showTitle?: boolean;
   onRemove?: () => void;
+  openImageModal: (callback: (url: string) => void) => void;
 }
 
-const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove }) => {
+const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove, openImageModal }) => {
 
   const handleContentChange = (index: number, value: string) => {
     const newContent = [...(section.content || [])];
@@ -190,7 +192,14 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
         {(section.content || []).map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             {item.type === 'text' && <Textarea value={item.value} onChange={e => handleContentChange(index, e.target.value)} rows={3} className="flex-grow" />}
-            {item.type === 'image' && <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />}
+            {item.type === 'image' && (
+              <div className="flex-grow flex items-center gap-2">
+                <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />
+                <button type="button" onClick={() => openImageModal(url => handleContentChange(index, url))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                  <ImageIcon className="h-5 w-5 text-slate-600" />
+                </button>
+              </div>
+            )}
             {item.type === 'video' && <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de la vidéo YouTube" className="flex-grow" />}
             <button type="button" onClick={() => removeContentBlock(index)} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
           </div>
@@ -252,6 +261,13 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   const { user } = useAuth();
   const [showQRCode, setShowQRCode] = useState(false);
   const canGenerateQRCode = user && user.role === UserRole.ADMIN;
+  const [isImageModalOpen, setImageModalOpen] = useState(false);
+  const [imageCallback, setImageCallback] = useState<(url: string) => void>(() => () => {});
+
+  const openImageModal = (callback: (url: string) => void) => {
+    setImageCallback(() => callback);
+    setImageModalOpen(true);
+  };
 
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
@@ -458,6 +474,11 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <ImageUploadModal
+        isOpen={isImageModalOpen}
+        onClose={() => setImageModalOpen(false)}
+        onSelectImage={imageCallback}
+      />
       <h2 className="text-3xl font-bold text-slate-800 mb-6">{initialCaseStudy?._id ? 'Modifier la Mémofiche' : 'Créer une Nouvelle Mémofiche'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -523,8 +544,13 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             </div>
           </div>
           <div>
-            <Label htmlFor="coverImageUrl">URL de l\'image de couverture</Label>
-            <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} />
+            <Label htmlFor="coverImageUrl">Image de couverture</Label>
+            <div className="mt-1 flex items-center gap-2">
+                <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} className="flex-grow" />
+                <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, coverImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                    <ImageIcon className="h-5 w-5 text-slate-600" />
+                </button>
+            </div>
           </div>
           {caseStudy.coverImageUrl && (
             <div>
@@ -566,7 +592,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                         const newCustomSections = [...caseStudy.customSections];
                         newCustomSections[customSectionIndex] = newSection;
                         handleCustomSectionChange(newCustomSections);
-                    }} onRemove={() => removeCustomSection(sectionInfo.id)} />;
+                    }} onRemove={() => removeCustomSection(sectionInfo.id)} openImageModal={openImageModal} />;
                 }
             } else if (sectionInfo.isMemoSection) {
                 const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
@@ -575,7 +601,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                         const newMemoSections = [...caseStudy.memoSections];
                         newMemoSections[memoSectionIndex] = newSection;
                         setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
-                    }} showTitle={true} />;
+                    }} showTitle={true} openImageModal={openImageModal} />;
                 }
             } else {
                 switch (sectionInfo.id) {
@@ -589,7 +615,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     case 'dispositifsAConseiller':
                     case 'reponsesObjections':
                     case 'pagesSponsorisees':
-                        content = <RichContentSectionEditor section={caseStudy[sectionInfo.id]} onChange={(newSection) => setCaseStudy(prev => ({ ...prev, [sectionInfo.id]: newSection }))} showTitle={false} />;
+                        content = <RichContentSectionEditor section={caseStudy[sectionInfo.id]} onChange={(newSection) => setCaseStudy(prev => ({ ...prev, [sectionInfo.id]: newSection }))} showTitle={false} openImageModal={openImageModal} />;
                         break;
                     case 'keyQuestions':
                     case 'redFlags':
