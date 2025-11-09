@@ -381,39 +381,38 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
                             
-                            {user ? (
-                                <>
-                                    {!registrationStatus ? (
-                                        <AuthenticatedRegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
-                                    ) : registrationStatus === 'PENDING' ? (
-                                        <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
-                                    ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
-                                        <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
-                                    ) : registrationStatus === 'CONFIRMED' ? (
-                                        <div className="text-center">
-                                            <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
-                                            {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
-                                                <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
-                                            )}
-                                            {webinar.googleMeetLink ? (
-                                                <><button
-                                                    onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
-                                                    className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
-                                                >
-                                                    Rejoindre avec
-                                                </button><div className="mt-4">
-                                                        <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
-                                                            <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
-                                                        </a>
-                                                    </div></>
-                                            ) : (
-                                                <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
-                                            )}
-                                        </div>
-                                    ) : null}
-                                </>
+                            {registrationStatus === 'CONFIRMED' ? (
+                                <div className="text-center">
+                                    <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
+                                    {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                        <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
+                                    )}
+                                    {webinar.googleMeetLink ? (
+                                        <><button
+                                            onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
+                                            className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                                        >
+                                            Rejoindre avec
+                                        </button><div className="mt-4">
+                                                <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
+                                                    <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
+                                                </a>
+                                            </div></>
+                                    ) : (
+                                        <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
+                                    )}
+                                </div>
+                            ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
+                                <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
+                            ) : registrationStatus === 'PENDING' ? (
+                                <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
                             ) : (
-                                <PublicRegistrationForm webinarId={webinarId!} onRegistrationSuccess={fetchWebinar} />
+                                // No registration status, decide which form to show
+                                user ? (
+                                    <AuthenticatedRegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
+                                ) : (
+                                    <PublicRegistrationForm webinarId={webinarId!} onRegistrationSuccess={fetchWebinar} />
+                                )
                             )}
 
                             {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
