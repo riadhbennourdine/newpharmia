@@ -64,7 +64,9 @@ const App: React.FC = () => (
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/tarifs" element={<PricingPage />} />
                         <Route path="/contact" element={<ContactFormView />} />
-                        <Route path="/apercu-memofiche" element={<MemoFichePreview />} /> {/* Add the preview route */}
+                        <Route path="/apercu-memofiche" element={<MemoFichePreview />} />
+                        <Route path="/webinars" element={<WebinarsPage />} />
+                        <Route path="/webinars/:id" element={<WebinarDetailPage />} />
                     </Route>
                     <Route path="/login" element={<LoginView />} />
                     <Route path="/register" element={<RegisterView />} />
@@ -83,8 +85,6 @@ const App: React.FC = () => (
                         <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
                         <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
                         <Route path="/complete-profile" element={<ProfileCompletionView />} />
-                        <Route path="/webinars" element={<WebinarsPage />} />
-                        <Route path="/webinars/:id" element={<WebinarDetailPage />} />
 
                         {/* Routes for Formateurs & Admins */}
                         <Route element={<FormateurOrAdminRoute />}>
