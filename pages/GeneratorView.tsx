@@ -63,7 +63,7 @@ Instructions spécifiques par section :
 - **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
 - **Aperçu pathologie**: Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
 - **Signaux d'alerte**: Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères.
+- **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères. Pour chaque traitement, inclure le nom de la molécule ou du produit, sa classe pharmacologique, la posologie usuelle, et les conseils de prise principaux. Le format doit être clair et structuré, par exemple : "**Nom du produit** (Classe) : Posologie - Conseil de prise".
 - **associatedProducts**: Liste des produits associés. Chaque élément doit être une chaîne de caractères. Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
 - **lifestyleAdvice**: Liste des conseils d'hygiène de vie. Chaque élément doit être une chaîne de caractères.
 - **dietaryAdvice**: Liste des conseils alimentaires. Chaque élément doit être une chaîne de caractères.
