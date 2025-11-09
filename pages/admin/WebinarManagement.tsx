@@ -31,27 +31,31 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                 <div key={timeSlot} className="mt-3">
                     <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot}</p>
                     <ul className="space-y-2">
-                        {groupAttendees.map(attendee => (
-                            <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
-                                <span>
-                                    {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
-                                    {attendee.proofUrl && (
-                                        <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
-                                            (Voir justificatif)
-                                        </a>
+                        {groupAttendees.map(attendee => {
+                            console.log('Rendering attendee userId:', attendee.userId); // DEBUG
+                            return (
+                                <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
+                                    <span>
+                                        {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
+                                        {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
+                                        {attendee.proofUrl && (
+                                            <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
+                                                (Voir justificatif)
+                                            </a>
+                                        )}
+                                    </span>
+                                    {attendee.status === 'PAYMENT_SUBMITTED' && (
+                                        <button
+                                            onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
+                                            disabled={isConfirmingPayment}
+                                            className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
+                                        >
+                                            {isConfirmingPayment ? 'Confirmation...' : 'Confirmer Paiement'}
+                                        </button>
                                     )}
-                                </span>
-                                {attendee.status === 'PAYMENT_SUBMITTED' && (
-                                    <button
-                                        onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
-                                        disabled={isConfirmingPayment}
-                                        className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
-                                    >
-                                        {isConfirmingPayment ? 'Confirmation...' : 'Confirmer Paiement'}
-                                    </button>
-                                )}
-                            </li>
-                        ))}
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             ))}
