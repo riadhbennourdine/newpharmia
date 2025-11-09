@@ -401,7 +401,7 @@ router.post('/:id/public-register', async (req, res) => {
 
         // --- Generate Guest Token ---
         const guestToken = jwt.sign(
-            { _id: userId, role: user.role },
+            { id: userId.toString(), role: user.role },
             process.env.JWT_SECRET!,
             { expiresIn: '24h' } // Guest token is valid for 24 hours
         );
