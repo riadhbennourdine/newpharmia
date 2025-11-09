@@ -333,24 +333,37 @@ router.post('/:id/public-register', async (req, res) => {
         const webinarsCollection = db.collection<Webinar>('webinars');
 
         // --- Find or Create User ---
-        const userResult = await usersCollection.findOneAndUpdate(
-            { email: email.toLowerCase() },
-            {
-                $setOnInsert: {
-                    email: email.toLowerCase(),
-                    firstName,
-                    lastName,
-                    role: UserRole.VISITEUR,
-                    status: ClientStatus.PROSPECT,
-                    createdAt: new Date(),
-                }
-            },
-            { upsert: true, returnDocument: 'after' }
-        );
+        let user;
+        try {
+            const userResult = await usersCollection.findOneAndUpdate(
+                { email: email.toLowerCase() },
+                {
+                    $setOnInsert: {
+                        email: email.toLowerCase(),
+                        firstName,
+                        lastName,
+                        role: UserRole.VISITEUR,
+                        status: ClientStatus.PROSPECT,
+                        createdAt: new Date(),
+                    }
+                },
+                { upsert: true, returnDocument: 'after' }
+            );
+
+            if (!userResult || !userResult.value) {
+                console.error('Failed to upsert user. Full result:', JSON.stringify(userResult, null, 2));
+                return res.status(500).json({ message: 'Failed to find or create user.' });
+            }
+            user = userResult.value;
+
+        } catch (dbError) {
+            console.error('Database error during user upsert:', dbError);
+            return res.status(500).json({ message: 'A database error occurred.' });
+        }
         
-        const user = userResult.value;
         if (!user) {
-            return res.status(500).json({ message: 'Failed to find or create user.' });
+            // This is redundant now but safe to keep
+            return res.status(500).json({ message: 'Failed to find or create user for unknown reasons.' });
         }
         const userId = user._id;
 
