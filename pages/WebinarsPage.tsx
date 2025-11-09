@@ -57,6 +57,7 @@ const WebinarsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<WebinarGroup>(WebinarGroup.CROP_TUNIS);
+    const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -70,7 +71,16 @@ const WebinarsPage: React.FC = () => {
                     throw new Error('Failed to fetch webinars');
                 }
                 const data = await response.json();
-                setWebinars(data);
+
+                const now = new Date();
+                const upcomingWebinars = data.filter((w: Webinar) => new Date(w.date) > now);
+
+                // Sort upcoming webinars by date in ascending order (nearest first)
+                const sortedUpcomingWebinars = upcomingWebinars.sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                setWebinars(sortedUpcomingWebinars); // Set all upcoming webinars
+                setNearestWebinar(sortedUpcomingWebinars.length > 0 ? sortedUpcomingWebinars[0] : null); // Set the nearest one
+
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -82,18 +92,6 @@ const WebinarsPage: React.FC = () => {
     }, [activeTab]);
 
     const isAdmin = user?.role === UserRole.ADMIN;
-
-    const groupedWebinars = webinars.reduce((acc, webinar) => {
-        const date = new Date(webinar.date);
-        const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-        const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
-
-        if (!acc[capitalizedMonthYear]) {
-            acc[capitalizedMonthYear] = [];
-        }
-        acc[capitalizedMonthYear].push(webinar);
-        return acc;
-    }, {} as Record<string, Webinar[]>);
 
     const renderTabs = () => (
         <div className="mb-8 border-b border-slate-200">
@@ -143,18 +141,26 @@ const WebinarsPage: React.FC = () => {
                     <h3 className="text-xl font-semibold">Erreur de chargement</h3>
                     <p className="mt-2">{error}</p>
                 </div>
-            ) : webinars.length > 0 ? (
+            ) : webinars.length > 0 ? ( // webinars now contains only upcoming webinars, sorted by nearest first
                 <div className="space-y-12">
-                    {Object.entries(groupedWebinars).map(([monthYear, monthWebinars]) => (
-                        <div key={monthYear}>
-                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">{monthYear}</h2>
+                    {nearestWebinar && (
+                        <div className="mb-12 p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Prochain Webinaire</h2>
+                            <WebinarCard webinar={nearestWebinar} />
+                        </div>
+                    )}
+
+                    {/* Display other upcoming webinars, excluding the nearest one if it's already displayed */}
+                    {webinars.filter(w => w._id !== nearestWebinar?._id).length > 0 && (
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Autres Webinaires à Venir</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {monthWebinars.map(webinar => (
+                                {webinars.filter(w => w._id !== nearestWebinar?._id).map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
                             </div>
                         </div>
-                    ))}
+                    )}
                 </div>
             ) : (
                 <div className="text-center py-12 bg-white rounded-lg shadow-sm">
