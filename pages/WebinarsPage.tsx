@@ -14,7 +14,6 @@ const CropTunisIntro: React.FC = () => (
             />
         </div>
         <div className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">Projet "Préparateurs en Ligne"</h2>
             <div className="text-base text-slate-600 space-y-3">
                 <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
                 <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
@@ -119,28 +118,20 @@ const WebinarsPage: React.FC = () => {
                 >
                     {WebinarGroup.PHARMIA}
                 </button>
+                {isAdmin && (
+                    <button
+                        onClick={() => navigate('/admin/webinars')}
+                        className="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    >
+                        Gérer les webinaires
+                    </button>
+                )}
             </nav>
         </div>
     );
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-slate-800">Nos Webinaires</h1>
-                    <p className="text-lg text-slate-600 mt-1">Découvrez nos sessions en direct et à venir.</p>
-                </div>
-                {isAdmin && (
-                    <button
-                        onClick={() => navigate('/admin/webinars')}
-                        className="inline-flex items-center bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700"
-                    >
-                        <SparklesIcon className="h-5 w-5 mr-2" />
-                        Gérer les webinaires
-                    </button>
-                )}
-            </div>
-
             {renderTabs()}
 
             {activeTab === WebinarGroup.CROP_TUNIS && <CropTunisIntro />}
