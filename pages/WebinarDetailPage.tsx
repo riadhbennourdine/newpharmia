@@ -74,9 +74,9 @@ const SubmitPayment: React.FC<{
 
     return (
         <div>
-            <h3 className="text-lg font-semibold text-slate-800">Finaliser l\'inscription</h3>
+            <h3 className="text-lg font-semibold text-slate-800">Finaliser l'inscription</h3>
             <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l\'équipe officinale</p>
+                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
                 <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement (RIB, etc.) dans la description du webinaire ci-dessus.</p>
             </div>
             
@@ -354,82 +354,84 @@ const WebinarDetailPage: React.FC = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
-                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
-                <div className="relative z-20">
-                    <h1 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h1>
-                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
-                        <div className="flex items-center gap-2">
-                            <CalendarIcon className="h-5 w-5" />
-                            <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <UserIcon className="h-5 w-5" />
-                            <span className="font-medium">Animé par {webinar.presenter}</span>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="max-w-4xl mx-auto">
+                    <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
+                        <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
+                        <div className="relative z-20">
+                            <h1 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h1>
+                            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
+                                <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-5 w-5" />
+                                    <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <UserIcon className="h-5 w-5" />
+                                    <span className="font-medium">Animé par {webinar.presenter}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-12 -mt-16">
-                <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div className="p-8">
-                        <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="p-8">
+                            <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
-                        <div className="bg-slate-50 p-6 rounded-lg">
-                            <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
-                            
-                            {registrationStatus === 'CONFIRMED' ? (
-                                <div className="text-center">
-                                    <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
-                                    {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
-                                        <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
-                                    )}
-                                    {webinar.googleMeetLink ? (
-                                        <><button
-                                            onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
-                                            className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
-                                        >
-                                            Rejoindre avec
-                                        </button><div className="mt-4">
-                                                <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
-                                                    <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
-                                                </a>
-                                            </div></>
-                                    ) : (
-                                        <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
-                                    )}
-                                </div>
-                            ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
-                                <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
-                            ) : registrationStatus === 'PENDING' ? (
-                                <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
-                            ) : (
-                                // No registration status, decide which form to show
-                                user ? (
-                                    <AuthenticatedRegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
+                            <div className="bg-slate-50 p-6 rounded-lg">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
+                                
+                                {registrationStatus === 'CONFIRMED' ? (
+                                    <div className="text-center">
+                                        <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
+                                        {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                            <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
+                                        )}
+                                        {webinar.googleMeetLink ? (
+                                            <><button
+                                                onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
+                                                className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                                            >
+                                                Rejoindre avec
+                                            </button><div className="mt-4">
+                                                    <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
+                                                        <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
+                                                    </a>
+                                                </div></>
+                                        ) : (
+                                            <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
+                                        )}
+                                    </div>
+                                ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
+                                    <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
+                                ) : registrationStatus === 'PENDING' ? (
+                                    <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
                                 ) : (
-                                    <PublicRegistrationForm webinarId={webinarId!} onRegistrationSuccess={fetchWebinar} />
-                                )
-                            )}
+                                    // No registration status, decide which form to show
+                                    user ? (
+                                        <AuthenticatedRegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
+                                    ) : (
+                                        <PublicRegistrationForm webinarId={webinarId!} onRegistrationSuccess={fetchWebinar} />
+                                    )
+                                )}
 
-                            {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
-                        </div>
-
-                        {user?.role === UserRole.ADMIN && webinar.attendees && (
-                             <div className="mt-8 p-4 border-t border-gray-200">
-                                <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
-                                <ul className="list-disc list-inside mt-2 text-slate-600">
-                                    {webinar.attendees.map(attendee => (
-                                        <li key={attendee.userId.toString()}>
-                                            {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
-                                            {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
-                                        </li>
-                                    ))}
-                                </ul>
+                                {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
                             </div>
-                        )}
+
+                            {user?.role === UserRole.ADMIN && webinar.attendees && (
+                                 <div className="mt-8 p-4 border-t border-gray-200">
+                                    <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
+                                    <ul className="list-disc list-inside mt-2 text-slate-600">
+                                        {webinar.attendees.map(attendee => (
+                                            <li key={attendee.userId.toString()}>
+                                                {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
+                                                {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
