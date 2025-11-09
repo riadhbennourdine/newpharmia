@@ -335,7 +335,7 @@ router.post('/:id/public-register', async (req, res) => {
         // --- Find or Create User ---
         let user;
         try {
-            const userResult = await usersCollection.findOneAndUpdate(
+            user = await usersCollection.findOneAndUpdate(
                 { email: email.toLowerCase() },
                 {
                     $setOnInsert: {
@@ -350,21 +350,16 @@ router.post('/:id/public-register', async (req, res) => {
                 { upsert: true, returnDocument: 'after' }
             );
 
-            if (!userResult || !userResult.value) {
-                console.error('Failed to upsert user. Full result:', JSON.stringify(userResult, null, 2));
+            if (!user) {
+                console.error('Failed to upsert user. The database returned a nullish value.');
                 return res.status(500).json({ message: 'Failed to find or create user.' });
             }
-            user = userResult.value;
 
         } catch (dbError) {
             console.error('Database error during user upsert:', dbError);
             return res.status(500).json({ message: 'A database error occurred.' });
         }
         
-        if (!user) {
-            // This is redundant now but safe to keep
-            return res.status(500).json({ message: 'Failed to find or create user for unknown reasons.' });
-        }
         const userId = user._id;
 
         // --- Add to Newsletter Group ---
