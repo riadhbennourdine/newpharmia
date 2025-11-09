@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Webinar, User, UserRole, WebinarTimeSlot } from '../types';
+import { Webinar, User, UserRole, WebinarTimeSlot, WebinarGroup } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 
@@ -10,6 +10,17 @@ const getUserDisplayName = (user: Partial<User>): string => {
         return `${user.firstName} ${user.lastName}`;
     }
     return user.username || user.email || 'Utilisateur inconnu';
+};
+
+const getGroupLogo = (group: WebinarGroup): string => {
+    switch (group) {
+        case WebinarGroup.CROP_TUNIS:
+            return 'https://pharmaconseilbmb.com/photos/site/crop/crop-tunis.png';
+        case WebinarGroup.PHARMIA:
+            return '/assets/logo-pharmia.png';
+        default:
+            return '';
+    }
 };
 
 // Component for the payment submission step (for both public and private users)
@@ -74,9 +85,9 @@ const SubmitPayment: React.FC<{
 
     return (
         <div>
-            <h3 className="text-lg font-semibold text-slate-800">Finaliser l'inscription</h3>
+            <h3 className="text-lg font-semibold text-slate-800">Finaliser l\'inscription</h3>
             <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
+                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l\'équipe officinale</p>
                 <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement (RIB, etc.) dans la description du webinaire ci-dessus.</p>
             </div>
             
@@ -350,17 +361,25 @@ const WebinarDetailPage: React.FC = () => {
 
     const registrationStatus = webinar.registrationStatus;
     const registeredAttendee = webinar.attendees?.find(att => att.userId.toString() === user?._id.toString());
-
+    const logoUrl = getGroupLogo(webinar.group);
 
     return (
         <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="max-w-4xl mx-auto">
+
+                    <div className="flex items-center gap-4 mb-6">
+                        {logoUrl && <img src={logoUrl} alt={`${webinar.group} Logo`} className="h-12 w-auto" />}
+                        <h1 className="text-3xl font-bold text-teal-600">
+                            Wébinaires - <span className="text-slate-700">{webinar.group}</span>
+                        </h1>
+                    </div>
+
                     <div className="rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
                         <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
                         <div className="relative z-20">
-                            <h1 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h1>
+                            <h2 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h2>
                             <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-5 w-5" />
