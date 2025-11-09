@@ -5,26 +5,52 @@ import { useAuth } from '../hooks/useAuth';
 import { Spinner, SparklesIcon } from '../components/Icons';
 
 const CropTunisIntro: React.FC = () => (
-    <div className="mb-12 p-6 bg-white rounded-lg shadow-md">
-        <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex-shrink-0">
-                <img 
-                    src="https://pharmaconseilbmb.com/photos/site/crop/crop-tunis.png" 
-                    alt="CROP Tunis Logo" 
-                    className="w-32 h-32 object-contain"
-                />
-            </div>
-            <div className="flex-grow">
-                <h2 className="text-xl font-bold text-slate-800 mb-3 text-center md:text-left">Projet "Préparateurs en Ligne"</h2>
-                <div className="text-sm text-slate-600 space-y-2">
-                    <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
-                    <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
-                    <p>L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.</p>
-                </div>
+    <div className="mb-12">
+        <div className="mb-6 rounded-lg overflow-hidden shadow-lg">
+            <img 
+                src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
+                alt="Préparateurs en ligne" 
+                className="w-full h-auto"
+            />
+        </div>
+        <div className="p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">Projet "Préparateurs en Ligne"</h2>
+            <div className="text-base text-slate-600 space-y-3">
+                <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
+                <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
+                <p>L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.</p>
             </div>
         </div>
     </div>
 );
+
+const WebinarCard: React.FC<{ webinar: Webinar }> = ({ webinar }) => {
+    const navigate = useNavigate();
+    return (
+        <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+            <Link to={`/webinars/${webinar._id}`} className="block">
+                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
+            </Link>
+            <div className="p-4 flex-grow flex flex-col">
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mt-1">Animé par {webinar.presenter}</p>
+                <p className="text-xs text-slate-500 mt-1">Le {new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
+            </div>
+            <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
+                <p className="text-xl font-bold text-teal-600 py-2">
+                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                </p>
+                <button
+                    onClick={() => navigate(`/webinars/${webinar._id}`)}
+                    className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                >
+                    S'inscrire
+                </button>
+            </div>
+        </div>
+    );
+};
 
 
 const WebinarsPage: React.FC = () => {
@@ -57,6 +83,18 @@ const WebinarsPage: React.FC = () => {
     }, [activeTab]);
 
     const isAdmin = user?.role === UserRole.ADMIN;
+
+    const groupedWebinars = webinars.reduce((acc, webinar) => {
+        const date = new Date(webinar.date);
+        const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+        if (!acc[capitalizedMonthYear]) {
+            acc[capitalizedMonthYear] = [];
+        }
+        acc[capitalizedMonthYear].push(webinar);
+        return acc;
+    }, {} as Record<string, Webinar[]>);
 
     const renderTabs = () => (
         <div className="mb-8 border-b border-slate-200">
@@ -115,31 +153,16 @@ const WebinarsPage: React.FC = () => {
                     <p className="mt-2">{error}</p>
                 </div>
             ) : webinars.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {webinars.map(webinar => (
-                        <Link to={`/webinars/${webinar._id}`} key={webinar._id.toString()} className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-                            <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
-                            <div className="p-4 flex-grow flex flex-col">
-                                <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
-                                <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mt-1">Animé par {webinar.presenter}</p>
-                                <p className="text-xs text-slate-500 mt-1">Le {new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                                <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
+                <div className="space-y-12">
+                    {Object.entries(groupedWebinars).map(([monthYear, monthWebinars]) => (
+                        <div key={monthYear}>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">{monthYear}</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {monthWebinars.map(webinar => (
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                ))}
                             </div>
-                            <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
-                                <p className="text-xl font-bold text-teal-600 py-2">
-                                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                                </p>
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/webinars/${webinar._id}`);
-                                    }}
-                                    className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
-                                >
-                                    S'inscrire
-                                </button>
-                            </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             ) : (
