@@ -17,7 +17,7 @@ const SubmitPayment: React.FC<{
     webinarId: string; 
     token: string | null; 
     onPaymentSubmitted: () => void; 
-}> = ({ webinarId, token, onPaymentSubmitted }) => {
+}> = ({ webinarId, token, onPaymentSubmitted }) => { 
     
     const [file, setFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -74,9 +74,9 @@ const SubmitPayment: React.FC<{
 
     return (
         <div>
-            <h3 className="text-lg font-semibold text-slate-800">Finaliser l'inscription</h3>
+            <h3 className="text-lg font-semibold text-slate-800">Finaliser l\'inscription</h3>
             <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
+                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l\'équipe officinale</p>
                 <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement (RIB, etc.) dans la description du webinaire ci-dessus.</p>
             </div>
             
@@ -207,9 +207,7 @@ const PublicRegistrationForm: React.FC<{
             }
             
             // The parent component will automatically refetch on token change.
-            // No need to call onRegistrationSuccess() here.
             setMessage(data.message);
-
 
         } catch (err: any) {
             setMessage(err.message);
@@ -356,26 +354,27 @@ const WebinarDetailPage: React.FC = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
+                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
+                <div className="relative z-20">
+                    <h1 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h1>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
+                        <div className="flex items-center gap-2">
+                            <CalendarIcon className="h-5 w-5" />
+                            <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <UserIcon className="h-5 w-5" />
+                            <span className="font-medium">Animé par {webinar.presenter}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-12 -mt-16">
                 <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
                     <div className="p-8">
-                        <h1 className="text-4xl font-extrabold text-slate-900 mb-4">{webinar.title}</h1>
-                        
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-slate-600 mb-6">
-                            <div className="flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5" />
-                                <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <ClockIcon className="h-5 w-5" />
-                                <span className="font-medium">{new Date(webinar.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <UserIcon className="h-5 w-5" />
-                                <span className="font-medium">Animé par {webinar.presenter}</span>
-                            </div>
-                        </div>
-
                         <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
                         <div className="bg-slate-50 p-6 rounded-lg">
