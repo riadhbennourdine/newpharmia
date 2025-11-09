@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Webinar, UserRole, WebinarTimeSlot } from '../types';
+import { Webinar, User, UserRole, WebinarTimeSlot } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 
-// New component for the payment submission step
+const getUserDisplayName = (user: Partial<User>): string => {
+    if (typeof user !== 'object' || user === null) return 'ID Inconnu';
+    if (user.firstName && user.lastName) {
+        return `${user.firstName} ${user.lastName}`;
+    }
+    return user.username || user.email || 'Utilisateur inconnu';
+};
+
+// Component for the payment submission step (for both public and private users)
 const SubmitPayment: React.FC<{ 
     webinarId: string; 
     token: string | null; 
@@ -31,7 +39,6 @@ const SubmitPayment: React.FC<{
         setError(null);
 
         try {
-            // 1. Upload the file
             const formData = new FormData();
             formData.append('file', file);
 
@@ -41,13 +48,10 @@ const SubmitPayment: React.FC<{
                 body: formData,
             });
 
-            if (!uploadResponse.ok) {
-                throw new Error('File upload failed');
-            }
+            if (!uploadResponse.ok) throw new Error('File upload failed');
             const uploadData = await uploadResponse.json();
             const proofUrl = uploadData.fileUrl;
 
-            // 2. Submit the payment proof URL
             const paymentResponse = await fetch(`/api/webinars/${webinarId}/submit-payment`, {
                 method: 'POST',
                 headers: {
@@ -57,11 +61,8 @@ const SubmitPayment: React.FC<{
                 body: JSON.stringify({ proofUrl }),
             });
 
-            if (!paymentResponse.ok) {
-                throw new Error('Failed to submit proof of payment');
-            }
-
-            // 3. Notify parent component
+            if (!paymentResponse.ok) throw new Error('Failed to submit proof of payment');
+            
             onPaymentSubmitted();
 
         } catch (err: any) {
@@ -105,7 +106,8 @@ const SubmitPayment: React.FC<{
     );
 };
 
-const RegistrationForm: React.FC<{
+// Component for authenticated user registration
+const AuthenticatedRegistrationForm: React.FC<{
     isRegistering: boolean;
     onRegister: (timeSlots: WebinarTimeSlot[]) => void;
 }> = ({ isRegistering, onRegister }) => {
@@ -156,6 +158,95 @@ const RegistrationForm: React.FC<{
     );
 };
 
+// New component for public (unauthenticated) user registration
+const PublicRegistrationForm: React.FC<{
+    webinarId: string;
+    onRegistrationSuccess: () => void;
+}> = ({ webinarId, onRegistrationSuccess }) => {
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+    const [selectedTimeSlots, setSelectedTimeSlots] = useState<WebinarTimeSlot[]>([]);
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleCheckboxChange = (slot: WebinarTimeSlot) => {
+        setSelectedTimeSlots(prev =>
+            prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot]
+        );
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (selectedTimeSlots.length === 0 || !formData.firstName || !formData.lastName || !formData.email) {
+            setMessage('Veuillez remplir tous les champs et sélectionner au moins un créneau.');
+            return;
+        }
+
+        setIsRegistering(true);
+        setMessage(null);
+
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/public-register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, timeSlots: selectedTimeSlots }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Public registration failed');
+            }
+            
+            setMessage(data.message);
+            onRegistrationSuccess();
+
+        } catch (err: any) {
+            setMessage(err.message);
+        } finally {
+            setIsRegistering(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-slate-700">Prénom</label>
+                <input type="text" name="firstName" id="firstName" onChange={handleInputChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+            </div>
+            <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-slate-700">Nom</label>
+                <input type="text" name="lastName" id="lastName" onChange={handleInputChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+            </div>
+            <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email</label>
+                <input type="email" name="email" id="email" onChange={handleInputChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+            </div>
+            
+            <div>
+                <h3 className="text-md font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
+                <div className="space-y-2">
+                    {Object.values(WebinarTimeSlot).map((slot) => (
+                        <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
+                            <input type="checkbox" name="timeSlot" value={slot} checked={selectedTimeSlots.includes(slot)} onChange={() => handleCheckboxChange(slot)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                            <span className="ml-3 font-medium text-slate-700">{slot}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <button type="submit" disabled={isRegistering || selectedTimeSlots.length === 0} className="w-full bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 transition-colors">
+                {isRegistering ? 'Inscription en cours...' : 'Confirmer l\'inscription'}
+            </button>
+            {message && <p className="mt-2 text-center text-sm font-medium">{message}</p>}
+        </form>
+    );
+};
+
+
 const WebinarDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const webinarId = id;
@@ -188,7 +279,6 @@ const WebinarDetailPage: React.FC = () => {
         }
     }, [webinarId, token]);
 
-    // Initial fetch and loading management
     useEffect(() => {
         const initialLoad = async () => {
             setIsLoading(true);
@@ -198,14 +288,9 @@ const WebinarDetailPage: React.FC = () => {
         initialLoad();
     }, [fetchWebinar]);
 
-    // Polling mechanism for pending payment validation
     useEffect(() => {
-        // If the status is PAYMENT_SUBMITTED, start polling
         if (webinar?.registrationStatus === 'PAYMENT_SUBMITTED') {
-            const intervalId = setInterval(fetchWebinar, 5000); // Poll every 5 seconds
-
-            // Cleanup function to stop polling when the component unmounts
-            // or when the status changes.
+            const intervalId = setInterval(fetchWebinar, 5000);
             return () => clearInterval(intervalId);
         }
     }, [webinar?.registrationStatus, fetchWebinar]);
@@ -289,34 +374,40 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="bg-slate-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
                             
-                            {!registrationStatus ? (
-                                <RegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
-                            ) : registrationStatus === 'PENDING' ? (
-                                <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
-                            ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
-                                <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
-                            ) : registrationStatus === 'CONFIRMED' ? (
-                                <div className="text-center">
-                                    <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
-                                    {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
-                                        <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
-                                    )}
-                                    {webinar.googleMeetLink ? (
-                                        <><button
-    onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
-    className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
->
-    Rejoindre avec
-</button><div className="mt-4">
-        <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
-            <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
-        </a>
-    </div></>
-                                    ) : (
-                                        <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
-                                    )}
-                                </div>
-                            ) : null}
+                            {user ? (
+                                <>
+                                    {!registrationStatus ? (
+                                        <AuthenticatedRegistrationForm isRegistering={isRegistering} onRegister={handleRegister} />
+                                    ) : registrationStatus === 'PENDING' ? (
+                                        <SubmitPayment webinarId={webinarId!} token={token} onPaymentSubmitted={fetchWebinar} />
+                                    ) : registrationStatus === 'PAYMENT_SUBMITTED' ? (
+                                        <p className="text-center text-blue-600 font-semibold">Votre justificatif a été soumis et est en cours de validation.</p>
+                                    ) : registrationStatus === 'CONFIRMED' ? (
+                                        <div className="text-center">
+                                            <p className="text-green-600 font-semibold mb-2">Votre inscription est confirmée !</p>
+                                            {registeredAttendee?.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                                <p className="text-slate-600 font-medium mb-4">Créneaux horaires : <span className="font-bold text-teal-700">{registeredAttendee.timeSlots.join(', ')}</span></p>
+                                            )}
+                                            {webinar.googleMeetLink ? (
+                                                <><button
+                                                    onClick={() => window.open(webinar.googleMeetLink, '_blank', 'noopener,noreferrer')}
+                                                    className="inline-flex items-center justify-center bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                                                >
+                                                    Rejoindre avec
+                                                </button><div className="mt-4">
+                                                        <a href={webinar.googleMeetLink} target="_blank" rel="noopener noreferrer">
+                                                            <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-12 mx-auto" />
+                                                        </a>
+                                                    </div></>
+                                            ) : (
+                                                <p className="text-slate-500">Le lien de la réunion sera bientôt disponible.</p>
+                                            )}
+                                        </div>
+                                    ) : null}
+                                </>
+                            ) : (
+                                <PublicRegistrationForm webinarId={webinarId!} onRegistrationSuccess={fetchWebinar} />
+                            )}
 
                             {registrationMessage && <p className="mt-4 text-center text-sm font-medium">{registrationMessage}</p>}
                         </div>
@@ -327,7 +418,7 @@ const WebinarDetailPage: React.FC = () => {
                                 <ul className="list-disc list-inside mt-2 text-slate-600">
                                     {webinar.attendees.map(attendee => (
                                         <li key={attendee.userId.toString()}>
-                                            {attendee.userId.toString()} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
+                                            {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
                                             {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
                                         </li>
                                     ))}
