@@ -443,14 +443,16 @@ app.get('/api/memofiches/:id', async (req, res) => {
             return res.status(404).json({ message: 'Mémofiche non trouvée' });
         }
 
+        if (fiche.isFree) {
             return res.json({
                 ...fiche,
                 isLocked: false,
-                mainTreatment: fiche.recommendations?.mainTreatment || [],
-                associatedProducts: fiche.recommendations?.associatedProducts || [],
-                lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
-                dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                mainTreatment: fiche.mainTreatment || [],
+                associatedProducts: fiche.associatedProducts || [],
+                lifestyleAdvice: fiche.lifestyleAdvice || [],
+                dietaryAdvice: fiche.dietaryAdvice || [],
             });
+        }
 
         if (!userId || !ObjectId.isValid(userId)) {
             console.log(`403: Access denied for memofiche ${id}. User not authenticated.`);
@@ -481,10 +483,10 @@ app.get('/api/memofiches/:id', async (req, res) => {
             return res.json({
                 ...fiche,
                 isLocked: false,
-                mainTreatment: fiche.recommendations?.mainTreatment || [],
-                associatedProducts: fiche.recommendations?.associatedProducts || [],
-                lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
-                dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                mainTreatment: fiche.mainTreatment || [],
+                associatedProducts: fiche.associatedProducts || [],
+                lifestyleAdvice: fiche.lifestyleAdvice || [],
+                dietaryAdvice: fiche.dietaryAdvice || [],
             });
         }
 
@@ -496,10 +498,10 @@ app.get('/api/memofiches/:id', async (req, res) => {
                 return res.json({
                     ...fiche,
                     isLocked: false,
-                    mainTreatment: fiche.recommendations?.mainTreatment || [],
-                    associatedProducts: fiche.recommendations?.associatedProducts || [],
-                    lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
-                    dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                    mainTreatment: fiche.mainTreatment || [],
+                    associatedProducts: fiche.associatedProducts || [],
+                    lifestyleAdvice: fiche.lifestyleAdvice || [],
+                    dietaryAdvice: fiche.dietaryAdvice || [],
                 });
             }
 
@@ -512,10 +514,10 @@ app.get('/api/memofiches/:id', async (req, res) => {
                     return res.json({
                         ...fiche,
                         isLocked: false,
-                        mainTreatment: fiche.recommendations?.mainTreatment || [],
-                        associatedProducts: fiche.recommendations?.associatedProducts || [],
-                        lifestyleAdvice: fiche.recommendations?.lifestyleAdvice || [],
-                        dietaryAdvice: fiche.recommendations?.dietaryAdvice || [],
+                        mainTreatment: fiche.mainTreatment || [],
+                        associatedProducts: fiche.associatedProducts || [],
+                        lifestyleAdvice: fiche.lifestyleAdvice || [],
+                        dietaryAdvice: fiche.dietaryAdvice || [],
                     });
                 }
             }
