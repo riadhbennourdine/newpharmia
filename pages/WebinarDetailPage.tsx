@@ -206,8 +206,10 @@ const PublicRegistrationForm: React.FC<{
                 setGuestToken(data.guestToken);
             }
             
+            // The parent component will automatically refetch on token change.
+            // No need to call onRegistrationSuccess() here.
             setMessage(data.message);
-            onRegistrationSuccess();
+
 
         } catch (err: any) {
             setMessage(err.message);
