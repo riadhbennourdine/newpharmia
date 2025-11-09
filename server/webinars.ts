@@ -340,7 +340,7 @@ router.post('/:id/public-register', async (req, res) => {
                     email: email.toLowerCase(),
                     firstName,
                     lastName,
-                    role: UserRole.USER,
+                    role: UserRole.VISITEUR,
                     status: ClientStatus.PROSPECT,
                     createdAt: new Date(),
                 }
