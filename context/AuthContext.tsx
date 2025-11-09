@@ -12,6 +12,7 @@ interface AuthContextType {
   isLoading: boolean;
   authError: string | null;
   setUser: (user: User) => void;
+  setGuestToken: (token: string) => void;
   markFicheAsRead: (ficheId: string) => Promise<void>;
   saveQuizResult: (result: { quizId: string; score: number; completedAt: Date }) => Promise<void>;
 }
@@ -21,6 +22,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [guestToken, setGuestToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -28,34 +30,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const verifyUser = async () => {
       const storedToken = localStorage.getItem('token');
+      const storedGuestToken = localStorage.getItem('guestToken');
+
       if (storedToken) {
         try {
           const response = await fetch('/api/auth/me', {
-            headers: {
-              'Authorization': `Bearer ${storedToken}`,
-            },
+            headers: { 'Authorization': `Bearer ${storedToken}` },
           });
           if (response.ok) {
             const userData = await response.json();
             setUser(userData);
             setToken(storedToken);
           } else {
-            // Token is invalid or expired
             localStorage.removeItem('token');
-            setToken(null);
-            setUser(null);
           }
         } catch (error) {
           console.error('Error verifying token:', error);
           localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
         }
+      } else if (storedGuestToken) {
+        setGuestToken(storedGuestToken);
       }
       setIsLoading(false);
     };
 
     verifyUser();
+  }, []);
+
+  const setGuestTokenAndStorage = useCallback((newToken: string) => {
+    setGuestToken(newToken);
+    localStorage.setItem('guestToken', newToken);
   }, []);
 
   const login = useCallback(async (identifier: string, password: string) => {
@@ -76,6 +80,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(data.token);
       localStorage.setItem('token', data.token);
       
+      // Clear any guest token on full login
+      setGuestToken(null);
+      localStorage.removeItem('guestToken');
+
       if (data.user.profileIncomplete) {
         navigate('/complete-profile');
       } else {
@@ -92,7 +100,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = useCallback(() => {
     setUser(null);
     setToken(null);
+    setGuestToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('guestToken');
     navigate('/', { replace: true });
   }, [navigate]);
 
@@ -119,7 +129,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const handleSetUser = useCallback((updatedUser: User) => {
     setUser(updatedUser);
-    // No longer saving user to localStorage to prevent stale data
   }, []);
 
   const markFicheAsRead = useCallback(async (ficheId: string) => {
@@ -170,16 +179,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value = useMemo(() => ({
     isAuthenticated: !!token,
     user,
-    token,
+    token: token || guestToken, // Prioritize user token, fallback to guest
     login,
     logout,
     register,
     isLoading,
     authError,
     setUser: handleSetUser,
+    setGuestToken: setGuestTokenAndStorage,
     markFicheAsRead,
     saveQuizResult,
-  }), [user, token, isLoading, authError, login, logout, register, handleSetUser, markFicheAsRead, saveQuizResult]);
+  }), [user, token, guestToken, isLoading, authError, login, logout, register, handleSetUser, setGuestTokenAndStorage, markFicheAsRead, saveQuizResult]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
 import { Webinar, UserRole, WebinarGroup, ClientStatus } from '../types.js';
 import clientPromise from './mongo.js';
@@ -397,7 +398,17 @@ router.post('/:id/public-register', async (req, res) => {
             return res.status(404).json({ message: 'Webinar not found during update.' });
         }
 
-        res.status(200).json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
+        // --- Generate Guest Token ---
+        const guestToken = jwt.sign(
+            { _id: userId, role: user.role },
+            process.env.JWT_SECRET!,
+            { expiresIn: '24h' } // Guest token is valid for 24 hours
+        );
+
+        res.status(200).json({ 
+            message: 'Successfully registered for the webinar. Please submit payment to confirm.',
+            guestToken,
+        });
 
     } catch (error) {
         console.error('Error in public registration for webinar:', error);

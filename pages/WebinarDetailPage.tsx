@@ -167,6 +167,7 @@ const PublicRegistrationForm: React.FC<{
     const [selectedTimeSlots, setSelectedTimeSlots] = useState<WebinarTimeSlot[]>([]);
     const [isRegistering, setIsRegistering] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const { setGuestToken } = useAuth();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -199,6 +200,10 @@ const PublicRegistrationForm: React.FC<{
 
             if (!response.ok) {
                 throw new Error(data.message || 'Public registration failed');
+            }
+            
+            if (data.guestToken) {
+                setGuestToken(data.guestToken);
             }
             
             setMessage(data.message);
