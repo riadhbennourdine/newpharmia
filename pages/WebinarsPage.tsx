@@ -58,6 +58,8 @@ const WebinarsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<WebinarGroup>(WebinarGroup.CROP_TUNIS);
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
+    const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
+    const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -73,13 +75,42 @@ const WebinarsPage: React.FC = () => {
                 const data = await response.json();
 
                 const now = new Date();
-                const upcomingWebinars = data.filter((w: Webinar) => new Date(w.date) > now);
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
 
-                // Sort upcoming webinars by date in ascending order (nearest first)
-                const sortedUpcomingWebinars = upcomingWebinars.sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                const upcomingWebinars = data
+                    .filter((w: Webinar) => new Date(w.date) > now)
+                    .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-                setWebinars(sortedUpcomingWebinars); // Set all upcoming webinars
-                setNearestWebinar(sortedUpcomingWebinars.length > 0 ? sortedUpcomingWebinars[0] : null); // Set the nearest one
+                setWebinars(upcomingWebinars); // All upcoming webinars, sorted
+
+                // Find nearest webinar
+                setNearestWebinar(upcomingWebinars.length > 0 ? upcomingWebinars[0] : null);
+
+                // Separate current month and future months
+                const currentMonthW = upcomingWebinars.filter(w => {
+                    const d = new Date(w.date);
+                    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                });
+                setCurrentMonthWebinars(currentMonthW);
+
+                const futureMonthsW = upcomingWebinars.filter(w => {
+                    const d = new Date(w.date);
+                    return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
+                });
+
+                const groupedFutureWebinars = futureMonthsW.reduce((acc, webinar) => {
+                    const date = new Date(webinar.date);
+                    const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+                    const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+                    if (!acc[capitalizedMonthYear]) {
+                        acc[capitalizedMonthYear] = [];
+                    }
+                    acc[capitalizedMonthYear].push(webinar);
+                    return acc;
+                }, {} as Record<string, Webinar[]>);
+                setFutureMonthsWebinars(groupedFutureWebinars);
 
             } catch (err: any) {
                 setError(err.message);
@@ -141,24 +172,46 @@ const WebinarsPage: React.FC = () => {
                     <h3 className="text-xl font-semibold">Erreur de chargement</h3>
                     <p className="mt-2">{error}</p>
                 </div>
-            ) : webinars.length > 0 ? ( // webinars now contains only upcoming webinars, sorted by nearest first
+            ) : webinars.length > 0 ? (
                 <div className="space-y-12">
-                    {nearestWebinar && (
+                    {/* Nearest Webinar (if it's in the current month) */}
+                    {nearestWebinar && new Date(nearestWebinar.date).getMonth() === new Date().getMonth() && (
                         <div className="mb-12 p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
                             <h2 className="text-3xl font-bold mb-4 text-center">Prochain Webinaire</h2>
                             <WebinarCard webinar={nearestWebinar} />
                         </div>
                     )}
 
-                    {/* Display other upcoming webinars, excluding the nearest one if it's already displayed */}
-                    {webinars.filter(w => w._id !== nearestWebinar?._id).length > 0 && (
-                        <div>
-                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Autres Webinaires à Venir</h2>
+                    {/* Other webinars from the current month */}
+                    {currentMonthWebinars.filter(w => w._id !== nearestWebinar?._id).length > 0 && (
+                         <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Autres webinaires ce mois-ci
+                            </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {webinars.filter(w => w._id !== nearestWebinar?._id).map(webinar => (
+                                {currentMonthWebinars.filter(w => w._id !== nearestWebinar?._id).map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {/* Webinars for future months, grouped */}
+                    {Object.entries(futureMonthsWebinars).length > 0 && (
+                        <div>
+                             <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Prochains Mois
+                            </h2>
+                            {Object.entries(futureMonthsWebinars).map(([monthYear, monthWebinars]) => (
+                                <div key={monthYear} className="mb-12">
+                                    <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {monthWebinars.map(webinar => (
+                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
