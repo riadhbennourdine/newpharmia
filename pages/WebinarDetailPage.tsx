@@ -266,7 +266,6 @@ const WebinarDetailPage: React.FC = () => {
     const navigate = useNavigate();
 
     const fetchWebinar = useCallback(async () => {
-        console.log('Fetching webinar with token:', token); // DEBUG
         if (!webinarId) return;
         
         try {
