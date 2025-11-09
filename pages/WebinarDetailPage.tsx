@@ -372,7 +372,7 @@ const WebinarDetailPage: React.FC = () => {
                         {logoUrl && <img src={logoUrl} alt={`${webinar.group} Logo`} className="h-12 w-auto" />}
                         <h1 className="text-3xl font-bold text-teal-600">
                             {webinar.group === WebinarGroup.CROP_TUNIS ? (
-                                <>Wébinaires Préparateurs en Ligne - {webinar.group}</>
+                                <>Préparateurs en Ligne - {webinar.group}</>
                             ) : (
                                 <>Wébinaires - {webinar.group}</>
                             )}
