@@ -48,8 +48,8 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             return webinarResponse;
         });
 
-        // If the user is an admin, populate attendee details
-        if (authReq.user?.role === UserRole.ADMIN) {
+        // If the user is an admin or webinar admin, populate attendee details
+        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
             const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
             const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
 
@@ -135,8 +135,8 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             delete webinarResponse.googleMeetLink;
         }
 
-        // Admins can see the full list of attendees, others cannot.
-        if (authReq.user?.role === UserRole.ADMIN) {
+        // Admins and webinar admins can see the full list of attendees, others cannot.
+        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
             const userIds = webinar.attendees.map(a => new ObjectId(a.userId as string));
             if (userIds.length > 0) {
                 const usersCollection = db.collection('users');
@@ -475,7 +475,7 @@ router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedR
 });
 
 // POST for an admin to confirm a payment
-router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { webinarId, userId } = req.params;
 
@@ -501,7 +501,7 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
 });
 
 // DELETE an attendee from a webinar (Admin only)
-router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { webinarId, attendeeUserId } = req.params;
 

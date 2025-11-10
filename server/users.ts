@@ -2,10 +2,22 @@ import express from 'express';
 import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
+import { authenticateToken, checkRole } from './authMiddleware.js';
 
 console.log('server/users.ts: Initializing users router.');
 
 const router = express.Router();
+
+router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const users = await usersCollection.find({}).toArray();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des utilisateurs.' });
+    }
+});
 
 router.get('/pharmacists', async (req, res) => {
     try {
@@ -331,6 +343,39 @@ router.post('/:userId/quiz-history', async (req, res) => {
     } catch (error) {
         console.error('Error saving quiz history:', error);
         res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+
+        if (!role || !Object.values(UserRole).includes(role)) {
+            return res.status(400).json({ message: 'Invalid role specified.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) as any },
+            { $set: { role: role } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({ message: 'User role updated successfully.' });
+
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour du rôle de l\'utilisateur.' });
     }
 });
 
