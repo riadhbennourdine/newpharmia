@@ -50,6 +50,6 @@ export const FormateurOrAdminRoute: React.FC = () => {
 // Protects routes for Admins only
 export const AdminOnlyRoute: React.FC = () => {
     const { user } = useAuth();
-    const isAuthorized = user?.role === UserRole.ADMIN;
+    const isAuthorized = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
     return isAuthorized ? <Outlet /> : <Navigate to="/dashboard" replace />;
 };
