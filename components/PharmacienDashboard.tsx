@@ -1,50 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Group, User, CaseStudy } from '../types';
 import LearnerDashboard from './LearnerDashboard';
 import { useAuth } from '../hooks/useAuth';
 import PreparatorCard from './PreparatorCard';
 import EditInstructionModal from './EditInstructionModal';
+import { Spinner } from './Icons'; // Assuming Spinner is available
 
-interface Props {
-    group: Group | null;
-}
-
-const PharmacienDashboard: React.FC<Props> = ({ group: initialGroup }) => {
+const PharmacienDashboard: React.FC = () => {
     const { user } = useAuth();
+    const [group, setGroup] = useState<Group | null>(null);
+    const [isLoadingGroup, setIsLoadingGroup] = useState(true);
+    const [groupError, setGroupError] = useState<string | null>(null);
+
     const [selectedMenu, setSelectedMenu] = useState('equipe');
     const [preparators, setPreparators] = useState<User[]>([]);
     const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
 
-    const fetchPreparators = async () => {
-        if (!initialGroup) return;
+    const fetchGroup = useCallback(async () => {
+        if (!user) {
+            setIsLoadingGroup(false);
+            return;
+        }
+        setIsLoadingGroup(true);
+        setGroupError(null);
         try {
-            const response = await fetch(`/api/users/groups/${initialGroup._id}/preparateurs`);
+            const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+            if (response.ok) {
+                const data = await response.json();
+                setGroup(data);
+            } else if (response.status === 404) {
+                setGroup(null); // User might not be part of a group
+            } else {
+                throw new Error('Failed to fetch group');
+            }
+        } catch (error: any) {
+            console.error('Error fetching group:', error);
+            setGroupError(error.message || 'Erreur lors du chargement du groupe.');
+        } finally {
+            setIsLoadingGroup(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        fetchGroup();
+    }, [fetchGroup]);
+
+    const fetchPreparators = useCallback(async () => {
+        if (!group) return;
+        try {
+            const response = await fetch(`/api/users/groups/${group._id}/preparateurs`);
             const data = await response.json();
             setPreparators(data);
         } catch (error) {
             console.error('Error fetching preparators:', error);
         }
-    };
+    }, [group]);
 
     useEffect(() => {
-        if (selectedMenu === 'equipe') {
+        if (selectedMenu === 'equipe' && group) {
             fetchPreparators();
         }
-    }, [selectedMenu, initialGroup]);
+    }, [selectedMenu, group, fetchPreparators]);
 
     useEffect(() => {
         const fetchInstructionFiches = async () => {
-            if (!initialGroup) return;
+            if (!group) return;
 
             const ficheIdsToFetch: string[] = [];
-            if (initialGroup.primaryMemoFicheId) {
-                ficheIdsToFetch.push(initialGroup.primaryMemoFicheId.toString());
+            if (group.primaryMemoFicheId) {
+                ficheIdsToFetch.push(group.primaryMemoFicheId.toString());
             }
-            if (initialGroup.instructionFiches && initialGroup.instructionFiches.length > 0) {
-                ficheIdsToFetch.push(...initialGroup.instructionFiches.map(id => id.toString()));
+            if (group.instructionFiches && group.instructionFiches.length > 0) {
+                ficheIdsToFetch.push(...group.instructionFiches.map(id => id.toString()));
             }
 
             if (ficheIdsToFetch.length === 0) return;
@@ -58,14 +88,14 @@ const PharmacienDashboard: React.FC<Props> = ({ group: initialGroup }) => {
 
                 const data = await Promise.all(responses.map(res => res.json()));
 
-                if (initialGroup.primaryMemoFicheId) {
-                    const primary = data.find(d => d._id === initialGroup.primaryMemoFicheId.toString());
+                if (group.primaryMemoFicheId) {
+                    const primary = data.find(d => d._id === group.primaryMemoFicheId.toString());
                     setPrimaryFicheDetails(primary || null);
                 }
 
                 const additional = data.filter(d => 
-                    initialGroup.instructionFiches?.map(id => id.toString()).includes(d._id) && 
-                    d._id !== initialGroup.primaryMemoFicheId?.toString()
+                    group.instructionFiches?.map(id => id.toString()).includes(d._id) && 
+                    d._id !== group.primaryMemoFicheId?.toString()
                 );
                 setAdditionalFicheDetails(additional);
 
@@ -74,7 +104,24 @@ const PharmacienDashboard: React.FC<Props> = ({ group: initialGroup }) => {
             }
         };
         fetchInstructionFiches();
-    }, [initialGroup]);
+    }, [group]);
+
+    if (isLoadingGroup) {
+        return <div className="flex justify-center items-center h-64"><Spinner className="h-12 w-12 text-teal-600" /></div>;
+    }
+
+    if (groupError) {
+        return <div className="text-center text-red-500 p-4">{groupError}</div>;
+    }
+
+    if (!group) {
+        return (
+            <div className="text-center p-8 bg-white rounded-lg shadow-md">
+                <h2 className="text-2xl font-bold text-slate-800 mb-4">Aucun groupe trouvé</h2>
+                <p className="text-slate-600">Il semble que vous ne soyez pas encore associé à un groupe. Veuillez contacter l'administrateur.</p>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -93,13 +140,13 @@ const PharmacienDashboard: React.FC<Props> = ({ group: initialGroup }) => {
                 </button>
             </div>
 
-            {selectedMenu === 'parcours' && <LearnerDashboard group={initialGroup} />}
+            {selectedMenu === 'parcours' && <LearnerDashboard group={group} />}
             {selectedMenu === 'equipe' && (
                 <div className="container mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne de l'équipe</h2>
-                        <p className="text-slate-700 font-semibold text-base">{initialGroup?.instruction || 'Aucune consigne pour le moment.'}</p>
-                        {initialGroup?.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(initialGroup.instructionDate).toLocaleDateString('fr-FR')}</p>}
+                        <p className="text-slate-700 font-semibold text-base">{group?.instruction || 'Aucune consigne pour le moment.'}</p>
+                        {group?.instructionDate && <p className="text-sm text-gray-500 mt-2">Donnée le: {new Date(group.instructionDate).toLocaleDateString('fr-FR')}</p>}
                         
                         {primaryFicheDetails && (
                             <div className="mt-4">
@@ -137,7 +184,7 @@ const PharmacienDashboard: React.FC<Props> = ({ group: initialGroup }) => {
             )}
             {isInstructionModalOpen && (
                 <EditInstructionModal 
-                    group={initialGroup}
+                    group={group}
                     onClose={() => setIsInstructionModalOpen(false)}
                 />
             )}

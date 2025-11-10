@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
@@ -7,15 +7,55 @@ import MemoFichePreviewCard from './MemoFichePreviewCard';
 import { Group, CaseStudy } from '../types';
 
 interface Props {
-    group: Group | null;
+    initialGroup?: Group | null; // Make prop optional
 }
 
-const LearnerDashboard: React.FC<Props> = ({ group }) => {
-    const { user, isLoading } = useAuth();
+const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
+    const { user, isLoading: isLoadingUser } = useAuth();
     const { fiches, isLoading: fichesLoading } = useData();
+
+    const [group, setGroup] = useState<Group | null>(initialGroup || null);
+    const [isLoadingGroup, setIsLoadingGroup] = useState(!initialGroup); // If initialGroup is provided, it's not loading
+    const [groupError, setGroupError] = useState<string | null>(null);
+
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
+
+    const fetchGroup = useCallback(async () => {
+        if (initialGroup) { // If group is already provided, no need to fetch
+            setGroup(initialGroup);
+            setIsLoadingGroup(false);
+            return;
+        }
+        if (!user || isLoadingUser) { // Wait for user to be loaded
+            setIsLoadingGroup(false);
+            return;
+        }
+
+        setIsLoadingGroup(true);
+        setGroupError(null);
+        try {
+            const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+            if (response.ok) {
+                const data = await response.json();
+                setGroup(data);
+            } else if (response.status === 404) {
+                setGroup(null); // User might not be part of a group
+            } else {
+                throw new Error('Failed to fetch group');
+            }
+        } catch (error: any) {
+            console.error('Error fetching group:', error);
+            setGroupError(error.message || 'Erreur lors du chargement du groupe.');
+        } finally {
+            setIsLoadingGroup(false);
+        }
+    }, [user, initialGroup, isLoadingUser]);
+
+    useEffect(() => {
+        fetchGroup();
+    }, [fetchGroup]);
 
     useEffect(() => {
         const validateReadFiches = async () => {
@@ -41,16 +81,14 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
             }
         };
 
-        if (!isLoading && user) {
+        if (!isLoadingUser && user) {
             validateReadFiches();
         }
-    }, [user, isLoading]);
+    }, [user, isLoadingUser]);
 
     useEffect(() => {
         const fetchInstructionFiches = async () => {
-            console.log('fetchInstructionFiches called. User:', user, 'User ID:', user?._id);
             if (!group || !user || !user._id) {
-                console.log('Skipping fetchInstructionFiches: group, user, or user._id is missing.');
                 return;
             }
 
@@ -65,7 +103,6 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
             if (ficheIdsToFetch.length === 0) return;
 
             try {
-                // Fetch all required memo fiches in parallel
                 const responses = await Promise.all(
                     ficheIdsToFetch.map(ficheId => 
                         fetch(`/api/memofiches/${ficheId}`, { headers: { 'x-user-id': user._id as string } })
@@ -74,7 +111,6 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
 
                 const data = await Promise.all(responses.map(res => res.json()));
 
-                // Distribute fetched data
                 if (group.primaryMemoFicheId) {
                     const primary = data.find(d => d._id === group.primaryMemoFicheId.toString());
                     setPrimaryFicheDetails(primary || null);
@@ -90,10 +126,10 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
                 console.error('Error fetching instruction fiches:', error);
             }
         };
-        if (!isLoading && user) { 
+        if (!isLoadingUser && user && group) { 
             fetchInstructionFiches();
         }
-    }, [group, user, isLoading]);
+    }, [group, user, isLoadingUser]);
 
     const quizHistory = user?.quizHistory || [];
     const quizRealises = quizHistory.length;
@@ -109,6 +145,14 @@ const LearnerDashboard: React.FC<Props> = ({ group }) => {
         "Ne lâchez rien, vous êtes sur la bonne voie.",
     ];
     const encouragement = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+
+    if (isLoadingUser || isLoadingGroup) {
+        return <div className="flex justify-center items-center h-64"><Spinner className="h-12 w-12 text-teal-600" /></div>;
+    }
+
+    if (groupError) {
+        return <div className="text-center text-red-500 p-4">{groupError}</div>;
+    }
 
     return (
         <>
