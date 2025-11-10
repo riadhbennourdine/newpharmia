@@ -300,6 +300,32 @@ const WebinarDetailPage: React.FC = () => {
         }
     }, [webinarId, token]);
 
+    const handleDeleteAttendee = async (attendeeUserId: string) => {
+        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce participant ?')) {
+            return;
+        }
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/attendees/${attendeeUserId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete attendee');
+            }
+
+            // Refetch webinar details to update the attendee list
+            await fetchWebinar();
+            setRegistrationMessage('Participant supprimé avec succès.');
+
+        } catch (err: any) {
+            setRegistrationMessage(err.message);
+        }
+    };
+
     useEffect(() => {
         const initialLoad = async () => {
             setIsLoading(true);
@@ -451,9 +477,17 @@ const WebinarDetailPage: React.FC = () => {
                                     <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
                                     <ul className="list-disc list-inside mt-2 text-slate-600">
                                         {webinar.attendees.map(attendee => (
-                                            <li key={attendee.userId.toString()}>
-                                                {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
-                                                {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
+                                            <li key={attendee.userId.toString()} className="flex items-center justify-between">
+                                                <span>
+                                                    {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
+                                                    {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleDeleteAttendee((attendee.userId as User)._id.toString())}
+                                                    className="ml-4 text-red-500 hover:text-red-700 text-sm"
+                                                >
+                                                    Supprimer
+                                                </button>
                                             </li>
                                         ))}
                                     </ul>

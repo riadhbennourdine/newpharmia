@@ -479,5 +479,34 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
     }
 });
 
+// DELETE an attendee from a webinar (Admin only)
+router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { webinarId, attendeeUserId } = req.params;
+
+        if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(attendeeUserId)) {
+            return res.status(400).json({ message: 'Invalid webinar ID or attendee user ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(webinarId) },
+            { $pull: { attendees: { userId: new ObjectId(attendeeUserId) } } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar or attendee not found.' });
+        }
+
+        res.json({ message: 'Attendee removed successfully.' });
+
+    } catch (error) {
+        console.error('Error removing attendee:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
 
 export default router;
