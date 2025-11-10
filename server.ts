@@ -954,7 +954,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
 });
 app.post('/api/newsletter/send', async (req, res) => {
     try {
-        const { subject, htmlContent, roles, cities, statuses } = req.body;
+        const { subject, htmlContent, roles, cities, statuses, formalGroupIds } = req.body;
 
         if (!subject || !htmlContent) {
             return res.status(400).json({ message: 'Le sujet et le contenu HTML sont requis.' });
@@ -987,6 +987,11 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         if (statuses && statuses.length > 0) {
             query.status = { $in: statuses };
+        }
+
+        // New: Filter by formalGroupIds
+        if (formalGroupIds && formalGroupIds.length > 0) {
+            query.groupId = { $in: formalGroupIds.map((id: string) => new ObjectId(id)) };
         }
 
         console.log('Query:', JSON.stringify(query, null, 2));

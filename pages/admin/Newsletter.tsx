@@ -154,6 +154,12 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
     );
 };
 
+interface FormalGroup {
+  _id: string;
+  name: string;
+  memberCount?: number; // Ajouté pour afficher le nombre de membres si disponible
+}
+
 interface Group {
   name: string;
   count: number;
@@ -174,25 +180,37 @@ const Newsletter: React.FC = () => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [formalGroups, setFormalGroups] = useState<FormalGroup[]>([]);
+  const [selectedFormalGroupIds, setSelectedFormalGroupIds] = useState<string[]>([]);
   const [testEmail, setTestEmail] = useState('');
 
   useEffect(() => {
-    const fetchSubscriberGroups = async () => {
+    const fetchSubscriberGroupsAndFormalGroups = async () => {
       try {
-        const response = await fetch('/api/newsletter/subscriber-groups');
-        if (!response.ok) {
+        // Fetch subscriber groups (existing logic)
+        const subscriberResponse = await fetch('/api/newsletter/subscriber-groups');
+        if (!subscriberResponse.ok) {
           throw new Error('Failed to fetch subscriber groups');
         }
-        const { roles, cities, staff, statuses } = await response.json();
+        const { roles, cities, staff, statuses } = await subscriberResponse.json();
         setRoles(roles);
         setCities(cities);
         setStaff(staff);
         setStatuses(statuses);
+
+        // Fetch formal groups
+        const formalGroupsResponse = await fetch('/api/admin/groups');
+        if (!formalGroupsResponse.ok) {
+          throw new Error('Failed to fetch formal groups');
+        }
+        const formalGroupsData = await formalGroupsResponse.json();
+        setFormalGroups(formalGroupsData);
+
       } catch (err: any) {
         console.error(err);
       }
     };
-    fetchSubscriberGroups();
+    fetchSubscriberGroupsAndFormalGroups();
   }, []);
 
   const handleRoleToggle = (role: string) => {
@@ -210,6 +228,12 @@ const Newsletter: React.FC = () => {
   const handleStatusToggle = (status: string) => {
     setSelectedStatuses(prev =>
         prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+    );
+  };
+
+  const handleFormalGroupToggle = (groupId: string) => {
+    setSelectedFormalGroupIds(prev =>
+      prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]
     );
   };
 
@@ -275,7 +299,7 @@ const Newsletter: React.FC = () => {
       const response = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities, statuses: selectedStatuses }),
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities, statuses: selectedStatuses, formalGroupIds: selectedFormalGroupIds }),
       });
 
       const data = await response.json();
@@ -355,6 +379,18 @@ const Newsletter: React.FC = () => {
                 ))}
             </div>
             <p className="text-xs text-gray-500 mt-1">Si aucun groupe n'est sélectionné, la newsletter sera envoyée à tous les abonnés.</p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Envoyer aux groupes formels</label>
+            <div className="mt-2 flex flex-wrap gap-2">
+                {formalGroups.map(group => (
+                    <div key={group._id} className="flex items-center">
+                        <input type="checkbox" id={`formal-group-select-${group._id}`} checked={selectedFormalGroupIds.includes(group._id)} onChange={() => handleFormalGroupToggle(group._id)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <label htmlFor={`formal-group-select-${group._id}`} className="ml-2 text-sm text-gray-700">{group.name} {group.memberCount ? `(${group.memberCount})` : ''}</label>
+                    </div>
+                ))}
+            </div>
           </div>
 
           <div className="mb-4">
