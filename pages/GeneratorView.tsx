@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { generateCaseStudyDraft, generateLearningTools } from '../services/geminiService';
 import { CaseStudy } from '../types';
-import { SparklesIcon, ChevronLeftIcon, Spinner, TrashIcon, PlusCircleIcon } from '../components/Icons';
+import { SparklesIcon, ChevronLeftIcon, Spinner, TrashIcon, PlusCircleIcon, ImageIcon } from '../components/Icons';
+import ImageUploadModal from '../components/ImageUploadModal';
 import { DetailedMemoFicheView } from './MemoFicheView';
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -21,6 +22,7 @@ const GeneratorView: React.FC = () => {
   const [step, setStep] = useState(1); // 1: select type, 2: fill details
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
+  const [isImageModalOpen, setImageModalOpen] = useState(false);
   const navigate = useNavigate();
   const { saveCaseStudy } = useData();
 
@@ -319,6 +321,14 @@ Le texte à analyser est :\n\n${sourceText}`;
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in p-4 md:p-8">
+      <ImageUploadModal
+        isOpen={isImageModalOpen}
+        onClose={() => setImageModalOpen(false)}
+        onSelectImage={(url) => {
+            setCoverImageUrl(url);
+            setImageModalOpen(false);
+        }}
+      />
       <button onClick={() => step === 1 ? navigate('/dashboard') : setStep(1)} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-6 transition-colors">
         <ChevronLeftIcon className="h-4 w-4 mr-2" />
         {step === 1 ? 'Retour au tableau de bord' : 'Retour au choix du type'}
@@ -474,17 +484,22 @@ Le texte à analyser est :\n\n${sourceText}`;
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                   <label htmlFor="cover-image-url" className="block text-lg font-medium text-slate-700 mb-2">
-                  URL de l'image de couverture (Optionnel)
+                  Image de couverture (Optionnel)
                   </label>
-                  <input
-                  id="cover-image-url"
-                  type="text"
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  placeholder="https://exemple.com/image.jpg"
-                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
-                  disabled={isLoading}
-                  />
+                  <div className="flex items-center space-x-2">
+                    <input
+                    id="cover-image-url"
+                    type="text"
+                    value={coverImageUrl}
+                    onChange={(e) => setCoverImageUrl(e.target.value)}
+                    placeholder="https://exemple.com/image.jpg"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                    disabled={isLoading}
+                    />
+                    <button type="button" onClick={() => setImageModalOpen(true)} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                        <ImageIcon className="h-5 w-5 text-slate-600" />
+                    </button>
+                  </div>
               </div>
               <div>
                   <label className="block text-lg font-medium text-slate-700 mb-2">
