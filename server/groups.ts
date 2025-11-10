@@ -166,6 +166,7 @@ adminRouter.get('/', async (req, res) => {
         ...group,
         pharmacistNames: pharmacistNames, // Nouveau champ pour les noms des pharmaciens
         managedByName: managerName,
+        preparatorIds: group.preparatorIds || [], // Assurer que c'est un tableau
       };
     });
 
