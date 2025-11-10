@@ -12,7 +12,7 @@ const getUserDisplayName = (user: Partial<User>): string => {
     return user.username || user.email || 'Utilisateur inconnu';
 };
 
-const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, onConfirmPayment, isConfirmingPayment }) => {
+const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, presenter: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment }) => {
     const getTranslatedStatus = (status: string | undefined): string => {
         switch (status) {
             case 'CONFIRMED':
@@ -25,6 +25,9 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                 return status || 'Inconnu';
         }
     };
+
+    const participants = attendees.filter(att => getUserDisplayName(att.userId as User) !== presenter);
+    const participantCount = participants.length;
 
     const groupedByTimeSlot = attendees.reduce((acc, attendee) => {
         const slots = attendee.timeSlots && attendee.timeSlots.length > 0 ? attendee.timeSlots : ['Non spécifié'];
@@ -39,14 +42,14 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
 
     return (
         <div className="mt-4 p-3 bg-slate-50 rounded-md">
-            <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({attendees.length})</h3>
-            {Object.entries(groupedByTimeSlot).map(([timeSlot, groupAttendees]) => (
-                <div key={timeSlot} className="mt-3">
-                    <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot}</p>
-                    <ul className="space-y-2">
-                        {groupAttendees.map(attendee => {
-
-                            return (
+            <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({participantCount})</h3>
+            {Object.entries(groupedByTimeSlot).map(([timeSlot, groupAttendees]) => {
+                const slotParticipantCount = groupAttendees.filter(att => getUserDisplayName(att.userId as User) !== presenter).length;
+                return (
+                    <div key={timeSlot} className="mt-3">
+                        <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot} ({slotParticipantCount})</p>
+                        <ul className="space-y-2">
+                            {groupAttendees.map(attendee => (
                                 <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
                                     <span>
                                         {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
@@ -67,11 +70,11 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                                         </button>
                                     )}
                                 </li>
-                            );
-                        })}
-                    </ul>
-                </div>
-            ))}
+                            ))}
+                        </ul>
+                    </div>
+                );
+            })}
         </div>
     );
 };
@@ -285,6 +288,7 @@ const WebinarManagement: React.FC = () => {
                                     <AttendeesList 
                                         attendees={soonestWebinar.attendees} 
                                         webinarId={soonestWebinar._id.toString()}
+                                        presenter={soonestWebinar.presenter}
                                         onConfirmPayment={handleConfirmPayment}
                                         isConfirmingPayment={isConfirmingPayment}
                                     />
@@ -316,6 +320,7 @@ const WebinarManagement: React.FC = () => {
                                         <AttendeesList 
                                             attendees={webinar.attendees} 
                                             webinarId={webinar._id.toString()}
+                                            presenter={webinar.presenter}
                                             onConfirmPayment={handleConfirmPayment}
                                             isConfirmingPayment={isConfirmingPayment}
                                         />
