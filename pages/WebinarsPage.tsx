@@ -147,7 +147,7 @@ const WebinarsPage: React.FC = () => {
         fetchWebinars();
     }, [activeTab]);
 
-    const isAdmin = user?.role === UserRole.ADMIN;
+    const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
     const renderTabs = () => (
         <div className="mb-8 border-b border-slate-200">
