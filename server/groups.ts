@@ -197,8 +197,8 @@ adminRouter.put('/:id', async (req, res) => {
 
     const updateFields: any = {};
     if (name) updateFields.name = name;
-    if (pharmacistIds) updateFields.pharmacistIds = pharmacistIds.map((id: string) => new ObjectId(id));
-    if (preparatorIds) updateFields.preparatorIds = preparatorIds.map((id: string) => new ObjectId(id));
+    if (pharmacistIds !== undefined && pharmacistIds !== null) updateFields.pharmacistIds = (pharmacistIds as string[]).map((id: string) => new ObjectId(id));
+    if (preparatorIds !== undefined && preparatorIds !== null) updateFields.preparatorIds = (preparatorIds as string[]).map((id: string) => new ObjectId(id));
     if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
 
     if (managedBy) {
@@ -218,7 +218,7 @@ adminRouter.put('/:id', async (req, res) => {
     }
 
     // Update users
-    const allUserIds = [...(pharmacistIds || []), ...(preparatorIds || [])].map((id: string) => new ObjectId(id));
+    const allUserIds = [...(pharmacistIds as string[] || []), ...(preparatorIds as string[] || [])].map((id: string) => new ObjectId(id));
     await usersCollection.updateMany({ groupId: new ObjectId(req.params.id) }, { $unset: { groupId: '' } });
     await usersCollection.updateMany(
       { _id: { $in: allUserIds } },
