@@ -87,8 +87,13 @@ const SubmitPayment: React.FC<{
         <div>
             <h3 className="text-lg font-semibold text-slate-800">Finaliser l\'inscription</h3>
             <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l\'équipe officinale</p>
-                <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement (RIB, etc.) dans la description du webinaire ci-dessus.</p>
+                <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
+                <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement ci-dessous.</p>
+                <div className="mt-4">
+                    <a href="https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg" target="_blank" rel="noopener noreferrer">
+                        <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg" alt="RIB" className="rounded-lg shadow-md" />
+                    </a>
+                </div>
             </div>
             
             <div className="mt-4">
