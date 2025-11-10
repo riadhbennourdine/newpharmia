@@ -153,7 +153,7 @@ adminRouter.get('/', async (req, res) => {
 
     // Add pharmacistNames and managerName to each group
     const populatedGroups = groups.map(group => {
-      const pharmacistNames = group.pharmacistIds
+      const pharmacistNames = (group.pharmacistIds || [])
         .map(id => pharmacistMap.get(id.toString()))
         .filter(name => name) as string[];
 
