@@ -319,9 +319,7 @@ const Newsletter: React.FC = () => {
   const formatContentForHtml = (text: string) => {
     return `
       ${text.split('\n').join('<br />')}
-      <br /><br />
-      Cordialement,<br />
-      L\'équipe PharmIA
+      
     `;
   };
 
