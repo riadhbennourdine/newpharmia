@@ -59,14 +59,9 @@ export interface User {
 export interface Group {
   _id: ObjectId | string;
   name: string;
-  pharmacistId: ObjectId | string;
+  pharmacistIds: (ObjectId | string)[]; // Changé de pharmacistId à pharmacistIds (tableau)
   preparatorIds: (ObjectId | string)[];
   assignedFiches: { ficheId: string; assignedAt: Date; }[];
-  pharmacistName?: string;
-  pharmacistCreatedAt?: Date;
-  pharmacistSubscriptionEndDate?: Date;
-  pharmacistPlanName?: string;
-  pharmacistHasActiveSubscription?: boolean;
   managedBy?: ObjectId | string;
   subscriptionAmount?: number;
   instruction?: string;

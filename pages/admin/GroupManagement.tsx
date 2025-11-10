@@ -74,7 +74,7 @@ const GroupManagementPage = () => {
             {groups.map((group) => (
               <tr key={group._id as string}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{group.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistId}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.pharmacistNames?.join(', ') || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{group.preparatorIds.length}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleOpenModal(group)} className="text-teal-600 hover:text-teal-900">

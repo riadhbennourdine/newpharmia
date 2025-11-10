@@ -86,36 +86,43 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
 // Create a new group
 adminRouter.post('/', async (req, res) => {
   try {
-    const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount } = req.body;
+    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
-    // Validate pharmacist
-    const pharmacist = await usersCollection.findOne({ _id: new ObjectId(pharmacistId), role: UserRole.PHARMACIEN });
-    if (!pharmacist) {
-      return res.status(400).json({ message: 'Pharmacien invalide.' });
+    // Validate pharmacists
+    if (!Array.isArray(pharmacistIds) || pharmacistIds.length === 0) {
+      return res.status(400).json({ message: 'Au moins un pharmacien est requis pour le groupe.' });
+    }
+
+    const pharmacistObjectIds = pharmacistIds.map((id: string) => new ObjectId(id));
+    const pharmacists = await usersCollection.find({ _id: { $in: pharmacistObjectIds }, role: UserRole.PHARMACIEN }).toArray();
+
+    if (pharmacists.length !== pharmacistIds.length) {
+      return res.status(400).json({ message: 'Un ou plusieurs pharmaciens sont invalides ou n\'existent pas.' });
     }
 
     const newGroup: Group = {
       _id: new ObjectId(),
       name,
-      pharmacistId,
-      preparatorIds,
+      pharmacistIds: pharmacistObjectIds, // Utiliser le tableau d'ObjectIds
+      preparatorIds: preparatorIds.map((id: string) => new ObjectId(id)),
       assignedFiches: [],
-      managedBy,
+      managedBy: managedBy ? new ObjectId(managedBy) : undefined,
       subscriptionAmount,
     };
 
     const result = await groupsCollection.insertOne(newGroup);
 
     // Update users with the new group ID
-    const userIdsToUpdate = [pharmacistId, ...preparatorIds];
+    const userIdsToUpdate = [...pharmacistObjectIds, ...preparatorIds.map((id: string) => new ObjectId(id))];
     await usersCollection.updateMany(
-      { _id: { $in: userIdsToUpdate.map(id => new ObjectId(id)) } },
+      { _id: { $in: userIdsToUpdate } },
       { $set: { groupId: newGroup._id } }
     );
 
     res.status(201).json(newGroup);
   } catch (error) {
+    console.error("Erreur lors de la création du groupe:", error);
     res.status(500).json({ message: "Erreur lors de la création du groupe.", error });
   }
 });
@@ -135,13 +142,7 @@ adminRouter.get('/', async (req, res) => {
     // Create a map of pharmacists for easy lookup
     const pharmacistMap = new Map(pharmacists.map(p => [
       (p._id as ObjectId).toString(),
-      {
-        name: `${p.firstName} ${p.lastName}`,
-        createdAt: p.createdAt,
-        subscriptionEndDate: p.subscriptionEndDate,
-        planName: p.planName,
-        hasActiveSubscription: p.hasActiveSubscription,
-      }
+      `${p.firstName} ${p.lastName}`
     ]));
 
     // Create a map of managers for easy lookup
@@ -150,12 +151,11 @@ adminRouter.get('/', async (req, res) => {
         `${m.firstName} ${m.lastName}`
     ]));
 
-    // Add pharmacistName and dates to each group
+    // Add pharmacistNames and managerName to each group
     const populatedGroups = groups.map(group => {
-      let pharmacistInfo: any = {};
-      if (group.pharmacistId && ObjectId.isValid(group.pharmacistId as string)) {
-        pharmacistInfo = pharmacistMap.get((group.pharmacistId as ObjectId).toString());
-      }
+      const pharmacistNames = group.pharmacistIds
+        .map(id => pharmacistMap.get(id.toString()))
+        .filter(name => name) as string[];
 
       let managerName = 'Non assigné';
       if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
@@ -164,11 +164,7 @@ adminRouter.get('/', async (req, res) => {
 
       return {
         ...group,
-        pharmacistName: pharmacistInfo ? pharmacistInfo.name : 'Pharmacien non trouvé',
-        pharmacistCreatedAt: pharmacistInfo ? pharmacistInfo.createdAt : undefined,
-        pharmacistSubscriptionEndDate: pharmacistInfo ? pharmacistInfo.subscriptionEndDate : undefined,
-        pharmacistPlanName: pharmacistInfo ? pharmacistInfo.planName : undefined,
-        pharmacistHasActiveSubscription: pharmacistInfo ? pharmacistInfo.hasActiveSubscription : false,
+        pharmacistNames: pharmacistNames, // Nouveau champ pour les noms des pharmaciens
         managedByName: managerName,
       };
     });
@@ -196,20 +192,17 @@ adminRouter.get('/:id', async (req, res) => {
 // Update a group
 adminRouter.put('/:id', async (req, res) => {
   try {
-    const { name, pharmacistId, preparatorIds, managedBy, subscriptionAmount, pharmacistSubscriptionEndDate } = req.body;
+    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
     const updateFields: any = {};
     if (name) updateFields.name = name;
-    if (pharmacistId) updateFields.pharmacistId = pharmacistId;
-    if (preparatorIds) updateFields.preparatorIds = preparatorIds;
+    if (pharmacistIds) updateFields.pharmacistIds = pharmacistIds.map((id: string) => new ObjectId(id));
+    if (preparatorIds) updateFields.preparatorIds = preparatorIds.map((id: string) => new ObjectId(id));
     if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
-    if (pharmacistSubscriptionEndDate) {
-        await usersCollection.updateOne({ _id: new ObjectId(pharmacistId) }, { $set: { subscriptionEndDate: new Date(pharmacistSubscriptionEndDate) } });
-    }
 
     if (managedBy) {
-      updateFields.managedBy = managedBy;
+      updateFields.managedBy = new ObjectId(managedBy);
     } else if (managedBy === '') {
       updateFields.managedBy = undefined;
     }
@@ -225,15 +218,16 @@ adminRouter.put('/:id', async (req, res) => {
     }
 
     // Update users
-    const allUserIds = [pharmacistId, ...preparatorIds];
+    const allUserIds = [...(pharmacistIds || []), ...(preparatorIds || [])].map((id: string) => new ObjectId(id));
     await usersCollection.updateMany({ groupId: new ObjectId(req.params.id) }, { $unset: { groupId: '' } });
     await usersCollection.updateMany(
-      { _id: { $in: allUserIds.map(id => new ObjectId(id)) } },
+      { _id: { $in: allUserIds } },
       { $set: { groupId: new ObjectId(req.params.id) } }
     );
 
     res.json(updatedGroup);
   } catch (error) {
+    console.error("Erreur lors de la mise à jour du groupe:", error);
     res.status(500).json({ message: "Erreur lors de la mise à jour du groupe.", error });
   }
 });

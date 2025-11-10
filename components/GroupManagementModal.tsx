@@ -12,17 +12,13 @@ interface GroupManagementModalProps {
 const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onClose, fetchGroups }) => {
   const { user: currentUser } = useAuth();
   const [name, setName] = useState(group?.name || '');
-  const [pharmacistId, setPharmacistId] = useState(group?.pharmacistId || '');
+  const [pharmacistIds, setPharmacistIds] = useState<string[]>(group?.pharmacistIds?.map(id => id.toString()) || []); // Changé en tableau
   const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds as string[] || []);
   const [subscriptionAmount, setSubscriptionAmount] = useState<number | undefined>(group?.subscriptionAmount);
-  const [planName, setPlanName] = useState('');
-  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | undefined>(
-    group?.pharmacistSubscriptionEndDate ? new Date(group.pharmacistSubscriptionEndDate).toISOString().split('T')[0] : undefined
-  );
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
+  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState(''); // Garder pour la recherche, mais la sélection sera multiple
 
   const pricing = {
     solo: {
@@ -45,12 +41,8 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   useEffect(() => {
     fetchPharmacists();
     fetchPreparators();
-    if (group && group.pharmacistId) {
-      const pharmacist = allPharmacists.find(p => p._id === group.pharmacistId);
-      if (pharmacist) {
-        setPharmacistSearchTerm(`${pharmacist.firstName} ${pharmacist.lastName} (${pharmacist.email})`);
-      }
-    }
+    // Pas besoin d'initialiser pharmacistSearchTerm ici pour un seul pharmacien
+    // La sélection multiple sera gérée par des checkboxes
   }, [group]);
 
   const fetchPharmacists = async () => {
@@ -83,9 +75,15 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
     );
   };
 
+  const handlePharmacistToggle = (id: string) => {
+    setPharmacistIds(prev =>
+      prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const groupData = { name, pharmacistId, preparatorIds, subscriptionAmount, pharmacistSubscriptionEndDate: subscriptionEndDate };
+    const groupData = { name, pharmacistIds, preparatorIds, subscriptionAmount }; // pharmacistIds est un tableau
 
     try {
       const url = group ? `/api/admin/groups/${group._id}` : '/api/admin/groups';
@@ -137,43 +135,37 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
             />
           </div>
           <div>
-            <label htmlFor="pharmacist" className="block text-sm font-medium text-slate-700">Pharmacien Responsable</label>
+            <label className="block text-sm font-medium text-slate-700">Pharmaciens Responsables</label>
             <input
               type="text"
-              id="pharmacist"
+              placeholder="Rechercher par nom, email..."
               value={pharmacistSearchTerm}
-              onChange={(e) => {
-                setPharmacistSearchTerm(e.target.value);
-                setPharmacistId('');
-              }}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-              required
+              onChange={(e) => setPharmacistSearchTerm(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mb-2"
             />
-            {pharmacistSearchTerm && (
-              <div className="mt-2 border p-2 rounded-md max-h-40 overflow-y-auto">
-                {allPharmacists
-                  .filter(p => {
-                    const searchTermLower = pharmacistSearchTerm.toLowerCase();
-                    return (
-                      p.firstName?.toLowerCase().includes(searchTermLower) ||
-                      p.lastName?.toLowerCase().includes(searchTermLower) ||
-                      p.email.toLowerCase().includes(searchTermLower)
-                    );
-                  })
-                  .map(p => (
-                    <div
-                      key={p._id as string}
-                      className="p-2 hover:bg-slate-100 cursor-pointer"
-                      onClick={() => {
-                        setPharmacistId(p._id as string);
-                        setPharmacistSearchTerm(`${p.firstName} ${p.lastName} (${p.email})`);
-                      }}
-                    >
-                      {p.firstName} {p.lastName} ({p.email})
-                    </div>
-                  ))}
-              </div>
-            )}
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto border p-2 rounded-md">
+              {allPharmacists
+                .filter(p => {
+                  const searchTermLower = pharmacistSearchTerm.toLowerCase();
+                  return (
+                    p.firstName?.toLowerCase().includes(searchTermLower) ||
+                    p.lastName?.toLowerCase().includes(searchTermLower) ||
+                    p.email.toLowerCase().includes(searchTermLower)
+                  );
+                })
+                .map(p => (
+                  <div key={p._id as string} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`pharmacist-${p._id}`}
+                      checked={pharmacistIds.includes(p._id as string)}
+                      onChange={() => handlePharmacistToggle(p._id as string)}
+                      className="h-4 w-4 text-teal-600 border-gray-300 rounded-md focus:ring-teal-500"
+                    />
+                    <label htmlFor={`pharmacist-${p._id}`} className="ml-2 block text-sm text-gray-900">{p.firstName} {p.lastName} ({p.email})</label>
+                  </div>
+                ))}
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700">Préparateurs</label>
@@ -200,52 +192,12 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
             </div>
           </div>
           <div>
-            <label htmlFor="planName" className="block text-sm font-medium text-slate-700">Abonnement</label>
-            <select
-              id="planName"
-              value={planName}
-              onChange={(e) => {
-                const selectedPlan = e.target.value;
-                setPlanName(selectedPlan);
-                if (selectedPlan === 'free-trial') {
-                  setSubscriptionAmount(0);
-                } else if (selectedPlan) {
-                  const [planKey, period] = selectedPlan.split('-');
-                  const price = pricing[planKey as keyof typeof pricing][period as 'monthly' | 'annual'];
-                  setSubscriptionAmount(price);
-                } else {
-                  setSubscriptionAmount(0);
-                }
-              }}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-            >
-              <option value="">Sélectionner un abonnement</option>
-              <option value="free-trial">Free Trial</option>
-              {Object.entries(pricing).map(([key, plan]) => (
-                <React.Fragment key={key}>
-                  <option value={`${key}-monthly`}>{`${plan.name} - Mensuel`}</option>
-                  <option value={`${key}-annual`}>{`${plan.name} - Annuel`}</option>
-                </React.Fragment>
-              ))}
-            </select>
-          </div>
-          <div>
             <label htmlFor="subscriptionAmount" className="block text-sm font-medium text-slate-700">Montant de l'abonnement</label>
             <input
               type="number"
               id="subscriptionAmount"
               value={subscriptionAmount || ''}
               onChange={(e) => setSubscriptionAmount(parseFloat(e.target.value))}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="subscriptionEndDate" className="block text-sm font-medium text-slate-700">Date de fin d'abonnement</label>
-            <input
-              type="date"
-              id="subscriptionEndDate"
-              value={subscriptionEndDate || ''}
-              onChange={(e) => setSubscriptionEndDate(e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
