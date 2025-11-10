@@ -316,8 +316,8 @@ app.get('/api/memofiches', async (req, res) => {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
             if (user && user.groupId) {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                if (group && group.pharmacistId) {
-                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
+                if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
+                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
                 }
             }
         }
@@ -471,10 +471,11 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
         console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
         if (user && user.groupId) {
-            group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-            if (group && group.pharmacistId) {
-                pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistId) });
-            }
+                        group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+            
+                        if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
+                            pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
+                        }
         }
 
         // Admin and Formateur can access all non-free memofiches
