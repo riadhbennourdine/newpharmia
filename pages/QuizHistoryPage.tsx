@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, ArrowLeftIcon } from '../components/Icons';
-import { QuizQuestion } from '../types';
+import { QuizQuestion, UserRole } from '../types';
+import { isPharmacienOrAdminWebinar } from '../utils/roles';
 
 interface QuizEntry {
     quizId: string;
@@ -89,7 +90,7 @@ const QuizHistoryPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-            <Link to={currentUser?.role === 'PHARMACIEN' ? '/dashboard' : '/dashboard'} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-4 transition-colors">
+            <Link to={isPharmacienOrAdminWebinar(currentUser?.role) ? '/dashboard' : '/dashboard'} className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-800 mb-4 transition-colors">
                 <ArrowLeftIcon className="h-4 w-4 mr-2" />
                 Retour au tableau de bord
             </Link>

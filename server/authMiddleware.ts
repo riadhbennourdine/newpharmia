@@ -71,13 +71,22 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     }
 };
 
-export const checkRole = (roles: UserRole[]) => {
+export const checkRole = (allowedRoles: UserRole[]) => {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });
         }
 
-        if (!roles.includes(req.user.role)) {
+        const effectiveRoles: UserRole[] = [req.user.role];
+
+        // Si l'utilisateur est ADMIN_WEBINAR, il hérite des droits de PHARMACIEN
+        if (req.user.role === UserRole.ADMIN_WEBINAR) {
+            effectiveRoles.push(UserRole.PHARMACIEN);
+        }
+
+        const hasPermission = allowedRoles.some(allowedRole => effectiveRoles.includes(allowedRole));
+
+        if (!hasPermission) {
             return res.status(403).json({ message: 'You do not have permission to perform this action' });
         }
 

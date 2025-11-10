@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole, User } from '../types';
+import { isPharmacienOrAdminWebinar } from '../utils/roles';
 
 const RegisterView: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -92,6 +93,7 @@ const RegisterView: React.FC = () => {
                             >
                                 <option value={UserRole.PHARMACIEN}>Pharmacien</option>
                                 <option value={UserRole.PREPARATEUR}>Préparateur</option>
+                                <option value={UserRole.ADMIN_WEBINAR}>Admin Webinar</option>
                             </select>
                         </div>
                         {/* Email Field */}
@@ -154,7 +156,7 @@ const RegisterView: React.FC = () => {
                             />
                         </div>
                         {/* Role-specific fields */}
-                        {role === UserRole.PHARMACIEN && (
+                        {isPharmacienOrAdminWebinar(role) && (
                             <>
                                 <div>
                                     <label htmlFor="city-register" className="sr-only">Ville</label>
@@ -197,6 +199,7 @@ const RegisterView: React.FC = () => {
                                                     p.lastName?.toLowerCase().includes(searchTermLower) ||
                                                     p.email.toLowerCase().includes(searchTermLower)
                                                 );
+
                                             })
                                             .map(p => (
                                                 <div
