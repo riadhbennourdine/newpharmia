@@ -22,7 +22,7 @@ router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res)
 router.get('/pharmacists', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const pharmacists = await usersCollection.find({ role: UserRole.PHARMACIEN }).toArray();
+        const pharmacists = await usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } }).toArray();
         res.json(pharmacists);
     } catch (error) {
         console.error('Error fetching pharmacists:', error);

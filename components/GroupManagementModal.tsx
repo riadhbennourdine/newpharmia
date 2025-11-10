@@ -120,7 +120,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm md:max-w-2xl overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm md:max-w-2xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-slate-800 mb-4">{group ? 'Modifier le Groupe' : 'Créer un Groupe'}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
