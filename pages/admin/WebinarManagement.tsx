@@ -13,6 +13,19 @@ const getUserDisplayName = (user: Partial<User>): string => {
 };
 
 const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, onConfirmPayment, isConfirmingPayment }) => {
+    const getTranslatedStatus = (status: string | undefined): string => {
+        switch (status) {
+            case 'CONFIRMED':
+                return 'CONFIRMÉ';
+            case 'PENDING':
+                return 'EN ATTENTE DE PAIEMENT';
+            case 'PAYMENT_SUBMITTED':
+                return 'EN ATTENTE DE VALIDATION';
+            default:
+                return status || 'Inconnu';
+        }
+    };
+
     const groupedByTimeSlot = attendees.reduce((acc, attendee) => {
         const slots = attendee.timeSlots && attendee.timeSlots.length > 0 ? attendee.timeSlots : ['Non spécifié'];
         slots.forEach(slot => {
@@ -36,7 +49,7 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                             return (
                                 <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
                                     <span>
-                                        {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{attendee.status}</span>
+                                        {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
                                         {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
                                         {attendee.proofUrl && (
                                             <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
