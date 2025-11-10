@@ -26,8 +26,29 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
 
-        // If the user is an admin, populate attendee details
         const authReq = req as AuthenticatedRequest;
+        const userIdString = authReq.user?._id.toString();
+
+        const webinarsWithStatus = webinars.map(webinar => {
+            const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null };
+            if (userIdString) {
+                const attendee = webinar.attendees.find(
+                    att => att.userId.toString() === userIdString
+                );
+                webinarResponse.isRegistered = !!attendee;
+                webinarResponse.registrationStatus = attendee?.status || null;
+                if (attendee?.status !== 'CONFIRMED') {
+                    delete webinarResponse.googleMeetLink;
+                }
+            } else {
+                webinarResponse.isRegistered = false;
+                webinarResponse.registrationStatus = null;
+                delete webinarResponse.googleMeetLink;
+            }
+            return webinarResponse;
+        });
+
+        // If the user is an admin, populate attendee details
         if (authReq.user?.role === UserRole.ADMIN) {
             const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
             const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
@@ -40,7 +61,7 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
                 const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
 
-                webinars.forEach(webinar => {
+                webinarsWithStatus.forEach(webinar => {
                     webinar.attendees.forEach(attendee => {
                         const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
                         if (userDetails) {
@@ -51,12 +72,12 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             }
         } else {
             // For non-admins, don't send attendee details
-            webinars.forEach(webinar => {
+            webinarsWithStatus.forEach(webinar => {
                 delete (webinar as Partial<Webinar>).attendees;
             });
         }
 
-        res.json(webinars);
+        res.json(webinarsWithStatus);
     } catch (error) {
         console.error('Error fetching webinars:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des webinaires.' });

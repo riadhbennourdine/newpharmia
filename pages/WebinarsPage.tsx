@@ -23,8 +23,34 @@ const CropTunisIntro: React.FC = () => (
     </div>
 );
 
-const WebinarCard: React.FC<{ webinar: Webinar }> = ({ webinar }) => {
+const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null } }> = ({ webinar }) => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+
+    const renderButton = () => {
+        if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink) {
+            return (
+                <a
+                    href={webinar.googleMeetLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                >
+                    <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6 mr-2" />
+                    Rejoindre
+                </a>
+            );
+        }
+        return (
+            <button
+                onClick={() => navigate(`/webinars/${webinar._id}`)}
+                className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+            >
+                {webinar.registrationStatus === 'PENDING' || webinar.registrationStatus === 'PAYMENT_SUBMITTED' ? 'Voir inscription' : 'S\'inscrire'}
+            </button>
+        );
+    };
+
     return (
         <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block">
@@ -40,12 +66,7 @@ const WebinarCard: React.FC<{ webinar: Webinar }> = ({ webinar }) => {
                 <p className="text-xl font-bold text-teal-600 py-2">
                     {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
-                <button
-                    onClick={() => navigate(`/webinars/${webinar._id}`)}
-                    className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
-                >
-                    S'inscrire
-                </button>
+                {renderButton()}
             </div>
         </div>
     );
@@ -60,7 +81,7 @@ const WebinarsPage: React.FC = () => {
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,7 +89,11 @@ const WebinarsPage: React.FC = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await fetch(`/api/webinars?group=${encodeURIComponent(activeTab)}`);
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const response = await fetch(`/api/webinars?group=${encodeURIComponent(activeTab)}`, { headers });
                 if (!response.ok) {
                     throw new Error('Failed to fetch webinars');
                 }
