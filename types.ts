@@ -215,6 +215,12 @@ export enum WebinarGroup {
   PHARMIA = 'PharmIA',
 }
 
+export enum WebinarStatus {
+  UPCOMING = 'Upcoming',
+  LIVE = 'Live',
+  PAST = 'Past',
+}
+
 export enum WebinarTimeSlot {
   MORNING = '09:00',
   LUNCH = '13:30',
@@ -241,6 +247,7 @@ export interface Webinar {
   updatedAt: Date;
   group: WebinarGroup;
   registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
+  calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
 }
 
 export interface Image {

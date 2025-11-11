@@ -1,13 +1,35 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
-import { Webinar, UserRole, WebinarGroup, ClientStatus } from '../types.js';
+import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 import { authenticateToken, checkRole, softAuthenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
+
+function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
+    const now = new Date();
+    const webinarStart = new Date(webinarDate);
+    
+    // Normalize dates to compare only the day
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const webinarDay = new Date(webinarStart.getFullYear(), webinarStart.getMonth(), webinarStart.getDate());
+
+    if (webinarDay.getTime() === today.getTime()) {
+        // If it's today, check the time
+        if (now >= webinarStart) {
+            return WebinarStatus.LIVE;
+        } else {
+            return WebinarStatus.UPCOMING;
+        }
+    } else if (webinarDay < today) {
+        return WebinarStatus.PAST;
+    } else {
+        return WebinarStatus.UPCOMING;
+    }
+}
 
 // GET all webinars, optionally filtered by group
 router.get('/', softAuthenticateToken, async (req, res) => {
@@ -30,14 +52,16 @@ router.get('/', softAuthenticateToken, async (req, res) => {
         const userIdString = authReq.user?._id.toString();
 
         const webinarsWithStatus = webinars.map(webinar => {
-            const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null };
+            const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
+            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
             if (userIdString) {
                 const attendee = webinar.attendees.find(
                     att => att.userId.toString() === userIdString
                 );
                 webinarResponse.isRegistered = !!attendee;
                 webinarResponse.registrationStatus = attendee?.status || null;
-                if (attendee?.status !== 'CONFIRMED') {
+                // Keep googleMeetLink if webinar is LIVE or UPCOMING and user is confirmed
+                if (webinarResponse.calculatedStatus === WebinarStatus.PAST || attendee?.status !== 'CONFIRMED') {
                     delete webinarResponse.googleMeetLink;
                 }
             } else {
@@ -102,7 +126,8 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         }
 
         console.log('[Webinar Debug] Entering GET /:id handler.');
-        const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null };
+        const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
+        webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
 
         const authReq = req as AuthenticatedRequest;
         if (authReq.user) {
@@ -123,8 +148,8 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             webinarResponse.isRegistered = !!attendee;
             webinarResponse.registrationStatus = attendee?.status || null;
 
-            // Hide the meet link if the user is not confirmed
-            if (attendee?.status !== 'CONFIRMED') {
+            // Keep the meet link if webinar is LIVE or UPCOMING and user is confirmed
+            if (webinarResponse.calculatedStatus === WebinarStatus.PAST || attendee?.status !== 'CONFIRMED') {
                 delete webinarResponse.googleMeetLink;
             }
         } else {

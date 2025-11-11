@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Webinar, UserRole, WebinarGroup } from '../types';
+import { Webinar, UserRole, WebinarGroup, WebinarStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, SparklesIcon } from '../components/Icons';
 
@@ -81,6 +81,8 @@ const WebinarsPage: React.FC = () => {
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
+    const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
+    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
@@ -100,31 +102,36 @@ const WebinarsPage: React.FC = () => {
                 const data = await response.json();
 
                 const now = new Date();
+
+                const liveWebinars = data.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
+                const upcomingWebinars = data
+                    .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+                    .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                const pastWebinars = data
+                    .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
+                    .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Tri décroissant pour les passés
+
+                setWebinars(data); // Garder tous les webinaires pour le rendu
+
+                // Trouver le webinaire le plus proche parmi les prochains
+                setNearestWebinar(upcomingWebinars.length > 0 ? upcomingWebinars[0] : null);
+
+                // Séparer les webinaires du mois en cours et des mois futurs pour les prochains webinaires
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();
 
-                const upcomingWebinars = data
-                    .filter((w: Webinar) => new Date(w.date) > now)
-                    .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-                setWebinars(upcomingWebinars); // All upcoming webinars, sorted
-
-                // Find nearest webinar
-                setNearestWebinar(upcomingWebinars.length > 0 ? upcomingWebinars[0] : null);
-
-                // Separate current month and future months
-                const currentMonthW = upcomingWebinars.filter(w => {
+                const currentMonthUpcoming = upcomingWebinars.filter(w => {
                     const d = new Date(w.date);
                     return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
                 });
-                setCurrentMonthWebinars(currentMonthW);
+                setCurrentMonthWebinars(currentMonthUpcoming);
 
-                const futureMonthsW = upcomingWebinars.filter(w => {
+                const futureMonthsUpcoming = upcomingWebinars.filter(w => {
                     const d = new Date(w.date);
                     return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
                 });
 
-                const groupedFutureWebinars = futureMonthsW.reduce((acc, webinar) => {
+                const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
                     const date = new Date(webinar.date);
                     const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
                     const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
@@ -136,6 +143,10 @@ const WebinarsPage: React.FC = () => {
                     return acc;
                 }, {} as Record<string, Webinar[]>);
                 setFutureMonthsWebinars(groupedFutureWebinars);
+
+                // Stocker les webinaires live et passés séparément pour le rendu
+                setLiveWebinars(liveWebinars);
+                setPastWebinars(pastWebinars);
 
             } catch (err: any) {
                 setError(err.message);
@@ -197,31 +208,35 @@ const WebinarsPage: React.FC = () => {
                     <h3 className="text-xl font-semibold">Erreur de chargement</h3>
                     <p className="mt-2">{error}</p>
                 </div>
-            ) : webinars.length > 0 ? (
+            ) : webinars.length > 0 || liveWebinars.length > 0 || pastWebinars.length > 0 ? (
                 <div className="space-y-12">
-                    {/* Nearest Webinar (if it's in the current month) */}
-                    {nearestWebinar && new Date(nearestWebinar.date).getMonth() === new Date().getMonth() && (
-                        <div className="mb-12 p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Prochain Webinaire</h2>
-                            <WebinarCard webinar={nearestWebinar} />
-                        </div>
-                    )}
-
-                    {/* Other webinars from the current month */}
-                    {currentMonthWebinars.filter(w => w._id !== nearestWebinar?._id).length > 0 && (
-                         <div>
-                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
-                                Autres webinaires ce mois-ci
-                            </h2>
+                    {/* Live Webinars */}
+                    {liveWebinars.length > 0 && (
+                        <div className="mb-12 p-6 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-xl">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Webinaires en Direct <SparklesIcon className="inline-block h-8 w-8 ml-2 text-yellow-300" /></h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {currentMonthWebinars.filter(w => w._id !== nearestWebinar?._id).map(webinar => (
+                                {liveWebinars.map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {/* Webinars for future months, grouped */}
+                    {/* Upcoming Webinars (Current Month) */}
+                    {currentMonthWebinars.length > 0 && (
+                         <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Prochains webinaires ce mois-ci
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {currentMonthWebinars.map(webinar => (
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Upcoming Webinars (Future Months) */}
                     {Object.entries(futureMonthsWebinars).length > 0 && (
                         <div>
                              <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
@@ -237,6 +252,20 @@ const WebinarsPage: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Past Webinars */}
+                    {pastWebinars.length > 0 && (
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">
+                                Webinaires Passés
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {pastWebinars.map(webinar => (
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
