@@ -57,7 +57,7 @@ const WebinarCard: React.FC<{
     // Rendu simplifié pour les cartes Live
     if (isLiveCard) {
         return (
-            <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+            <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
                 <Link to={`/webinars/${webinar._id}`} className="block relative">
                     <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-24 w-full object-cover" /> {/* h-24 au lieu de h-40 */}
                     {webinar.calculatedStatus === WebinarStatus.LIVE && (
@@ -90,7 +90,7 @@ const WebinarCard: React.FC<{
 
     // Rendu normal pour les autres cartes
     return (
-        <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+        <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block relative">
                 <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
                 {webinar.calculatedStatus === WebinarStatus.LIVE && (
