@@ -164,11 +164,16 @@ adminRouter.get('/', async (req, res) => {
         const managerId = group.managedBy.toString();
         managerName = managerMap.get(managerId) || 'Non assigné';
         
-        // Find the manager user object to get subscriptionEndDate
         const managerUser = managers.find(m => (m._id as ObjectId).toString() === managerId);
         if (managerUser) {
           subscriptionEndDate = managerUser.subscriptionEndDate;
+          // --- DEBUG LOGGING ---
+          console.log(`Processing Group: "${group.name}" | Manager: "${managerName}" | Subscription End Date Found:`, subscriptionEndDate);
+        } else {
+          console.log(`Processing Group: "${group.name}" | Manager ID found but manager object not in list: "${managerId}"`);
         }
+      } else {
+        console.log(`Processing Group: "${group.name}" | No manager (managedBy) assigned.`);
       }
 
       return {
@@ -176,7 +181,7 @@ adminRouter.get('/', async (req, res) => {
         pharmacistNames: pharmacistNames,
         managedByName: managerName,
         preparatorIds: group.preparatorIds || [],
-        subscriptionEndDate: subscriptionEndDate, // Add subscription end date
+        subscriptionEndDate: subscriptionEndDate,
       };
     });
 
@@ -255,8 +260,8 @@ adminRouter.put('/:id', async (req, res) => {
       ...(updateFields.preparatorIds || [])
     ];
 
-    const usersToRemove = oldUserIds.filter(id => !newUserIds.some(newId => newId.equals(id)));
-    const usersToAdd = newUserIds.filter(id => !oldUserIds.some(oldId => oldId.equals(id)));
+    const usersToRemove = oldUserIds.filter(id => !newUserIds.some(newId => newId.toString() === id.toString()));
+    const usersToAdd = newUserIds.filter(id => !oldUserIds.some(oldId => oldId.toString() === id.toString()));
 
     if (usersToRemove.length > 0) {
       await usersCollection.updateMany(
