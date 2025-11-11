@@ -60,8 +60,10 @@ router.get('/', softAuthenticateToken, async (req, res) => {
                 );
                 webinarResponse.isRegistered = !!attendee;
                 webinarResponse.registrationStatus = attendee?.status || null;
-                // Keep googleMeetLink if webinar is LIVE or UPCOMING and user is confirmed
-                if (webinarResponse.calculatedStatus === WebinarStatus.PAST || attendee?.status !== 'CONFIRMED') {
+                // Keep googleMeetLink if user is CONFIRMED AND (webinar is LIVE or UPCOMING)
+                if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                    // Do nothing, keep the link
+                } else {
                     delete webinarResponse.googleMeetLink;
                 }
             } else {
@@ -148,8 +150,10 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             webinarResponse.isRegistered = !!attendee;
             webinarResponse.registrationStatus = attendee?.status || null;
 
-            // Keep the meet link if webinar is LIVE or UPCOMING and user is confirmed
-            if (webinarResponse.calculatedStatus === WebinarStatus.PAST || attendee?.status !== 'CONFIRMED') {
+            // Keep googleMeetLink if user is CONFIRMED AND (webinar is LIVE or UPCOMING)
+            if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                // Do nothing, keep the link
+            } else {
                 delete webinarResponse.googleMeetLink;
             }
         } else {
