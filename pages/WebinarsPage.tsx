@@ -39,8 +39,8 @@ const WebinarCard: React.FC<{
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
                 >
-                    <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6 mr-2" />
-                    Rejoindre
+                    <span className="mr-2">Rejoindre avec</span>
+                    <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
                 </a>
             );
         }
