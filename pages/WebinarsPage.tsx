@@ -212,9 +212,12 @@ const WebinarsPage: React.FC = () => {
                 <div className="space-y-12">
                     {/* Live Webinars */}
                     {liveWebinars.length > 0 && (
-                        <div className="mb-12 p-6 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-xl">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Webinaires en Direct <SparklesIcon className="inline-block h-8 w-8 ml-2 text-yellow-300" /></h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="mb-12 p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl flex items-center justify-between">
+                            <div className="flex items-center">
+                                <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="h-12 w-12 mr-4" />
+                                <h2 className="text-3xl font-bold">Webinaire en Direct</h2>
+                            </div>
+                            <div className="grid grid-cols-1 gap-6 flex-grow ml-8">
                                 {liveWebinars.map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
