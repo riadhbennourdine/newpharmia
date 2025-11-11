@@ -139,6 +139,9 @@ adminRouter.get('/', async (req, res) => {
       usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray(),
     ]);
 
+    // Combine all users who could potentially be a manager
+    const allPotentialManagers = [...pharmacists, ...managers];
+
     // Create a map of pharmacists for easy lookup
     const pharmacistMap = new Map(pharmacists.map(p => [
       (p._id as ObjectId).toString(),
@@ -162,18 +165,15 @@ adminRouter.get('/', async (req, res) => {
 
       if (group.managedBy && ObjectId.isValid(group.managedBy.toString())) {
         const managerId = group.managedBy.toString();
-        managerName = managerMap.get(managerId) || 'Non assigné';
+        // Use the combined map for name lookup for simplicity, or create a combined one
+        const tempManagerName = allPotentialManagers.find(m => (m._id as ObjectId).toString() === managerId);
+        managerName = tempManagerName ? `${tempManagerName.firstName} ${tempManagerName.lastName}` : 'Non assigné';
         
-        const managerUser = managers.find(m => (m._id as ObjectId).toString() === managerId);
+        // Find the manager user object from the combined list
+        const managerUser = allPotentialManagers.find(m => (m._id as ObjectId).toString() === managerId);
         if (managerUser) {
           subscriptionEndDate = managerUser.subscriptionEndDate;
-          // --- DEBUG LOGGING ---
-          console.log(`Processing Group: "${group.name}" | Manager: "${managerName}" | Subscription End Date Found:`, subscriptionEndDate);
-        } else {
-          console.log(`Processing Group: "${group.name}" | Manager ID found but manager object not in list: "${managerId}"`);
         }
-      } else {
-        console.log(`Processing Group: "${group.name}" | No manager (managedBy) assigned.`);
       }
 
       return {
