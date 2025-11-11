@@ -67,15 +67,22 @@ const WebinarCard: React.FC<{
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
                         {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
-                    {/* Bouton Google Meet */}
-                    {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && (
-                        <div className="absolute bottom-2 right-2">
-                            {renderButton()}
-                        </div>
-                    )}
                 </Link>
                 <div className="p-4 flex flex-col">
-                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                        {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && (
+                            <a
+                                href={webinar.googleMeetLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                            >
+                                <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6 mr-2" />
+                                Rejoindre
+                            </a>
+                        )}
+                    </div>
                 </div>
             </div>
         );
@@ -245,21 +252,21 @@ const WebinarsPage: React.FC = () => {
                 </div>
             ) : webinars.length > 0 || liveWebinars.length > 0 || pastWebinars.length > 0 ? (
                 <div className="space-y-12">
-                    {/* Live Webinars */}
-                    {liveWebinars.length > 0 && (
-                        <div className="mb-12">
-                            <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
-                                Webinaire en Direct
-                                <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="h-12 w-12 ml-4" />
-                            </h2>
-                            <div className="p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
-                                <div className="grid grid-cols-1 gap-6">
-                                                                    {liveWebinars.map(webinar => (
-                                                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
-                                                                    ))}                                </div>
-                            </div>
-                        </div>
-                    )}
+                                        {/* Live Webinars */}
+                                        {liveWebinars.length > 0 && (
+                                            <div className="mb-12">
+                                                <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
+                                                    Webinaire en Direct
+                                                </h2>
+                                                <div className="p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
+                                                    <div className="grid grid-cols-1 gap-6">
+                                                        {liveWebinars.map(webinar => (
+                                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
 
                     {/* Next Upcoming Webinar (if not live) */}
                     {nearestWebinar && liveWebinars.length === 0 && (
