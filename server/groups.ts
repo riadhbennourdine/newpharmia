@@ -89,9 +89,9 @@ adminRouter.post('/', async (req, res) => {
     const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
-    // Validate pharmacists
-    if (!Array.isArray(pharmacistIds) || pharmacistIds.length === 0) {
-      return res.status(400).json({ message: 'Au moins un pharmacien est requis pour le groupe.' });
+    // Validate that there is at least one member
+    if ((pharmacistIds?.length || 0) === 0 && (preparatorIds?.length || 0) === 0) {
+      return res.status(400).json({ message: 'Le groupe doit contenir au moins un membre.' });
     }
 
     const pharmacistObjectIds = pharmacistIds.map((id: string) => new ObjectId(id));
