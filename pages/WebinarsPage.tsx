@@ -23,7 +23,10 @@ const CropTunisIntro: React.FC = () => (
     </div>
 );
 
-const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus } }> = ({ webinar }) => {
+const WebinarCard: React.FC<{ 
+    webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus },
+    isLiveCard?: boolean // Nouvelle prop
+}> = ({ webinar, isLiveCard }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -51,6 +54,34 @@ const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string |
         );
     };
 
+    // Rendu simplifié pour les cartes Live
+    if (isLiveCard) {
+        return (
+            <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+                <Link to={`/webinars/${webinar._id}`} className="block relative">
+                    <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
+                    {webinar.calculatedStatus === WebinarStatus.LIVE && (
+                        <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
+                    )}
+                    {/* Date en surbrillance */}
+                    <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
+                        {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    {/* Bouton Google Meet */}
+                    {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && (
+                        <div className="absolute bottom-2 right-2">
+                            {renderButton()}
+                        </div>
+                    )}
+                </Link>
+                <div className="p-4 flex flex-col">
+                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                </div>
+            </div>
+        );
+    }
+
+    // Rendu normal pour les autres cartes
     return (
         <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block relative">
@@ -223,10 +254,9 @@ const WebinarsPage: React.FC = () => {
                             </h2>
                             <div className="p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
                                 <div className="grid grid-cols-1 gap-6">
-                                    {liveWebinars.map(webinar => (
-                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} />
-                                    ))}
-                                </div>
+                                                                    {liveWebinars.map(webinar => (
+                                                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
+                                                                    ))}                                </div>
                             </div>
                         </div>
                     )}
