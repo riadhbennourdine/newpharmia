@@ -203,23 +203,41 @@ adminRouter.get('/:id', async (req, res) => {
 // Update a group
 adminRouter.put('/:id', async (req, res) => {
   try {
-    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount } = req.body;
+    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount, subscriptionEndDate } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
+    const groupId = new ObjectId(req.params.id);
+
+    // Update subscription date for the manager if provided
+    if (managedBy && subscriptionEndDate) {
+      const managerId = new ObjectId(managedBy);
+      const newSubscriptionEndDate = new Date(subscriptionEndDate);
+      const hasActiveSubscription = newSubscriptionEndDate > new Date();
+      
+      await usersCollection.updateOne(
+        { _id: managerId },
+        { 
+          $set: { 
+            subscriptionEndDate: newSubscriptionEndDate,
+            hasActiveSubscription: hasActiveSubscription 
+          } 
+        }
+      );
+    }
 
     const updateFields: any = {};
     if (name) updateFields.name = name;
-    if (pharmacistIds !== undefined && pharmacistIds !== null) updateFields.pharmacistIds = (pharmacistIds as string[]).map((id: string) => new ObjectId(id));
-    if (preparatorIds !== undefined && preparatorIds !== null) updateFields.preparatorIds = (preparatorIds as string[]).map((id: string) => new ObjectId(id));
+    if (pharmacistIds !== undefined) updateFields.pharmacistIds = (pharmacistIds as string[]).map(id => new ObjectId(id));
+    if (preparatorIds !== undefined) updateFields.preparatorIds = (preparatorIds as string[]).map(id => new ObjectId(id));
     if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
-
+    
     if (managedBy) {
       updateFields.managedBy = new ObjectId(managedBy);
-    } else if (managedBy === '') {
-      updateFields.managedBy = undefined;
+    } else if (managedBy === '' || managedBy === null) {
+      updateFields.$unset = { managedBy: "" };
     }
 
     const updatedGroup = await groupsCollection.findOneAndUpdate(
-      { _id: new ObjectId(req.params.id) },
+      { _id: groupId },
       { $set: updateFields },
       { returnDocument: 'after' }
     );
@@ -228,13 +246,31 @@ adminRouter.put('/:id', async (req, res) => {
       return res.status(404).json({ message: "Groupe non trouvé." });
     }
 
-    // Update users
-    const allUserIds = [...(pharmacistIds as string[] || []), ...(preparatorIds as string[] || [])].map((id: string) => new ObjectId(id));
-    await usersCollection.updateMany({ groupId: new ObjectId(req.params.id) }, { $unset: { groupId: '' } });
-    await usersCollection.updateMany(
-      { _id: { $in: allUserIds } },
-      { $set: { groupId: new ObjectId(req.params.id) } }
-    );
+    // Update users' groupId
+    const oldGroupUsers = await usersCollection.find({ groupId: groupId }).toArray();
+    const oldUserIds = oldGroupUsers.map(u => u._id);
+
+    const newUserIds = [
+      ...(updateFields.pharmacistIds || []),
+      ...(updateFields.preparatorIds || [])
+    ];
+
+    const usersToRemove = oldUserIds.filter(id => !newUserIds.some(newId => newId.equals(id)));
+    const usersToAdd = newUserIds.filter(id => !oldUserIds.some(oldId => oldId.equals(id)));
+
+    if (usersToRemove.length > 0) {
+      await usersCollection.updateMany(
+        { _id: { $in: usersToRemove } },
+        { $unset: { groupId: "" } }
+      );
+    }
+
+    if (usersToAdd.length > 0) {
+      await usersCollection.updateMany(
+        { _id: { $in: usersToAdd } },
+        { $set: { groupId: groupId } }
+      );
+    }
 
     res.json(updatedGroup);
   } catch (error) {

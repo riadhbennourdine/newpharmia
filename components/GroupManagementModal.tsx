@@ -1,55 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { Group, User, UserRole } from '../../types';
-
 import { useAuth } from '../hooks/useAuth';
 
 interface GroupManagementModalProps {
-  group?: Group;
+  group?: Group & { subscriptionEndDate?: Date }; // Ensure group type includes optional subscription date
   onClose: () => void;
-  fetchGroups: () => void; // Add this line
+  fetchGroups: () => void;
 }
 
 const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onClose, fetchGroups }) => {
   const { user: currentUser } = useAuth();
   const [name, setName] = useState(group?.name || '');
-  const [pharmacistIds, setPharmacistIds] = useState<string[]>(group?.pharmacistIds?.map(id => id.toString()) || []); // Changé en tableau
-  const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds as string[] || []);
+  const [pharmacistIds, setPharmacistIds] = useState<string[]>(group?.pharmacistIds?.map(id => id.toString()) || []);
+  const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds?.map(id => id.toString()) || []);
   const [subscriptionAmount, setSubscriptionAmount] = useState<number | undefined>(group?.subscriptionAmount);
+  const [managedBy, setManagedBy] = useState<string | undefined>(group?.managedBy?.toString());
+  
+  // State for the subscription date input
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string>('');
+
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
+  const [allManagers, setAllManagers] = useState<User[]>([]);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState(''); // Garder pour la recherche, mais la sélection sera multiple
+  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
 
-  const pricing = {
-    solo: {
-      name: 'Solo',
-      monthly: 29.900,
-      annual: 269.100,
-    },
-    starter: {
-      name: 'Starter',
-      monthly: 79.400,
-      annual: 714.600,
-    },
-    gold: {
-      name: 'Gold',
-      monthly: 108.900,
-      annual: 980.100,
-    }
+  // Format date to YYYY-MM-DD for input[type=date]
+  const formatDateForInput = (date: Date | undefined | null): string => {
+    if (!date) return '';
+    return new Date(date).toISOString().split('T')[0];
   };
 
   useEffect(() => {
     fetchPharmacists();
     fetchPreparators();
-    // Pas besoin d'initialiser pharmacistSearchTerm ici pour un seul pharmacien
-    // La sélection multiple sera gérée par des checkboxes
+    fetchManagers();
+
+    // Initialize subscription date from group prop
+    if (group?.subscriptionEndDate) {
+      setSubscriptionEndDate(formatDateForInput(group.subscriptionEndDate));
+    }
   }, [group]);
+
+  // Effect to update date when manager changes
+  useEffect(() => {
+    if (managedBy) {
+      const selectedManager = allManagers.find(m => m._id.toString() === managedBy);
+      if (selectedManager?.subscriptionEndDate) {
+        setSubscriptionEndDate(formatDateForInput(selectedManager.subscriptionEndDate));
+      } else {
+        setSubscriptionEndDate(''); // Reset if new manager has no date
+      }
+    }
+  }, [managedBy, allManagers]);
+
 
   const fetchPharmacists = async () => {
     try {
       const response = await fetch('/api/users/pharmacists');
-      const data = await response.json();
-      setAllPharmacists(data);
+      setAllPharmacists(await response.json());
     } catch (error) {
       console.error('Error fetching pharmacists:', error);
     }
@@ -58,12 +68,18 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const fetchPreparators = async () => {
     try {
       const response = await fetch('/api/users/preparateurs');
-      const data = await response.json();
-      setAllPreparators(data);
-      console.log('All preparators:', data);
-      console.log('All preparators:', data);
+      setAllPreparators(await response.json());
     } catch (error) {
       console.error('Error fetching preparators:', error);
+    }
+  };
+
+  const fetchManagers = async () => {
+    try {
+      const response = await fetch('/api/users/managers');
+      setAllManagers(await response.json());
+    } catch (error) {
+      console.error('Error fetching managers:', error);
     }
   };
 
@@ -83,7 +99,14 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const groupData = { name, pharmacistIds, preparatorIds, subscriptionAmount }; // pharmacistIds est un tableau
+    const groupData = { 
+      name, 
+      pharmacistIds, 
+      preparatorIds, 
+      subscriptionAmount,
+      managedBy,
+      subscriptionEndDate: subscriptionEndDate || null // Send null if empty
+    };
 
     try {
       const url = group ? `/api/admin/groups/${group._id}` : '/api/admin/groups';
@@ -96,7 +119,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
       });
 
       if (response.ok) {
-        fetchGroups(); // Refresh the groups list
+        fetchGroups();
         onClose();
       } else {
         const errorData = await response.json();
@@ -134,6 +157,36 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
               required
             />
           </div>
+
+          <div>
+            <label htmlFor="managedBy" className="block text-sm font-medium text-slate-700">Manager du Groupe</label>
+            <select
+              id="managedBy"
+              value={managedBy || ''}
+              onChange={(e) => setManagedBy(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+            >
+              <option value="">-- Sélectionner un manager --</option>
+              {allManagers.map(manager => (
+                <option key={manager._id as string} value={manager._id as string}>
+                  {manager.firstName} {manager.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="subscriptionEndDate" className="block text-sm font-medium text-slate-700">Date d'expiration de l'abonnement</label>
+            <input
+              type="date"
+              id="subscriptionEndDate"
+              value={subscriptionEndDate}
+              onChange={(e) => setSubscriptionEndDate(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+              disabled={!managedBy} // Disable if no manager is selected
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-700">Pharmaciens Responsables</label>
             <input
