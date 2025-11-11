@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Webinar, UserRole, WebinarGroup, User } from '../../types';
+import { Webinar, UserRole, WebinarGroup, User, WebinarStatus } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
@@ -103,13 +103,18 @@ const WebinarManagement: React.FC = () => {
             if (!response.ok) throw new Error('Failed to fetch webinars');
             const data: Webinar[] = await response.json();
 
-            const upcomingWebinars = data
-                .filter(w => new Date(w.date) > new Date())
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-            if (upcomingWebinars.length > 0) {
-                setSoonestWebinar(upcomingWebinars[0]);
-                setOtherWebinars(upcomingWebinars.slice(1));
+            const liveWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.LIVE);
+            const upcomingWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.UPCOMING);
+            const pastWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.PAST); // Pour référence, même si non affiché directement
+
+            // Pour la page de gestion, nous voulons voir les webinaires LIVE et UPCOMING
+            const relevantWebinars = [...liveWebinars, ...upcomingWebinars].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            if (relevantWebinars.length > 0) {
+                setSoonestWebinar(relevantWebinars[0]);
+                setOtherWebinars(relevantWebinars.slice(1));
             } else {
                 setSoonestWebinar(null);
                 setOtherWebinars([]);
