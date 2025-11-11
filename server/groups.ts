@@ -151,23 +151,32 @@ adminRouter.get('/', async (req, res) => {
         `${m.firstName} ${m.lastName}`
     ]));
 
-    // Add pharmacistNames and managerName to each group
+    // Add pharmacistNames, managerName, and subscriptionEndDate to each group
     const populatedGroups = groups.map(group => {
-      console.log('Processing group:', group); // <-- Ajouter ce log
       const pharmacistNames = (group.pharmacistIds || [])
         .map(id => pharmacistMap.get(id.toString()))
         .filter(name => name) as string[];
 
       let managerName = 'Non assigné';
-      if (group.managedBy && ObjectId.isValid(group.managedBy as string)) {
-        managerName = managerMap.get((group.managedBy as ObjectId).toString()) || 'Non assigné';
+      let subscriptionEndDate: Date | undefined = undefined;
+
+      if (group.managedBy && ObjectId.isValid(group.managedBy.toString())) {
+        const managerId = group.managedBy.toString();
+        managerName = managerMap.get(managerId) || 'Non assigné';
+        
+        // Find the manager user object to get subscriptionEndDate
+        const managerUser = managers.find(m => (m._id as ObjectId).toString() === managerId);
+        if (managerUser) {
+          subscriptionEndDate = managerUser.subscriptionEndDate;
+        }
       }
 
       return {
         ...group,
-        pharmacistNames: pharmacistNames, // Nouveau champ pour les noms des pharmaciens
+        pharmacistNames: pharmacistNames,
         managedByName: managerName,
-        preparatorIds: group.preparatorIds || [], // Assurer que c'est un tableau
+        preparatorIds: group.preparatorIds || [],
+        subscriptionEndDate: subscriptionEndDate, // Add subscription end date
       };
     });
 
