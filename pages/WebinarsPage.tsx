@@ -23,7 +23,7 @@ const CropTunisIntro: React.FC = () => (
     </div>
 );
 
-const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null } }> = ({ webinar }) => {
+const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus } }> = ({ webinar }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -53,8 +53,11 @@ const WebinarCard: React.FC<{ webinar: Webinar & { registrationStatus?: string |
 
     return (
         <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-            <Link to={`/webinars/${webinar._id}`} className="block">
+            <Link to={`/webinars/${webinar._id}`} className="block relative">
                 <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
+                {webinar.calculatedStatus === WebinarStatus.LIVE && (
+                    <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
+                )}
             </Link>
             <div className="p-4 flex-grow flex flex-col">
                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
@@ -212,15 +215,17 @@ const WebinarsPage: React.FC = () => {
                 <div className="space-y-12">
                     {/* Live Webinars */}
                     {liveWebinars.length > 0 && (
-                        <div className="mb-12 p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl flex items-center justify-between">
-                            <div className="flex items-center">
-                                <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="h-12 w-12 mr-4" />
-                                <h2 className="text-3xl font-bold">Webinaire en Direct</h2>
-                            </div>
-                            <div className="grid grid-cols-1 gap-6 flex-grow ml-8">
-                                {liveWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
-                                ))}
+                        <div className="mb-12">
+                            <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
+                                Webinaire en Direct
+                                <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="h-12 w-12 ml-4" />
+                            </h2>
+                            <div className="p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
+                                <div className="grid grid-cols-1 gap-6">
+                                    {liveWebinars.map(webinar => (
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
