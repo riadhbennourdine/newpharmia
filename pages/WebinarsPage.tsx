@@ -225,6 +225,16 @@ const WebinarsPage: React.FC = () => {
                         </div>
                     )}
 
+                    {/* Next Upcoming Webinar (if not live) */}
+                    {nearestWebinar && liveWebinars.length === 0 && (
+                        <div className="mb-12 p-6 bg-white rounded-lg shadow-xl border-t-4 border-teal-500">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                                <SparklesIcon className="h-6 w-6 text-teal-500 mr-2" /> Prochain Webinaire
+                            </h2>
+                            <WebinarCard webinar={nearestWebinar} />
+                        </div>
+                    )}
+
                     {/* Upcoming Webinars (Current Month) */}
                     {currentMonthWebinars.length > 0 && (
                          <div>
