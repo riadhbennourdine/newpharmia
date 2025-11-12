@@ -259,21 +259,15 @@ const WebinarDetailPage: React.FC = () => {
                         </h1>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-4 mb-6 max-h-[60px] overflow-hidden">
+                    <div className="mb-6 max-h-[60px] overflow-hidden">
                         {/* Image Section */}
-                        <div className="relative flex-1 min-w-0 h-[60px] rounded-lg overflow-hidden shadow-lg">
+                        <div className="relative h-[60px] rounded-lg overflow-hidden shadow-lg">
                             <img
                                 src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'}
                                 alt={webinar.title}
                                 className="absolute inset-0 w-full h-full object-contain"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
-                        </div>
-
-                        {/* YouTube Video Placeholder Section */}
-                        <div className="relative flex-1 min-w-0 h-[60px] bg-gray-300 flex items-center justify-center rounded-lg shadow-lg text-gray-600 font-semibold">
-                            <p>Placeholder Vidéo YouTube (60px)</p>
-                            {/* Here the actual YouTube iframe would go */}
                         </div>
                     </div>
 
