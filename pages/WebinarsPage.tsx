@@ -30,13 +30,6 @@ const WebinarCard: React.FC<{
 }> = ({ webinar, isLiveCard }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { addToCart, cartItems } = useCart();
-    const isInCart = cartItems.includes(webinar._id as string);
-
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent navigation when clicking the button
-        addToCart(webinar._id as string);
-    };
 
     const renderButtons = () => {
         if (webinar.calculatedStatus === WebinarStatus.PAST) {
@@ -74,18 +67,6 @@ const WebinarCard: React.FC<{
                     className="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-lg hover:bg-slate-300 transition-colors"
                 >
                     Détails
-                </button>
-                <button
-                    onClick={handleAddToCart}
-                    disabled={isInCart}
-                    className={`font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center ${
-                        isInCart
-                            ? 'bg-green-500 text-white cursor-not-allowed'
-                            : 'bg-teal-600 text-white hover:bg-teal-700'
-                    }`}
-                >
-                    {isInCart ? <CheckCircleIcon className="h-5 w-5 mr-2" /> : <ShoppingCartIcon className="h-5 w-5 mr-2" />}
-                    {isInCart ? 'Ajouté' : 'Ajouter'}
                 </button>
             </div>
         );
