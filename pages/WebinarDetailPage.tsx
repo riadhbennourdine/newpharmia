@@ -65,35 +65,6 @@ const AddToCartForm: React.FC<{ webinarId: string }> = ({ webinarId }) => {
         navigate('/cart');
     };
 
-    if (isAdded) {
-        return (
-            <div>
-                <p className="text-green-600 font-semibold text-center mb-4">Ajouté au panier !</p>
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
-                <div className="space-y-2 mb-4">
-                    {selectedSlots.map(slot => (
-                         <label key={slot} className="flex items-center p-3 border rounded-lg bg-teal-50 border-teal-500 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                value={slot}
-                                checked={true}
-                                onChange={() => handleCheckboxChange(slot)}
-                                className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-                            />
-                            <span className="ml-3 font-medium text-slate-700">{slot}</span>
-                        </label>
-                    ))}
-                </div>
-                <button
-                    onClick={handleGoToCart}
-                    className="w-full mt-4 bg-slate-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transition-colors"
-                >
-                    Voir le panier
-                </button>
-            </div>
-        );
-    }
-
     return (
         <div>
             <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
@@ -114,11 +85,15 @@ const AddToCartForm: React.FC<{ webinarId: string }> = ({ webinarId }) => {
                 ))}
             </div>
             <button
-                onClick={handleAddToCart}
-                disabled={selectedSlots.length === 0}
-                className="w-full mt-4 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                onClick={isAdded ? handleGoToCart : handleAddToCart}
+                disabled={!isAdded && selectedSlots.length === 0}
+                className={`w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${
+                    isAdded
+                        ? 'bg-orange-500 text-white hover:bg-orange-600'
+                        : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
+                }`}
             >
-                Ajouter au panier
+                {isAdded ? 'Ajouté' : 'Ajouter au panier'}
             </button>
         </div>
     );
