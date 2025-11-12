@@ -265,18 +265,18 @@ const WebinarDetailPage: React.FC = () => {
                             alt={webinar.title}
                             className="absolute inset-0 w-full h-full object-contain"
                         />
-                    </div>
-
-                    <div className="max-w-2xl mx-auto">
-                        <h2 className="text-4xl font-extrabold tracking-tight text-slate-800 mb-4">{webinar.title}</h2>
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90 text-slate-600 mb-8">
-                            <div className="flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5" />
-                                <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <UserIcon className="h-5 w-5" />
-                                <span className="font-medium">Animé par {webinar.presenter}</span>
+                        {/* Overlay for text */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10 flex flex-col justify-end p-6">
+                            <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2">{webinar.title}</h2>
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90 text-white">
+                                <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-5 w-5" />
+                                    <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <UserIcon className="h-5 w-5" />
+                                    <span className="font-medium">Animé par {webinar.presenter}</span>
+                                </div>
                             </div>
                         </div>
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
