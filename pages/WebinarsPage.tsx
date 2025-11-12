@@ -191,8 +191,8 @@ const WebinarsPage: React.FC = () => {
 
                 const currentMonthUpcoming = upcomingWebinars.filter(w => {
                     const d = new Date(w.date);
-                    const isNearest = nearestWebinar && nearestWebinar._id === w._id;
-                    return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && !isNearest;
+                    // Exclure le nearestWebinar de cette liste
+                    return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearestWebinar ? w._id.toString() !== nearestWebinar._id.toString() : true);
                 });
                 setCurrentMonthWebinars(currentMonthUpcoming);
 
