@@ -8,16 +8,16 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../com
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
         <div className="flex flex-col md:flex-row gap-4">
-            <div className="md:w-2/3 rounded-lg overflow-hidden shadow-lg h-80">
+            <div className="md:w-2/3 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
                 <img 
                     src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
                     alt="Préparateurs en ligne" 
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain" // Use object-contain to avoid truncation
                 />
             </div>
-            <div className="md:w-1/3 h-80 rounded-lg overflow-hidden shadow-lg">
+            <div className="md:w-1/3 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
                 <iframe
-                    className="w-full h-full"
+                    className="absolute inset-0 w-full h-full"
                     src="https://www.youtube.com/embed/KwUvB51Wcp8"
                     title="YouTube video player"
                     frameBorder="0"
