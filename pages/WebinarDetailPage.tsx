@@ -228,7 +228,38 @@ const WebinarDetailPage: React.FC = () => {
                             <div className="bg-slate-50 p-6 rounded-lg">
                                 <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
                                 
-                                <AddToCartForm webinarId={webinarId!} />
+                                {registeredAttendee && (registeredAttendee.status === 'PAYMENT_SUBMITTED' || registeredAttendee.status === 'CONFIRMED') ? (
+                                    <div>
+                                        <p className={`font-semibold text-center mb-4 ${registeredAttendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>
+                                            {registeredAttendee.status === 'CONFIRMED' ? 'Votre inscription est confirmée !' : 'Votre inscription est en attente de validation.'}
+                                        </p>
+                                        {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                            <>
+                                                <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
+                                                <div className="space-y-2 mb-4">
+                                                    {registeredAttendee.timeSlots.map(slot => (
+                                                        <div key={slot} className="flex items-center p-3 border rounded-lg bg-teal-50 border-teal-500">
+                                                            <span className="ml-3 font-medium text-slate-700">{slot}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                        {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (
+                                            <a
+                                                href={webinar.googleMeetLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                                            >
+                                                <span className="mr-2">Rejoindre la conférence</span>
+                                                <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
+                                            </a>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <AddToCartForm webinarId={webinarId!} />
+                                )}
 
                             </div>
 
