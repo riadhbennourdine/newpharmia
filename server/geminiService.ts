@@ -1,13 +1,8 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
-// The previous implementation used an older, unofficial '@google/genai' package.
-// Key changes include:
-// - New initialization: `new GoogleGenerativeAI(API_KEY)`
-// - Getting a model: `genAI.getGenerativeModel(...)`
-// - Generating content with schema: `model.generateContent({ ..., generationConfig: { response_mime_type: "application/json", response_schema: ... } })`
-// - Chat sessions: `model.startChat(...)`
+// The schemas now use the official JSON Schema format required by the SDK.
 
 const getApiKey = () => {
   const API_KEY = process.env.GEMINI_API_KEY;
@@ -15,63 +10,23 @@ const getApiKey = () => {
   return API_KEY;
 };
 
-// Helper to convert old schema format to standard JSON schema
-const convertSchema = (schema: any): any => {
-  if (typeof schema !== 'object' || schema === null) {
-    return schema;
-  }
-
-  if (Array.isArray(schema)) {
-    return schema.map(convertSchema);
-  }
-
-  const newSchema: { [key: string]: any } = {};
-  for (const key in schema) {
-    if (key === 'type') {
-      // Map old SDK types to JSON schema string types
-      switch (schema[key]) {
-        case 'OBJECT':
-          newSchema[key] = 'object';
-          break;
-        case 'ARRAY':
-          newSchema[key] = 'array';
-          break;
-        case 'STRING':
-          newSchema[key] = 'string';
-          break;
-        case 'INTEGER':
-          newSchema[key] = 'integer';
-          break;
-        default:
-          newSchema[key] = schema[key];
-      }
-    } else if (key === 'properties' || key === 'items') {
-      newSchema[key] = convertSchema(schema[key]);
-    } else {
-      newSchema[key] = schema[key];
-    }
-  }
-  return newSchema;
-};
-
-
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  let jsonStructure: any = {
-    type: "object",
+  let jsonStructure: Schema = {
+    type: "OBJECT",
     properties: {
-      title: { type: "string" },
-      patientSituation: { type: "string" },
-      keyQuestions: { type: "array", items: { type: "string" } },
-      pathologyOverview: { type: "string" },
-      redFlags: { type: "array", items: { type: "string" } },
-      mainTreatment: { type: "array", items: { type: "string" } },
-      associatedProducts: { type: "array", items: { type: "string" } },
-      lifestyleAdvice: { type: "array", items: { type: "string" } },
-      dietaryAdvice: { type: "array", items: { type: "string" } },
-      references: { type: "array", items: { type: "string" } },
+      title: { type: "STRING" },
+      patientSituation: { type: "STRING" },
+      keyQuestions: { type: "ARRAY", items: { type: "STRING" } },
+      pathologyOverview: { type: "STRING" },
+      redFlags: { type: "ARRAY", items: { type: "STRING" } },
+      mainTreatment: { type: "ARRAY", items: { type: "STRING" } },
+      associatedProducts: { type: "ARRAY", items: { type: "STRING" } },
+      lifestyleAdvice: { type: "ARRAY", items: { type: "STRING" } },
+      dietaryAdvice: { type: "ARRAY", items: { type: "STRING" } },
+      references: { type: "ARRAY", items: { type: "STRING" } },
     },
     required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'],
   };
@@ -82,17 +37,17 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        title: { type: "string" },
-        shortDescription: { type: "string" },
+        title: { type: "STRING" },
+        shortDescription: { type: "STRING" },
         memoSections: {
-          type: "array",
+          type: "ARRAY",
           items: {
-            type: "object",
+            type: "OBJECT",
             properties: {
-              title: { type: "string" },
-              content: { type: "string" },
+              title: { type: "STRING" },
+              content: { type: "STRING" },
             },
             required: ['title', 'content'],
           },
@@ -102,18 +57,18 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        title: { type: "string" },
-        casComptoir: { type: "string" },
-        objectifsConseil: { type: "string" },
-        pathologiesConcernees: { type: "string" },
-        interetDispositif: { type: "string" },
-        beneficesSante: { type: "string" },
-        dispositifsAConseiller: { type: "string" },
-        reponsesObjections: { type: "string" },
-        pagesSponsorisees: { type: "string" },
-        references: { type: "array", items: { type: "string" } },
+        title: { type: "STRING" },
+        casComptoir: { type: "STRING" },
+        objectifsConseil: { type: "STRING" },
+        pathologiesConcernees: { type: "STRING" },
+        interetDispositif: { type: "STRING" },
+        beneficesSante: { type: "STRING" },
+        dispositifsAConseiller: { type: "STRING" },
+        reponsesObjections: { type: "STRING" },
+        pagesSponsorisees: { type: "STRING" },
+        references: { type: "ARRAY", items: { type: "STRING" } },
       },
       required: [
         'title',
@@ -130,53 +85,53 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'ordonnances') {
     jsonStructure = {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        title: { type: "string" },
-        ordonnance: { type: "array", items: { type: "string" } },
-        analyseOrdonnance: { type: "array", items: { type: "string" } },
+        title: { type: "STRING" },
+        ordonnance: { type: "ARRAY", items: { type: "STRING" } },
+        analyseOrdonnance: { type: "ARRAY", items: { type: "STRING" } },
         conseilsTraitement: {
-          type: "array",
+          type: "ARRAY",
           items: {
-            type: "object",
+            type: "OBJECT",
             properties: {
-              medicament: { type: "string" },
-              conseils: { type: "array", items: { type: "string" } },
+              medicament: { type: "STRING" },
+              conseils: { type: "ARRAY", items: { type: "STRING" } },
             },
             required: ['medicament', 'conseils'],
           },
         },
-        informationsMaladie: { type: "array", items: { type: "string" } },
-        conseilsHygieneDeVie: { type: "array", items: { type: "string" } },
-        conseilsAlimentaires: { type: "array", items: { type: "string" } },
+        informationsMaladie: { type: "ARRAY", items: { type: "STRING" } },
+        conseilsHygieneDeVie: { type: "ARRAY", items: { type: "STRING" } },
+        conseilsAlimentaires: { type: "ARRAY", items: { type: "STRING" } },
         ventesAdditionnelles: {
-          type: "object",
+          type: "OBJECT",
           properties: {
-            complementsAlimentaires: { type: "array", items: { type: "string" } },
-            accessoires: { type: "array", items: { type: "string" } },
-            dispositifs: { type: "array", items: { type: "string" } },
-            cosmetiques: { type: "array", items: { type: "string" } },
+            complementsAlimentaires: { type: "ARRAY", items: { type: "STRING" } },
+            accessoires: { type: "ARRAY", items: { type: "STRING" } },
+            dispositifs: { type: "ARRAY", items: { type: "STRING" } },
+            cosmetiques: { type: "ARRAY", items: { type: "STRING" } },
           },
         },
-        references: { type: "array", items: { type: "string" } },
+        references: { type: "ARRAY", items: { type: "STRING" } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   } else if (memoFicheType === 'communication') {
     jsonStructure = {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        title: { type: "string" },
-        shortDescription: { type: "string" },
-        summary: { type: "string" },
-        patientSituation: { type: "string" },
+        title: { type: "STRING" },
+        shortDescription: { type: "STRING" },
+        summary: { type: "STRING" },
+        patientSituation: { type: "STRING" },
         customSections: {
-          type: "array",
+          type: "ARRAY",
           items: {
-            type: "object",
+            type: "OBJECT",
             properties: {
-              title: { type: "string" },
-              content: { type: "string" },
+              title: { type: "STRING" },
+              content: { type: "STRING" },
             },
             required: ['title', 'content'],
           },
@@ -214,7 +169,6 @@ ${prompt}`;
   const response = result.response;
   const responseText = response.text().trim();
   
-  // The response should be clean JSON, but we keep the cleanup logic just in case.
   const jsonText = responseText.startsWith('```json')
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
@@ -224,51 +178,51 @@ ${prompt}`;
   return { ...generatedData, status: MemoFicheStatus.DRAFT };
 };
 
-const learningToolsSchema = {
-    type: "object",
+const learningToolsSchema: Schema = {
+    type: "OBJECT",
     properties: {
         flashcards: {
-            type: "array",
+            type: "ARRAY",
             items: {
-                type: "object",
+                type: "OBJECT",
                 properties: {
-                    question: { type: "string" },
-                    answer: { type: "string" },
+                    question: { type: "STRING" },
+                    answer: { type: "STRING" },
                 },
                 required: ['question', 'answer'],
             },
             description: "Crée exactement 10 flashcards pertinentes pour aider à mémoriser les points clés de la mémofiche."
         },
         glossary: {
-            type: "array",
+            type: "ARRAY",
             items: {
-                type: "object",
+                type: "OBJECT",
                 properties: {
-                    term: { type: "string" },
-                    definition: { type: "string" },
+                    term: { type: "STRING" },
+                    definition: { type: "STRING" },
                 },
                 required: ['term', 'definition'],
             },
             description: "Crée un glossaire d'exactement 10 termes techniques importants mentionnés dans la mémofiche."
         },
         quiz: {
-            type: "array",
+            type: "ARRAY",
             items: {
-                type: "object",
+                type: "OBJECT",
                 properties: {
                     questionType: {
-                        type: "string",
+                        type: "STRING",
                         enum: ['QCM', 'VRAI_FAUX'],
                         description: "Le type de question : QCM (Question à Choix Multiples) ou VRAI_FAUX."
                     },
-                    question: { type: "string" },
+                    question: { type: "STRING" },
                     options: {
-                        type: "array", 
-                        items: { type: "string" },
+                        type: "ARRAY", 
+                        items: { type: "STRING" },
                         description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
                     },
-                    correctAnswerIndex: { type: "integer" },
-                    explanation: { type: "string" }
+                    correctAnswerIndex: { type: "INTEGER" },
+                    explanation: { type: "STRING" }
                 },
                 required: ['questionType', 'question', 'options', 'correctAnswerIndex', 'explanation']
             },
@@ -321,7 +275,7 @@ Ne rajoute rien d'autre à cette réponse de salutation.
 
 Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.`;
 
-    const history = [
+    const history: Part[] = [
         { role: "user", parts: [{ text: system_prompt }] },
         { role: "model", parts: [{ text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :
 

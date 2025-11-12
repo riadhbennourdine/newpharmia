@@ -16,7 +16,7 @@ const getApiKey = () => {
 export const uploadFileToGemini = async (path: string, mimeType: string) => {
   const genAI = new GoogleGenerativeAI(getApiKey());
   console.log(`Uploading file: ${path} with mimeType: ${mimeType}`);
-  const result = await genAI.uploadFile(path, mimeType);
+  const result = await (genAI as any).uploadFile(path, mimeType);
   console.log(`Upload successful for ${path}. Gemini file name: ${result.file.name}`);
   return result.file;
 };
