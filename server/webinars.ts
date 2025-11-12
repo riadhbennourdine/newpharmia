@@ -194,10 +194,39 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
     }
 });
 
+// POST to get multiple webinars by their IDs
+router.post('/by-ids', async (req, res) => {
+    try {
+        const { ids } = req.body;
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ message: 'An array of webinar IDs is required.' });
+        }
+
+        const validObjectIds = ids.filter(id => ObjectId.isValid(id)).map(id => new ObjectId(id));
+
+        if (validObjectIds.length === 0) {
+            return res.status(400).json({ message: 'No valid webinar IDs provided.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const webinars = await webinarsCollection.find({ _id: { $in: validObjectIds } }).toArray();
+        
+        res.json(webinars);
+
+    } catch (error) {
+        console.error('Error fetching webinars by IDs:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 // POST to create a new webinar (Admin only)
 router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
-        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group } = req.body;
+        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group, price } = req.body;
 
         if (!title || !description || !date || !presenter) {
             return res.status(400).json({ message: 'Title, description, date, and presenter are required.' });
@@ -212,6 +241,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WE
             description,
             date: new Date(date),
             presenter,
+            price: price ? parseFloat(price) : 0,
             registrationLink: registrationLink || '',
             imageUrl: imageUrl || '',
             googleMeetLink: googleMeetLink || '',
@@ -251,6 +281,9 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_
         updates.updatedAt = new Date();
         if(updates.date) {
             updates.date = new Date(updates.date);
+        }
+        if (updates.price) {
+            updates.price = parseFloat(updates.price);
         }
 
 

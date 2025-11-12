@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
-import { Spinner, SparklesIcon } from '../components/Icons';
+import { useCart } from '../context/CartContext'; // Import useCart
+import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../components/Icons';
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
@@ -25,12 +26,19 @@ const CropTunisIntro: React.FC = () => (
 
 const WebinarCard: React.FC<{ 
     webinar: Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus },
-    isLiveCard?: boolean // Nouvelle prop
+    isLiveCard?: boolean
 }> = ({ webinar, isLiveCard }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addToCart, cartItems } = useCart();
+    const isInCart = cartItems.includes(webinar._id as string);
 
-    const renderButton = () => {
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent navigation when clicking the button
+        addToCart(webinar._id as string);
+    };
+
+    const renderButtons = () => {
         if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink) {
             return (
                 <a
@@ -39,31 +47,54 @@ const WebinarCard: React.FC<{
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
                 >
-                    <span className="mr-2">Rejoindre avec</span>
+                    <span className="mr-2">Rejoindre</span>
                     <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
                 </a>
             );
         }
+        if (webinar.registrationStatus === 'PENDING' || webinar.registrationStatus === 'PAYMENT_SUBMITTED') {
+            return (
+                 <button
+                    onClick={() => navigate(`/webinars/${webinar._id}`)}
+                    className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600 transition-colors"
+                >
+                    Voir inscription
+                </button>
+            );
+        }
         return (
-            <button
-                onClick={() => navigate(`/webinars/${webinar._id}`)}
-                className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
-            >
-                {webinar.registrationStatus === 'PENDING' || webinar.registrationStatus === 'PAYMENT_SUBMITTED' ? 'Voir inscription' : 'S\'inscrire'}
-            </button>
+            <div className="flex items-center space-x-2">
+                <button
+                    onClick={() => navigate(`/webinars/${webinar._id}`)}
+                    className="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-lg hover:bg-slate-300 transition-colors"
+                >
+                    Détails
+                </button>
+                <button
+                    onClick={handleAddToCart}
+                    disabled={isInCart}
+                    className={`font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center ${
+                        isInCart
+                            ? 'bg-green-500 text-white cursor-not-allowed'
+                            : 'bg-teal-600 text-white hover:bg-teal-700'
+                    }`}
+                >
+                    {isInCart ? <CheckCircleIcon className="h-5 w-5 mr-2" /> : <ShoppingCartIcon className="h-5 w-5 mr-2" />}
+                    {isInCart ? 'Ajouté' : 'Ajouter'}
+                </button>
+            </div>
         );
     };
 
-    // Rendu simplifié pour les cartes Live
     if (isLiveCard) {
+        // Simplified rendering for Live cards
         return (
             <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
                 <Link to={`/webinars/${webinar._id}`} className="block relative">
-                    <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-24 w-full object-cover" /> {/* h-24 au lieu de h-40 */}
+                    <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-24 w-full object-cover" />
                     {webinar.calculatedStatus === WebinarStatus.LIVE && (
                         <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
                     )}
-                    {/* Date en surbrillance */}
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
                         {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
@@ -88,7 +119,6 @@ const WebinarCard: React.FC<{
         );
     }
 
-    // Rendu normal pour les autres cartes
     return (
         <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block relative">
@@ -107,7 +137,7 @@ const WebinarCard: React.FC<{
                 <p className="text-xl font-bold text-teal-600 py-2">
                     {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
-                {renderButton()}
+                {renderButtons()}
             </div>
         </div>
     );

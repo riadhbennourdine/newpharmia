@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 // Providers
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
+import { CartProvider } from './context/CartContext';
 
 // Layout and Route Protection
 import AppLayout from './components/Layout';
@@ -50,6 +51,7 @@ import WebinarDetailPage from './pages/WebinarDetailPage';
 import WebinarManagement from './pages/admin/WebinarManagement';
 import ImageManager from './pages/admin/ImageManager';
 import WebinarAdminManager from './pages/admin/WebinarAdminManager';
+import CartPage from './pages/CartPage'; // Import CartPage
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -59,69 +61,72 @@ const App: React.FC = () => (
     <HashRouter>
         <AuthProvider>
             <DataProvider>
-                <Routes>
-                    {/* Public Routes */}
-                    <Route element={<AppLayout />}>
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/tarifs" element={<PricingPage />} />
-                        <Route path="/contact" element={<ContactFormView />} />
-                        <Route path="/apercu-memofiche" element={<MemoFichePreview />} />
-                        <Route path="/webinars" element={<WebinarsPage />} />
-                        <Route path="/webinars/:id" element={<WebinarDetailPage />} />
-                    </Route>
-                    <Route path="/login" element={<LoginView />} />
-                    <Route path="/register" element={<RegisterView />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordView />} />
-                    <Route path="/reset-password" element={<ResetPasswordView />} />
-                    <Route path="/activate-account" element={<ActivateAccountView />} />
-                    <Route path="/unsubscribe" element={<UnsubscribePage />} />
-                    
-                    {/* Authenticated Routes */}
-                    <Route element={<LoggedInRoute />}>
-                        {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/memofiches" element={<MemoFichesPage />} />
-                        <Route path="/memofiche/:id" element={<MemoFichePage />} />
-                        <Route path="/quiz/:id" element={<QuizPage />} />
-                        <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
-                        <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
-                        <Route path="/complete-profile" element={<ProfileCompletionView />} />
-
-                        {/* Routes for Formateurs & Admins */}
-                        <Route element={<FormateurOrAdminRoute />}>
-                            <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
-                            <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                <CartProvider>
+                    <Routes>
+                        {/* Public Routes */}
+                        <Route element={<AppLayout />}>
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/tarifs" element={<PricingPage />} />
+                            <Route path="/contact" element={<ContactFormView />} />
+                            <Route path="/apercu-memofiche" element={<MemoFichePreview />} />
+                            <Route path="/webinars" element={<WebinarsPage />} />
+                            <Route path="/webinars/:id" element={<WebinarDetailPage />} />
+                            <Route path="/cart" element={<CartPage />} />
                         </Route>
+                        <Route path="/login" element={<LoginView />} />
+                        <Route path="/register" element={<RegisterView />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordView />} />
+                        <Route path="/reset-password" element={<ResetPasswordView />} />
+                        <Route path="/activate-account" element={<ActivateAccountView />} />
+                        <Route path="/unsubscribe" element={<UnsubscribePage />} />
+                        
+                        {/* Authenticated Routes */}
+                        <Route element={<LoggedInRoute />}>
+                            {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/memofiches" element={<MemoFichesPage />} />
+                            <Route path="/memofiche/:id" element={<MemoFichePage />} />
+                            <Route path="/quiz/:id" element={<QuizPage />} />
+                            <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
+                            <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
+                            <Route path="/complete-profile" element={<ProfileCompletionView />} />
 
-                        {/* Routes for Formateurs & Admins */}
-                        <Route element={<FormateurOrAdminRoute />}>
-                            <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
-                            <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
-                            {/* CRM Routes for Formateurs & Admins */}
-                            <Route path="/admin/crm" element={<CRMDashboard />}>
-                                <Route index element={<Navigate to="appointments" replace />} />
-                                <Route path="clients" element={<ClientList />} />
-                                <Route path="prospects" element={<ProspectList />} />
-                                <Route path="appointments" element={<AppointmentList />} />
+                            {/* Routes for Formateurs & Admins */}
+                            <Route element={<FormateurOrAdminRoute />}>
+                                <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
+                                <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
                             </Route>
-                            <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
-                        </Route>
 
-                        {/* Routes for Admins ONLY */}
-                        <Route element={<AdminOnlyRoute />}>
-                            <Route path="/generateur" element={<GeneratorView />} />
-                            <Route path="/admin" element={<AdminPanel />} />
-                            <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
-                            <Route path="/admin/newsletter" element={<NewsletterManager />} />
-                            <Route path="/admin/webinars" element={<WebinarManagement />} />
-                            <Route path="/admin/image-manager" element={<ImageManager />} />
-                            <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
+                            {/* Routes for Formateurs & Admins */}
+                            <Route element={<FormateurOrAdminRoute />}>
+                                <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
+                                <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                                {/* CRM Routes for Formateurs & Admins */}
+                                <Route path="/admin/crm" element={<CRMDashboard />}>
+                                    <Route index element={<Navigate to="appointments" replace />} />
+                                    <Route path="clients" element={<ClientList />} />
+                                    <Route path="prospects" element={<ProspectList />} />
+                                    <Route path="appointments" element={<AppointmentList />} />
+                                </Route>
+                                <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
+                            </Route>
+
+                            {/* Routes for Admins ONLY */}
+                            <Route element={<AdminOnlyRoute />}>
+                                <Route path="/generateur" element={<GeneratorView />} />
+                                <Route path="/admin" element={<AdminPanel />} />
+                                <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
+                                <Route path="/admin/newsletter" element={<NewsletterManager />} />
+                                <Route path="/admin/webinars" element={<WebinarManagement />} />
+                                <Route path="/admin/image-manager" element={<ImageManager />} />
+                                <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
+                            </Route>
                         </Route>
-                    </Route>
-                    
-                    {/* Not Found Route */}
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
+                        
+                        {/* Not Found Route */}
+                        <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                </CartProvider>
             </DataProvider>
         </AuthProvider>
     </HashRouter>

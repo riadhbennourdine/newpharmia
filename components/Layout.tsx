@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../context/CartContext'; // Import useCart
 import { UserRole } from '../types';
 import Footer from './Footer';
+import { ShoppingCartIcon } from './Icons'; // Import ShoppingCartIcon
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { getItemCount } = useCart();
+  const itemCount = getItemCount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -24,6 +28,33 @@ const Header: React.FC = () => {
     `${mobileBaseLinkClass} ${
       isActive ? 'bg-teal-50 text-teal-700' : 'text-teal-600 hover:bg-gray-50 hover:text-teal-500'
     }`;
+
+  const cartLink = (
+    <NavLink to="/cart" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+      <div className="relative">
+        <ShoppingCartIcon className="h-6 w-6" />
+        {itemCount > 0 && (
+          <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            {itemCount}
+          </span>
+        )}
+      </div>
+    </NavLink>
+  );
+
+  const mobileCartLink = (
+     <NavLink to="/cart" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+      <div className="flex items-center">
+        <ShoppingCartIcon className="h-6 w-6 mr-2" />
+        <span>Panier</span>
+        {itemCount > 0 && (
+          <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            {itemCount}
+          </span>
+        )}
+      </div>
+    </NavLink>
+  );
 
   const navLinks = (
     <>
@@ -48,6 +79,7 @@ const Header: React.FC = () => {
           <NavLink to="/webinars" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Webinaires
           </NavLink>
+          {cartLink}
           {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR ? (
             <div className="relative group">
               <button className={navLinkClass({ isActive: false }) + " flex items-center"}>
@@ -82,6 +114,7 @@ const Header: React.FC = () => {
           <NavLink to="/contact" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Contact
           </NavLink>
+          {cartLink}
           <Link to="/login" className="ml-4 bg-teal-600 text-white font-semibold px-4 py-2 rounded-md text-sm hover:bg-teal-700 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
             Connexion
           </Link>
@@ -113,6 +146,7 @@ const Header: React.FC = () => {
           <NavLink to="/webinars" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Webinaires
           </NavLink>
+          {mobileCartLink}
           {user?.role === UserRole.ADMIN || user?.role === UserRole.FORMATEUR ? (
             <div className="border-t border-gray-200 mt-2 pt-2">
               <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</p>
@@ -145,6 +179,7 @@ const Header: React.FC = () => {
           <NavLink to="/contact" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Contact
           </NavLink>
+          {mobileCartLink}
           <Link to="/login" className="block w-full text-left mt-2 bg-teal-600 text-white font-semibold px-3 py-2 rounded-md text-base hover:bg-teal-700 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
             Connexion
           </Link>
@@ -167,6 +202,14 @@ const Header: React.FC = () => {
             {navLinks}
           </nav>
           <div className="md:hidden flex items-center">
+            {itemCount > 0 && (
+              <NavLink to="/cart" className="relative mr-4" onClick={() => setIsMobileMenuOpen(false)}>
+                <ShoppingCartIcon className="h-6 w-6 text-teal-600" />
+                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                  {itemCount}
+                </span>
+              </NavLink>
+            )}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
