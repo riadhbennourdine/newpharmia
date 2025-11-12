@@ -172,7 +172,7 @@ const WebinarDetailPage: React.FC = () => {
     }, [webinar?.registrationStatus, fetchWebinar]);
 
     if (isLoading) {
-        return <div className="flex justify-center items-center h-screen"><Spinner className="h-16 w-16 text-teal-600" /></div>;
+        return <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>;
     }
 
     if (error) {

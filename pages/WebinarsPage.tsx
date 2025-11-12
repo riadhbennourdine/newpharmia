@@ -260,7 +260,7 @@ const WebinarsPage: React.FC = () => {
             {activeTab === WebinarGroup.CROP_TUNIS && <CropTunisIntro />}
 
             {isLoading ? (
-                <div className="flex justify-center items-center h-64"><Spinner className="h-12 w-12 text-teal-600" /></div>
+                <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>
             ) : error ? (
                 <div className="text-center py-12 bg-red-50 text-red-700 rounded-lg shadow-sm">
                     <h3 className="text-xl font-semibold">Erreur de chargement</h3>
