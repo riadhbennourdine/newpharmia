@@ -29,3 +29,32 @@ export const TOPIC_CATEGORIES = [
         ]
     }
 ];
+
+// Placeholder for MEMOFICHES to fix build error
+export const MEMOFICHES = [
+    {
+        _id: 'preview-1',
+        id: 'preview-1',
+        title: 'Exemple de Mémofiche',
+        shortDescription: 'Ceci est un aperçu du contenu d\'une mémofiche interactive.',
+        theme: 'Dermocosmétique',
+        system: 'Peau',
+        creationDate: new Date().toISOString(),
+        status: 'Published',
+        isLocked: true,
+        patientSituation: {
+            title: 'Situation du Patient',
+            content: [{ type: 'text', value: 'Un patient se présente avec une peau sèche et des démangeaisons.' }]
+        },
+        keyQuestions: [],
+        pathologyOverview: {
+            title: 'Aperçu',
+            content: [{ type: 'text', value: 'Informations sur la pathologie.' }]
+        },
+        redFlags: [],
+        keyPoints: [],
+        glossary: [],
+        flashcards: [],
+        references: [],
+    }
+];
