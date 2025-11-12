@@ -85,7 +85,7 @@ const WebinarManagement: React.FC = () => {
     const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { token } = useAuth();
+    const { token, user } = useAuth();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
