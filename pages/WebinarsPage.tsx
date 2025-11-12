@@ -39,6 +39,11 @@ const WebinarCard: React.FC<{
     };
 
     const renderButtons = () => {
+        if (webinar.calculatedStatus === WebinarStatus.PAST) {
+            return (
+                <p className="text-sm text-slate-500 italic">Webinaire passé</p>
+            );
+        }
         if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink) {
             return (
                 <a
@@ -135,7 +140,7 @@ const WebinarCard: React.FC<{
             </div>
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
                 <p className="text-xl font-bold text-teal-600 py-2">
-                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    {webinar.price ? `${webinar.price.toFixed(3)} TND` : 'Gratuit'}
                 </p>
                 {renderButtons()}
             </div>
