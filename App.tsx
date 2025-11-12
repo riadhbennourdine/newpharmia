@@ -52,6 +52,7 @@ import WebinarManagement from './pages/admin/WebinarManagement';
 import ImageManager from './pages/admin/ImageManager';
 import WebinarAdminManager from './pages/admin/WebinarAdminManager';
 import CartPage from './pages/CartPage'; // Import CartPage
+import CheckoutPage from './pages/CheckoutPage'; // Import CheckoutPage
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -82,6 +83,7 @@ const App: React.FC = () => (
                         
                         {/* Authenticated Routes */}
                         <Route element={<LoggedInRoute />}>
+                            <Route path="/checkout/:orderId" element={<CheckoutPage />} />
                             {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/memofiches" element={<MemoFichesPage />} />

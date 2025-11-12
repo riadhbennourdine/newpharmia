@@ -2,13 +2,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../hooks/useAuth'; // Import useAuth
 import { Webinar } from '../types';
 import { Spinner, TrashIcon } from '../components/Icons';
 
 const CartPage: React.FC = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
+  const { token } = useAuth(); // Get auth token
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -53,17 +56,47 @@ const CartPage: React.FC = () => {
     return webinars.reduce((total, webinar) => total + (webinar.price || 0), 0);
   }, [webinars]);
 
-  const handleCheckout = () => {
-    // Later, this will navigate to a checkout page
-    console.log('Proceeding to checkout with items:', webinars);
-    alert('La page de paiement n\'est pas encore implémentée.');
+  const handleCheckout = async () => {
+    if (!token) {
+        alert('Vous devez être connecté pour passer une commande.');
+        navigate('/login');
+        return;
+    }
+
+    setIsCreatingOrder(true);
+    setError(null);
+
+    try {
+        const response = await fetch('/api/orders/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ webinarIds: cartItems }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create order.');
+        }
+
+        const { orderId } = await response.json();
+        clearCart(); // Clear cart after order is successfully created
+        navigate(`/checkout/${orderId}`); // Redirect to the new checkout page
+
+    } catch (err: any) {
+        setError(err.message);
+        alert(`Erreur lors de la création de la commande: ${err.message}`);
+    } finally {
+        setIsCreatingOrder(false);
+    }
   };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-64"><Spinner /></div>;
   }
 
-  if (error) {
+  if (error && !isCreatingOrder) { // Don't show page-level error if it's an order creation error
     return <div className="text-center text-red-500 py-10">{error}</div>;
   }
 
@@ -124,10 +157,11 @@ const CartPage: React.FC = () => {
               </div>
               <div className="mt-6">
                 <button 
-                  onClick={handleCheckout} 
-                  className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                  onClick={handleCheckout}
+                  disabled={isCreatingOrder}
+                  className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors disabled:bg-teal-400 disabled:cursor-not-allowed flex justify-center items-center"
                 >
-                  Procéder au paiement
+                  {isCreatingOrder ? <Spinner className="h-5 w-5" /> : 'Procéder au paiement'}
                 </button>
                 <button 
                   onClick={clearCart} 

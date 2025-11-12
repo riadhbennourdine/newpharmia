@@ -258,3 +258,21 @@ export interface Image {
   url: string;
   createdAt: Date;
 }
+
+export enum OrderStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
+  PAYMENT_SUBMITTED = 'PAYMENT_SUBMITTED',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface Order {
+  _id: ObjectId | string;
+  userId: ObjectId | string;
+  webinarIds: (ObjectId | string)[];
+  totalAmount: number;
+  paymentProofUrl?: string;
+  status: OrderStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -261,6 +261,7 @@ import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from
 import usersRoutes from './server/users.js';
 console.log('server.ts: usersRoutes imported successfully.');
 import webinarsRouter from './server/webinars.js';
+import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
 
@@ -272,6 +273,7 @@ app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
+app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
 
