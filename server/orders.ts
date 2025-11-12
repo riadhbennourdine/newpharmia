@@ -156,7 +156,7 @@ router.post('/:orderId/submit-payment', authenticateToken, async (req: Authentic
         const bulkUpdateOps = order.webinarIds.map(webinarId => ({
             updateOne: {
                 filter: { _id: new ObjectId(webinarId) },
-                update: { $push: { attendees: newAttendee as any } }
+                update: { $push: { attendees: newAttendee } }
             }
         }));
 

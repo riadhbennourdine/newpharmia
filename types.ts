@@ -216,6 +216,12 @@ export enum WebinarTimeSlot {
     EVENING = '15:30',
 }
 
+export enum WebinarStatus {
+    LIVE = 'LIVE',
+    UPCOMING = 'UPCOMING',
+    PAST = 'PAST',
+}
+
 export enum WebinarGroup {
     CROP_TUNIS = 'CROP Tunis',
     PHARMIA = 'PharmIA',
