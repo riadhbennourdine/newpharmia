@@ -30,6 +30,8 @@ const WebinarCard: React.FC<{
 }> = ({ webinar, isLiveCard }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { findItem } = useCart(); // Use findItem to check if webinar is in cart
+    const isInCart = !!findItem(webinar._id as string);
 
     const renderButtons = () => {
         if (webinar.calculatedStatus === WebinarStatus.PAST) {
@@ -57,6 +59,16 @@ const WebinarCard: React.FC<{
                     className="bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600 transition-colors"
                 >
                     Voir inscription
+                </button>
+            );
+        }
+        if (isInCart) {
+            return (
+                <button
+                    onClick={() => navigate(`/webinars/${webinar._id}`)}
+                    className="bg-orange-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-orange-600 transition-colors"
+                >
+                    Ajouté
                 </button>
             );
         }
