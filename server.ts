@@ -5,6 +5,8 @@ import cors from 'cors';
 // FIX: Added imports for ES module scope __dirname
 import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
+import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
+import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
@@ -276,6 +278,58 @@ app.use('/api/webinars', webinarsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
+
+// ===============================================
+// ADMIN FILE SEARCH API
+// ===============================================
+const fileSearchUpload = multer({ dest: 'tmp/filesearch/' });
+// Ensure the upload directory exists
+if (!fs.existsSync('tmp/filesearch/')) {
+    fs.mkdirSync('tmp/filesearch/', { recursive: true });
+}
+
+app.post('/api/admin/filesearch/upload', authenticateToken, fileSearchUpload.single('file'), async (req: AuthenticatedRequest, res) => {
+    if (req.user?.role !== UserRole.ADMIN) {
+        // Clean up uploaded file if user is not admin
+        if (req.file) fs.unlinkSync(req.file.path);
+        return res.status(403).json({ message: 'Accès non autorisé.' });
+    }
+    if (!req.file) {
+        return res.status(400).json({ message: 'Aucun fichier envoyé.' });
+    }
+
+    try {
+        const geminiFile = await uploadFileToGemini(req.file.path, req.file.mimetype);
+        fs.unlinkSync(req.file.path); // Clean up the temporary file
+        res.json(geminiFile);
+    } catch (error: any) {
+        console.error('Error uploading file to Gemini:', error);
+        // Make sure to clean up the file in case of an error
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        res.status(500).json({ message: `Erreur lors de l'upload du fichier vers Gemini: ${error.message}` });
+    }
+});
+
+app.post('/api/admin/filesearch/search', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    if (req.user?.role !== UserRole.ADMIN) {
+        return res.status(403).json({ message: 'Accès non autorisé.' });
+    }
+
+    const { query, files } = req.body;
+    if (!query || !files || !Array.isArray(files) || files.length === 0) {
+        return res.status(400).json({ message: 'La requête et une liste de fichiers sont requises.' });
+    }
+
+    try {
+        const searchResult = await searchInFiles(query, files);
+        res.json({ result: searchResult });
+    } catch (error: any) {
+        console.error('Error searching in files:', error);
+        res.status(500).json({ message: `Erreur lors de la recherche: ${error.message}` });
+    }
+});
 
 
 

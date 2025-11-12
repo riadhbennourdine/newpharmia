@@ -51,6 +51,7 @@ import WebinarDetailPage from './pages/WebinarDetailPage';
 import WebinarManagement from './pages/admin/WebinarManagement';
 import ImageManager from './pages/admin/ImageManager';
 import WebinarAdminManager from './pages/admin/WebinarAdminManager';
+import FileSearchAdmin from './pages/admin/FileSearchAdmin';
 import CartPage from './pages/CartPage'; // Import CartPage
 import CheckoutPage from './pages/CheckoutPage'; // Import CheckoutPage
 
@@ -122,6 +123,7 @@ const App: React.FC = () => (
                                 <Route path="/admin/webinars" element={<WebinarManagement />} />
                                 <Route path="/admin/image-manager" element={<ImageManager />} />
                                 <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
+                                <Route path="/admin/file-search" element={<FileSearchAdmin />} />
                             </Route>
                         </Route>
                         

@@ -1,27 +1,77 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
-// This file uses an older syntax for the Google GenAI SDK that is compatible with the project's dependencies.
-// The main class is GoogleGenAI and content is generated via ai.models.generateContent(...)
+// NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
+// The previous implementation used an older, unofficial '@google/genai' package.
+// Key changes include:
+// - New initialization: `new GoogleGenerativeAI(API_KEY)`
+// - Getting a model: `genAI.getGenerativeModel(...)`
+// - Generating content with schema: `model.generateContent({ ..., generationConfig: { response_mime_type: "application/json", response_schema: ... } })`
+// - Chat sessions: `model.startChat(...)`
 
-export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
+const getApiKey = () => {
   const API_KEY = process.env.GEMINI_API_KEY;
   if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  return API_KEY;
+};
+
+// Helper to convert old schema format to standard JSON schema
+const convertSchema = (schema: any): any => {
+  if (typeof schema !== 'object' || schema === null) {
+    return schema;
+  }
+
+  if (Array.isArray(schema)) {
+    return schema.map(convertSchema);
+  }
+
+  const newSchema: { [key: string]: any } = {};
+  for (const key in schema) {
+    if (key === 'type') {
+      // Map old SDK types to JSON schema string types
+      switch (schema[key]) {
+        case 'OBJECT':
+          newSchema[key] = 'object';
+          break;
+        case 'ARRAY':
+          newSchema[key] = 'array';
+          break;
+        case 'STRING':
+          newSchema[key] = 'string';
+          break;
+        case 'INTEGER':
+          newSchema[key] = 'integer';
+          break;
+        default:
+          newSchema[key] = schema[key];
+      }
+    } else if (key === 'properties' || key === 'items') {
+      newSchema[key] = convertSchema(schema[key]);
+    } else {
+      newSchema[key] = schema[key];
+    }
+  }
+  return newSchema;
+};
+
+
+export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
+  const genAI = new GoogleGenerativeAI(getApiKey());
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   let jsonStructure: any = {
-    type: Type.OBJECT,
+    type: "object",
     properties: {
-      title: { type: Type.STRING },
-      patientSituation: { type: Type.STRING },
-      keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
-      pathologyOverview: { type: Type.STRING },
-      redFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
-      mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
-      associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
-      lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
-      dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
-      references: { type: Type.ARRAY, items: { type: Type.STRING } },
+      title: { type: "string" },
+      patientSituation: { type: "string" },
+      keyQuestions: { type: "array", items: { type: "string" } },
+      pathologyOverview: { type: "string" },
+      redFlags: { type: "array", items: { type: "string" } },
+      mainTreatment: { type: "array", items: { type: "string" } },
+      associatedProducts: { type: "array", items: { type: "string" } },
+      lifestyleAdvice: { type: "array", items: { type: "string" } },
+      dietaryAdvice: { type: "array", items: { type: "string" } },
+      references: { type: "array", items: { type: "string" } },
     },
     required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'],
   };
@@ -32,17 +82,17 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
-      type: Type.OBJECT,
+      type: "object",
       properties: {
-        title: { type: Type.STRING },
-        shortDescription: { type: Type.STRING },
+        title: { type: "string" },
+        shortDescription: { type: "string" },
         memoSections: {
-          type: Type.ARRAY,
+          type: "array",
           items: {
-            type: Type.OBJECT,
+            type: "object",
             properties: {
-              title: { type: Type.STRING },
-              content: { type: Type.STRING },
+              title: { type: "string" },
+              content: { type: "string" },
             },
             required: ['title', 'content'],
           },
@@ -52,18 +102,18 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = {
-      type: Type.OBJECT,
+      type: "object",
       properties: {
-        title: { type: Type.STRING },
-        casComptoir: { type: Type.STRING },
-        objectifsConseil: { type: Type.STRING },
-        pathologiesConcernees: { type: Type.STRING },
-        interetDispositif: { type: Type.STRING },
-        beneficesSante: { type: Type.STRING },
-        dispositifsAConseiller: { type: Type.STRING },
-        reponsesObjections: { type: Type.STRING },
-        pagesSponsorisees: { type: Type.STRING },
-        references: { type: Type.ARRAY, items: { type: Type.STRING } },
+        title: { type: "string" },
+        casComptoir: { type: "string" },
+        objectifsConseil: { type: "string" },
+        pathologiesConcernees: { type: "string" },
+        interetDispositif: { type: "string" },
+        beneficesSante: { type: "string" },
+        dispositifsAConseiller: { type: "string" },
+        reponsesObjections: { type: "string" },
+        pagesSponsorisees: { type: "string" },
+        references: { type: "array", items: { type: "string" } },
       },
       required: [
         'title',
@@ -80,53 +130,53 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'ordonnances') {
     jsonStructure = {
-      type: Type.OBJECT,
+      type: "object",
       properties: {
-        title: { type: Type.STRING },
-        ordonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
-        analyseOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        title: { type: "string" },
+        ordonnance: { type: "array", items: { type: "string" } },
+        analyseOrdonnance: { type: "array", items: { type: "string" } },
         conseilsTraitement: {
-          type: Type.ARRAY,
+          type: "array",
           items: {
-            type: Type.OBJECT,
+            type: "object",
             properties: {
-              medicament: { type: Type.STRING },
-              conseils: { type: Type.ARRAY, items: { type: Type.STRING } },
+              medicament: { type: "string" },
+              conseils: { type: "array", items: { type: "string" } },
             },
             required: ['medicament', 'conseils'],
           },
         },
-        informationsMaladie: { type: Type.ARRAY, items: { type: Type.STRING } },
-        conseilsHygieneDeVie: { type: Type.ARRAY, items: { type: Type.STRING } },
-        conseilsAlimentaires: { type: Type.ARRAY, items: { type: Type.STRING } },
+        informationsMaladie: { type: "array", items: { type: "string" } },
+        conseilsHygieneDeVie: { type: "array", items: { type: "string" } },
+        conseilsAlimentaires: { type: "array", items: { type: "string" } },
         ventesAdditionnelles: {
-          type: Type.OBJECT,
+          type: "object",
           properties: {
-            complementsAlimentaires: { type: Type.ARRAY, items: { type: Type.STRING } },
-            accessoires: { type: Type.ARRAY, items: { type: Type.STRING } },
-            dispositifs: { type: Type.ARRAY, items: { type: Type.STRING } },
-            cosmetiques: { type: Type.ARRAY, items: { type: Type.STRING } },
+            complementsAlimentaires: { type: "array", items: { type: "string" } },
+            accessoires: { type: "array", items: { type: "string" } },
+            dispositifs: { type: "array", items: { type: "string" } },
+            cosmetiques: { type: "array", items: { type: "string" } },
           },
         },
-        references: { type: Type.ARRAY, items: { type: Type.STRING } },
+        references: { type: "array", items: { type: "string" } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   } else if (memoFicheType === 'communication') {
     jsonStructure = {
-      type: Type.OBJECT,
+      type: "object",
       properties: {
-        title: { type: Type.STRING },
-        shortDescription: { type: Type.STRING },
-        summary: { type: Type.STRING },
-        patientSituation: { type: Type.STRING },
+        title: { type: "string" },
+        shortDescription: { type: "string" },
+        summary: { type: "string" },
+        patientSituation: { type: "string" },
         customSections: {
-          type: Type.ARRAY,
+          type: "array",
           items: {
-            type: Type.OBJECT,
+            type: "object",
             properties: {
-              title: { type: Type.STRING },
-              content: { type: Type.STRING },
+              title: { type: "string" },
+              content: { type: "string" },
             },
             required: ['title', 'content'],
           },
@@ -138,7 +188,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     const expertRole = memoFicheType === 'pharmacologie' ? 'pharmacologie et ingénieur pédagogique' : 'connaissances pharmaceutiques';
-    fullPrompt = `En tant qu\'expert en ${expertRole} pour les professionnels de la pharmacie, votre mission est de transformer le texte brut suivant en une mémofiche de type '${memoFicheType}' claire, détaillée et directement utilisable au comptoir.\n\n**Objectif :** Extraire et structurer l\'information clé du texte source pour créer un outil de référence rapide et fiable. Il est impératif de conserver la profondeur et la précision scientifique du texte original.\n\n**Structure de la mémofiche :**\n\n1.  **Titre :** Un titre précis et informatif (ex: "Les inhibiteurs de la pompe à protons (IPP)").\n2.  **Courte description :** Un résumé de 2-3 phrases qui présente la classe thérapeutique ou le principe actif et son importance.\n3.  **Sections (memoSections) :** Plusieurs sections thématiques qui décomposent le sujet de manière logique.\n\n**Instructions détaillées pour les \`memoSections\` :**\n\n*   **Titres de section :** Les titres doivent être clairs et correspondre aux grandes catégories de la pharmacologie. Exemples de titres de section à utiliser si pertinent :\n    *   Mécanisme d\'action\n    *   Indications principales\n    *   Posologie et mode d\'administration\n    *   Effets indésirables et gestion\n    *   Contre-indications et précautions d\'emploi\n    *   Interactions médicamenteuses\n    *   Conseils aux patients\n    *   Molécules de la classe\n\n*   **Contenu des sections :**\n    *   **Fidélité et détail :** Le contenu doit être une synthèse fidèle et détaillée du texte source. **Ne pas simplifier à l\'extrême.** Conserver la terminologie médicale et pharmaceutique précise.\n    *   **Formatage :** Le contenu de chaque section doit être une liste à puces. Chaque point doit commencer par le caractère "•" suivi d\'un espace.\n    *   **Mise en évidence :** Chaque point de la liste doit commencer par un mot-clé ou un concept clé mis en évidence en gras (entouré de doubles astérisques). Exemple : "**Effet principal** : Diminution de la sécrétion acide gastrique."\n\n**Texte à analyser :**\n\n${prompt}`;
+    fullPrompt = `En tant qu\'expert en ${expertRole} pour les professionnels de la pharmacie, votre mission est de transformer le texte brut suivant en une mémofiche de type '${memoFicheType}' claire, détaillée et directement utilisable au comptoir.\n\n**Objectif :** Extraire et structurer l\'information clé du texte source pour créer un outil de référence rapide et fiable. Il est impératif de conserver la profondeur et la précision scientifique du texte original.\n\n**Structure de la mémofiche :**\n\n1.  **Titre :** Un titre précis et informatif (ex: "Les inhibiteurs de la pompe à protons (IPP)").\n2.  **Courte description :** Un résumé de 2-3 phrases qui présente la classe thérapeutique ou le principe actif et son importance.\n3.  **Sections (memoSections) :** Plusieurs sections thématiques qui décomposent le sujet de manière logique.\n\n**Instructions détaillées pour les \`memoSections\` :**\n\n*   **Titres de section :** Les titres doivent être clairs et correspondre aux grandes catégories de la pharmacologie. Exemples de titres de section à utiliser si pertinent :\n    *   Mécanisme d\'action\n    *   Indications principales\n    *   Posologie et mode d\'administration\n    *   Effets indésirables et gestion\n    *   Contre-indications et précautions d\'emploi\n    *   Interactions médicamenteuses\n    *   Conseils aux patients\n    *   Molécules de la classe\n\n*   **Contenu des sections :**\n    *   **Fidélité et détail :** Le contenu doit être une synthèse fidèle et détaillée du texte source. **Ne pas simplifier à l\'extrême.** Conserver la terminologie médicale et pharmaceutique précise.\n    *   **Formatage :** Le contenu de chaque section doit être une liste à puces. Chaque point doit commencer par le caractère "•" suivi d\'un espace.\n    *   **Mise en évidence :** Chaque point de la liste doit commencer par un mot-clé ou un concept clé mis en évidence en gras (entouré de doubles astérisques). Exemple : "**Effet principal** : Diminution de la sécrétion ...`;
   } else if (memoFicheType === 'dispositifs-medicaux') {
     fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
 
@@ -153,13 +203,18 @@ ${prompt}`;
   console.log("jsonStructure:", JSON.stringify(jsonStructure, null, 2));
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+  const result = await model.generateContent({
     contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-    config: { responseMimeType: "application/json", responseSchema: jsonStructure },
+    generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: jsonStructure,
+    },
   });
   
-  const responseText = response.text.trim();
+  const response = result.response;
+  const responseText = response.text().trim();
+  
+  // The response should be clean JSON, but we keep the cleanup logic just in case.
   const jsonText = responseText.startsWith('```json')
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
@@ -170,50 +225,50 @@ ${prompt}`;
 };
 
 const learningToolsSchema = {
-    type: Type.OBJECT,
+    type: "object",
     properties: {
         flashcards: {
-            type: Type.ARRAY,
+            type: "array",
             items: {
-                type: Type.OBJECT,
+                type: "object",
                 properties: {
-                    question: { type: Type.STRING },
-                    answer: { type: Type.STRING },
+                    question: { type: "string" },
+                    answer: { type: "string" },
                 },
                 required: ['question', 'answer'],
             },
             description: "Crée exactement 10 flashcards pertinentes pour aider à mémoriser les points clés de la mémofiche."
         },
         glossary: {
-            type: Type.ARRAY,
+            type: "array",
             items: {
-                type: Type.OBJECT,
+                type: "object",
                 properties: {
-                    term: { type: Type.STRING },
-                    definition: { type: Type.STRING },
+                    term: { type: "string" },
+                    definition: { type: "string" },
                 },
                 required: ['term', 'definition'],
             },
             description: "Crée un glossaire d'exactement 10 termes techniques importants mentionnés dans la mémofiche."
         },
         quiz: {
-            type: Type.ARRAY,
+            type: "array",
             items: {
-                type: Type.OBJECT,
+                type: "object",
                 properties: {
                     questionType: {
-                        type: Type.STRING,
+                        type: "string",
                         enum: ['QCM', 'VRAI_FAUX'],
                         description: "Le type de question : QCM (Question à Choix Multiples) ou VRAI_FAUX."
                     },
-                    question: { type: Type.STRING },
+                    question: { type: "string" },
                     options: {
-                        type: Type.ARRAY, 
-                        items: { type: Type.STRING },
+                        type: "array", 
+                        items: { type: "string" },
                         description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
                     },
-                    correctAnswerIndex: { type: Type.INTEGER },
-                    explanation: { type: Type.STRING }
+                    correctAnswerIndex: { type: "integer" },
+                    explanation: { type: "string" }
                 },
                 required: ['questionType', 'question', 'options', 'correctAnswerIndex', 'explanation']
             },
@@ -224,9 +279,8 @@ const learningToolsSchema = {
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-    const API_KEY = process.env.GEMINI_API_KEY;
-    if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const genAI = new GoogleGenerativeAI(getApiKey());
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const context = `
         Titre: ${memoContent.title}
@@ -239,20 +293,21 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
     const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. Réponds en JSON en respectant le schéma détaillé qui demande explicitement 10 flashcards et un quiz de 10 questions (6 QCM et 4 Vrai/Faux). Le contenu de la mémofiche est : "${context}".`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+    const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-      // The config property seems to be the way to pass the schema in this older version
-      config: { responseMimeType: "application/json", responseSchema: learningToolsSchema },
+      generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: learningToolsSchema,
+      },
     });
-  
-    return JSON.parse(response.text.trim());
+    
+    const response = result.response;
+    return JSON.parse(response.text().trim());
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    const API_KEY = process.env.GEMINI_API_KEY;
-    if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const genAI = new GoogleGenerativeAI(getApiKey());
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
 Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
@@ -266,23 +321,27 @@ Ne rajoute rien d'autre à cette réponse de salutation.
 
 Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.`;
 
-    const contents = [
+    const history = [
         { role: "user", parts: [{ text: system_prompt }] },
         { role: "model", parts: [{ text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :
 
 **${title}**
 
 Comment puis-je vous aider aujourd'hui ?` }] },
-        ...chatHistory.map(msg => ({ role: msg.role, parts: [{ text: msg.text }] })),
-        { role: "user", parts: [{ text: `CONTEXTE DE LA MEMOFICHE: ${context}
-
-QUESTION: ${question}` }] }
+        ...chatHistory.map(msg => ({ 
+            role: msg.role === 'user' ? 'user' : 'model', 
+            parts: [{ text: msg.text }] 
+        })),
     ];
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: contents,
-    });
-  
-    return response.text.trim();
+    const chat = model.startChat({
+        history: history,
+        generationConfig: {
+          maxOutputTokens: 1000,
+        },
+      });
+
+    const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
+    const response = result.response;
+    return response.text().trim();
 };
