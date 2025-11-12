@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
+import { BANK_DETAILS } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -139,9 +140,12 @@ const CheckoutPage: React.FC = () => {
                             Veuillez effectuer un virement bancaire du montant total sur le compte suivant, en indiquant votre numéro de commande dans le libellé de la transaction.
                         </p>
                         <div className="mt-4 p-4 bg-slate-50 rounded-md text-sm">
-                            <p><strong>Banque:</strong> Banque Internationale Arabe de Tunisie (BIAT)</p>
-                            <p><strong>IBAN:</strong> TN59 0800 8001 2345 6789 123</p>
-                            <p><strong>Bénéficiaire:</strong> PharmIA</p>
+                            <p><strong>Titulaire:</strong> {BANK_DETAILS.holder}</p>
+                            <p><strong>Banque:</strong> {BANK_DETAILS.bank} ({BANK_DETAILS.branch})</p>
+                            <p><strong>RIB:</strong> {BANK_DETAILS.rib}</p>
+                            <a href={BANK_DETAILS.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+                                <img src={BANK_DETAILS.imageUrl} alt="RIB" className="rounded-md shadow-sm w-full max-w-xs" />
+                            </a>
                         </div>
                     </div>
 

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Webinar, User, UserRole, WebinarTimeSlot, WebinarGroup } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
+import { BANK_DETAILS } from '../constants';
 
 const getUserDisplayName = (user: Partial<User>): string => {
     if (typeof user !== 'object' || user === null) return 'ID Inconnu';
@@ -89,9 +90,12 @@ const SubmitPayment: React.FC<{
             <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="font-bold text-blue-800">Pass Journée Formation : 80 DT pour toute l'équipe officinale</p>
                 <p className="text-sm text-blue-700 mt-1">Veuillez trouver les détails pour le paiement ci-dessous.</p>
-                <div className="mt-4">
-                    <a href="https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg" target="_blank" rel="noopener noreferrer">
-                        <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg" alt="RIB" className="rounded-lg shadow-md" />
+                <div className="mt-4 text-sm">
+                    <p><strong>Titulaire:</strong> {BANK_DETAILS.holder}</p>
+                    <p><strong>Banque:</strong> {BANK_DETAILS.bank} ({BANK_DETAILS.branch})</p>
+                    <p><strong>RIB:</strong> {BANK_DETAILS.rib}</p>
+                    <a href={BANK_DETAILS.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+                        <img src={BANK_DETAILS.imageUrl} alt="RIB" className="rounded-lg shadow-md w-full max-w-xs" />
                     </a>
                 </div>
             </div>

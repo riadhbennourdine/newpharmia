@@ -58,3 +58,11 @@ export const MEMOFICHES = [
         references: [],
     }
 ];
+
+export const BANK_DETAILS = {
+    holder: 'CROPT',
+    rib: '07309007510558138471',
+    bank: 'AMEN BANK',
+    branch: 'Alain Savary',
+    imageUrl: 'https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg'
+};
