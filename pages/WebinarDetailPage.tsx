@@ -185,16 +185,10 @@ const WebinarDetailPage: React.FC = () => {
 
     const registrationStatus = webinar.registrationStatus;
     const registeredAttendee = webinar.attendees?.find(att => {
-        console.log('Comparing attendee.userId:', att.userId, 'with user._id:', user?._id);
         // Handle both ObjectId string and populated User object for att.userId
         const attendeeId = typeof att.userId === 'object' ? att.userId._id.toString() : att.userId.toString();
         return attendeeId === user?._id?.toString();
     });
-
-    console.log('User:', user);
-    console.log('Webinar:', webinar);
-    console.log('Registered Attendee:', registeredAttendee);
-    console.log('Condition for rendering registration details:', registeredAttendee && (registeredAttendee.status === 'PAYMENT_SUBMITTED' || registeredAttendee.status === 'CONFIRMED'));
     const logoUrl = getGroupLogo(webinar.group);
 
     return (
