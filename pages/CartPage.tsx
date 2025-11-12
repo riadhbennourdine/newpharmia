@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
 import { Webinar } from '../types';
 import { Spinner, TrashIcon } from '../components/Icons';
+import { WEBINAR_PRICE } from '../constants';
 
 const CartPage: React.FC = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
@@ -53,8 +54,8 @@ const CartPage: React.FC = () => {
   }, [cartItems]);
 
   const totalPrice = useMemo(() => {
-    return webinars.reduce((total, webinar) => total + (webinar.price || 0), 0);
-  }, [webinars]);
+    return cartItems.length * WEBINAR_PRICE;
+  }, [cartItems]);
 
   const handleCheckout = async () => {
     if (!token) {
@@ -130,7 +131,7 @@ const CartPage: React.FC = () => {
                     <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-lg text-teal-600">{webinar.price?.toFixed(3) || '0.000'} TND</p>
+                    <p className="font-bold text-lg text-teal-600">{WEBINAR_PRICE.toFixed(3)} TND</p>
                     <button onClick={() => removeFromCart(webinar._id as string)} className="text-sm text-red-500 hover:text-red-700 mt-1">
                       <TrashIcon className="h-5 w-5 inline-block mr-1" />
                       Supprimer

@@ -390,10 +390,6 @@ const WebinarManagement: React.FC = () => {
                                     <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
                                     <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
                                 </div>
-                                <div className="mb-4">
-                                    <label htmlFor="price" className="block text-sm font-medium text-slate-700">Prix (en TND)</label>
-                                    <input type="number" name="price" id="price" value={currentWebinar.price || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" step="0.01" />
-                                </div>
                                 <div className="flex justify-end gap-4 mt-8">
                                     <button type="button" onClick={handleCloseModal} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300">Annuler</button>
                                     <button type="submit" className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700">Enregistrer</button>

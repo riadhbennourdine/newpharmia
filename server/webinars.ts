@@ -226,7 +226,7 @@ router.post('/by-ids', async (req, res) => {
 // POST to create a new webinar (Admin only)
 router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
-        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group, price } = req.body;
+        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group } = req.body;
 
         if (!title || !description || !date || !presenter) {
             return res.status(400).json({ message: 'Title, description, date, and presenter are required.' });
@@ -241,7 +241,6 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WE
             description,
             date: new Date(date),
             presenter,
-            price: price ? parseFloat(price) : 0,
             registrationLink: registrationLink || '',
             imageUrl: imageUrl || '',
             googleMeetLink: googleMeetLink || '',
@@ -281,9 +280,6 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_
         updates.updatedAt = new Date();
         if(updates.date) {
             updates.date = new Date(updates.date);
-        }
-        if (updates.price) {
-            updates.price = parseFloat(updates.price);
         }
 
 

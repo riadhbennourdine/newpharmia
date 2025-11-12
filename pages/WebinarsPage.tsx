@@ -18,7 +18,7 @@ const CropTunisIntro: React.FC = () => (
             <div className="text-base text-slate-600 space-y-3">
                 <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
                 <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
-                <p>L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.</p>
+                <p className="font-bold text-teal-600 text-lg">Chaque webinaire est au tarif unique de 80,000 TND.</p>
             </div>
         </div>
     </div>
@@ -140,7 +140,7 @@ const WebinarCard: React.FC<{
             </div>
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
                 <p className="text-xl font-bold text-teal-600 py-2">
-                    {webinar.price ? `${webinar.price.toFixed(3)} TND` : 'Gratuit'}
+                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
                 {renderButtons()}
             </div>

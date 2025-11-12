@@ -233,7 +233,6 @@ export interface Webinar {
   description: string;
   date: Date;
   presenter: string;
-  price?: number; // Add price field
   imageUrl?: string;
   googleMeetLink?: string;
   registrationLink?: string;

@@ -5,6 +5,7 @@ import clientPromise from './mongo.js';
 import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 import { Order, OrderStatus, Webinar } from '../types.js';
+import { WEBINAR_PRICE } from '../constants.js';
 
 const router = express.Router();
 
@@ -30,14 +31,14 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
 
         const webinarObjectIds = webinarIds.map(id => new ObjectId(id));
 
-        // Fetch all webinars in the cart to validate them and calculate the total price
-        const webinars = await webinarsCollection.find({ _id: { $in: webinarObjectIds } }).toArray();
+        // Fetch all webinars in the cart to validate them
+        const webinarsCount = await webinarsCollection.countDocuments({ _id: { $in: webinarObjectIds } });
 
-        if (webinars.length !== webinarIds.length) {
+        if (webinarsCount !== webinarIds.length) {
             return res.status(404).json({ message: 'One or more webinars not found.' });
         }
 
-        const totalAmount = webinars.reduce((total, webinar) => total + (webinar.price || 0), 0);
+        const totalAmount = webinarsCount * WEBINAR_PRICE;
 
         const newOrder: Omit<Order, '_id'> = {
             userId: new ObjectId(userId),
