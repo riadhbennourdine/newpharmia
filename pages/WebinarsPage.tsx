@@ -7,14 +7,26 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../com
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
-        <div className="mb-6 rounded-lg overflow-hidden shadow-lg">
-            <img 
-                src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
-                alt="Préparateurs en ligne" 
-                className="w-full h-auto"
-            />
+        <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 rounded-lg overflow-hidden shadow-lg h-80">
+                <img 
+                    src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
+                    alt="Préparateurs en ligne" 
+                    className="w-full h-full object-cover"
+                />
+            </div>
+            <div className="flex-1 h-80 rounded-lg overflow-hidden shadow-lg">
+                <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/KwUvB51Wcp8"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                ></iframe>
+            </div>
         </div>
-        <div className="p-6 bg-white rounded-lg shadow-md">
+        <div className="p-6 bg-white rounded-lg shadow-md mt-6">
             <div className="text-base text-slate-600 space-y-3">
                 <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
                 <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>

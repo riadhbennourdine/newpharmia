@@ -259,36 +259,23 @@ const WebinarDetailPage: React.FC = () => {
                         </h1>
                     </div>
 
-                                        <div className="flex flex-col md:flex-row gap-4 mb-8">
-                                            <div className="rounded-lg overflow-hidden shadow-lg relative h-80 flex-1 flex items-end p-8 text-white bg-slate-800">
-                                                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
-                                                <div className="relative z-20">
-                                                    <h2 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h2>
-                                                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
-                                                        <div className="flex items-center gap-2">
-                                                            <CalendarIcon className="h-5 w-5" />
-                                                            <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <UserIcon className="h-5 w-5" />
-                                                            <span className="font-medium">Animé par {webinar.presenter}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex-1 h-80 rounded-lg overflow-hidden shadow-lg">
-                                                <iframe
-                                                    className="w-full h-full"
-                                                    src="https://www.youtube.com/embed/KwUvB51Wcp8"
-                                                    title="YouTube video player"
-                                                    frameBorder="0"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                ></iframe>
-                                            </div>
-                                        </div>
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                                                            <div className="rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
+                                                                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
+                                                                <div className="relative z-20">
+                                                                    <h2 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h2>
+                                                                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <CalendarIcon className="h-5 w-5" />
+                                                                            <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <UserIcon className="h-5 w-5" />
+                                                                            <span className="font-medium">Animé par {webinar.presenter}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
                             <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
