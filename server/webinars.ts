@@ -559,7 +559,7 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
 });
 
 // DELETE an attendee from a webinar (Admin only)
-router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { webinarId, attendeeUserId } = req.params;
 

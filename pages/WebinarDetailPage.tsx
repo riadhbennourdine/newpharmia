@@ -173,10 +173,10 @@ const WebinarDetailPage: React.FC = () => {
 
             // Refetch webinar details to update the attendee list
             await fetchWebinar();
-            setRegistrationMessage('Participant supprimé avec succès.');
+            alert('Participant supprimé avec succès.');
 
         } catch (err: any) {
-            setRegistrationMessage(err.message);
+            alert(`Erreur: ${err.message}`);
         }
     };
 
