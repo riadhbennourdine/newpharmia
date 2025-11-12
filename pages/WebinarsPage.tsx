@@ -262,8 +262,6 @@ const WebinarsPage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {renderTabs()}
 
-            {activeTab === WebinarGroup.CROP_TUNIS && <CropTunisIntro />}
-
             {isLoading ? (
                 <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>
             ) : error ? (
