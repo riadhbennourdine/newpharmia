@@ -7,7 +7,7 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../com
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
-        <div className="md:w-1/2 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg mx-auto"> {/* Aspect ratio 16:9 */}
+        <div className="md:w-1/2 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
             <img 
                 src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
                 alt="Préparateurs en ligne" 
