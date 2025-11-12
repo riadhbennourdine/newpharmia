@@ -380,7 +380,88 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         );
 
         if (result.matchedCount === 0) {
-// ... (rest of the file)
+            return res.status(404).json({ message: 'Webinar not found.' });
+        }
+
+        res.json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
+    } catch (error) {
+        console.error('Error registering for webinar:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'inscription au webinaire.' });
+    }
+});
+
+// POST for a PUBLIC user to register for a webinar
+router.post('/:id/public-register', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { firstName, lastName, email, timeSlots } = req.body;
+
+        // --- Validation ---
+        if (!firstName || !lastName || !email || !timeSlots) {
+            return res.status(400).json({ message: 'First name, last name, email, and time slots are required.' });
+        }
+        if (!Array.isArray(timeSlots) || timeSlots.length === 0) {
+            return res.status(400).json({ message: 'At least one time slot is required.' });
+        }
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid webinar ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection('users');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        // --- Find or Create User ---
+        let user;
+        try {
+            user = await usersCollection.findOneAndUpdate(
+                { email: email.toLowerCase() },
+                {
+                    $setOnInsert: {
+                        email: email.toLowerCase(),
+                        firstName,
+                        lastName,
+                        username: new ObjectId().toHexString(),
+                        role: UserRole.VISITEUR,
+                        status: ClientStatus.PROSPECT,
+                        createdAt: new Date(),
+                    }
+                },
+                { upsert: true, returnDocument: 'after' }
+            );
+
+            if (!user) {
+                console.error('Failed to upsert user. The database returned a nullish value.');
+                return res.status(500).json({ message: 'Failed to find or create user.' });
+            }
+
+        } catch (dbError) {
+            console.error('Database error during user upsert:', dbError);
+            return res.status(500).json({ message: 'A database error occurred.' });
+        }
+        
+        const userId = user._id;
+
+        // --- Add to Newsletter Group ---
+        try {
+            await addToNewsletterGroup(email, 'Webinar Participants');
+        } catch (newsletterError) {
+            console.error("Could not add user to newsletter group:", newsletterError);
+            // Non-fatal error, so we continue with the registration
+        }
+
+        // --- Register for Webinar ---
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinaire non trouvé.' });
+        }
+
+        const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
+        if (isRegistered) {
+            return res.status(409).json({ message: 'Vous êtes déjà inscrit à ce webinaire.' });
+        }
+
         const newAttendee = {
             userId: new ObjectId(userId),
             status: 'PENDING' as 'PENDING',
