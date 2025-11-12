@@ -262,9 +262,11 @@ const WebinarManagement: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
-                <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
-                    + Créer un Webinaire
-                </button>
+                {user?.role === UserRole.ADMIN && (
+                    <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
+                        + Créer un Webinaire
+                    </button>
+                )}
             </div>
 
             {isLoading && <Spinner />}
