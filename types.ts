@@ -210,21 +210,15 @@ export interface ImageTheme {
   category: 'Thèmes Pédagogiques' | 'Systèmes et Organes';
 }
 
-export enum WebinarGroup {
-  CROP_TUNIS = 'CROP Tunis',
-  PHARMIA = 'PharmIA',
-}
-
-export enum WebinarStatus {
-  UPCOMING = 'Upcoming',
-  LIVE = 'Live',
-  PAST = 'Past',
-}
-
 export enum WebinarTimeSlot {
-  MORNING = '09:00',
-  LUNCH = '13:30',
-  AFTERNOON = '15:30',
+    MORNING = '09:00',
+    AFTERNOON = '13:30',
+    EVENING = '15:30',
+}
+
+export enum WebinarGroup {
+    CROP_TUNIS = 'CROP Tunis',
+    PHARMIA = 'PharmIA',
 }
 
 export interface Webinar {
