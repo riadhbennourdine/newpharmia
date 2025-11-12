@@ -25,18 +25,26 @@ const getGroupLogo = (group: WebinarGroup): string => {
     }
 };
 
-// Simplified component for time slot selection leading to Add to Cart
-const AddToCartForm: React.FC<{ webinarId: string }> = ({ webinarId }) => {
+// Simplified component for time slot selection leading to Add to Cart or updating registration
+const AddToCartForm: React.FC<{ 
+    webinarId: string;
+    initialSelectedSlots?: WebinarTimeSlot[]; // For already registered users
+    onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
+}> = ({ webinarId, initialSelectedSlots, onUpdateRegistration }) => {
     const { addToCart, findItem } = useCart();
     const navigate = useNavigate();
     const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(() => {
-        const existingItem = findItem(webinarId);
-        return existingItem ? existingItem.slots : [];
+        // If initialSelectedSlots are provided (for registered users), use them.
+        // Otherwise, check if the item is in the cart.
+        return initialSelectedSlots || (findItem(webinarId)?.slots || []);
     });
     
-    // Check if the item is in the cart on initial render
+    // Check if the item is in the cart on initial render (only relevant for non-registered flow)
     const isInitiallyInCart = !!findItem(webinarId);
     const [isAdded, setIsAdded] = useState(isInitiallyInCart);
+
+    // Determine if we are in "update registration" mode
+    const isUpdateMode = !!onUpdateRegistration;
 
     const handleCheckboxChange = (slot: WebinarTimeSlot) => {
         setSelectedSlots(prev => {
@@ -44,26 +52,50 @@ const AddToCartForm: React.FC<{ webinarId: string }> = ({ webinarId }) => {
                 ? prev.filter(s => s !== slot)
                 : [...prev, slot];
             
-            // If item is already in cart, update it immediately
-            if (isInitiallyInCart) {
+            // If in cart mode and item is already in cart, update it immediately
+            if (!isUpdateMode && isInitiallyInCart) {
                 addToCart({ webinarId, slots: newSlots });
             }
             return newSlots;
         });
     };
 
-    const handleAddToCart = () => {
+    const handleAction = async () => {
         if (selectedSlots.length === 0) {
             alert("Veuillez sélectionner au moins un créneau.");
             return;
         }
-        addToCart({ webinarId, slots: selectedSlots });
-        setIsAdded(true);
+
+        if (isUpdateMode) {
+            // Call the provided update registration function
+            await onUpdateRegistration(selectedSlots);
+            alert("Vos créneaux horaires ont été mis à jour avec succès.");
+        } else {
+            // Add to cart flow
+            addToCart({ webinarId, slots: selectedSlots });
+            setIsAdded(true);
+        }
     };
 
     const handleGoToCart = () => {
         navigate('/cart');
     };
+
+    const buttonText = isUpdateMode
+        ? 'Modifier les créneaux'
+        : (isAdded ? 'Ajouté' : 'Ajouter au panier');
+
+    const buttonOnClick = isUpdateMode
+        ? handleAction
+        : (isAdded ? handleGoToCart : handleAction);
+
+    const buttonClassName = `w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${
+        isUpdateMode
+            ? 'bg-blue-600 text-white hover:bg-blue-700' // Blue for update mode
+            : (isAdded
+                ? 'bg-orange-500 text-white hover:bg-orange-600'
+                : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed')
+    }`;
 
     return (
         <div>
@@ -85,15 +117,11 @@ const AddToCartForm: React.FC<{ webinarId: string }> = ({ webinarId }) => {
                 ))}
             </div>
             <button
-                onClick={isAdded ? handleGoToCart : handleAddToCart}
-                disabled={!isAdded && selectedSlots.length === 0}
-                className={`w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${
-                    isAdded
-                        ? 'bg-orange-500 text-white hover:bg-orange-600'
-                        : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
-                }`}
+                onClick={buttonOnClick}
+                disabled={selectedSlots.length === 0 && !isAdded} // Disable if no slots selected and not already added
+                className={buttonClassName}
             >
-                {isAdded ? 'Ajouté' : 'Ajouter au panier'}
+                {buttonText}
             </button>
         </div>
     );
@@ -128,6 +156,30 @@ const WebinarDetailPage: React.FC = () => {
             setError(err.message);
         }
     }, [webinarId, token]);
+
+    const handleUpdateRegistration = async (newSlots: WebinarTimeSlot[]) => {
+        if (!user || !webinarId) return;
+
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/attendees/${user._id}/slots`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ newSlots }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update time slots');
+            }
+
+            await fetchWebinar(); // Refresh webinar data to show updated slots
+        } catch (err: any) {
+            alert(`Erreur lors de la mise à jour des créneaux : ${err.message}`);
+        }
+    };
 
     const handleDeleteAttendee = async (attendeeUserId: string) => {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce participant ?')) {
@@ -240,13 +292,12 @@ const WebinarDetailPage: React.FC = () => {
                                         {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && (
                                             <>
                                                 <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
-                                                <div className="space-y-2 mb-4">
-                                                    {registeredAttendee.timeSlots.map(slot => (
-                                                        <div key={slot} className="flex items-center p-3 border rounded-lg bg-teal-50 border-teal-500">
-                                                            <span className="ml-3 font-medium text-slate-700">{slot}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                                {/* Display current slots or allow modification */}
+                                                <AddToCartForm 
+                                                    webinarId={webinarId!} 
+                                                    initialSelectedSlots={registeredAttendee.timeSlots}
+                                                    onUpdateRegistration={handleUpdateRegistration}
+                                                />
                                             </>
                                         )}
                                         {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (

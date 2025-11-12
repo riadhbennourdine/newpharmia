@@ -588,4 +588,48 @@ router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkR
     }
 });
 
+// PUT to update time slots for an attendee (User or Admin)
+router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+        const { webinarId, userId } = req.params;
+        const { newSlots } = req.body;
+
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required.' });
+        }
+
+        // Authorization check: User can only modify their own slots, unless they are an ADMIN
+        if (req.user._id.toString() !== userId.toString() && req.user.role !== UserRole.ADMIN) {
+            return res.status(403).json({ message: 'Unauthorized to modify these slots.' });
+        }
+
+        if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid webinar ID or user ID.' });
+        }
+
+        if (!Array.isArray(newSlots) || newSlots.length === 0) {
+            return res.status(400).json({ message: 'At least one time slot is required.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(webinarId), "attendees.userId": new ObjectId(userId) },
+            { $set: { "attendees.$.timeSlots": newSlots, "attendees.$.updatedAt": new Date() } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar or attendee not found.' });
+        }
+
+        res.json({ message: 'Time slots updated successfully.' });
+
+    } catch (error) {
+        console.error('Error updating attendee time slots:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des créneaux horaires.' });
+    }
+});
+
 export default router;
