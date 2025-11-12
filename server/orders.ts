@@ -12,15 +12,15 @@ const router = express.Router();
 // POST /api/orders/checkout
 // Creates a new order from the user's cart items.
 router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, res) => {
-    const { webinarIds } = req.body;
+    const { items } = req.body as { items: { webinarId: string, slots: WebinarTimeSlot[] }[] };
     const userId = req.user?._id;
 
     if (!userId) {
         return res.status(401).json({ message: 'User not authenticated.' });
     }
 
-    if (!Array.isArray(webinarIds) || webinarIds.length === 0) {
-        return res.status(400).json({ message: 'Webinar IDs are required.' });
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ message: 'Cart items are required.' });
     }
 
     try {
@@ -29,20 +29,20 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
         const webinarsCollection = db.collection<Webinar>('webinars');
         const ordersCollection = db.collection<Order>('orders');
 
-        const webinarObjectIds = webinarIds.map(id => new ObjectId(id));
+        const webinarIds = items.map(item => new ObjectId(item.webinarId));
 
         // Fetch all webinars in the cart to validate them
-        const webinarsCount = await webinarsCollection.countDocuments({ _id: { $in: webinarObjectIds } });
+        const webinarsCount = await webinarsCollection.countDocuments({ _id: { $in: webinarIds } });
 
-        if (webinarsCount !== webinarIds.length) {
+        if (webinarsCount !== items.length) {
             return res.status(404).json({ message: 'One or more webinars not found.' });
         }
 
-        const totalAmount = webinarsCount * WEBINAR_PRICE;
+        const totalAmount = items.length * WEBINAR_PRICE;
 
         const newOrder: Omit<Order, '_id'> = {
             userId: new ObjectId(userId),
-            webinarIds: webinarObjectIds,
+            items: items.map(item => ({ ...item, webinarId: new ObjectId(item.webinarId) })),
             totalAmount,
             status: OrderStatus.PENDING_PAYMENT,
             createdAt: new Date(),
@@ -146,19 +146,21 @@ router.post('/:orderId/submit-payment', authenticateToken, async (req: Authentic
         );
 
         // Now, register the user for each webinar in the order
-        const newAttendee = {
-            userId: new ObjectId(userId),
-            status: 'PAYMENT_SUBMITTED' as const,
-            proofUrl: proofUrl, // Link the same proof to each registration
-            registeredAt: new Date(),
-        };
-
-        const bulkUpdateOps = order.webinarIds.map(webinarId => ({
-            updateOne: {
-                filter: { _id: new ObjectId(webinarId) },
-                update: { $push: { attendees: newAttendee } }
-            }
-        }));
+        const bulkUpdateOps = order.items.map(item => {
+            const newAttendee = {
+                userId: new ObjectId(userId),
+                status: 'PAYMENT_SUBMITTED' as const,
+                proofUrl: proofUrl,
+                registeredAt: new Date(),
+                timeSlots: item.slots, // Use the slots from the order item
+            };
+            return {
+                updateOne: {
+                    filter: { _id: new ObjectId(item.webinarId) },
+                    update: { $push: { attendees: newAttendee } }
+                }
+            };
+        });
 
         if (bulkUpdateOps.length > 0) {
             await webinarsCollection.bulkWrite(bulkUpdateOps);

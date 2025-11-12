@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
 import { Webinar } from '../types';
-import { Spinner, TrashIcon } from '../components/Icons';
+import { Spinner, TrashIcon, EditIcon } from '../components/Icons';
 import { WEBINAR_PRICE } from '../constants';
 
 const CartPage: React.FC = () => {
@@ -26,12 +26,13 @@ const CartPage: React.FC = () => {
 
       try {
         setIsLoading(true);
+        const webinarIds = cartItems.map(item => item.webinarId);
         const response = await fetch('/api/webinars/by-ids', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ ids: cartItems }),
+          body: JSON.stringify({ ids: webinarIds }),
         });
 
         if (!response.ok) {
@@ -40,7 +41,7 @@ const CartPage: React.FC = () => {
 
         const data: Webinar[] = await response.json();
         // Ensure the order of webinars matches the order in the cart
-        const sortedData = cartItems.map(id => data.find(w => w._id === id)).filter(Boolean) as Webinar[];
+        const sortedData = webinarIds.map(id => data.find(w => w._id === id)).filter(Boolean) as Webinar[];
         setWebinars(sortedData);
 
       } catch (err: any) {
@@ -74,7 +75,7 @@ const CartPage: React.FC = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({ webinarIds: cartItems }),
+            body: JSON.stringify({ items: cartItems }), // Send the full cart items array
         });
 
         if (!response.ok) {
@@ -122,23 +123,41 @@ const CartPage: React.FC = () => {
           {/* Cart Items */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-md">
             <ul className="divide-y divide-slate-200">
-              {webinars.map(webinar => (
-                <li key={webinar._id as string} className="p-4 flex items-center space-x-4">
-                  <img src={webinar.imageUrl || 'https://via.placeholder.com/150'} alt={webinar.title} className="h-20 w-20 object-cover rounded-md hidden sm:block" />
-                  <div className="flex-grow">
-                    <h2 className="font-semibold text-slate-800">{webinar.title}</h2>
-                    <p className="text-sm text-slate-500">Par {webinar.presenter}</p>
-                    <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-lg text-teal-600">{WEBINAR_PRICE.toFixed(3)} TND</p>
-                    <button onClick={() => removeFromCart(webinar._id as string)} className="text-sm text-red-500 hover:text-red-700 mt-1">
-                      <TrashIcon className="h-5 w-5 inline-block mr-1" />
-                      Supprimer
-                    </button>
-                  </div>
-                </li>
-              ))}
+              {webinars.map(webinar => {
+                const cartItem = cartItems.find(item => item.webinarId === webinar._id);
+                return (
+                    <li key={webinar._id as string} className="p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <img src={webinar.imageUrl || 'https://via.placeholder.com/150'} alt={webinar.title} className="h-24 w-24 object-cover rounded-md" />
+                        <div className="flex-grow">
+                            <h2 className="font-semibold text-slate-800">{webinar.title}</h2>
+                            <p className="text-sm text-slate-500">Par {webinar.presenter}</p>
+                            <div className="mt-2">
+                                <h4 className="text-xs font-bold text-slate-600 uppercase">Créneaux choisis :</h4>
+                                {cartItem?.slots && cartItem.slots.length > 0 ? (
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {cartItem.slots.map(slot => (
+                                            <span key={slot} className="text-xs font-medium bg-teal-100 text-teal-800 px-2 py-1 rounded-full">{slot}</span>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-red-500">Aucun créneau sélectionné !</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="text-right self-center">
+                            <p className="font-bold text-lg text-teal-600 mb-2">{WEBINAR_PRICE.toFixed(3)} TND</p>
+                            <button onClick={() => navigate(`/webinars/${webinar._id}`)} className="text-sm text-blue-500 hover:text-blue-700 mb-2 flex items-center justify-end w-full">
+                                <EditIcon className="h-4 w-4 mr-1" />
+                                Modifier
+                            </button>
+                            <button onClick={() => removeFromCart(webinar._id as string)} className="text-sm text-red-500 hover:text-red-700 flex items-center justify-end w-full">
+                                <TrashIcon className="h-4 w-4 mr-1" />
+                                Supprimer
+                            </button>
+                        </div>
+                    </li>
+                );
+              })}
             </ul>
           </div>
 

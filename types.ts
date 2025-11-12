@@ -268,7 +268,10 @@ export enum OrderStatus {
 export interface Order {
   _id: ObjectId | string;
   userId: ObjectId | string;
-  webinarIds: (ObjectId | string)[];
+  items: {
+    webinarId: ObjectId | string;
+    slots: WebinarTimeSlot[];
+  }[];
   totalAmount: number;
   paymentProofUrl?: string;
   status: OrderStatus;

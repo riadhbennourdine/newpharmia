@@ -1,13 +1,22 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { WebinarTimeSlot } from '../types';
+
+// Define the shape of a single cart item
+export interface CartItem {
+  webinarId: string;
+  slots: WebinarTimeSlot[];
+}
 
 // Define the shape of the context data
 interface CartContextType {
-  cartItems: string[]; // Array of webinar IDs
-  addToCart: (webinarId: string) => void;
+  cartItems: CartItem[];
+  addToCart: (item: CartItem) => void;
   removeFromCart: (webinarId: string) => void;
+  updateItemSlots: (webinarId: string, newSlots: WebinarTimeSlot[]) => void;
   clearCart: () => void;
   getItemCount: () => number;
+  findItem: (webinarId: string) => CartItem | undefined;
 }
 
 // Create the context with a default value
@@ -19,7 +28,7 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<string[]>(() => {
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     // Load cart from local storage on initial load
     try {
       const localData = localStorage.getItem('webinarCart');
@@ -35,17 +44,31 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem('webinarCart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (webinarId: string) => {
+  const addToCart = (item: CartItem) => {
     setCartItems(prevItems => {
-      if (!prevItems.includes(webinarId)) {
-        return [...prevItems, webinarId];
+      const existingItemIndex = prevItems.findIndex(i => i.webinarId === item.webinarId);
+      if (existingItemIndex > -1) {
+        // Item already exists, update its slots
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = item;
+        return updatedItems;
+      } else {
+        // Item does not exist, add it
+        return [...prevItems, item];
       }
-      return prevItems;
     });
   };
 
   const removeFromCart = (webinarId: string) => {
-    setCartItems(prevItems => prevItems.filter(id => id !== webinarId));
+    setCartItems(prevItems => prevItems.filter(item => item.webinarId !== webinarId));
+  };
+
+  const updateItemSlots = (webinarId: string, newSlots: WebinarTimeSlot[]) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.webinarId === webinarId ? { ...item, slots: newSlots } : item
+      )
+    );
   };
 
   const clearCart = () => {
@@ -54,8 +77,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const getItemCount = () => cartItems.length;
 
+  const findItem = (webinarId: string) => {
+    return cartItems.find(item => item.webinarId === webinarId);
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, getItemCount }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateItemSlots, clearCart, getItemCount, findItem }}>
       {children}
     </CartContext.Provider>
   );
