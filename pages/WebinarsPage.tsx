@@ -7,24 +7,12 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../com
 
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
-        <div className="flex flex-col md:flex-row gap-4">
-            <div className="md:w-2/3 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
-                <img 
-                    src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
-                    alt="Préparateurs en ligne" 
-                    className="absolute inset-0 w-full h-full object-contain" // Use object-contain to avoid truncation
-                />
-            </div>
-            <div className="md:w-1/3 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
-                <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/KwUvB51Wcp8"
-                    title="YouTube video player"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                ></iframe>
-            </div>
+        <div className="md:w-1/2 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg mx-auto"> {/* Aspect ratio 16:9 */}
+            <img 
+                src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
+                alt="Préparateurs en ligne" 
+                className="absolute inset-0 w-full h-full object-contain" // Use object-contain to avoid truncation
+            />
         </div>
         <div className="p-6 bg-white rounded-lg shadow-md mt-6">
             <div className="text-base text-slate-600 space-y-3">
