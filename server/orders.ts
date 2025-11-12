@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
-import { Order, OrderStatus, Webinar } from '../types.js';
+import { Order, OrderStatus, Webinar, WebinarTimeSlot } from '../types.js';
 import { WEBINAR_PRICE } from '../constants.js';
 
 const router = express.Router();
