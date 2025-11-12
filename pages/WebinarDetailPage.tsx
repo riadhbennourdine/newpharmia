@@ -259,16 +259,12 @@ const WebinarDetailPage: React.FC = () => {
                         </h1>
                     </div>
 
-                    <div className="mb-6 max-h-[60px] overflow-hidden">
-                        {/* Image Section */}
-                        <div className="relative h-[60px] rounded-lg overflow-hidden shadow-lg">
-                            <img
-                                src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'}
-                                alt={webinar.title}
-                                className="absolute inset-0 w-full h-full object-contain"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
-                        </div>
+                    <div className="relative mb-6 pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* 16:9 Aspect Ratio */}
+                        <img
+                            src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'}
+                            alt={webinar.title}
+                            className="absolute inset-0 w-full h-full object-contain"
+                        />
                     </div>
 
                     <div className="max-w-2xl mx-auto">
