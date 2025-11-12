@@ -9,17 +9,10 @@ const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
         <div className="md:w-1/2 relative pb-[56.25%] rounded-lg overflow-hidden shadow-lg"> {/* Aspect ratio 16:9 */}
             <img 
-                src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
+                src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762983569288-457142038.png" 
                 alt="Préparateurs en ligne" 
                 className="absolute inset-0 w-full h-full object-contain" // Use object-contain to avoid truncation
             />
-        </div>
-        <div className="p-6 bg-white rounded-lg shadow-md mt-6">
-            <div className="text-base text-slate-600 space-y-3">
-                <p>"Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences.</p>
-                <p>Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations d'un même thème durant les mardis de chaque semaine.) afin de ne pas perturber l'organisation quotidienne de la pharmacie.</p>
-                <p className="font-bold text-teal-600 text-lg">Chaque webinaire est au tarif unique de 80,000 TND.</p>
-            </div>
         </div>
     </div>
 );
