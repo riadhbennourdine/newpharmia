@@ -8,14 +8,14 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../com
 const CropTunisIntro: React.FC = () => (
     <div className="mb-12">
         <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 rounded-lg overflow-hidden shadow-lg h-80">
+            <div className="md:w-2/3 rounded-lg overflow-hidden shadow-lg h-80">
                 <img 
                     src="https://pharmaconseilbmb.com/photos/site/crop/prepenligne.png" 
                     alt="Préparateurs en ligne" 
                     className="w-full h-full object-cover"
                 />
             </div>
-            <div className="flex-1 h-80 rounded-lg overflow-hidden shadow-lg">
+            <div className="md:w-1/3 h-80 rounded-lg overflow-hidden shadow-lg">
                 <iframe
                     className="w-full h-full"
                     src="https://www.youtube.com/embed/KwUvB51Wcp8"
