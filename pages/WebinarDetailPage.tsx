@@ -260,7 +260,7 @@ const WebinarDetailPage: React.FC = () => {
                     </div>
 
                                                             <div className="rounded-lg overflow-hidden shadow-lg relative h-80 flex items-end p-8 text-white bg-slate-800">
-                                                                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                                <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="absolute inset-0 w-full h-full object-contain" />
                                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
                                                                 <div className="relative z-20">
                                                                     <h2 className="text-4xl font-extrabold tracking-tight">{webinar.title}</h2>
