@@ -126,14 +126,9 @@ const WebinarCard: React.FC<{
                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
             </div>
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
-                <div>
-                    <p className="text-xl font-bold text-teal-600 py-2">
-                        {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                    </p>
-                    <p className="text-2xl font-extrabold text-red-600">
-                        80,000 DT
-                    </p>
-                </div>
+                <p className="text-xl font-bold text-teal-600 py-2">
+                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                </p>
                 {renderButtons()}
             </div>
         </div>
@@ -280,6 +275,9 @@ const WebinarsPage: React.FC = () => {
                     className="mt-4 text-sm text-slate-600 font-light max-w-4xl"
                     youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share" // Pass the YouTube Short URL
                 />
+                <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
+                    Pass journée: 80,000 DT
+                </p>
             </div>
 
             {isLoading ? (
