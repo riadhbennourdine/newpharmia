@@ -296,7 +296,7 @@ const WebinarsPage: React.FC = () => {
                                                 <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
                                                     Webinaire en Direct
                                                 </h2>
-                                                <div className="p-6 bg-gradient-to-r from-teal-500 to-teal-700 text-white rounded-lg shadow-xl">
+                                                <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
                                                     <div className="grid grid-cols-1 gap-6">
                                                         {liveWebinars.map(webinar => (
                                                             <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
