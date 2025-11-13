@@ -26,6 +26,7 @@ export const TOPIC_CATEGORIES = [
             "Urinaire",
             "Reproducteur",
             "Ostéo-articulaire",
+            "Pédiatrie",
         ]
     }
 ];
