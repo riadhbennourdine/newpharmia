@@ -88,7 +88,7 @@ export async function queryLearningAssistant(query: string, history: { role: str
         contents.push({ role: 'user', parts: [{ text: query }] });
 
         const result = await genAI.models.generateContent({
-            model: 'gemini-latest', // Use an appropriate model
+            model: 'gemini-pro', // Use an appropriate model
             contents: contents,
             tools: [{
                 fileSearch: {
