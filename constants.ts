@@ -8,7 +8,7 @@ export const TOPIC_CATEGORIES = [
             "Dermocosmétique",
             "Dispositifs Médicaux",
             "Ordonnances",
-            "Pathologies",
+            "Maladies courantes",
             "Pharmacologie",
             "Communication",
             "Savoir-faire",
