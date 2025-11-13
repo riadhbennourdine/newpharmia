@@ -71,7 +71,7 @@ const WebinarCard: React.FC<{
                     onClick={() => navigate(`/webinars/${webinar._id}`)}
                     className="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-lg hover:bg-slate-300 transition-colors"
                 >
-                    Détails
+                    Détails et Inscriptions
                 </button>
             </div>
         );
