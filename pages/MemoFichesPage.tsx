@@ -182,15 +182,6 @@ const MemoFichesPage: React.FC = () => {
                     <h1 className="text-3xl font-bold text-slate-800">Toutes les mémofiches</h1>
                     <p className="text-lg text-slate-600 mt-1">Explorez, recherchez et filtrez notre bibliothèque de contenu.</p>
                 </div>
-                {isAdmin && (
-                    <button
-                        onClick={() => navigate('/edit-memofiche')}
-                        className="inline-flex items-center bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700"
-                    >
-                        <SparklesIcon className="h-5 w-5 mr-2" />
-                        Créer une mémofiche
-                    </button>
-                )}
             </div>
             
             <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
