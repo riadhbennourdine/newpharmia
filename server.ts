@@ -26,6 +26,22 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('/data/uploads'));
 
+import { initializeFileStore } from './server/learningJourneyService.js';
+
+app.post('/api/learning-journey/initialize', async (req, res) => {
+    try {
+        const result = await initializeFileStore();
+        if (result.success) {
+            res.json({ message: result.message });
+        } else {
+            res.status(500).json({ message: result.message });
+        }
+    } catch (error: any) {
+        console.error('Error initializing learning journey:', error);
+        res.status(500).json({ message: `Erreur interne du serveur lors de l'initialisation du parcours d'apprentissage.` });
+    }
+});
+
 // In production, serve static files from the build directory
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '..', 'dist')));

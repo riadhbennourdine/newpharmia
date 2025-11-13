@@ -1,0 +1,366 @@
+{
+  "_id": "68ddb2660534882ebdb64cf7",
+  "title": "Constipation occasionnelle: conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une femme âgée de 38 ans s’est présentée à la pharmacie: “Je suis constipée depuis 3 jours. Que me conseillez-vous?”"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "- Est-ce une constipation récente ou chronique ?",
+    "- Avez-vous des symptômes associés (douleurs abdominales, ballonnements, sang dans les selles, amaigrissement) ?",
+    "- Y a-t-il une alternance entre la diarrhée et la constipation ?",
+    "- Prenez-vous des médicaments actuellement ?",
+    "- Y a-t-il eu un changement dans vos habitudes de vie récemment ?",
+    "- Êtes-vous enceinte ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition**\n• - Émission de moins de 3 selles/semaine ou difficulté d'évacuation.,\n• - Elle peut être occasionnelle ou chronique (plus de 2 semaines)\n• **Causes possibles**:\n• - Manque de fibres/eau, sédentarité, grossesse, âge, stress, alitement\n• - Médicaments inducteurs: Opiacés, anticholinergiques, sels de fer/calcium, antitussifs codéinés.,-\n• - Rétention volontaire des selles, abus de laxatifs."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Constipation > 15 jours ou aggravation récente.",
+    "-Douleurs abdominales importantes, vomissements, sang dans les selles.",
+    "-Alternance entre constipation et diarrhée.",
+    "-Constipation liée à la prise d'un médicament (nécessite avis médical).",
+    "-Persistance ou récidive après la prise de médicaments.",
+    "-Patient âgé de plus de 40 ans avec douleurs coliques, sang, diarrhées, irritation anale, altération état général, amaigrissement, antécédents familiaux de cancer colique."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Laxatifs osmotiques**:",
+      "-Ils augmentent l'hydratation des selles en attirant l'eau dans la lumière intestinale. ",
+      "-Leur action débute 24 à 48 heures après la première prise.",
+      "- **Les osmotiques sucrés**: polyols (lactulose, sorbitol) ",
+      "-Ils peuvent provoquer des douleurs abdominales et des flatulences du fait de leur fermentation par la flore intestinale. ",
+      "-Ex: Duphalac®",
+      "- **Les osmotiques salins**: les macrogols (PEG): ",
+      "-Ils ont une efficacité supérieure aux polyols et provoquent moins de douleurs abdominales car ils n'induisent pas de fermentation colique.",
+      "-CI: occlusion intestinale. ",
+      "-Ex: Ilax®",
+      "**Laxatifs lubrifiants**: Huile de paraffine",
+      "-Ils ramollissent et facilitent l'exonération (action 24h). ",
+      "-Éviter chez alités/reflux (risque d’inhalation bronchique et de pneumonie). ",
+      "-Ne pas se coucher dans les 2h après prise ",
+      "-Au long cours, ils exposent à une réduction de l’absorption des vitamines liposolubles A, D, E et K. ",
+      "-Ex: Laxafine®",
+      "**Laxatifs de lest** (Psyllium, Ispaghul) ",
+      "-Augmentent le volume et hydratent les selles (action 2-3 jours). ",
+      "-Nécessitent un apport hydrique suffisant. ",
+      "-CI: occlusion, fécalome. ",
+      "-Ex: Biofibres®",
+      "- **Laxatifs stimulants** (Dérivés anthracéniques). ",
+      "-Stimulent l'intestin (action 5-10h). ",
+      "-Utilisation ponctuel (3-5 jours max)**. ",
+      "-CI: colopathies inflammatoires, occlusion, troubles du rythme. ",
+      "-Ex: Purgatif®",
+      "- **Laxatifs rectaux** (Lavements, suppositoires)",
+      "-Agissent localement par effet osmotique ou en stimulant le réflexe de défécation, ",
+      "-Délai d'action de quelques minutes à 1 heure",
+      "-CI: poussée hémorroïdaire, fissure anale. ",
+      "-En cas d’utilisation prolongée, ils sont irritants et peuvent entraver le réflexe normal d’exonération, notamment chez l’enfant.",
+      "-Ex: Laxagel®",
+      "-**Attention!!!**: Ne pas associer les salins et les stimulants du fait de leur effet hypokaliémiant aux antiarythmiques, neuroleptiques, diurétiques hypokaliémiants, corticoïdes, digitaliques, cisapride…"
+    ],
+    "associatedProducts": [
+      "- **Antispasmodiques**: ",
+      "-Aident à réduire les douleurs abdominales. ",
+      "-Ex:  Spasmocalm®, Nospasm®",
+      "- **Tisanes laxatives**: Séné, Rhubarbe ",
+      "-Contiennent des dérivés anthracéniques, agissent comme des laxatifs stimulants à utiliser avec précaution. ",
+      "-Ex: Laxative®",
+      "- **Tisanes digestives**: Fenouil, Anis ",
+      "-Aident à éliminer les ballonnements et améliorer le transit. ",
+      "-Ex: Phytokad digestion®",
+      "- **Probiotiques** : ",
+      "-Modulent le microbiote pour un transit amélioré à long terme. ",
+      "-Ex: Lactibiane référence®"
+    ],
+    "lifestyleAdvice": [
+      "-Pratiquer régulièrement une activité physique",
+      "-Aller à heures régulières, ne pas se retenir.",
+      "-Prendre son temps, adopter une position favorable aux toilettes.",
+      "-Gérer par des techniques de relaxation.",
+      "-Éviter l'usage prolongé de laxatif"
+    ],
+    "dietaryAdvice": [
+      "-Augmenter l'apport en fibres (fruits, légumes, céréales complètes).",
+      "-Boire au moins 1,5L d'eau par jour.",
+      "-Consommer des aliments riches en probiotiques (yaourts).",
+      "-Éviter certains aliments: Riz blanc, viandes rouges, pomme de terre."
+    ]
+  },
+  "references": [
+    "-Belin, N. (2024d, August 7). “Je voudrais quelque chose contre la constipation !” Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-contre-la-constipation",
+    "-Clere, N. (2016). Prise en charge de la diarrhée et de la constipation à l’officine. Actualités Pharmaceutiques, 55(559), 48–51. https://doi.org/10.1016/j.actpha.2016.07.010",
+    "-FMCHGE - Association Française de Formation Médicale Continue en Hépato-Gastro-Entérologie. (2025, January 14). Constipation sévère. FMC-HGE. https://www.fmcgastro.org/postu-main/archives/postu-2011-paris/textes-postu-2011-paris/constipation-severe/#:~:text=Comment%20d%C3%A9finir%20une%20constipation%20s%C3%A9v%C3%A8re,-La%20d%C3%A9finition%20de&text=Les%20difficult%C3%A9s%20pour%20exon%C3%A9rer%20comprennent,l'utilisation%20de%20manoeuvres%20digitales.",
+    "-José Oto. (2008). La constipation. Actualités Pharmaceutiques, n° 477, 34–35.",
+    "-Le Moniteur des pharmacies (2008). « Je suis constipé ». Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-suis-constipe",
+    "-Le Moniteur des pharmacies.fr. (2021). Constipation subite. Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/therapeutique/medicaments/mieux-delivrer/constipation-subite",
+    "-Marcinski, P. (2011). Prise en charge et conseil officinal de la constipation. In Actualités Pharmaceutiques: Vol. n° 509.",
+    "-Masson, E. (2009). En finir avec la constipation. EM-Consulte. https://www.em-consulte.com/article/199925/en-finir-avec-la-constipation",
+    "-Milan, A. (2003). « Je suis constipé ». Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-suis-constipe-3"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Digestion",
+  "creationDate": "2025-10-01T22:59:50.841Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Constipation",
+      "definition": "Émission de moins de 3 selles par semaine ou difficulté d'évacuation des selles."
+    },
+    {
+      "term": "Fécalome",
+      "definition": "Accumulation et impaction de selles dures dans le rectum, souvent liée à une constipation chronique."
+    },
+    {
+      "term": "Laxatifs osmotiques",
+      "definition": "Médicaments qui attirent l'eau dans le côlon, ramollissant les selles et augmentant leur volume pour faciliter leur transit (ex: Macrogols, Polyols)."
+    },
+    {
+      "term": "Anticholinergiques",
+      "definition": "Classe de médicaments qui bloquent l'action de l'acétylcholine, pouvant ralentir le transit intestinal et induire la constipation."
+    },
+    {
+      "term": "Colopathies inflammatoires",
+      "definition": "Maladies inflammatoires chroniques de l'intestin (comme la maladie de Crohn ou la rectocolite hémorragique), qui contre-indiquent l'usage de certains laxatifs stimulants."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition de la constipation selon la mémofiche ?",
+      "answer": "Émission de moins de 3 selles par semaine ou difficulté d'évacuation."
+    },
+    {
+      "question": "À partir de quelle durée une constipation est-elle considérée comme chronique ?",
+      "answer": "Plus de 2 semaines."
+    },
+    {
+      "question": "Citez au moins trois médicaments connus pour induire la constipation.",
+      "answer": "Opiacés, anticholinergiques, sels de fer/calcium, pansements alumineux, antitussifs codéinés."
+    },
+    {
+      "question": "Quels sont les trois principaux facteurs de risque comportementaux de la constipation ?",
+      "answer": "Manque de fibres/eau, sédentarité, rétention volontaire des selles, abus de laxatifs."
+    },
+    {
+      "question": "Quel est le mécanisme d'action des laxatifs osmotiques et quel est leur délai d'action ?",
+      "answer": "Ils augmentent la quantité d'eau dans les selles. Leur action est de 24 à 48 heures."
+    },
+    {
+      "question": "Pourquoi les laxatifs lubrifiants (ex: huile de paraffine) doivent-ils être utilisés avec précaution chez les patients alités ou souffrant de reflux ?",
+      "answer": "En raison du risque d'inhalation."
+    },
+    {
+      "question": "Quelle est la durée maximale d'utilisation recommandée pour les laxatifs stimulants ?",
+      "answer": "Usage ponctuel de 3 à 5 jours maximum."
+    },
+    {
+      "question": "Citez une contre-indication majeure à l'utilisation des laxatifs de lest.",
+      "answer": "Occlusion intestinale ou fécalome."
+    },
+    {
+      "question": "Donnez deux exemples de situations considérées comme des signaux d'alerte nécessitant un avis médical pour la constipation.",
+      "answer": "Constipation > 15 jours, douleurs abdominales importantes, vomissements, sang dans les selles, alternance constipation/diarrhée, échec du traitement."
+    },
+    {
+      "question": "Chez un patient de plus de 40 ans, quels sont les signes associés à la constipation qui constituent un signal d'alerte grave ?",
+      "answer": "Douleurs coliques, sang, diarrhées, irritation anale, altération de l'état général, amaigrissement, antécédents familiaux de cancer colique."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Selon la mémofiche, quelle est la définition correcte de la constipation ?",
+      "options": [
+        "Moins de 5 selles par semaine",
+        "Difficulté d'évacuation seulement",
+        "Moins de 3 selles par semaine ou difficulté d'évacuation",
+        "Selles molles et peu fréquentes"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche définit la constipation comme l'émission de moins de 3 selles par semaine ou la difficulté d'évacuation."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le délai d'action typique des laxatifs osmotiques comme le Macrogol ?",
+      "options": [
+        "5-10 heures",
+        "24-48 heures",
+        "2-3 jours",
+        "Action immédiate"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les laxatifs osmotiques (Macrogols, Polyols) agissent généralement en 24 à 48 heures."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les substances suivantes, laquelle est mentionnée comme pouvant induire la constipation ?",
+      "options": [
+        "Paracétamol",
+        "Ibuprofène",
+        "Opiacés",
+        "Vitamines du groupe B"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les opiacés sont explicitement cités dans la mémofiche comme des médicaments inducteurs de constipation."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pour quel type de laxatif est-il crucial de s'assurer d'un apport hydrique suffisant ?",
+      "options": [
+        "Laxatifs stimulants",
+        "Laxatifs lubrifiants",
+        "Laxatifs de lest",
+        "Laxatifs rectaux"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les laxatifs de lest (Psyllium, Ispaghul) nécessitent un apport hydrique suffisant pour agir efficacement et prévenir une aggravation de la constipation."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un patient présente une constipation depuis 10 jours sans autres symptômes. Est-ce un signal d'alerte nécessitant un avis médical selon la mémofiche ?",
+      "options": [
+        "Oui, car la constipation dure plus d'une semaine.",
+        "Non, car la durée n'atteint pas 15 jours et l'âge n'est pas un facteur isolé ici.",
+        "Oui, toute constipation persistante est un signal d'alerte.",
+        "Non, sauf en présence de sang dans les selles."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique qu'une constipation de plus de 15 jours est un signal d'alerte. Une durée de 10 jours sans autres symptômes associés (douleurs, vomissements, etc.) ne constitue pas un signal d'alerte immédiat selon les critères listés."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la durée maximale d'utilisation recommandée pour les laxatifs stimulants ?",
+      "options": [
+        "1 jour",
+        "3-5 jours",
+        "2 semaines",
+        "Sans limite de durée si bien toléré"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les laxatifs stimulants doivent être utilisés de manière ponctuelle pour une durée maximale de 3 à 5 jours en raison des risques d'abus et de dépendance."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La grossesse est un facteur de risque reconnu pour la constipation.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche mentionne explicitement la grossesse parmi les facteurs de risque de constipation."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'huile de paraffine peut être utilisée sans précaution particulière chez les patients alités.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. La mémofiche indique d'éviter l'huile de paraffine chez les patients alités ou ayant un reflux en raison du risque d'inhalation."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une poussée hémorroïdaire est une contre-indication à l'utilisation des laxatifs rectaux.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. Les laxatifs rectaux sont contre-indiqués en cas de poussée hémorroïdaire ou de fissure anale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'abus de laxatifs fait partie des facteurs comportementaux pouvant entraîner la constipation.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. La mémofiche liste l'abus de laxatifs comme un facteur comportemental de la constipation."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Digestion"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/digestion/constipation/constipation.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

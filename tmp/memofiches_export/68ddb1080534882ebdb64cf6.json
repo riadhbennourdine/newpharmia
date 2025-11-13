@@ -1,0 +1,332 @@
+{
+  "_id": "68ddb1080534882ebdb64cf6",
+  "title": "Diarrhée virale aiguë: conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un adulte de 45 ans se présente à la pharmacie en demandant conseil: Je souffre d’une diarrhée depuis quelques jours, je veux une boite de Normix 200?"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand avez-vous la diarrhée ?",
+    "-Quelle est la fréquence et la consistance des selles ?",
+    "-Avez-vous d'autres symptômes tels que : douleurs abdominales, vomissements, fièvre ?",
+    "-Y a-t-il du sang ou des glaires dans les selles ?",
+    "-Avez-vous récemment pris des antibiotiques ou un nouveau médicament ?",
+    "-Avez-vous déjà mangé des aliments suspects ou voyagé récemment ?",
+    "-D'autres personnes de votre entourage sont-elles atteintes des mêmes symptômes ?",
+    "-Êtes-vous suivi pour une maladie particulière ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition**\n• - Diminution consistance selles et/ou > 3 selles liquides/24h\n• - La diarrhée aigue ne dépasse pas 14 jours\n• - **Causes virales** Rotavirus, norovirus (fréquentes).\n• - **Causes bactériennes** E. coli, Salmonella, Campylobacter (aliments/eau contaminés).\n• - **Causes parasitaires** Giardia lamblia.\n• - **Intolérances** Lactose (déficience en lactase).\n• - **Troubles digestifs** Syndrome de l'Intestin Irritable (SII), Maladies Inflammatoires de l'Intestin (MII).\n• - **Médicaments** Antibiotiques, AINS, colchicine, antiacides contenant du magnésium."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Douleurs abdominales importantes ou vomissements répétés (empêchant l'hydratation).",
+    "-Persistance de la diarrhée > 2 jours.",
+    "-Fièvre élevée > 38,5°C.",
+    "-Présence de sang ou de glaires dans les selles",
+    "-Personnes à risque: personnes âgées, nourrissons ou immunodéprimées",
+    "-Diarrhée au retour d'un voyage en zone tropicale.",
+    "-Alternance diarrhée et constipation.",
+    "-Intoxication: Suspicion alimentaire.",
+    "-Diarrhée d'origine médicamenteuse."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "La prise en charge repose sur une réhydratation et un traitement symptomatique.",
+      "**SRO** Solution de Réhydratation Orale",
+      "-Prévenir la déshydratation. ",
+      "-Elle permet de compenser les pertes en eau et électrolytes.",
+      "-Les SRO sont à prendre avant tout autre liquide, le plus précocement possible.",
+      "-Ex: Hydratec®, (sachets) à diluer dans 200 ml d'eau"
+    ],
+    "associatedProducts": [
+      "** Ralentisseur du transit** : Lopéramide",
+      "-Posologie: 2 gélules en début, puis 1 après chaque selle non moulée (max 6/jour, max 2 jours). ",
+      "-CI: Diarrhée sanglante, glaireuse, fébrile. (risque de ralentissement de l'élimination du germe)",
+      "-Conseil: Usage ponctuel",
+      "-Ex: Diaretyl®, Diarestop flash®.",
+      "**Adsorbant intestinal** :Diosmectite",
+      "-Posologie: 3 sachets/jour (jusqu'à 6 en début de traitement). ",
+      "-Conseil: À prendre à distance des autres médicaments. ",
+      "-Ex: Smecta®",
+      "**Racécadotril** (sur ordonnance) Antisécrétoire intestinal. ",
+      "-Diminue sécrétion eau/électrolytes. ",
+      "-Posologie: 1 gélule aux premiers signes, puis 1 avant chaque repas. ",
+      "-Précautions: Non recommandé femmes enceintes et personnes sous IEC (risque d'angio-œdème). ",
+      "-Ex: Tiorfan®, Tiortec®",
+      "**Probiotiques** (Saccharomyces boulardii, Lactobacillus rhamnosus GG) : ",
+      "-Aident à restaurer la flore intestinale. ",
+      "-À éviter: Personnes immunodéprimées."
+    ],
+    "lifestyleAdvice": [
+      "-Se laver fréquemment les mains surtout avant les repas et après être allé aux toilettes.",
+      "-Utiliser des solutions hydroalcooliques si nécessaire.",
+      "-Nettoyer et désinfecter les toilettes après chaque utilisation.",
+      "-Éviter les contacts rapprochés avec l'entourage, surtout les personnes fragiles.",
+      "-Boire de l'eau en bouteille, éviter les aliments crus, les glaçons et les glaces artisanales."
+    ],
+    "dietaryAdvice": [
+      "-Boire au moins 1,5 litre de liquide par jour (eau, bouillon, thé).",
+      "-Privilégier: Riz, pommes de terre, volaille, poisson, banane, compote de pommes ou coing cuite.",
+      "-Éviter les boissons caféinées, alcool, plats gras, épicés ou trop sucrés.",
+      "-En cas de diarrhée infectieuse, éviter les produits riches en lactose."
+    ]
+  },
+  "references": [
+    "-Collin, A.H., & Blanc, A. (2017, 19 février). La diarrhée. Cahiers Conseil.",
+    "-De Truchis, P., & De Truchis, A. (2007). Diarrhées aiguës infectieuses. Presse Med, 36, 695–705.",
+    "-Buxeraud, J., Faure, S., & Denardou, D. (2019). Les médicaments de la diarrhée. Actualités pharmaceutiques.",
+    "-Clere, N. (2016). Prise en charge de la diarrhée et de la constipation à l’officine. Actualités pharmaceutiques.",
+    "-Fougere, E., Perrichon, B., & Buxeraud, J. (2019). Une diarrhée chez un patient adulte. Actualités pharmaceutiques.",
+    "-Belin, N. (2018, 1 décembre). “J’ai la diarrhée”. Délivrance. Le moniteur des pharmaciens",
+    "-Belin, N. (2023, 27 juin). “Vite, quelque chose contre la diarrhée SVP !”. Délivrance. Le moniteur des pharmaciens",
+    "-Lamassiaude, S. (2009, 2 mars). La diarrhée aiguë. Actualités pharmaceutiques n° 483",
+    "-Ameli.fr. (2025, 2 janvier). Diarrhée et gastro-entérite de l'adulte : que faire ?.",
+    "-Ameli.fr. (2025, 2 janvier). Gastro-entérite de l'adulte : consultation et traitement.",
+    "-Ameli.fr. (2025, 2 janvier). Symptômes, causes et évolution de la gastro-entérite chez un adulte."
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Digestion",
+  "creationDate": "2025-10-01T22:54:00.278Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "SRO (Solution de Réhydratation Orale)",
+      "definition": "Préparation destinée à compenser les pertes en eau et en électrolytes dues à la diarrhée, primordiale pour prévenir la déshydratation."
+    },
+    {
+      "term": "Lopéramide",
+      "definition": "Médicament ralentisseur du transit intestinal, utilisé pour réduire la fréquence des selles liquides en cas de diarrhée aiguë simple."
+    },
+    {
+      "term": "Diosmectite",
+      "definition": "Adsorbant intestinal qui forme une couche protectrice sur la muqueuse digestive, contribuant à stopper la diarrhée."
+    },
+    {
+      "term": "Racécadotril",
+      "definition": "Médicament antisécrétoire intestinal qui réduit la sécrétion d'eau et d'électrolytes dans l'intestin, traitant ainsi les symptômes de la diarrhée sans altérer le transit normal."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition de la diarrhée aiguë selon la mémofiche ?",
+      "answer": "Diminution de la consistance des selles et/ou plus de 3 selles liquides par 24h et/ou plus de 300g par jour."
+    },
+    {
+      "question": "Citez deux causes virales fréquentes de diarrhée aiguë mentionnées dans le document.",
+      "answer": "Rotavirus et Norovirus."
+    },
+    {
+      "question": "Quels types de médicaments peuvent provoquer une diarrhée comme effet secondaire ?",
+      "answer": "Antibiotiques, AINS, colchicine, et antiacides contenant du magnésium."
+    },
+    {
+      "question": "Quel est l'objectif principal de l'administration d'une Solution de Réhydratation Orale (SRO) ?",
+      "answer": "Prévenir la déshydratation."
+    },
+    {
+      "question": "Quelle est la posologie initiale du Lopéramide en cas de diarrhée aiguë, et sa posologie maximale quotidienne en automédication ?",
+      "answer": "2 gélules en début de traitement, puis 1 gélule après chaque selle non moulée (max 6/jour)."
+    },
+    {
+      "question": "Quelles sont les contre-indications majeures à l'utilisation du Lopéramide ?",
+      "answer": "Diarrhée sanglante, glaireuse ou fébrile."
+    },
+    {
+      "question": "Quelle est la précaution importante à prendre lors de l'administration de Diosmectite ?",
+      "answer": "À prendre à distance des autres médicaments."
+    },
+    {
+      "question": "Quel est le mécanisme d'action du Racécadotril ?",
+      "answer": "C'est un antisécrétoire intestinal qui diminue la sécrétion d'eau et d'électrolytes."
+    },
+    {
+      "question": "Pour combien de jours le Lopéramide est-il conseillé au maximum en automédication pour la diarrhée aiguë ?",
+      "answer": "Maximum 2 jours."
+    },
+    {
+      "question": "Citez deux signaux d'alerte nécessitant un avis médical urgent pour une diarrhée.",
+      "answer": "Douleurs abdominales importantes, vomissements répétés, diarrhée persistant > 2 jours, fièvre > 38,5°C, présence de sang ou glaires dans les selles, signes de déshydratation, diarrhée après voyage en zone tropicale, etc."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Selon la mémofiche, quelle est une des caractéristiques définissant la diarrhée aiguë ?",
+      "options": [
+        "Moins de 3 selles par jour",
+        "Des selles molles avec une consistance normale",
+        "Plus de 3 selles liquides par 24h",
+        "Une augmentation du poids des selles à 100g/jour"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche définit la diarrhée aiguë par une diminution de la consistance des selles et/ou plus de 3 selles liquides par 24h et/ou plus de 300g par jour."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les options suivantes, quelles sont les deux causes virales les plus fréquentes de diarrhée aiguë mentionnées dans le texte ?",
+      "options": [
+        "E. coli et Salmonella",
+        "Giardia lamblia et Rotavirus",
+        "Rotavirus et Norovirus",
+        "Campylobacter et Norovirus"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche cite explicitement le Rotavirus et le Norovirus comme causes virales fréquentes de diarrhée."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la posologie maximale quotidienne de Lopéramide recommandée pour l'automédication selon la mémofiche ?",
+      "options": [
+        "4 gélules/jour",
+        "6 gélules/jour",
+        "8 gélules/jour",
+        "2 gélules/jour"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique une posologie maximale de 6 gélules par jour pour le Lopéramide."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Le Racécadotril est un antisécrétoire intestinal. Quelle est la principale précaution d'emploi mentionnée pour ce médicament ?",
+      "options": [
+        "Ne pas l'utiliser chez les enfants de moins de 6 ans",
+        "Ne pas le prendre avec des aliments",
+        "Non recommandé chez les femmes enceintes et les personnes sous IEC (risque d'angio-œdème)",
+        "À prendre uniquement le soir au coucher"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche précise que le Racécadotril est non recommandé chez les femmes enceintes et les personnes sous IEC en raison du risque d'angio-œdème."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel conseil important est donné concernant l'administration de Diosmectite ?",
+      "options": [
+        "À prendre avec un grand verre d'eau",
+        "À prendre à jeun pour une meilleure absorption",
+        "À prendre à distance des autres médicaments",
+        "À ne pas prendre avec des jus de fruits"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche conseille de prendre la Diosmectite à distance des autres médicaments pour éviter toute interaction d'adsorption."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les situations suivantes, laquelle est un signal d'alerte nécessitant un avis médical pour une diarrhée ?",
+      "options": [
+        "Diarrhée simple sans fièvre",
+        "Diarrhée persistant depuis 1 jour",
+        "Présence de glaires ou de sang dans les selles",
+        "Diarrhée après un repas copieux"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La présence de sang ou de glaires dans les selles est explicitement listée comme un signal d'alerte."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La Solution de Réhydratation Orale (SRO) doit être prise après tout autre liquide.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique que la SRO doit être prise 'avant tout autre liquide, précocement'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le Lopéramide est contre-indiqué en cas de diarrhée fébrile.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche mentionne que le Lopéramide est contre-indiqué en cas de diarrhée sanglante, glaireuse ou fébrile."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une diarrhée d'origine médicamenteuse (iatrogène) n'est pas considérée comme un signal d'alerte.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche liste la 'Diarrhée d'origine médicamenteuse' comme un signal d'alerte nécessitant un avis médical."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une diarrhée persistant plus de 2 jours chez un adulte est un signal d'alerte justifiant un avis médical.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche indique 'Persistance Diarrhée > 2 jours' comme un signal d'alerte."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Digestion"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/digestion/diarrhee/diarrhee.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published"
+}

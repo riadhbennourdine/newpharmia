@@ -1,0 +1,336 @@
+{
+  "_id": "68ddb4430534882ebdb64cf8",
+  "title": "Hémorroïdes: Mémofiche conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une patiente de 28 ans se présente à la pharmacie: \" Je veux une boîte de Neo Healar® crème."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand ressentez-vous ces symptômes ?",
+    "-Avez-vous des saignements lors des selles ? Si oui, quelle couleur, quelle abondance ?",
+    "-Ressentez-vous des douleurs ou des démangeaisons ?",
+    "-Avez-vous remarqué une grosseur à l'anus ?",
+    "-Êtes-vous constipée ou avez-vous des problèmes de transit ?",
+    "-Êtes-vous enceinte ou avez-vous récemment accouché ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition**\nRéseau de vaisseaux artériels et veineux normalement présents dans le canal anal\n• - **Maladie**\nSurvient lorsque ces vaisseaux se dilatent ou s'enflamment\n• - **Types**\nHémorroïdes internes (canal anal) et externes (autour de l'anus)\n• - **Symptômes**\nSaignements de sang rouge vif après la défécation, démangeaisons, gonflement, sensation de pesanteur.,\n• - **Douleur**\nMoins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (douleur intense)"
+      }
+    ]
+  },
+  "redFlags": [
+    "-Symptômes persistants après 48 heures de traitement.",
+    "-Saignements abondants ou sang noir dans les selles (sang digéré).",
+    "-Douleur Intense ou persistante toute la journée (risque de thrombose).",
+    "-Fièvre associée aux symptômes.",
+    "-Patient de plus de 50 ans (nécessite exploration médicale)."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Topiques locaux** Crèmes, pommades, suppositoires:",
+      "-Propriétés anti-inflammatoires, décongestionnantes, lubrifiantes et/ou veinotoniques.",
+      "-Utilisation courte : 1 à 2 semaines maximum",
+      "-Enrober le suppositoire d'une crème pour faciliter son introduction. ",
+      "-Ex: Neo-Healar®, Hémorroix®"
+    ],
+    "associatedProducts": [
+      "- **Veinotoniques oraux** : ",
+      "-Soulager les symptômes aigus de la maladie hémorroïdaire, incluant la douleur et les saignements (rectorragies)",
+      "-Les veinotoniques agissent par leur effet vasculotrope et anti-inflammatoire, limitant la dilatation veineuse et diminuant la perméabilité capillaire",
+      "-Posologie Daflon 500(crise) : 2 comprimés 3 fois par jour pendant 5 jours.",
+      "- **Antalgiques** : ",
+      "-Paracétamol: 1g trois fois par jour, max 4g/j",
+      "- **AINS** : ",
+      "-Ibuprofène: 200 mg, 600 à 1200 mg par jour",
+      "- **Laxatifs doux (constipation)** : ",
+      "-Laxatifs osmotiques : Macrogol ou laxatifs de lest (ispaghul, psyllium).",
+      "- **Compléments Veinotoniques (prévention)** : Vigne rouge, Marronnier d’Inde, Ginkgo biloba.",
+      "-Réduit le risque de récurrence des symptômes à six mois. ",
+      "-Envisager une cure de 10 jours par mois pour réduire la fréquence et l'intensité des crises. ",
+      "-Ex: Keravel Forvein®"
+    ],
+    "lifestyleAdvice": [
+      "-Toilette anale douce après chaque selle avec un savon surgras ou un gel intime doux (ex: Saforelle®). Séchage soigneux.",
+      "-Éviter la sédentarité, la station assise ou debout prolongée. Pratiquer une activité physique régulière (marche, natation).",
+      "-Ne pas forcer lors des selles.",
+      "-Porter des vêtements en coton amples."
+    ],
+    "dietaryAdvice": [
+      "-Privilégier une alimentation riche en fibres (légumes verts, fruits, céréales complètes) pour régulariser le transit.",
+      "-Boire suffisamment d'eau (1,5 à 2 litres par jour).",
+      "-Éviter les aliments épicés, l'alcool, le café et les excitants."
+    ]
+  },
+  "references": [
+    "-Dalibon, P. (2019). La maladie hémorroïdaire. Actualités Pharmaceutiques, 58(584), 46–50.",
+    "-Higuero, T., et al. (2016). Guidelines for the treatment of hemorrhoids (short report). Journal of Visceral Surgery, 153(3), 213–218.",
+    "-Hémorroïdes : consultation et traitement | ameli.fr | Assuré",
+    "-Hémorroïdes : définition, facteurs favorisants et symptômes | ameli.fr | Assuré",
+    "-Hémorroïdes : que faire pour être soulagé et quand consulter ? | ameli.fr | Assuré",
+    "-SNFCP. (2024, 30 mai). Les hémorroïdes. SNFCP.",
+    "-Senejoux, A. (2011). Traitement médical de la pathologie hémorroïdaire. La Presse Médicale, 40(10), 927–930.",
+    "-Le Moniteur des pharmacies.fr. (2008, Sep 1). « Mon mari a des hémorroïdes ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/mon-mari-a-des-hemorroideshttps://www.lemoniteurdespharmacies.fr/revues/porphyre/article/n-445/mon-mari-a-des-hemorroides.html",
+    "-Harlaut, A. (2023, November 29). “J’ai une nouvelle poussée d’hémorroïdes !” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-une-nouvelle-poussee-dhemorroideshttps://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-une-nouvelle-poussee-dhemorroides",
+    "-Harlaut, A. (2020, August 27). “Je voudrais quelque chose contre les hémorroïdes.” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-contre-les-hemorroideshttps://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-contre-les-hemorroides",
+    "-Siproudhis, L. (2008, December). La fissure anale. SNFCP.",
+    "-Berthélémy.S (2011, Mars) Conseils à un patient souffrant d’hémorroïdes Actualités pharmaceutiques n°504"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Digestion",
+  "creationDate": "2025-10-01T23:07:47.346Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Hémorroïdes",
+      "definition": "Réseau de vaisseaux artériels et veineux normalement présents dans le canal anal. La maladie hémorroïdaire est due à leur dilatation ou inflammation."
+    },
+    {
+      "term": "Prolapsus",
+      "definition": "Extériorisation des hémorroïdes internes hors du canal anal, pouvant être classé en différents stades selon sa réductibilité."
+    },
+    {
+      "term": "Thrombose hémorroïdaire",
+      "definition": "Complication des hémorroïdes caractérisée par la formation d'un caillot de sang dans une veine hémorroïdaire, provoquant une douleur intense."
+    },
+    {
+      "term": "Veinotonique",
+      "definition": "Substance ou médicament qui agit en améliorant le tonus et l'élasticité des parois veineuses, souvent utilisé pour réduire la congestion et la dilatation des vaisseaux."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition des hémorroïdes en tant que structure anatomique normale?",
+      "answer": "Les hémorroïdes sont un réseau de vaisseaux artériels et veineux normalement présents dans le canal anal."
+    },
+    {
+      "question": "Quand parle-t-on de 'maladie hémorroïdaire'?",
+      "answer": "La maladie hémorroïdaire survient lorsque ces vaisseaux se dilatent ou s'enflamment."
+    },
+    {
+      "question": "Quels sont les deux types d'hémorroïdes selon leur localisation?",
+      "answer": "Il existe les hémorroïdes internes (situées dans le canal anal) et les hémorroïdes externes (situées autour de l'anus)."
+    },
+    {
+      "question": "Citez au moins trois symptômes courants des hémorroïdes.",
+      "answer": "Les symptômes courants incluent les saignements de sang rouge vif après la défécation, les démangeaisons, le gonflement et une sensation de pesanteur."
+    },
+    {
+      "question": "Quelle est la différence de perception de la douleur entre les hémorroïdes et une fissure anale?",
+      "answer": "Les hémorroïdes sont généralement moins douloureuses qu'une fissure anale, sauf en cas de thrombose où la douleur peut être intense."
+    },
+    {
+      "question": "Qu'est-ce que le 'prolapsus' dans le contexte des hémorroïdes?",
+      "answer": "Le prolapsus est l'extériorisation des hémorroïdes internes hors du canal anal."
+    },
+    {
+      "question": "Comment se caractérise un Stade 2 de prolapsus hémorroïdaire?",
+      "answer": "Le prolapsus survient lors de la défécation mais se réintègre spontanément."
+    },
+    {
+      "question": "Quelle est la durée maximale recommandée pour l'utilisation de traitements topiques locaux pour les hémorroïdes, en particulier ceux contenant des anesthésiques locaux?",
+      "answer": "L'utilisation est courte, 1 à 2 semaines maximum, et spécifiquement 8 jours pour les anesthésiques locaux."
+    },
+    {
+      "question": "Quel est un conseil pratique pour faciliter l'introduction d'un suppositoire?",
+      "answer": "Il est conseillé d'enrober le suppositoire d'une crème pour faciliter son introduction."
+    },
+    {
+      "question": "Citez deux signaux d'alerte qui nécessitent une exploration médicale pour un patient souffrant d'hémorroïdes.",
+      "answer": "Des signaux d'alerte incluent des symptômes persistants après 48 heures de traitement, des saignements abondants ou du sang noir dans les selles, une douleur intense ou persistante, de la fièvre associée, ou un patient de plus de 50 ans."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la définition correcte des hémorroïdes en tant que structure anatomique?",
+      "options": [
+        "Une inflammation des tissus rectaux.",
+        "Un réseau de vaisseaux artériels et veineux présents dans le canal anal.",
+        "Une dilatation anormale des artères uniquement.",
+        "Des excroissances cutanées autour de l'anus."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les hémorroïdes sont un réseau de vaisseaux sanguins normalement présents dans le canal anal. La maladie survient lorsque ces vaisseaux se dilatent ou s'enflamment."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les symptômes suivants, lequel est le plus typique des hémorroïdes non compliquées?",
+      "options": [
+        "Douleur intense et persistante toute la journée.",
+        "Saignements de sang noir dans les selles.",
+        "Saignements de sang rouge vif après la défécation.",
+        "Fièvre isolée."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les saignements de sang rouge vif après la défécation sont un symptôme classique des hémorroïdes. Le sang noir indique un saignement digestif haut, la douleur intense est souvent liée à une thrombose, et la fièvre est un signal d'alerte si associée."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Une hémorroïde de Stade 3 se caractérise par:",
+      "options": [
+        "Une réintégration spontanée après défécation.",
+        "Une non-prolabée, juste congestive.",
+        "Un prolapsus nécessitant une réintégration manuelle.",
+        "Un prolapsus permanent et irréductible."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le Stade 3 est défini par un prolapsus qui ne se réintègre pas spontanément et nécessite une aide manuelle."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la durée maximale recommandée pour l'utilisation de crèmes topiques anesthésiques locales pour les hémorroïdes?",
+      "options": [
+        "48 heures.",
+        "4 semaines.",
+        "8 jours.",
+        "1 mois."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les traitements topiques à base d'anesthésiques locaux doivent être utilisés sur une courte durée, spécifiquement 8 jours maximum, afin d'éviter les effets secondaires liés à une utilisation prolongée."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est l'action principale d'un traitement topique local pour les hémorroïdes tel que Neo-Healar®?",
+      "options": [
+        "Anticoagulant et antibiotique.",
+        "Anesthésique local, anti-inflammatoire et décongestionnant.",
+        "Laxatif et antispasmodique.",
+        "Immunosuppresseur et antiviral."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les traitements topiques locaux visent à soulager les symptômes par des actions anesthésiques, anti-inflammatoires, décongestionnantes, lubrifiantes et/ou veinotoniques."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est un signal d'alerte important qui justifierait une consultation médicale pour des symptômes d'hémorroïdes?",
+      "options": [
+        "Démangeaisons légères.",
+        "Sensation de pesanteur occasionnelle.",
+        "Saignements abondants ou présence de sang noir dans les selles.",
+        "Prolapsus de stade 1."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Des saignements abondants ou la présence de sang noir dans les selles (sang digéré) sont des signaux d'alerte qui nécessitent une exploration médicale rapide pour écarter d'autres pathologies plus graves."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les hémorroïdes sont généralement plus douloureuses qu'une fissure anale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Les hémorroïdes sont généralement moins douloureuses qu'une fissure anale, sauf en cas de thrombose hémorroïdaire où la douleur peut être intense."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La présence de fièvre associée aux symptômes hémorroïdaires est un signal d'alerte nécessitant une consultation médicale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. La fièvre associée aux symptômes est un signal d'alerte qui doit faire consulter un médecin pour investiguer la cause et écarter une infection ou autre complication."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Un patient de 28 ans avec des symptômes persistants après 48h de traitement doit immédiatement consulter un médecin.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. La persistance des symptômes après 48 heures de traitement est un signal d'alerte, indépendamment de l'âge du patient. C'est l'un des critères pour une exploration médicale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le prolapsus permanent et irréductible manuellement correspond à un stade 2 des hémorroïdes.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Le prolapsus permanent et irréductible manuellement correspond à un stade 4 des hémorroïdes. Le stade 2 se caractérise par un prolapsus lors de la défécation avec réintégration spontanée."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Digestion"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/digestion/hemorroides/hemorroides.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

@@ -1,0 +1,415 @@
+{
+  "_id": "690877538c9382adf9815707",
+  "title": "Vaccination Antigrippale: conseils à l'officine",
+  "shortDescription": "Analyse des aspects essentiels de la vaccination antigrippale, des caractéristiques du virus, des populations à risque, des objectifs et recommandations vaccinales, ainsi que des propriétés et effets indésirables du vaccin pour une gestion optimale au comptoir.",
+  "memoSections": [
+    {
+      "id": "memo-0",
+      "title": "Cas Comptoir: Gestion d'une Demande sur la Vaccination Antigrippale",
+      "content": [
+        {
+          "type": "text",
+          "value": "Un patient se présente à l’officine pour demander conseil au sujet du vaccin de la grippe: “On a conseillé mon père de se faire vacciner contre la grippe, mais je ne suis pas assez convaincu, est-il vraiment efficace? et ne présente-t-il pas des effets indésirables?”\n"
+        }
+      ]
+    },
+    {
+      "id": "memo-1",
+      "title": "Questions Clés au Comptoir",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Âge**: Quel âge a la personne concernée? \n• **Pathologies chroniques**: Souffre-t-il de maladies chroniques? Lesquelles (respiratoires, cardiaques, métaboliques…) \n• **Poids**: Et concernant son poids, est-il en surpoids ou obèse?  \n• **Allergies**: A-t-il des allergies particulières?\n\n"
+        }
+      ]
+    },
+    {
+      "id": "memo-2",
+      "title": "La Grippe: Étiologie et Types Viraux",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Agent causal**: \n-Myxovirus influenzae (famille Orthomyxoviridae), communément appelés virus **Influenzae**. \n• **Types**: \n-Se répartissent en trois types: **A**, **B** et **C**. \n• **Virus A**: \n-Le plus fréquent, mutagène, responsable des grandes épidémies et **pandémies**. Subdivisé en **sous-types** (ex: H1N1, H3N2) selon les glycoprotéines de surface **H** (hémagglutinine) et **N** (neuraminidase). \n• **Virus B**: \n-Responsable d'**épidémies** chez l'homme, avec deux **lignées circulantes** (Victoria et Yamagata). \n• **Virus C**: \n-**Faiblement** ou **non** pathogène, provoquant des symptômes **bénins**."
+        }
+      ]
+    },
+    {
+      "id": "memo-3",
+      "title": "Symptomatologie de la Grippe",
+      "content": [
+        {
+          "type": "text",
+          "value": "-**Incubation**: Courte, de **1 à 3 jours** après la contamination. \n-**Contagiosité**: Maximale les **3 à 4 premiers jours** suivant **l'apparition** des signes cliniques. \n-**Début**: **Brutal**, marqué par des signes généraux et locaux. \n-**Signes généraux**: **Frissons**, **fièvre élevée** (≥ 39 °C), **myalgies**, **céphalées**, **malaise**, **asthénie** importante\n-**Signes respiratoires/locaux**:\n-**Toux** sèche puis productive, \n-**rhinorrhée**, **congestion nasale**,\n-**douleurs pharyngées**, et **dysphonie**. \n-**Chez l'enfant**: **Signes digestifs** (vomissements, diarrhées) et **somnolence** fréquents. \n-**Chez la personne âgée**: **Signes respiratoires** marqués (toux, dyspnée), associés à une **confusion mentale**, **troubles digestifs**, **chutes**, et **déshydratation**."
+        }
+      ]
+    },
+    {
+      "id": "memo-4",
+      "title": "Complications de la Grippe",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Populations à risque**: Complications **graves**, en particulier chez les personnes dites à risque. \n• **Complications respiratoires**: \n-Les plus fréquentes; **pneumonie virale aiguë**, **surinfections bactériennes** (pneumonies bactériennes, sinusites, bronchites traînantes, otites moyennes aiguës). \n• **Complications extra-respiratoires**: \n-Plus rares; **neurologiques**, **cardiaques**, **musculaires**. \n• **Complications liées au terrain**: \n-**Décompensation** de pathologies préexistantes (cardiaques, métaboliques, rénales, respiratoires) avec risque accru d'**hospitalisation**. \n• **Complications spécifiques à la grossesse**: \n-Risque de **détresse respiratoire** et de **complications cardiovasculaires**. \n-Le virus peut traverser la barrière placentaire, exposant à un risque d'**avortement spontané**, de **prématurité** ou de **retard de croissance fœtal**."
+        }
+      ]
+    },
+    {
+      "id": "memo-5",
+      "title": "Objectifs de la Vaccination Antigrippale",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Protection individuelle**: \n-Protéger les individus à risque important contre les formes graves de la maladie. \n• **Réduction des complications**: \n-Diminuer le risque de **complications** (notamment respiratoires) et de décompensation des maladies existantes, **réduisant** ainsi les **hospitalisations** et les **décès**. \n• **Réduction de la transmission**: \n-Contribuer à **limiter la propagation du virus**, recommandée aux professionnels de santé en contact régulier avec des sujets à risque."
+        }
+      ]
+    },
+    {
+      "id": "memo-6",
+      "title": "Populations Cibles pour la Vaccination Antigrippale",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Personnes âgées**: \n-Individus de **65** ans **et plus**. \n• **Affections chroniques**: \n-Patients souffrant de pathologies pulmonaires, cardiaques (ex: insuffisance cardiaque), rénales, métaboliques (ex: diabète), neuromusculaires, déficits immunitaires, mucoviscidose, maladies hépatiques. \n• **Femmes enceintes**: \n-À tous les stades de la grossesse. \n• **Nourrissons et jeunes enfants**: \n-Population immunodéficiente vulnérable. \n• **Obésité**: \n-Patients avec un **IMC ≥ 40 kg/m²**."
+        }
+      ]
+    },
+    {
+      "id": "memo-7",
+      "title": "Composition des Vaccins Antigrippaux",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Vaccins disponibles**: \n-Pour la campagne tunisienne 2025-2026: \n• **INFLUVAC®** (vaccin inactivé tétravalent, à antigène de surface) et \n• **VAXIGRIP®** (vaccin inactivé tétravalent, à virion fragmenté). \n• **Souches incluses**: \n-Contiennent généralement **2** souches de type **A** (ex: H1N1pdm09, H3N2) et **2** souches de type **B** (ex: lignées Victoria et Phuket/Yamagata)."
+        }
+      ]
+    },
+    {
+      "id": "memo-8",
+      "title": "Administration et Immunité du Vaccin Antigrippal",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Indications**: \n-Vaccins disponibles pour **adultes** et enfants à partir **de 6 mois**. \n• **Délai d'immunité**: \n-Généralement obtenue **15 jours** (2 à 3 semaines) après l'injection. \n• **Période de vaccination**: \n-Conseillée **dès la disponibilité** du vaccin (octobre-novembre) et jusqu’au **pic épidémique** (décembre/janvier). \n• **Revaccination annuelle**: \n-**Recommandée** en raison de la **durée d'immunité** (6 à 12 mois) et des **modifications** des souches virales circulantes. \n• **Voie d'administration**: \n-Par injection **intramusculaire (IM)** ou **sous-cutanée (SC)**. \n• **Précautions**: \n-La vaccination doit être **reportée** en cas de fièvre ou de maladie aiguë."
+        }
+      ]
+    },
+    {
+      "id": "memo-9",
+      "title": "Effets Indésirables du Vaccin Antigrippal",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Nature des effets**: \n-Généralement **bénins** et **transitoires**. \n-Le vaccin inactivé **ne peut absolument pas provoquer la grippe**. \n• **Durée**: \n-La **majorité** des effets secondaires sont d'intensité **légère** à **modérée** et disparaissent en **1** à **3** jours **sans traitement**. \n• **Réactions locales au site d'injection**: \n-**Douleur**, **rougeur**, **gonflement**, **induration**, **ecchymose**, **prurit**. \n• **Symptômes généraux**: \n-**Céphalées**, **myalgies**, **malaise**, **fièvre**, **frissons**, **fatigue**. \n• **Excipients**: \n-Les vaccins antigrippaux ne contiennent pas d'adjuvants à base de sels d'aluminium, mais d'autres excipients comme les **protéines d'œuf** et le **formaldéhyde** peuvent être présents."
+        }
+      ]
+    },
+    {
+      "id": "memo-10",
+      "title": "Gestion des Objections et Idées Reçues sur la Vaccination",
+      "content": [
+        {
+          "type": "text",
+          "value": "**-Pourquoi se faire  vacciner si on n'est pas âgé ou si on est âgé mais en bonne santé?**: La grippe n'est pas uniquement grave chez les personnes âgées; les patients ayant des **maladies chroniques**  sont également à risque. Aussi, même une **personne âgée en bonne santé** doit se faire vacciner, car le système immunitaire et les poumons deviennent plus fragiles avec l'âge.\n**-Pourquoi se faire vacciner si ce n'est pas efficace à 100%?**: Même si non efficace à 100%, le vaccin **protège** contre les **formes graves**, les **complications** et les **décès**. \n**-Puis-je avoir la grippe après vaccination?**: Il est possible de contracter la grippe (souvent moins sévère) ou un **syndrome grippal** dû à un autre virus respiratoire; mais on est protégé contre les complications. \n**-Et la revaccination annuelle?**: **Indispensable** en raison de la **mutation** constante du virus et de la disparition de la protection au bout de **6** à **12** mois. \n**-Le vaccin donne-t-il la grippe?**: **Non**, les vaccins inactivés contiennent des **virus morts** ne pouvant pas provoquer la maladie. \n**-Je suis allergique aux œufs!**: Si allergie sévère aux œufs, une **évaluation médicale** est nécessaire.\n **-Il est trop tard pour se faire vacciner!**: Il n'est **jamais trop tard** pour se faire vacciner tant que le pic de l'épidémie n'est pas atteint. \n**-Et la \"vaccination\" par Homéopathie?**: **Non alternative** au vaccin antigrippal; elle peut compléter mais pas remplacer la vaccination."
+        }
+      ]
+    }
+  ],
+  "status": "Published",
+  "id": "",
+  "type": "savoir",
+  "theme": "Maladies courantes",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-11-03T09:35:15.725Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Grippe",
+      "definition": "Maladie respiratoire contagieuse causée par les virus influenza, caractérisée par une fièvre élevée, des maux de tête, des douleurs musculaires, une fatigue intense, de la toux et des maux de gorge."
+    },
+    {
+      "term": "Anticorps",
+      "definition": "Protéines produites par le système immunitaire en réponse à la présence d'un agent étranger (antigène), comme un virus ou une bactérie, pour le neutraliser."
+    },
+    {
+      "term": "Virus inactivé",
+      "definition": "Un virus dont la capacité à se répliquer et à provoquer une maladie a été supprimée, mais qui conserve sa capacité à stimuler une réponse immunitaire. Utilisé dans la plupart des vaccins antigrippaux."
+    },
+    {
+      "term": "Quadrivalent",
+      "definition": "Se dit d'un vaccin qui protège contre quatre souches ou types d'un agent pathogène. Pour la grippe, cela signifie deux souches A et deux souches B."
+    },
+    {
+      "term": "Dérive antigénique",
+      "definition": "Processus de modification génétique mineure et graduelle des virus influenza au fil du temps, entraînant des changements dans les protéines de surface et nécessitant une reformulation annuelle des vaccins."
+    },
+    {
+      "term": "Immunité de groupe",
+      "definition": "Protection indirecte contre une maladie infectieuse qui se produit lorsque la vaccination d'une proportion suffisante de la population confère une protection aux individus non vaccinés ou non immunisés."
+    },
+    {
+      "term": "Contre-indication",
+      "definition": "Une condition ou un facteur qui rend un traitement ou une procédure médicale inadéquate ou dangereuse. Pour le vaccin, une réaction allergique sévère antérieure est une contre-indication."
+    },
+    {
+      "term": "Séroconversion",
+      "definition": "Le développement d'anticorps détectables dans le sang en réponse à une infection ou une vaccination, indiquant l'acquisition d'une immunité."
+    },
+    {
+      "term": "Prophylaxie",
+      "definition": "Ensemble des moyens mis en œuvre pour prévenir l'apparition d'une maladie. La vaccination est une mesure prophylactique."
+    },
+    {
+      "term": "Trivalent",
+      "definition": "Se dit d'un vaccin qui protège contre trois souches d'un agent pathogène. Pour la grippe, cela signifiait deux souches A et une souche B, moins courant aujourd'hui que le quadrivalent."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quels sont les objectifs de la vaccination antigrippale ?",
+      "answer": "Objectifs de la vaccination antigrippale: Prévenir l'infection par le virus de la grippe, Réduire la gravité de la maladie, Prévenir les complications graves, y compris l'hospitalisation et le décès."
+    },
+    {
+      "question": "Quelles sont les populations prioritaires pour la vaccination antigrippale ?",
+      "answer": "Les personnes âgées de 65 ans et plus, Les personnes atteintes de maladies chroniques, Les femmes enceintes, Les nourrissons (à partir de 6 mois) et les jeunes enfants, Les professionnels de santé."
+    },
+    {
+      "question": "Quand est-il généralement recommandé de se faire vacciner contre la grippe ?",
+      "answer": "Il est généralement recommandé de se faire vacciner en automne, avant le début de la circulation des virus grippaux, idéalement entre octobre et décembre."
+    },
+    {
+      "question": "Combien de temps faut-il pour que le vaccin antigrippal soit efficace après l'injection ?",
+      "answer": "Il faut environ 2 semaines après l'injection pour que le système immunitaire développe une protection suffisante contre le virus de la grippe."
+    },
+    {
+      "question": "Quels sont les effets secondaires courants du vaccin antigrippal ?",
+      "answer": "Les effets secondaires courants sont généralement légers et transitoires : douleur, rougeur ou gonflement au site d'injection, maux de tête, douleurs musculaires, fièvre légère, et fatigue."
+    },
+    {
+      "question": "Un patient peut-il attraper la grippe à cause du vaccin ?",
+      "answer": "Non, le vaccin antigrippal ne peut pas donner la grippe car il contient des composants viraux, incapables de provoquer la maladie. Il peut parfois provoquer des symptômes pseudo-grippaux légers et temporaires."
+    },
+    {
+      "question": "Pourquoi la composition du vaccin antigrippal change-t-elle chaque année ?",
+      "answer": "Car les virus grippaux évoluent constamment. L'OMS recommande une nouvelle composition basée sur les souches virales les plus susceptibles de circuler la saison suivante."
+    },
+    {
+      "question": "Quelle est la principale contre-indication absolue au vaccin antigrippal ?",
+      "answer": "La principale contre-indication absolue est une réaction allergique sévère (anaphylaxie) à une dose antérieure du vaccin ou à l'un de ses composants (par exemple, des traces d'œuf pour certains vaccins)."
+    },
+    {
+      "question": "Qu'est-ce qu'un vaccin antigrippal quadrivalent ?",
+      "answer": "Un vaccin quadrivalent protège contre quatre souches de virus grippaux : deux souches de type A et deux souches de type B."
+    },
+    {
+      "question": "Le vaccin antigrippal protège-t-il contre le rhume ?",
+      "answer": "Non, le vaccin antigrippal ne protège pas contre le rhume (rhinopharyngite), qui est causé par d'autres types de virus (ex: rhinovirus, coronavirus) et non par le virus de la grippe."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "A partir de quel âge peut-on utiliser le vaccin antigrippal ?",
+      "options": [
+        " à partir de 1 an",
+        "à partir de 6 mois",
+        "à partir de 3 mois",
+        "Dès la naissance"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La vaccination antigrippale est recommandée à partir de l'âge de 6 mois chez les nourrissons. Avant cet âge, la protection peut être conférée par la vaccination de la mère pendant la grossesse."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le type de virus utilisé dans les vaccins antigrippaux injectables courants ?",
+      "options": [
+        "Virus vivant atténué",
+        "Virus entier vivant",
+        "Virus inactivé (tué)",
+        "Virus recombinant"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La plupart des vaccins antigrippaux injectables contiennent des virus inactivés (tués) ou des composants viraux, ce qui signifie qu'ils ne peuvent pas provoquer la grippe."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le délai approximatif pour l'obtention d'une protection immunitaire après la vaccination antigrippale ?",
+      "options": [
+        "24 heures",
+        "3 à 5 jours",
+        "2 semaines",
+        "1 mois"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Il faut environ 2 semaines au système immunitaire pour développer une réponse suffisante et conférer une protection efficace après la vaccination antigrippale."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi une personne vaccinée contre la grippe peut-elle quand même développer des symptômes grippaux ?",
+      "options": [
+        "Le vaccin donne la grippe",
+        "La personne a été exposée à une souche non couverte par le vaccin",
+        "Le vaccin n'est efficace que sur les personnes âgées",
+        "C'est un effet secondaire normal du vaccin"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le vaccin ne protège pas contre toutes les souches de grippe ni contre d'autres virus respiratoires. Si la personne contracte une souche non incluse dans le vaccin ou un autre virus respiratoire, elle peut ressentir des symptômes similaires à la grippe."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi encourage-t-on les professionnels de santé à se faire vacciner contre la grippe ?",
+      "options": [
+        "Pour des raisons économiques",
+        "Pour protéger leurs patients vulnérables",
+        "Parce qu'ils peuvent attraper les virus de leurs patients",
+        "Pour améliorer leur immunité générale"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les professionnels de santé sont encouragés à se vacciner pour réduire le risque de transmission du virus de la grippe à leurs patients, dont beaucoup sont vulnérables aux complications graves."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Qu'elle est la contre-indication absolue à la vaccination antigrippale ?",
+      "options": [
+        "Une rhinite légère",
+        "Une grossesse",
+        "Une réaction allergique sévère antérieure au vaccin",
+        "Une maladie chronique non contrôlée"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Une réaction allergique sévère (anaphylaxie) à une dose antérieure du vaccin ou à un de ses composants est une contre-indication absolue. Il est aussi important de rappeler que le report de la vaccination est recommandé en cas de fièvre ou de maladie aigue."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une personne âgée en bonne santé doit se faire vacciner contre la grippe.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai, les défenses immunitaires s'affaiblissent avec l'âge donc, même en absence de maladies chroniques, on recommande la vaccination des personnes âgées car ils présentent plus de risque de formes graves et de complications."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les femmes enceintes peuvent et doivent se faire vacciner contre la grippe.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai, la vaccination antigrippale est fortement recommandée pour les femmes enceintes à tout stade de la grossesse afin de les protéger, elles et leurs nouveau-nés."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il n'est pas nécessaire de se faire vacciner tous les ans contre la grippe si on l'a déjà fait l'année précédente.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux, la protection conférée par le vaccin est limitée dans le temps (6 à 12 mois) et les souches virales en circulation changent chaque année, nécessitant une vaccination annuelle pour une protection optimale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le vaccin doit être administré durant le mois d'octobre, sinon il n'est plus efficace.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux, la vaccination antigrippale est efficace tant qu'elle est faite avant le pic de l'épidémie (généralement entre décembre et janvier). Donc il est recommandé de se faire vacciner entre octobre et décembre."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/vaccin-grippe.png",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/igfoiBYmsZg",
+      "title": "Vaccination Antigrippale - Conseils à l'officine"
+    }
+  ],
+  "analyseOrdonnance": [],
+  "associatedProducts": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "customSections": [
+    {
+      "id": "custom-1762163365652",
+      "title": "Nouvelle Section",
+      "content": []
+    }
+  ],
+  "dietaryAdvice": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "keyQuestions": [],
+  "level": "Facile",
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": []
+  },
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "redFlags": [],
+  "references": [
+    "CBiP, Centre Belge d'information Pharmacothérapeutique. Vaccination contre la grippe : hiver 2025-2026 [en ligne]. 2025 [cité le 10 octobre 2025]. Disponible sur: https://www.cbip.be/fr/vaccination-contre-la-grippe-hiver-2025-2026",
+    "Belin N.La grippe. Le Moniteur des Pharmacies. 2017 [cité le 10 octobre 2025].. Disponible sur: https://www.lemoniteurdespharmacies.fr/conseils/maux-du-quotidien/la-grippe",
+    "Belin N.La grippe et ses vaccins. Le Moniteur des Pharmacies. 2018 [cité le 10 octobre 2025]. Disponible sur:https://www.lemoniteurdespharmacies.fr/conseils/maux-du-quotidien/la-grippe-et-ses-vaccins",
+    "\"Je suis pro-vaccins, y a pas photo!\". Le Moniteur des Pharmacies. 2017 [cité le 10 octobre 2025].. Disponible sur: https://www.lemoniteurdespharmacies.fr/preparateurs/accompagnement/je-suis-pro-vaccins-y-a-pas-photo",
+    "Mes Vaccins. Influvac Tetra. 2025 [cité le 10 octobre 2025]. Disponible sur: https://www.mesvaccins.net/web/vaccines/562-influvac-tetra",
+    "Mes Vaccins. VaxigripTetra. 2025 [cité le 10 octobre 2025]. Disponible sur: https://www.mesvaccins.net/web/vaccines/560-vaxigriptetra",
+    " Berthélémy S. Prévention et traitement de la grippe. Act Pha. 2015; 54 (542) : 36-9. [DOI: doi.org/10.1016/j.actpha.2014.11.007]",
+    "Marrakchi W. La Vaccination Antigrippale"
+  ],
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints",
+    "custom-1762163365652"
+  ],
+  "ventesAdditionnelles": {}
+}

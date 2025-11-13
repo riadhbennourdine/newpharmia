@@ -1,0 +1,445 @@
+{
+  "_id": "68ec33817c0f5ecb87b587e6",
+  "title": "Mémofiche CAO : Rhinite Allergique",
+  "ordonnance": [
+    "**Patient** Mme Fatma H., 28 ans.",
+    "**Pathologie** Rhinite allergique saisonnière.",
+    "**Prescription** ",
+    "- Fluticasone (spray nasal) : 1 pulvérisation dans chaque narine, 2 fois par jour. ",
+    "- Desloratadine 5 mg : 1 comprimé par jour.",
+    "**Durée** Pendant toute la période d'exposition aux pollens."
+  ],
+  "analyseOrdonnance": [
+    "**Analyse**",
+    " La prescription est typique et efficace pour une rhinite allergique modérée à sévère, combinant un **corticostéroïde nasal** (Fluticasone) pour maîtriser l'inflammation sous-jacente et un **antihistaminique oral** (Desloratadine) pour un soulagement rapide des manifestations aiguës de l'allergie.",
+    "**Profil patient** ",
+    "Mme H. est une jeune adulte pour qui la rhinite saisonnière peut fortement impacter la qualité de vie, notamment en causant des troubles du sommeil (ronflements, micro-réveils), menant à une fatigue diurne, une baisse de la concentration et de la productivité.",
+    "**Découverte du patient** ",
+    "Il est pertinent de vérifier s'il s'agit:",
+    "**première prescription**: afin d'expliquer la technique d'administration du spray et l'importance de l'observance",
+    "**Un renouvellement**: pour évaluer l'efficacité et la tolérance du traitement précédent."
+  ],
+  "conseilsTraitement": [
+    {
+      "medicament": "Fluticasone: Corticostéroïde en spray nasal",
+      "conseils": [
+        "**Posologie**: 1 pulvérisation dans chaque narine, 2 fois par jour.",
+        "**Technique**: Expliquer la technique d'administration correcte du spray nasal, surtout s'il s'agit d'une première prescription, pour garantir l'efficacité du traitement.",
+        "**Observance**: Insister sur l'importance de l'observance pour maîtriser l'inflammation sous-jacente et prévenir la réapparition des symptômes, contrôlant ainsi la maladie sur le long terme. Informer le patient que l'effet du médicament apparaît au bout de 3 à 4 jours de traitement.  ",
+        "**Évaluation**: Lors des renouvellements, évaluer l'efficacité du traitement et la tolérance pour ajuster si nécessaire."
+      ]
+    },
+    {
+      "medicament": "Desloratadine 5 mg cp: Antihistaminique H1 de deuxième génération",
+      "conseils": [
+        "**Posologie**: 1 comprimé par jour.",
+        "**Action rapide**: Ce traitement symptomatique vise un soulagement rapide des manifestations aiguës de l'allergie.",
+        "**Observance**: Rappeler l'importance de la prise régulière pour un soulagement continu des symptômes.",
+        "**Évaluation**: Lors des renouvellements, évaluer l'efficacité et la tolérance du traitement."
+      ]
+    }
+  ],
+  "informationsMaladie": [
+    "**Rhinite allergique**: c'est une **réaction d'hypersensibilité immédiate** du système immunitaire.",
+    "**Mécanisme** Un contact initial avec un allergène (comme le pollen) sensibilise l'organisme, qui produit alors des anticorps spécifiques (**IgE**). Lors de contacts ultérieurs, ces IgE se fixent sur des mastocytes et déclenchent la libération massive d'**histamine**, responsable des symptômes. ",
+    "**Types**: On distingue 2 types de rhinite allergique, selon l'allergène en cause:",
+    "**La rhinite perannuelle**: liée aux acariens, aux animaux de compagnie, aux moisissures...",
+    "**La rhinite saisonnière**: liée à un allergène saisonnier notamment le pollen.",
+    "**Symptômes typiques** Souvent désignés comme Le salut de l'allergique, ils incluent : ",
+    "**Des éternuements** en salves",
+    "**Un nez qui coule: **Rhinorrhée claire et abondante",
+    "**Un nez bouché: ** Obstruction nasale",
+    "**Des démangeaisons** du nez, du palais, de la gorge et des oreilles.",
+    "**Une conjonctivite** est très souvent associée: des yeux rouges, larmoyants, qui grattent.",
+    "**Objectifs du traitement**: une prise en charge globale vise à : ",
+    "1. Soulager rapidement les symptômes pour améliorer le confort immédiat (rôle de la Desloratadine). ",
+    "2. Contrôler l'inflammation sur le long terme pour prévenir la réapparition des symptômes, réduire leur intensité et améliorer significativement la qualité de vie (rôle de la Fluticasone)."
+  ],
+  "conseilsHygieneDeVie": [
+    "**Éviction de l'allergène**: C'est la mesure primordiale à conseiller au patient.",
+    "**Allergène = Acariens**: Le réservoir principal des acariens est le lit (matelas, oreillers, etc.).",
+    "**Aspiration**: Aspirer régulièrement les locaux d'habitation.",
+    "**Housses antiacariens**: Envelopper les oreillers et les matelas dans des housses antiacariens (totalement hermétiques, lavables à haute température, idéalement > 58 °C).",
+    "**Sommier**: Remplacer si possible un sommier tapissier (très riche en acariens) par un sommier à lattes.",
+    "**Spray antiacariens**: Pulvériser un spray antiacariens.",
+    "**Peluches**: Limiter les peluches sur le lit (lavage en machine 3-4 fois/an à 30-40 °C).",
+    "**Allergène = Pollen**: ",
+    "Éviter de sortir en pleine nature au moment des pollinisations. ",
+    "Se doucher et se laver les cheveux le soir pour éliminer le pollen accumulé pendant la journée.",
+    "**Aération**: Aérer la pièce 15 à 30 minutes par jour.",
+    "**Irritants**: Éviter les animaux domestiques, les moquettes et les teintures murales.",
+    "**Tabagisme**: L'interruption d'un éventuel tabagisme est recommandée.",
+    "**Lavage nasal**: Pratiquer des lavages des fosses nasales au sérum physiologique ou à l'eau de mer isotonique (par exemple, STÉRIMARⓇ), 3 à 4 instillations par narine par jour."
+  ],
+  "conseilsAlimentaires": [
+    "**Aliments à privilégier**: **Aliments riches en vitamine C**: Consommer des fruits frais (agrumes, kiwis, baies) et des légumes (poivrons, brocolis) pour leur rôle dans le renforcement du système immunitaire et leur potentiel effet sur la prévention de la sécrétion d'histamine. **Aliments sources de bromélaïne**: L'ananas est riche en bromélaïne, une enzyme qui peut stimuler la production de prostaglandines anti-inflammatoires. **Aliments riches en magnésium**: Intégrer des légumes verts à feuilles (épinards), des céréales complètes, des fruits à coque et des graines, le magnésium pouvant présenter un intérêt pour les patients allergiques et pour la gestion du stress. **Aliments fermentés (probiotiques)**: Inclure des yaourts ou d'autres aliments fermentés pour l'apport en probiotiques, qui peuvent aider à réguler la flore intestinale et potentiellement atténuer la sévérité des symptômes allergiques. **Aliments sources de quercétine**: Les oignons, pommes (avec la peau), baies et le thé vert sont de bonnes sources de quercétine, un flavonoïde connu pour inhiber la libération d'histamine.",
+    "_",
+    "**Aliments à éviter**: Il n'y a pas de liste spécifique d'aliments à éviter pour la rhinite allergique dans le cas général. Toutefois, si des allergies alimentaires croisées (par exemple, entre certains pollens et fruits/légumes) sont suspectées ou avérées, il est important d'adapter le régime alimentaire en conséquence et d'éviter les aliments déclencheurs."
+  ],
+  "ventesAdditionnelles": {
+    "accessoires": [
+      "**Housses de literie anti-acariens**: Contrôlent l'environnement et le réservoir principal des allergènes. Elles doivent être hermétiques et lavables régulièrement à 60 °C pour une prévention efficace des récidives."
+    ],
+    "complementsAlimentaires": [
+      "**Probiotiques**: ",
+      "Compléments contenant des souches spécifiques de **lactobacilles** et **bifidobactéries** (ex: Lactobacillus rhamnosus GG, Bifidobacterium lactis).",
+      "**Intérêt**: Contribuent à moduler la réponse immunitaire, à réduire l'inflammation et la sévérité des symptômes allergiques, et à prévenir les récidives en équilibrant la flore intestinale.",
+      "**Posologie**: Généralement 1 gélule par jour, à prendre de préférence le matin à jeun, pour une durée de plusieurs semaines à quelques mois.",
+      "**Quercétine**: Compléments à base de quercétine, souvent associée à d'autres antioxydants.",
+      "**Intérêt**: La quercétine est un flavonoïde naturel qui agit comme un stabilisateur de mastocytes, inhibant la libération d'histamine et d'autres médiateurs inflammatoires, ce qui peut aider à réduire les symptômes allergiques.",
+      "**Posologie**: Doses varient de **250** mg à **500** mg par jour, souvent réparties en **1-2** prises, pendant la période symptomatique ou préventive.",
+      "**Bromélaïne**: Compléments d'enzymes de bromélaïne, extraite de l'ananas.",
+      "**Intérêt**: Possède des propriétés anti-inflammatoires et mucolytiques qui peuvent aider à réduire la congestion nasale et l'inflammation des voies respiratoires supérieures.",
+      "**Posologie**: Doses allant de **200** mg à **500** mg par jour, souvent en dehors des repas pour optimiser l'action enzymatique.",
+      "**Extrait d'Ortie (Urtica dioica)**: Compléments à base d'extrait d'ortie.",
+      "**Intérêt**: Traditionnellement utilisée pour ses propriétés antihistaminiques et anti-inflammatoires, elle peut soulager les symptômes de la rhinite allergique comme les éternuements et les écoulements nasaux.",
+      "**Posologie**: souvent 1 à 2 gélules par jour.",
+      "**Vitamine C**: Compléments de Vitamine C (acide ascorbique) ou complexes vitaminiques.",
+      "**Intérêt**: La vitamine C est un antioxydant puissant qui soutient le système immunitaire et peut aider à réduire la libération d'histamine, participant ainsi à la gestion des réactions allergiques.",
+      "**Posologie**: Dose de **500 mg** à **1 g** par jour, en une ou plusieurs prises, de préférence le matin.",
+      "**Magnésium**: Compléments de Magnésium: ex: citrate de magnésium, bisglycinate de magnésium pour une meilleure absorption.",
+      "**Intérêt**: Le magnésium contribue au bon fonctionnement du système immunitaire et joue un rôle dans la régulation de la réponse au stress, qui peut exacerber les symptômes allergiques.",
+      "**Posologie**: Généralement **300** à **400** mg de magnésium élément par jour, répartis en plusieurs prises, avec les repas pour limiter les troubles digestifs. La durée du traitement peut être de plusieurs semaines."
+    ],
+    "cosmetiques": [],
+    "dispositifs": [
+      "**Solutions de lavage nasal (Sérum physiologique ou eau de mer isotonique, ex: STÉRIMAR®)**: Permettent de nettoyer les fosses nasales, d'éliminer les allergènes et les sécrétions, optimisant ainsi la pénétration du corticoïde nasal (Fluticasone). ",
+      "Il est conseillé **3** à **4** instillations par narine par jour."
+    ]
+  },
+  "references": [
+    "- **Clere, N.** (2012, février). Prise en charge de la rhinite allergique à lʼofficine. Actualités pharmaceutiques, (513).",
+    "- **Éditions Maloine.** (2020). Ordonnances – 200 prescriptions courantes en médecine (7e éd.). (D. V. Durand, Dir. & J.-F. d'Ivernois, Cons. Ed.).",
+    "- **Le Moniteur des pharmacies.** Rhinite allergique – Conseils.",
+    "- **Malbos, D.** (2021, avril). La rhinite allergique, une affection invalidante. Actualités pharmaceutiques, (605).",
+    "- **Porphyre.** (2006, 1 avril). La rhinite allergique. Porphyre, (422).",
+    "- **Thierry Souccar Editions.** (2013). Guide pratique des compléments alimentaires Comment les utiliser pour prendre en charge les maladies les plus courantes....",
+    "- **Thèmes divers.** (2015, mai). Allergies : le pharmacien doit s’impliquer. Actualités pharmaceutiques, (546)."
+  ],
+  "id": "",
+  "type": "ordonnances",
+  "theme": "Ordonnances",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-10-12T23:02:25.146Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Rhinite allergique",
+      "definition": "Inflammation de la muqueuse nasale due à une réaction allergique à des substances inoffensives (allergènes)."
+    },
+    {
+      "term": "Allergène",
+      "definition": "Substance qui déclenche une réaction allergique chez les personnes sensibilisées, comme le pollen, les acariens ou les poils d'animaux."
+    },
+    {
+      "term": "Antihistaminique",
+      "definition": "Médicament qui bloque l'action de l'histamine, une substance chimique libérée lors d'une réaction allergique, réduisant ainsi les symptômes."
+    },
+    {
+      "term": "Corticostéroïde nasal",
+      "definition": "Spray nasal contenant un corticoïde qui agit localement pour réduire l'inflammation de la muqueuse nasale et les symptômes de la rhinite allergique."
+    },
+    {
+      "term": "Décongestionnant nasal",
+      "definition": "Médicament qui réduit la congestion nasale en contractant les vaisseaux sanguins dans le nez, souvent utilisé pour une courte durée."
+    },
+    {
+      "term": "Rhinorrhée",
+      "definition": "Écoulement nasal, caractérisé par un écoulement clair et aqueux dans le cas de la rhinite allergique."
+    },
+    {
+      "term": "Prurit nasal/oculaire",
+      "definition": "Sensation de démangeaison intense ressentie dans le nez ou les yeux, un symptôme courant de la rhinite allergique."
+    },
+    {
+      "term": "Rhinite médicamenteuse",
+      "definition": "Congestion nasale chronique causée par l'utilisation excessive et prolongée de décongestionnants nasaux topiques, souvent appelée 'effet rebond'."
+    },
+    {
+      "term": "Immunothérapie allergénique",
+      "definition": "Traitement de désensibilisation visant à modifier la réponse immunitaire à un allergène spécifique par l'administration répétée de doses croissantes de cet allergène."
+    },
+    {
+      "term": "ARIA (Allergic Rhinitis and its Impact on Asthma)",
+      "definition": "Classification internationale de la rhinite allergique qui la divise en intermittente ou persistante, et légère ou modérée/sévère, selon la fréquence et l'intensité des symptômes."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que la rhinite allergique?",
+      "answer": "C'est une inflammation de la muqueuse nasale causée par une réaction immunitaire excessive à des allergènes inoffensifs pour la plupart des gens."
+    },
+    {
+      "question": "Quels sont les principaux symptômes de la rhinite allergique?",
+      "answer": "Éternuements fréquents, écoulement nasal clair (rhinorrhée), démangeaisons nasales et oculaires, et congestion nasale."
+    },
+    {
+      "question": "Quelle est la différence entre rhinite saisonnière et perannuelle?",
+      "answer": "La rhinite saisonnière est déclenchée par des allergènes saisonniers (ex: pollens), tandis que la rhinite perannuelle est causée par des allergènes présents toute l'année (ex: acariens, poils d'animaux)."
+    },
+    {
+      "question": "Quels sont les traitements de première ligne pour la rhinite allergique modérée à sévère?",
+      "answer": "Les corticostéroïdes nasaux sont généralement recommandés comme traitement de première ligne."
+    },
+    {
+      "question": "Comment agissent les antihistaminiques H1 de deuxième génération?",
+      "answer": "Ils bloquent les récepteurs histaminiques, réduisant les symptômes comme les éternuements, les démangeaisons et la rhinorrhée, avec un risque de sédation réduit par rapport à la première génération."
+    },
+    {
+      "question": "Quels conseils donner à un patient pour réduire l'exposition aux allergènes?",
+      "answer": "Éviter les allergènes connus, nettoyer régulièrement l'environnement, utiliser des housses anti-acariens, et maintenir les fenêtres fermées pendant les pics de pollen."
+    },
+    {
+      "question": "Quand faut-il orienter un patient vers un médecin pour sa rhinite allergique?",
+      "answer": "Lorsque les symptômes sont persistants malgré les traitements en vente libre, en cas de suspicion d'asthme, d'otites fréquentes, pour les enfants de moins de 6 ans, ou en cas de grossesse."
+    },
+    {
+      "question": "Quels sont les effets secondaires courants des corticostéroïdes nasaux?",
+      "answer": "Sécheresse nasale, irritation, et parfois des saignements de nez (épistaxis)."
+    },
+    {
+      "question": "Quelle est l'importance de l'observance du traitement pour les corticostéroïdes nasaux?",
+      "answer": "Ils nécessitent une utilisation régulière et peuvent prendre plusieurs jours pour atteindre leur plein effet thérapeutique, d'où l'importance de la persévérance du patient."
+    },
+    {
+      "question": "Quels compléments alimentaires peut-on conseiller chez un asthmatique?",
+      "answer": "La Quercétine, la Vitamine C, Les Probiotiques et le Magnésium sont les complémentas alimentaires de choix à conseiller chez un asthmatique."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est le symptôme le moins typique de la rhinite allergique parmi les suivants?",
+      "options": [
+        "Éternuements",
+        "Toux sèche",
+        "Démangeaisons nasales",
+        "Écoulement nasal clair"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La toux sèche, bien que parfois associée à un écoulement post-nasal, n'est pas un symptôme primaire et direct de l'inflammation nasale allergique comme les éternuements, les démangeaisons ou la rhinorrhée."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le traitement de première intention recommandé pour la rhinite allergique modérée à sévère chez l'adulte?",
+      "options": [
+        "Antihistaminiques oraux de première génération",
+        "Décongestionnants oraux",
+        "Corticostéroïdes nasaux",
+        "Cromoglycate de sodium"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les corticostéroïdes nasaux sont considérés comme le traitement de première ligne le plus efficace pour la rhinite allergique modérée à sévère en raison de leur action anti-inflammatoire locale."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quels sont les effets indésirables fréquents des corticostéroïdes par voie nasale?",
+      "options": [
+        "Insuffisance rénale",
+        "Choc anaphylactique",
+        "Epistaxis, Sécheresse nasale, Goût désagréable",
+        "Troubles digestifs"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les corticostéroïdes nasaux peuvent causer un épistaxis, une sécheresse et irritation nasale, sécheresse et irritation de la gorge, un goût et une odeur désagréables et des céphalées."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Que traite l'antihistaminique chez le patient qui souffre de rhinite allergique?",
+      "options": [
+        "L'obstruction nasale",
+        "Les éternuements et l'écoulement nasal",
+        "La toux ",
+        "La conjonctivite allergique"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les antihistaminiques soulagent les symptômes causés par l'histamine: l'écoulement nasal, le prurit et les éternuments."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le rôle principal d'une solution saline nasale dans le traitement de la rhinite allergique?",
+      "options": [
+        "Activer la réponse immunitaire",
+        "Remplacer les corticostéroïdes nasaux",
+        "Réduire l'inflammation ",
+        " Hydrater la muqueuse et éliminer les allergènes"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Les solutions salines nasales aident à hydrater les muqueuses nasales asséchées et à laver mécaniquement les allergènes et les irritants, améliorant ainsi le confort et l'efficacité des autres traitements."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les corticostéroïdes nasaux agissent immédiatement après la première administration.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les corticostéroïdes nasaux peuvent prendre plusieurs jours (souvent 3 à 7 jours) pour atteindre leur plein effet thérapeutique et nécessitent une utilisation régulière."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'éviction des allergènes est une stratégie importante dans la gestion de la rhinite allergique.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Réduire l'exposition aux allergènes (p. ex., acariens, pollens, poils d'animaux) est une mesure clé pour minimiser les symptômes de la rhinite allergique: il faut donc insister sur l'importance des recommandations hygiéniques en addition des traitements médicamenteux."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les compléments à base d'extrait d'échinacée sont les produits de choix à conseiller à un patient allergique.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'échinacée peut causer des réactions allergiques, elle est à éviter chez les personnes allergiques."
+    },
+    {
+      "question": "Choisir la mauvaise proposition concernant la quercétine:",
+      "options": [
+        "C'est un antiallergique et un anti-inflammatoire ",
+        "Sa posologie est de 250 à 500mg par jour.",
+        "Elle peut réduire la fréquence des crises d'allergie",
+        "On peut la conseiller chez les femmes enceintes et allaitantes"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "La quercétine est contre indiquée chez l'enfant de moins de 12 ans et chez les femmes enceintes et allaitantes."
+    },
+    {
+      "question": "Quelles sont les meilleures vitamines à conseiller chez le patient souffrant de rhinite allergique?",
+      "options": [
+        "La vitamine C et la vitamine D",
+        "La vitamine C et la vitamine E",
+        "La vitamine E et la vitamine D",
+        "La vitamine A et la vitamine D"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La diminution des taux des vitamines C et D est associée à des symptômes d'allergie chez les personnes prédisposées, d'autre part, des cures de ces 2 vitamines permettent de réduire les signes de la maladie allergique."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Ordonnances",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/rhinite.jpg",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/aV51nqHoHew",
+      "title": "CAO Rhinite Allergique  Le Guide à l'officine"
+    }
+  ],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "customSections": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "keyQuestions": [],
+  "level": "Facile",
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "recommendations": {
+    "mainTreatment": [],
+    "associatedProducts": [],
+    "lifestyleAdvice": [],
+    "dietaryAdvice": []
+  },
+  "redFlags": [],
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "shortDescription": "",
+  "sectionOrder": [],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

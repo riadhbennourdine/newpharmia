@@ -1,0 +1,333 @@
+{
+  "_id": "68de22200534882ebdb64cfa",
+  "title": "Candidose vaginale: Mémofiche conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une femme âgée de 26 ans s’est présentée à la pharmacie “J’ai des brûlures et des démangeaisons vaginales. Que me conseillez-vous?”"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis combien de temps avez-vous ces symptômes ?",
+    "-Avez-vous des pertes vaginales ? Si oui, quelle est leur apparence et leur odeur ?",
+    "-Ressentez-vous des démangeaisons ou des brûlures mictionnelles ?",
+    "-Êtes-vous enceinte ou utilisez-vous une contraception hormonale ?",
+    "-Avez-vous de la fièvre, des frissons ou des douleurs pelviennes ?",
+    "-Est-ce la première fois que vous avez ces symptômes ?",
+    "-Prenez-vous des médicaments en ce moment, comme des antibiotiques ou des corticoïdes ?",
+    "-Avez-vous déjà utilisé un traitement antifongique ? Si oui, lequel ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition** \nInfection fréquente du vagin ou de la vulve par la levure Candida albicans.\n• **Cause**\nDéséquilibre du microbiote vaginal où Candida albicans devient pathogène.\n• **Symptôme** \nPrurit vulvaire intense (démangeaisons), pertes blanchâtres, épaisses, d'aspect 'lait caillé' (leucorrhées), sensation de brûlure vulvo-vaginale, parfois en fin de miction.\n• **Facteurs de risque** \nGrossesse, diabète, antibiotiques à large spectre, contraceptifs oraux riches en œstrogènes, corticostéroïdes, immunosuppresseurs, vêtements serrés/synthétiques, hygiène intime excessive.\n• **Récidives** \nDéfinies par ≥ 4 épisodes/an, touchent environ 15% des femmes.\n• **Complication** \nPeut être associée à une infection bactérienne.\n• **Transmission** \nN'est PAS une maladie sexuellement transmissible (MST)."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Grossesse",
+    "-Symptômes persistent ou s'aggravent malgré le traitement.",
+    "-Récidives (plus de 4 fois par an).",
+    "-Présence de fièvre, frissons ou douleurs pelviennes.",
+    "-Présence de pertes jaunes malodorantes (peut indiquer une autre infection)."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Antifongiques locaux**: ",
+      "**Ovules ou capsules vaginales** à base d'imidazolés (ex: éconazole).",
+      "-Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles) ",
+      "-Exp: Ecorex® ovule",
+      "**Crème ou lait antifongique** pour application externe (ex: éconazole)",
+      "-Une application deux fois par jour pendant 8 jours ",
+      "-Exp: Ecorex® lait",
+      "**Partenaire** ",
+      "-Traitement uniquement si le partenaire présente des symptômes (antifongique externe, non systématique).",
+      "**Attention** ",
+      "-Ne pas interrompre le traitement pendant les règles."
+    ],
+    "associatedProducts": [
+      "**Gel lavant intime** ",
+      "- À pH alcalin (pH 8) durant le traitement (14 jours max afin de protéger l'équilibre naturel de la flore vaginale.)",
+      "- Ex: Mycolin®",
+      "**Hygiène quotidienne** ",
+      "- Utiliser ensuite des savons ou gels à pH physiologique pour l'entretien. ",
+      "- Exp: Saforelle®",
+      "**Probiotiques vaginaux** ",
+      "- Pour restaurer la flore vaginale saine (ex: Lactibiane CND®, Vagigermina®).",
+      "**Ovules hydratantes/cicatrisantes**",
+      "- Après guérison pour apaiser tissus irrités",
+      "- Ex: Ialugyn®, Santes®",
+      "**Protège-slips** ",
+      "- À changer fréquemment en cas d'écoulements."
+    ],
+    "lifestyleAdvice": [
+      "-Porter des sous-vêtements en coton et les changer quotidiennement.",
+      "-Éviter les vêtements trop serrés ou synthétiques.",
+      "-Ne pas utiliser de savons parfumés ou de douches vaginales.",
+      "-S'essuyer d'avant en arrière après être allé aux toilettes.",
+      "-Éviter les bains prolongés et les jacuzzis.",
+      "-Ne pas garder de maillot de bain mouillé.",
+      "-Utiliser des préservatifs pendant le traitement.",
+      "-Bien sécher la vulve après la toilette.",
+      "-Laver le linge à haute température (70°C)."
+    ],
+    "dietaryAdvice": [
+      "-Boire suffisamment d'eau."
+    ]
+  },
+  "references": [
+    "-Amouri, I, Abbes, S. Laboratoire de biologie moléculaire parasitaire et fongique, faculté de médecine, 3029 Sfax, Tunisie. (2010). La candidose vulvovaginale : revue / Vulvovaginal candidiasis: A review. In Journal De Mycologie Médicale (Vol. 20, pp. 108–115) [Journal-article]. Elsevier Masson SAS. https://doi.org/10.1016/j.mycmed.2010.01.005 ",
+    "-Belin, N.(2019, May 23). “J’ai encore une mycose vaginale !” Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-encore-une-mycose-vaginale ",
+    "-Mach, F., Marchandin, H., & Bichon, F. (2020). La mycose vaginale, traiter et éviter la récidive. Actualités Pharmaceutiques, 59(595–596), 43–46. https://doi.org/10.1016/j.actpha.2020.03.013",
+    "-Candidoses. (2023, October 4). Institut Pasteur. https://www.pasteur.fr/fr/centre-medical/fiches-maladies/candidoses",
+    "-Comment prévenir la vaginite et ses récidives ? | ameli.fr | Assuré",
+    "- Mycose vaginale et autres vaginites : que faire ? | ameli.fr | Assuré",
+    "-Reconnaître une vaginite | ameli.fr | Assuré",
+    "-Le Moniteur des pharmacies.fr (2007, April 1). Les mycoses vaginales. Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-mycoses-vaginales",
+    "-Milan, A. (2003, June 1). Comment traiter les mycoses vaginales ? Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/comment-traiter-les-mycoses-vaginales",
+    "-Belin, N. (2012, octobre 2). Je crois que j’ai une mycose vaginale. Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-crois-que-jai-une-mycose-vaginale"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé Féminine",
+  "creationDate": "2025-10-02T06:56:32.887Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Candida albicans",
+      "definition": "Une levure (champignon) présente naturellement dans le microbiote humain qui, en cas de déséquilibre, peut devenir pathogène et causer des infections comme la candidose vaginale."
+    },
+    {
+      "term": "Microbiote vaginal",
+      "definition": "L'ensemble des micro-organismes (bactéries, levures) qui résident naturellement dans le vagin et dont l'équilibre est essentiel pour la santé vaginale."
+    },
+    {
+      "term": "Prurit vulvaire",
+      "definition": "Des démangeaisons intenses affectant la région de la vulve, un symptôme courant de la candidose vaginale."
+    },
+    {
+      "term": "Leucorrhées",
+      "definition": "Des pertes vaginales. Dans le cas de la candidose, elles sont typiquement blanchâtres, épaisses et d'aspect 'lait caillé'."
+    },
+    {
+      "term": "Imidazolés",
+      "definition": "Une classe d'agents antifongiques à large spectre, souvent utilisés en traitement local (ovules, crèmes) pour les infections fongiques comme la candidose."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la cause principale de la candidose vaginale?",
+      "answer": "Un déséquilibre du microbiote vaginal où Candida albicans devient pathogène."
+    },
+    {
+      "question": "La candidose vaginale est-elle une maladie sexuellement transmissible (MST)?",
+      "answer": "Non, elle n'est PAS une maladie sexuellement transmissible (MST)."
+    },
+    {
+      "question": "Quels sont les principaux symptômes de la candidose vaginale?",
+      "answer": "Prurit vulvaire intense (démangeaisons), pertes blanchâtres, épaisses, d'aspect 'lait caillé' (leucorrhées), et sensation de brûlure vulvo-vaginale."
+    },
+    {
+      "question": "Citez au moins trois facteurs de risque pour la candidose vaginale.",
+      "answer": "Grossesse, diabète, prise d'antibiotiques à large spectre, contraceptifs oraux riches en œstrogènes, corticostéroïdes, immunosuppresseurs, vêtements serrés/synthétiques, hygiène intime excessive."
+    },
+    {
+      "question": "Comment sont définies les récidives de candidose vaginale?",
+      "answer": "Elles sont définies par ≥ 4 épisodes par an."
+    },
+    {
+      "question": "Quelle est la catégorie principale de médicaments utilisée pour le traitement local de la candidose vaginale?",
+      "answer": "Les antifongiques locaux, souvent à base d'imidazolés (ex: éconazole)."
+    },
+    {
+      "question": "Quelle est la posologie typique pour un ovule antifongique dans le traitement de la candidose vaginale?",
+      "answer": "Un ovule le soir pendant 3 à 6 jours (sauf pour les jeunes filles)."
+    },
+    {
+      "question": "Quand faut-il envisager de traiter le partenaire d'une femme atteinte de candidose vaginale?",
+      "answer": "Uniquement si le partenaire présente des symptômes (avec un antifongique externe, ce n'est pas systématique)."
+    },
+    {
+      "question": "Faut-il interrompre le traitement antifongique local pendant les règles?",
+      "answer": "Non, il ne faut pas interrompre le traitement pendant les règles."
+    },
+    {
+      "question": "Citez deux signaux d'alerte qui nécessitent une consultation médicale ou un avis médical approfondi.",
+      "answer": "Grossesse, persistance ou aggravation des symptômes malgré le traitement, récidives fréquentes, présence de fièvre/frissons/douleurs pelviennes, pertes jaunes malodorantes."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la principale caractéristique des pertes vaginales associées à la candidose vaginale?",
+      "options": [
+        "Jaunes et malodorantes",
+        "Claires et liquides",
+        "Blanchâtres, épaisses, aspect 'lait caillé'",
+        "Sanguinolentes"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche décrit les pertes (leucorrhées) comme 'blanchâtres, épaisses, d'aspect 'lait caillé'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les facteurs suivants, lequel N'EST PAS un facteur de risque pour la candidose vaginale?",
+      "options": [
+        "Grossesse",
+        "Utilisation d'antibiotiques à large spectre",
+        "Pratique régulière d'exercice physique intense",
+        "Diabète"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche liste la grossesse, les antibiotiques et le diabète comme facteurs de risque. L'exercice physique intense n'est pas mentionné comme tel."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le traitement local de première intention recommandé pour la candidose vaginale?",
+      "options": [
+        "Antibiotiques oraux",
+        "Antifongiques locaux (ovules, crèmes)",
+        "Antiviraux",
+        "Corticoïdes"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique 'Antifongiques locaux Ovules ou capsules vaginales à base d'imidazolés' et 'Crème vulvaire Crème ou lait antifongique'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "La posologie d'un ovule antifongique pour la candidose vaginale est généralement :",
+      "options": [
+        "Un ovule le matin pendant 1 jour",
+        "Un ovule le soir pendant 3 à 6 jours",
+        "Deux ovules par jour pendant 7 jours",
+        "Un ovule par semaine pendant un mois"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche spécifie : 'Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles)'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quand faut-il envisager de traiter le partenaire d'une patiente atteinte de candidose vaginale?",
+      "options": [
+        "Toujours, de manière systématique",
+        "Uniquement si le partenaire présente des symptômes",
+        "Seulement si la patiente a des récidives",
+        "Jamais, car ce n'est pas une MST"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique : 'Traitement uniquement si le partenaire présente des symptômes (antifongique externe, non systématique)'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Une patiente sous traitement pour candidose vaginale signale l'apparition de fièvre et de douleurs pelviennes. Que doit faire le professionnel de santé?",
+      "options": [
+        "Conseiller de doubler la dose de l'antifongique",
+        "Indiquer que c'est une réaction normale au traitement",
+        "Orienter la patiente vers une consultation médicale (signal d'alerte)",
+        "Suggérer un bain de siège à l'eau chaude"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche liste 'Présence de fièvre, frissons ou douleurs pelviennes' comme un signal d'alerte nécessitant une prise en charge médicale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La candidose vaginale est une maladie sexuellement transmissible (MST).",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche stipule clairement : 'N'est PAS une maladie sexuellement transmissible (MST)'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est recommandé d'interrompre le traitement antifongique local pendant les règles.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche précise : 'Ne pas interrompre le traitement pendant les règles'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Des récidives de candidose vaginale sont définies par 4 épisodes ou plus par an.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche indique : 'Récidives Définies par ≥ 4 épisodes/an'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Des pertes vaginales jaunes et malodorantes sont un symptôme typique de la candidose vaginale et ne nécessitent pas de consultation médicale supplémentaire.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche décrit les pertes typiques comme 'blanchâtres, épaisses, d'aspect 'lait caillé''. Des 'pertes jaunes malodorantes' sont listées comme un signal d'alerte pouvant indiquer une autre infection."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé Féminine"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/gyneco/candidose.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published"
+}

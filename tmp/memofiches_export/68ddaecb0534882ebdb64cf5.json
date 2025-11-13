@@ -1,0 +1,365 @@
+{
+  "_id": "68ddaecb0534882ebdb64cf5",
+  "title": "Reflux Gastro-Œsophagien: conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un patient âgé de 28 ans se présente au comptoir en demandant un médicament: \"J'ai des remontées acides, Je veux une boîte de GavisconⓇ.”"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Que ressentez-vous exactement (brûlures, remontées acides, douleur) ?",
+    "-Quand et à quelle fréquence ressentez-vous cette gêne ? Est-ce après les repas ?",
+    "-Depuis quand ressentez-vous ces symptômes ?",
+    "-D'autres symptômes associés (toux, difficulté à avaler, perte de poids, fatigue, enrouement, douleurs thoraciques) ?",
+    "-Avez-vous déjà essayé un traitement auparavant ? Si oui, lequel ?",
+    "-Prenez-vous des médicaments ? Lesquels ?",
+    "-Avez-vous perdu du poids récemment ?",
+    "-Êtes-vous enceinte ?",
+    "-Fumez-vous ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition** :\n• Remontée anormale du contenu acide de l'estomac dans l'œsophage.\n• - **Symptômes typiques** :\n• **Pyrosis**: Sensation de brûlure qui part de l'épigastre et remonte l'œsophage\n• **Régurgitations acides**: Remontée de liquide acide dans l'œsophage\n• - **Autres symptômes** : Éructations, hoquet, nausées.\n• - **Cause principale** :\n• Incompétence du sphincter inférieur de l'œsophage entraînant une mauvaise vidange gastrique.\n• - **Facteurs favorisants** :\n• Repas copieux/gras, chocolat, menthe, café, alcool, boissons gazeuses, aliments épicés ou acides.\n• Tabac, stress, obésité, constipation.\n• Grossesse.\n• Prise de certains médicaments: Théophylline, bêtabloquants, anticholinergiques, inhibiteurs calciques, progestérone et dérivés nitrés."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Douleurs fortes, vomissements avec sang, sang dans les selles, anémie.",
+    "-Perte de poids inexpliquée, difficulté à avaler, fatigue importante.",
+    "-Symptômes persistants après 7 jours de traitement ou récidives fréquentes.",
+    "-Toux chronique, difficultés respiratoires, douleurs thoraciques, douleur irradiante vers le bras gauche.",
+    "-Patient de plus de 50 ans avec des symptômes récurrents."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Antiacides** : ",
+      "-Sels d’aluminium, de magnésium ou de calcium ",
+      "-Ils neutralisent l'acidité. ",
+      "-Leur effet est rapide (30-60 min) mais de courte durée: Nécessitent donc plusieurs prises par jour. ",
+      "-Conseiller de décaler les prises d’au moins **2h** avec un autre médicament. ",
+      "-Ex: CalmacideⓇ",
+      "**Alginates** : ",
+      "-Ils forment un gel visqueux protecteur de la muqueuse œsophagienne.",
+      "-Conseiller de bien malaxer le sachet. ",
+      "-Posologie: 1 à 2 sachets trois fois/jour après repas et avant coucher, à distance (**2h**) des autres médicaments. ",
+      "-Ex: ApyrosisⓇ ",
+      "**Anti-Histaminiques H2: Anti-H2** : Famotidine",
+      "-Produits délivrés sous prescription médicale.",
+      "-Ils réduisent la sécrétion de l'acide gastrique. ",
+      "-Leur efficacité est modérée et de courte durée. ",
+      "-Posologie: À prendre en fonction des symptômes, au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour. ",
+      "-Ex: Famodine 40Ⓡ",
+      "**Inhibiteurs de Pompes à Protons: IPP ** : ",
+      "-Produits délivrés sous prescription médicale.",
+      "-Ils bloquent la production de l'acide gastrique.",
+      "-Posologie: 1 prise par jour, de préférence à jeun le matin. ",
+      "-Ils peuvent être associés aux antiacides/alginates en début de traitement. ",
+      "-Ne pas associer deux IPP entre eux ou un IPP avec un anti-H2. ",
+      "-Une utilisation prolongée peut entraîner une carence en vitamine **B12**.",
+      "-Ex: Esoméprazole : MesopralⓇ , Oméprazole: GastralⓇ."
+    ],
+    "associatedProducts": [
+      "**Phytothérapie** : Extraits de plantes protectrices, anti-acides, cicatrisantes ou anti-inflammatoires en complément.",
+      "**Gel d'aloe vera** : ",
+      "-2 cuillères à café à 2 cuillères à soupe au coucher.",
+      "**Tisane de mélisse** : ",
+      "-2 tasses par jour en dehors des repas.",
+      "**Décoction de réglisse** : ",
+      "-1 à 2 tasses par jour en dehors des repas.",
+      "**Huile essentielle de camomille** : ",
+      "-2 gouttes 3 fois par jour sur support pendant 5 jours."
+    ],
+    "lifestyleAdvice": [
+      "- Eviter de s'allonger directement après les repas.",
+      "- Éviter de se pencher en avant, surélever la tête du lit (10-15cm).",
+      "- Éviter le port de vêtements ou d'accessoires comprimant l'abdomen (ceintures, corsets).",
+      "- Éviter les activités nécessitant une antéflexion prolongée, pratiquer une activité physique régulière.",
+      "- Éviter de fumer.",
+      "- Gérer le stress, maintenir un poids santé."
+    ],
+    "dietaryAdvice": [
+      "-**Éviter** : les repas copieux (surtout le soir), les aliments gras/en sauce ou épicés, le chocolat, la menthe, les aliments acides (tomates).",
+      "-Éviter le café, les boissons gazeuses et alcoolisées, le vinaigre, les jus de fruits acides.",
+      "-Privilégier des repas légers et fréquents.",
+      "-Manger lentement, bien mâcher, à heures fixes, dans le calme.",
+      "-Boire beaucoup d’eau (entre les repas), préférer des eaux plates ou bicarbonatées."
+    ]
+  },
+  "references": [
+    "-Belin, N. (2022). “J’ai des remontées acides !” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-des-remontees-acides",
+    "-Berthélemy, S. (2013). Un patient se plaignant de reflux gastro-œsophagien. Actualités Pharmaceutiques, 52(525), 37–40. https://doi.org/10.1016/j.actpha.2013.02.010",
+    "-Bontemps, F. (2005). le reflux gastro-œsophagien. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/le-reflux-gastro-oesophagien-2",
+    "-Clere, N. (2010). Remontées acides et reflux gastro-œsophagien, éviter l’aigreur! Actualités Pharmaceutiques, 49(494), 36–38. https://doi.org/10.1016/s0515-3700(10)70646-7",
+    "-Clere, N. (2013). Prise en charge officinale des troubles gastriques. Actualités Pharmaceutiques, 52(531), 36–38. https://doi.org/10.1016/j.actpha.2013.10.008",
+    "-Cotinat, M. Cotinat, M (2020, décembre)Le traitement nutritionnel et phytothérapique. une alternative efficace aux inhibiteurs de la pompe à protons (2020). In Ethnopharmacologia: Vol. n°64. http://www.ethnopharmacologia.org/wp-content/uploads/2021/03/ETHNOPHARM-64-Cotinat.pdf",
+    "-Couic-Marinier, F., & Pillon, F. (2017). Traitement d’un reflux gastro-œsophagien. Actualités Pharmaceutiques, 56(566), 15–17. https://doi.org/10.1016/j.actpha.2017.03.003",
+    "-Djilani, M. (2016). Traitement à court terme des symptômes de reflux : rôle du pharmacien. Actualités Pharmaceutiques, 55(554), 42–45. https://doi.org/10.1016/j.actpha.2016.01.009"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Digestion",
+  "creationDate": "2025-10-01T22:44:27.693Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Pyrosis",
+      "definition": "Terme médical désignant les brûlures d'estomac, l'un des symptômes typiques du reflux gastro-œsophagien."
+    },
+    {
+      "term": "Sphincter inférieur de l'œsophage",
+      "definition": "Muscle situé à la jonction de l'œsophage et de l'estomac, dont l'incompétence est la cause principale du reflux gastro-œsophagien."
+    },
+    {
+      "term": "IPP (Inhibiteur de la Pompe à Protons)",
+      "definition": "Classe de médicaments qui bloquent la production d'acide dans l'estomac, utilisés pour traiter le reflux gastro-œsophagien et les ulcères. Ex: Oméprazole, Esoméprazole."
+    },
+    {
+      "term": "Alginates",
+      "definition": "Médicaments formant un gel visqueux protecteur au-dessus du contenu gastrique, agissant comme une barrière mécanique contre les remontées acides. À prendre après les repas et avant le coucher."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition du Reflux Gastro-Œsophagien (RGO)?",
+      "answer": "C'est la remontée anormale du contenu acide de l'estomac dans l'œsophage."
+    },
+    {
+      "question": "Citez deux symptômes typiques du RGO.",
+      "answer": "Les brûlures d'estomac (pyrosis) et les régurgitations acides."
+    },
+    {
+      "question": "Quelles sont les facteurs favorisant la survenue des épisodes de RGO?",
+      "answer": "Mauvaises habitudes alimentaires, Grossesse, Obésité, Tabac, Prise de certains médicaments. "
+    },
+    {
+      "question": "Quels sont les signaux d'alerte indiquant une urgence dans le cadre du RGO?",
+      "answer": "Douleurs fortes, vomissements avec sang, sang dans les selles, anémie.\nRécidives fréquentes. Symptômes persistants après 7 jours de traitement."
+    },
+    {
+      "question": "Quels sont les conseils de prise pour les alginates?",
+      "answer": "À prendre après les repas et avant le coucher, à distance (2h) des autres médicaments. Il faut bien malaxer le sachet."
+    },
+    {
+      "question": "Comment doivent être pris les IPP pour une efficacité optimale?",
+      "answer": "Une fois par jour, de préférence à jeun le matin."
+    },
+    {
+      "question": "Un patient de 35 ans demande de l'oméprazole chaque mois. Quel conseil clé doit-on lui donner?",
+      "answer": "Ne pas l'utiliser en continu sans avis médical, car cela peut masquer d'autres problèmes et entraîner des effets secondaires comme la diminution de l’absorption de la vitamine B12. Il est conseillé de consulter un médecin."
+    },
+    {
+      "question": "Quel est le mécanisme d'action des anti-H2?",
+      "answer": "Les anti-H2 réduisent le sécrétion de l'acide gastrique. "
+    },
+    {
+      "question": "Quelle est la posologie des anti-H2? ",
+      "answer": "A prendre au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour. "
+    },
+    {
+      "question": "Quels conseils d'hygiène de vie donner au patient souffrant de RGO ?",
+      "answer": "Eviter de s'allonger directement après les repas, éviter de se pencher en avant, surélever la tête du lit."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la cause principale du reflux gastro-œsophagien (RGO)?",
+      "options": [
+        "Surproduction d'enzymes digestives",
+        "Incompétence du sphincter inférieur de l'œsophage",
+        "Hypersécrétion de bile",
+        "Infection bactérienne de l'estomac"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'incompétence du sphincter inférieur de l'œsophage permet au contenu acide de l'estomac de remonter dans l'œsophage provoquant ainsi les signes du RGO."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les médicaments suivants, lequel est classé comme un IPP?",
+      "options": [
+        "Gaviscon",
+        "Ranitidine",
+        "Oméprazole",
+        "Maalox"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'Oméprazole est un Inhibiteur de la Pompe à Protons (IPP), tandis que Gaviscon et Maalox sont des antiacides/alginates, et la Ranitidine est un anti-H2."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle précaution importante doit être respectée lors de la prise d'antiacides?",
+      "options": [
+        "Les prendre à jeun le matin",
+        "Les décaler d'au moins 2h avec un autre médicament",
+        "Les prendre juste avant un repas copieux",
+        "Les associer systématiquement à un IPP"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les antiacides peuvent interagir avec l'absorption d'autres médicaments, il est donc crucial de décaler leurs prises d'au moins 2 heures."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quels sont les symptômes typiques du reflux gastro-œsophagien?",
+      "options": [
+        "Diarrhée et constipation alternées",
+        "Douleur irradiante vers le bras gauche et difficultés respiratoires",
+        "Brûlures d'estomac (pyrosis) et régurgitations acides",
+        "Fièvre et frissons"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les brûlures d'estomac (pyrosis) et les régurgitations acides sont les symptômes les plus caractéristiques du RGO."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un patient prend de l'Oméprazole de façon prolongée. Quel risque de carence est associé à cette utilisation?",
+      "options": [
+        "Carence en vitamine D",
+        "Carence en calcium",
+        "Carence en vitamine B12",
+        "Carence en fer"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'utilisation prolongée des IPP comme l'Oméprazole peut entraîner une diminution de l'absorption de la vitamine B12."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les facteurs suivants, lequel n'est PAS un facteur favorisant le RGO mentionné dans la mémofiche?",
+      "options": [
+        "Stress",
+        "Tabac",
+        "Activité physique intense",
+        "Repas gras"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Seuls le stress, le tabac et les repas gras sont des facteurs favorisant les épisodes de RGO."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les alginates doivent être pris à jeun pour une efficacité maximale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les alginates doivent être pris après les repas et avant le coucher, à distance des autres médicaments, et non à jeun."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une perte de poids inexpliquée chez un patient avec des symptômes de RGO est un signal d'alerte nécessitant une consultation médicale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La perte de poids inexpliquée fait partie des signaux d'alerte généraux qui justifient une évaluation médicale approfondie."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est recommandé d'associer deux IPP entre eux pour augmenter l'efficacité du traitement du RGO.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'association de deux IPP différents ou d'un IPP avec un anti-H2 est déconseillée."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "On conseille le patient souffrant de RGO d'éviter de boire l'eau tout le long de la journée.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "En cas du RGO, on recommande de boire beaucoup d'eau mais, préférentiellement, en dehors des repas."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Digestion"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/digestion/reflux/rgo.jpg",
+  "customSections": [
+    {
+      "id": "custom-1762170094968",
+      "title": "Cas comptoir complémentaire",
+      "content": [
+        {
+          "type": "text",
+          "value": "Un patient âgé de 35 ans se présente chaque mois à la pharmacie pour de l'oméprazole 20 mg. \nRéponse suggérée : \"Je comprends que vous cherchiez un soulagement rapide avec l'oméprazole, mais il est important de ne pas l'utiliser en continu sans avis médical. Une utilisation prolongée peut masquer d'autres problèmes de santé et entraîner des effets secondaires tels la diminution de l’absorption de la vitamine B12. \nJe peux vous proposer un anti-acide pour soulager votre douleur en ce moment mais je vous conseille vivement de consulter votre médecin pour discuter vos symptômes et trouver une solution adaptée à long terme.\""
+        }
+      ]
+    }
+  ],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

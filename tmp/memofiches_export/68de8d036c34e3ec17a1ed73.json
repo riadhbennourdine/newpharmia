@@ -1,0 +1,310 @@
+{
+  "_id": "68de8d036c34e3ec17a1ed73",
+  "title": "Vers intestinaux: Mémofiche Conseils à l'offcine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une maman s’est présentée à la pharmacie demandant un conseil pour son fils âgé de 8 ans: “Mon enfant a des vers, que me conseillez-vous ?\""
+      }
+    ]
+  },
+  "keyQuestions": [
+    "- Depuis quand pensez-vous que votre enfant a des vers ?",
+    "- Avez-vous vu des vers dans les selles de votre enfant ou autour de son anus ?",
+    "- Quels sont les symptômes que vous avez observés chez votre enfant ?",
+    "- Votre enfant se plaint-il de démangeaisons anales, surtout la nuit ?",
+    "- Y a-t-il d'autres symptômes associés, comme des douleurs abdominales, des diarrhées, une irritabilité ou des troubles du sommeil ?",
+    "- Y a-t-il d'autres membres de la famille ou des personnes vivant en collectivité (crèche, école...) qui présentent des symptômes similaires ?",
+    "- Avez-vous déjà essayé un traitement auparavant pour des vers ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition**\n• Oxyurose : parasitose intestinale très fréquente chez l'enfant.\n• - **Cause**\n• Petit ver blanc (*Enterobius vermicularis*), femelles pondent des œufs autour de l'anus la nuit.\n• - **Contamination**\n• Ingestion ou inhalation d'œufs présents sur les mains, objets ou dans l'air.\n• - **Cycle**\n• Œufs éclosent dans l'estomac, larves migrent vers l'intestin grêle, deviennent adultes en 5-6 semaines dans le côlon.\n• - **Transmission**\n• Très contagieux, favorisée par auto-réinfestation (grattage), vie en collectivité, œufs aéroportés.\n• - **Symptôme majeur**\n• Démangeaisons anales intenses, surtout la nuit, pouvant causer troubles du sommeil et irritabilité.\n• - **Autres symptômes**\n• Douleurs abdominales légères, perte d'appétit.\n• - **Observation**\n• Petits vers blancs mobiles parfois visibles dans les selles ou autour de l'anus."
+      }
+    ]
+  },
+  "redFlags": [
+    "- Présence de fièvre",
+    "- Amaigrissement",
+    "- Diarrhées persistantes",
+    "- Échec d'un traitement précédent bien conduit",
+    "- Retour d'un voyage à l'étranger "
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "- **Albendazole** (ex: Zzole, Nemacest, Zendis) : Enfant 1-2 ans: 200 mg (1/2 flacon) en 1 prise. Adulte et enfant > 2 ans: 400 mg en 1 prise. À renouveler après 1 semaine. Effets secondaires: troubles digestifs, céphalées, vertiges.",
+      "- **Mebendazole** (ex: Vermozol) : Enfant > 2 ans et adulte: 100 mg dose unique. À renouveler après 2 à 4 semaines. Effets secondaires: troubles digestifs, céphalées, vertiges.",
+      "- **Pyrantel** (ex: Helmintox) : 10-12 mg/kg en 1 prise unique. À renouveler après 2-3 semaines. Effets secondaires: troubles digestifs (anorexie, nausées, vomissements, douleurs abdominales, diarrhée), céphalées, somnolence, vertiges.",
+      "- **Renouvellement** Indispensable car la première prise n'élimine que les vers adultes, pas les œufs. Une seconde prise cible les larves écloses.",
+      "- **Famille** Traiter toute la famille vivant sous le même toit pour briser le cycle de transmission et éviter les réinfestations."
+    ],
+    "associatedProducts": [],
+    "lifestyleAdvice": [
+      "- Couper les ongles courts et les brosser régulièrement.",
+      "- Lavage des mains systématique après les toilettes et avant les repas.",
+      "- Changer quotidiennement sous-vêtements et pyjamas.",
+      "- Porter des pyjamas fermés la nuit pour limiter les démangeaisons et la dissémination des œufs.",
+      "- Laver draps et linge à 60°C (la chaleur est plus efficace que les désinfectants contre les œufs).",
+      "- Nettoyer/aspirer régulièrement les sols et tapis.",
+      "- Passer l’aspirateur fréquemment.",
+      "- Éviter de secouer les draps et vêtements pour ne pas disperser les œufs aéroportés."
+    ],
+    "dietaryAdvice": [
+      "- Maintenir une alimentation équilibrée pendant le traitement.",
+      "- Bien laver les légumes et les fruits avant consommation pour éliminer d'éventuels œufs.",
+      "- L'absorption de l'albendazole est améliorée par les aliments riches en lipides."
+    ]
+  },
+  "references": [
+    "- Berthélémy, S. (2013). Répondre à une demande de traitement vermifuge destiné à un enfant. Actualités Pharmaceutiques, 52(526), 37–40. https://doi.org/10.1016/j.actpha.2013.02.029",
+    "- Bourée, P., Institut A.-Fournier, & Hôpital de l’Hôtel-Dieu. (2018). Parasitoses intestinales infantiles. Perfectionnement En Pédiatrie, 1–1, 257–264. https://doi.org/10.1016/j.perped.2018.10.003",
+    "- Dardé, M.-L., Fougère, É., & Buxeraud, J. (2018). Les médicaments de la parasitologie. http://dx.doi.org/10.1016/j.actpha.2018.09.022",
+    "- OXYUROSE (ENTÉROBIASE) ministère de la santé et des services sociaux Québec.pdf ",
+    "-Le Moniteur des pharmacies.fr. (2007, June 1). « Mon enfant a des vers ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/mon-enfant-a-des-vers-4",
+    "- Vers intestinaux : contamination par des oxyures et symptômes. Ameli.fr",
+    "- Oxyures : que faire et quel traitement ? Ameli.fr",
+    "- Comprendre les parasitoses intestinales. Ameli.fr",
+    "- Contamination, symptômes et diagnostic de l'ascaridiose. Ameli.fr",
+    "- Parasitose intestinale : l'oxyurose. Ameli.fr",
+    "- Les mesures à prendre pour éviter les parasitoses intestinales. Ameli.fr"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Pédiatrie",
+  "creationDate": "2025-10-02T14:32:35.723Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Oxyurose",
+      "definition": "Parasitose intestinale très fréquente, causée par un petit ver blanc (Enterobius vermicularis)."
+    },
+    {
+      "term": "Enterobius vermicularis",
+      "definition": "Nom scientifique du petit ver blanc, agent causal de l'oxyurose, dont les femelles pondent des œufs autour de l'anus la nuit."
+    },
+    {
+      "term": "Auto-réinfestation",
+      "definition": "Processus par lequel une personne se réinfecte elle-même avec des oxyures, souvent par le grattage de la zone anale puis l'ingestion des œufs présents sur les doigts."
+    },
+    {
+      "term": "Parasitose intestinale",
+      "definition": "Maladie causée par la présence de parasites (comme les vers) dans l'intestin."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que l'oxyurose?",
+      "answer": "L'oxyurose est une parasitose intestinale très fréquente chez l'enfant."
+    },
+    {
+      "question": "Quelle est la cause de l'oxyurose?",
+      "answer": "Elle est causée par un petit ver blanc appelé Enterobius vermicularis."
+    },
+    {
+      "question": "Comment se fait la contamination par les oxyures?",
+      "answer": "La contamination se fait par ingestion ou inhalation d'œufs présents sur les mains, objets ou dans l'air."
+    },
+    {
+      "question": "Quel est le symptôme majeur de l'oxyurose?",
+      "answer": "Le symptôme majeur est des démangeaisons anales intenses, surtout la nuit."
+    },
+    {
+      "question": "Pourquoi est-il indispensable de renouveler le traitement contre les oxyures?",
+      "answer": "Le renouvellement est indispensable car la première prise n'élimine que les vers adultes, pas les œufs. La seconde prise cible les larves écloses."
+    },
+    {
+      "question": "Qui doit être traité en cas d'oxyurose dans une famille?",
+      "answer": "Toute la famille vivant sous le même toit doit être traitée pour briser le cycle de transmission et éviter les réinfestations."
+    },
+    {
+      "question": "Citez deux médicaments utilisés pour traiter l'oxyurose.",
+      "answer": "L'Albendazole (ex: Zzole) et le Mebendazole (ex: Vermozol) sont couramment utilisés."
+    },
+    {
+      "question": "Quel est le cycle de développement des oxyures dans l'organisme?",
+      "answer": "Les œufs éclosent dans l'estomac, les larves migrent vers l'intestin grêle et deviennent adultes en 5-6 semaines dans le côlon."
+    },
+    {
+      "question": "Quels sont les signes d'alerte qui nécessitent une consultation médicale en cas de suspicion de vers?",
+      "answer": "La fièvre, l'amaigrissement, les diarrhées persistantes, l'échec d'un traitement précédent ou un retour de voyage à l'étranger."
+    },
+    {
+      "question": "À quel moment peut-on observer les vers adultes?",
+      "answer": "De petits vers blancs mobiles sont parfois visibles dans les selles ou autour de l'anus, surtout la nuit."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la cause principale de l'oxyurose?",
+      "options": [
+        "Une bactérie",
+        "Un virus",
+        "Un petit ver blanc",
+        "Un champignon"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'oxyurose est causée par un petit ver blanc appelé Enterobius vermicularis."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le symptôme majeur et le plus caractéristique de l'oxyurose?",
+      "options": [
+        "Fièvre élevée",
+        "Toux persistante",
+        "Démangeaisons anales intenses la nuit",
+        "Douleurs articulaires"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les démangeaisons anales intenses, surtout la nuit, sont le symptôme majeur de l'oxyurose."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi est-il crucial de renouveler le traitement anti-oxyurique après quelques semaines?",
+      "options": [
+        "Pour renforcer le système immunitaire",
+        "Car la première dose ne tue que les œufs",
+        "Car la première dose n'élimine que les vers adultes, pas les œufs",
+        "Pour éviter les effets secondaires"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La première prise ne cible que les vers adultes. Le renouvellement permet d'éliminer les larves écloses à partir des œufs restants."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Selon la mémofiche, quelle est la posologie de l'Albendazole pour un enfant de 8 ans?",
+      "options": [
+        "200 mg en 1 prise",
+        "100 mg en 1 prise",
+        "400 mg en 1 prise",
+        "10-12 mg/kg en 1 prise"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Pour les adultes et enfants de plus de 2 ans, la posologie de l'Albendazole est de 400 mg en 1 prise."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel de ces éléments n'est PAS un signal d'alerte nécessitant une consultation médicale pour une suspicion de vers?",
+      "options": [
+        "Fièvre",
+        "Amaigrissement",
+        "Démangeaisons anales",
+        "Échec d'un traitement précédent bien conduit"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les démangeaisons anales sont un symptôme typique de l'oxyurose, mais pas un signal d'alerte spécifique pour une consultation médicale si c'est le seul symptôme. Les autres options sont des signes de complication ou d'un autre problème."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Comment se transmet principalement l'oxyurose?",
+      "options": [
+        "Par piqûre de moustique",
+        "Par contact direct avec des animaux domestiques",
+        "Par ingestion ou inhalation d'œufs",
+        "Par l'eau du robinet non filtrée"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La contamination se fait principalement par l'ingestion ou l'inhalation d'œufs présents sur les mains, les objets ou dans l'air."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'oxyurose est une parasitose intestinale rare chez l'enfant.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'oxyurose est décrite comme une parasitose intestinale très fréquente chez l'enfant."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "En cas d'oxyurose, seul l'enfant infecté doit être traité pour éviter la réinfestation.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Il est recommandé de traiter toute la famille vivant sous le même toit pour briser le cycle de transmission et éviter les réinfestations."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les œufs d'oxyures éclosent dans l'estomac avant que les larves ne migrent vers l'intestin grêle.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Selon la mémofiche, les œufs éclosent dans l'estomac et les larves migrent ensuite vers l'intestin grêle."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le Pyrantel peut causer des troubles digestifs tels que l'anorexie, les nausées et les vomissements.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche liste l'anorexie, les nausées, les vomissements, les douleurs abdominales et la diarrhée comme des effets secondaires possibles du Pyrantel."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Pédiatrie"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/pediatrie/vers-intestinal.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "status": "Published",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": []
+}

@@ -1,0 +1,352 @@
+{
+  "_id": "69111ea28c0083d697cc22a8",
+  "title": "Rhinopharyngite chez l'enfant: Conseils à l'officine",
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une maman s’est présentée à la pharmacie demandant un conseil : « Mon enfant a le nez qui coule, il éternue et tousse depuis quelques jours. Je voudrais un produit pour le soulager de son rhume. Que me conseillez-vous?»."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "**-**Quel âge a l'enfant ?",
+    "**-**Depuis quand ces symptômes sont-ils présents ?",
+    "**-**Y a-t-il d'autres symptômes (fièvre, maux de gorge, difficultés à respirer) ?",
+    "**-**Avez-vous déjà essayé un médicament?",
+    "**-**L'enfant est-il suivi pour une pathologie (asthme, immunodéficience) ?"
+  ],
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": [
+      {
+        "type": "text",
+        "value": "**-****La rhinopharyngite** (rhume) est une infection **virale** **bénigne** de la muqueuse du nez et du pharynx.\n**-**Elle est causée **exclusivement** par des **virus** (rhinovirus, coronavirus, etc.). \n**-**C'est la pathologie infectieuse **la plus fréquente** chez l'**enfant**, qui peut en contracter **jusqu'à dix** par an avant 2 ans en raison de l'**immaturité** de leur **système immunitaire**.\n**-****Symptômes Clés** : \n-Fièvre **modérée** (souvent < 38,5), ne durant pas plus de 3 jours.\n-**Obstruction** (nez bouché) ou **écoulement nasal** (nez qui coule)\n-**Éternuements**, **toux** (pouvant durer jusqu'à **10** jours et parfois causer des vomissements), et **léger** mal de gorge.\n**-****Évolution et Facteurs Favorisants** : \n-Le rhume guérit **spontanément** en **7** à **10** jours. Il est **favorisé** par la vie en communauté (crèche), le tabagisme passif, et la sécheresse de l'air."
+      }
+    ]
+  },
+  "redFlags": [
+    "**-**Nourrisson de moins de 3 mois (risque de détresse respiratoire).",
+    "**-**Fièvre persistante (> 48h) ou très élevée.",
+    "**-**Symptômes s'aggravant après 5 jours ou persistant après 10 jours sans amélioration.",
+    "**-**Difficulté à respirer, respiration rapide, lèvres bleues.",
+    "**-**Maux d'oreille (otalgie), écoulement de l'oreille (otorrhée), yeux collés par du pus jaunâtre.",
+    "**-**Refus de s'alimenter, vomissements, forte baisse de la ration alimentaire.",
+    "**-**Enfant très irritable ou beaucoup plus endormi que d'ordinaire.",
+    "**-**Enfant asthmatique, immunodéprimé, ou avec des otites fréquentes."
+  ],
+  "mainTreatment": [
+    "• **Désobstruction Rhino-Pharyngée (DRP)** (Hygiène nasale) : ",
+    "**-**Lavage par du **sérum physiologique** ou de l'**eau de mer isotonique**. ",
+    "**-**Réaliser aussi souvent que nécessaire, surtout avant les repas et au coucher, en position allongée tête penchée sur le côté.",
+    "Les bénéfices:",
+    "**-**Décongestionner le nez bouché pour une meilleure respiration et une tétée plus facile.",
+    "**-**Prévenir les complications vers les otites."
+  ],
+  "associatedProducts": [
+    "**-****Eau de mer hypertonique** Utiliser ponctuellement pour décongestionner par effet osmotique.",
+    "**-****Paracétamol**: 60 mg/kg/jour, réparti en 4-6 prises (15 mg/kg toutes les 6h ou 10 mg/kg toutes les 4h). - Indiqué si fièvre > 38.5°C, douleur, ou irritabilité. Utiliser la dose efficace la plus faible et la durée la plus courte.",
+    "**-****Ibuprofène** : Uniquement chez l'enfant de plus de 3 mois et en cas de contre-indication au paracétamol. - Risque de complications infectieuses",
+    "**-****Aspirine** Formellement contre-indiquée chez l'enfant sans avis médical (Risque de syndrome de Reye) ",
+    "**-****Mouche-bébé** : Pour aider à éliminer les sécrétions après lavage nasal ",
+    "**-****Sirop pour toux sèche**",
+    "**Guimauve**: dès 3 ans",
+    "**Plantain lancéolé** : dès 3 ans",
+    "**Thym** : dès 4 ans",
+    "**-****Sirop pour toux grasse**",
+    "**Lierre grimpant** :dès 2 ans",
+    "**Fenouil** : dès 4 ans",
+    "**Baumes pour confort respiratoire (aromathérapie)** Eucalyptus radié, Romarin à Verbénone dès 3 mois"
+  ],
+  "lifestyleAdvice": [
+    "**-**Maintenir la chambre fraîche et aérée (entre 18 et 20 °C) pour ne pas assécher les muqueuses.",
+    "**-**Surélever légèrement la tête du lit de l'enfant pour faciliter la respiration en cas de nez bouché.",
+    "**-**Utiliser un humidificateur à air froid ou placer un linge mouillé sur un radiateur si l'air est sec.",
+    "**-**Ne pas fumer au domicile de l'enfant pour prévenir les irritations des voies respiratoires.",
+    "**-**Se laver les mains et celles de l'enfant régulièrement, surtout après avoir toussé, éternué ou s’être mouché.",
+    "**-**Éviter de partager les jouets, tétines, sucettes, biberons ou couverts.",
+    "**-**Éviter les contacts entre les nourrissons de moins de 3 mois et les personnes enrhumées ou les jeunes enfants."
+  ],
+  "dietaryAdvice": [
+    "**-**Faire boire l'enfant suffisamment et régulièrement pour éviter la déshydratation (surtout en cas de fièvre) et fluidifier les sécrétions.",
+    "**-**Proposer de petits repas nutritifs et légers si l'enfant refuse de manger."
+  ],
+  "references": [
+    "• Belin, N. (2019, January 23). Les solutions « naturelles » contre la toux. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/conseils/sante-naturelle/les-solutions-naturelles-contre-la-toux",
+    "• Belin, N. (2024, January 19). “Un traitement naturel contre le rhume ?” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/un-traitement-naturel-contre-le-rhume",
+    "• Belin, N. (2016, January 26). “Je voudrais quelque chose de naturel contre le rhume.” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-de-naturel-contre-le-rhume-2",
+    "• Belin, N. (2024, January 13). Les produits d’hygiène nasale. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/therapeutique/produits/autres/les-produits-dhygiene-nasale",
+    "• Belin, N. (2014, February 1). “Je voudrais quelque chose contre le rhume.” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-contre-le-rhume-2",
+    "• Milan, A. (2002, November 1). « J’en ai assez de ce rhume ! ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jen-ai-assez-de-ce-rhume",
+    "• Belin, N. (2020, October 27). “Je voudrais un anti-rhume naturel !” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-un-anti-rhume-naturel"
+  ],
+  "status": "Draft",
+  "id": "",
+  "type": "maladie",
+  "theme": "Maladies courantes",
+  "system": "Pédiatrie",
+  "creationDate": "2025-11-09T23:07:14.945Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Rhinopharyngite",
+      "definition": "Infection virale bénigne de la muqueuse nasale et pharyngée, communément appelée rhume."
+    },
+    {
+      "term": "Désobstruction Rhino-Pharyngée (DRP)",
+      "definition": "Technique d'hygiène nasale consistant à nettoyer les fosses nasales, souvent avec du sérum physiologique."
+    },
+    {
+      "term": "Sérum physiologique isotonique",
+      "definition": "Solution saline dont la concentration en sel est similaire à celle des fluides corporels, utilisée pour le nettoyage nasal."
+    },
+    {
+      "term": "Eau de mer hypertonique",
+      "definition": "Solution saline avec une concentration en sel plus élevée que celle du corps, utilisée pour décongestionner le nez par effet osmotique."
+    },
+    {
+      "term": "Paracétamol",
+      "definition": "Médicament à action antalgique (anti-douleur) et antipyrétique (anti-fièvre)."
+    },
+    {
+      "term": "Ibuprofène",
+      "definition": "Anti-Inflammatoire Non Stéroïdien (AINS) utilisé comme antalgique, antipyrétique et anti-inflammatoire."
+    },
+    {
+      "term": "Syndrome de Reye",
+      "definition": "Affection rare mais grave qui provoque une enflure du foie et du cerveau, liée à l'utilisation de l'aspirine chez les enfants ou adolescents lors d'infections virales."
+    },
+    {
+      "term": "Otalgie",
+      "definition": "Douleur au niveau de l'oreille."
+    },
+    {
+      "term": "Otorrhée",
+      "definition": "Écoulement de liquide provenant de l'oreille."
+    },
+    {
+      "term": "Immunodéprimé",
+      "definition": "Se dit d'une personne dont le système immunitaire est affaibli, la rendant plus vulnérable aux infections."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que le rhume (rhinopharyngite) chez l'enfant?",
+      "answer": "C'est une infection virale bénigne de la muqueuse nasale et pharyngée."
+    },
+    {
+      "question": "Quelle est la dose maximale journalière de paracétamol recommandée pour un enfant?",
+      "answer": "60 mg/kg/jour, répartie en 4 à 6 prises."
+    },
+    {
+      "question": "Quel est le geste essentiel d'hygiène nasale en cas de rhume chez l'enfant?",
+      "answer": "La Désobstruction Rhino-Pharyngée (DRP) avec sérum physiologique isotonique ou eau de mer isotonique."
+    },
+    {
+      "question": "Jusqu'à quelle quantité de sérum physiologique peut-on utiliser par narine pour une DRP? ",
+      "answer": "Jusqu'à 2ml par narine."
+    },
+    {
+      "question": "Dans quel cas l'eau de mer hypertonique est-elle indiquée pour le rhume de l'enfant?",
+      "answer": "Pour une obstruction nasale importante, ponctuellement et pour une courte durée, afin de décongestionner par effet osmotique."
+    },
+    {
+      "question": "Pourquoi l'aspirine est-elle contre-indiquée chez l'enfant en cas de rhume sans avis médical?",
+      "answer": "En raison du risque de syndrome de Reye. "
+    },
+    {
+      "question": "Pourquoi doit-on envoyer l'enfant enrhumé de moins de 3 mois au médecin?",
+      "answer": "Car il y a risque de détresse respiratoire."
+    },
+    {
+      "question": "Quels sont les signes de détresse respiratoire à surveiller chez un enfant enrhumé?",
+      "answer": "Difficulté à respirer, respiration rapide, lèvres bleues."
+    },
+    {
+      "question": "A partir de quel âge peut-on utiliser les sirops à base de lierre grimpant?",
+      "answer": "Le lierre grimpant peut être utilisé à partir de l'âge de 2 ans."
+    },
+    {
+      "question": "Quels conseils hygiéno-diététiques donner aux parents de l'enfant enrhumé?",
+      "answer": "Faire boire l'enfant suffisamment et régulièrement, Surélever légèrement la tête du lit de l'enfant pour faciliter la respiration en cas de nez bouché, Se laver les mains et celles de l'enfant régulièrement."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est le traitement principal de la rhinopharyngite chez l'enfant?",
+      "options": [
+        "Le Paracétamol",
+        "La Désobstruction Rhino-Pharyngée",
+        "Un Sirop pour la toux",
+        "Un Baume pour confort respiratoire"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La Désobstruction Rhino-Pharyngée est le traitement principal du rhume, les autres produits sont conseillés selon les symptômes de l'enfant. "
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la dose maximale journalière de paracétamol recommandée pour un enfant atteint de rhume?",
+      "options": [
+        "90 mg/kg/jour",
+        "60 mg/kg/jour",
+        "30 mg/kg/jour",
+        "10 mg/kg/jour"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La dose maximale de paracétamol est de 60 mg/kg/jour, répartie en 4 ou 6 prises"
+    },
+    {
+      "questionType": "QCM",
+      "question": "Dans quelle situation l'utilisation d'eau de mer hypertonique est-elle recommandée pour un enfant enrhumé?",
+      "options": [
+        "En prévention quotidienne du rhume.",
+        "Pour une obstruction nasale légère.",
+        "Pour une obstruction nasale importante, ponctuellement et pour courte durée.",
+        "Comme traitement principal de la fièvre."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'eau de mer hypertonique est indiquée spécifiquement pour une obstruction nasale importante et son utilisation doit être ponctuelle et de courte durée."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le principal risque associé à l'utilisation d'aspirine chez l'enfant en cas d'infection virale comme le rhume?",
+      "options": [
+        "Crise d'asthme",
+        "Syndrome de Reye",
+        "Insuffisance rénale",
+        "Réaction allergique cutanée"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'aspirine est formellement contre-indiquée chez l'enfant sans avis médical en raison du risque de syndrome de Reye: une forme rare d'encéphalopathie aiguë et de dysfonctionnement hépatique, liée surtout à la prise de l'aspirine en cas d'infections virales."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la condition d'âge minimale pour l'utilisation de l'Ibuprofène chez l'enfant en cas de rhume, en plus d'une contre-indication au paracétamol?",
+      "options": [
+        "Moins de 3 mois",
+        "Plus de 3 mois",
+        "Plus de 6 mois",
+        "Plus de 1 an"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'Ibuprofène est uniquement recommandé chez l'enfant de plus de 3 mois et en cas de contre-indication au paracétamol, toujours avec avis médical en contexte infectieux."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La Désobstruction Rhino-Pharyngée (DRP) doit être réalisée uniquement le soir avant le coucher.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La DRP doit être réalisée aussi souvent que nécessaire, surtout avant les repas et au coucher, et non uniquement le soir."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'ibuprofène peut être utilisé de manière systématique en cas de rhume chez un enfant de plus de 3 mois.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'ibuprofène n'est recommandé qu'en cas de contre-indication au paracétamol et nécessite un avis médical en contexte infectieux en raison des risques de complications graves."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "En cas d'écoulement de l'oreille (otorrhée) chez un enfant enrhumé, il est inutile de consulter un médecin.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'otorrhée est un nouveau signe d'alerte qui nécessite un avis médical car il peut indiquer une complication comme une otite."
+    },
+    {
+      "question": "Parmi les propositions suivantes, laquelle n'est PAS un signal d'alerte nécessitant un avis médical urgent pour un enfant atteint de rhume?",
+      "options": [
+        "Enfant qui vomit et refuse de manger.",
+        "Symptômes persistant après 10 jours sans amélioration.",
+        "Un écoulement nasal clair et léger au premier jour.",
+        "Difficulté à respirer avec lèvres bleues."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Un écoulement nasal clair et léger au premier jour est un symptôme courant du rhume et ne constitue pas un signal d'alerte nécessitant un avis médical urgent, contrairement aux autres propositions décrivant une altération de l'état de l'enfant. "
+    },
+    {
+      "question": "Un parent se présente en officine pour demander conseil au sujet de son enfant de 4 ans, enrhumé et fiévreux depuis 3 jours, malgré un traitement adapté:",
+      "options": [
+        "On lui propose un sirop à base d'ibuprofène pour abaisser efficacement la fièvre.",
+        "On lui propose un sirop pour booster l'immunité de l'enfant.",
+        "On insiste sur l'importance du lavage nasal, et on lui conseille de patienter.",
+        "On l'oriente à son médecin."
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Une fièvre persistante de plus de 48 heures nécessite un consultation médicale à la recherche de complications possibles."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Pédiatrie"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/pediatrie/viroses-enfant.jpg",
+  "youtubeLinks": [],
+  "ordonnance": [],
+  "analyseOrdonnance": [],
+  "conseilsTraitement": [],
+  "informationsMaladie": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsAlimentaires": [],
+  "ventesAdditionnelles": {},
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "customSections": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "memoSections": [],
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "shortDescription": ""
+}

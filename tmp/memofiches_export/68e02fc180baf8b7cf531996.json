@@ -1,0 +1,321 @@
+{
+  "_id": "68e02fc180baf8b7cf531996",
+  "title": "Mémofiche Mycose des Mains",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un patient de 40 ans se présente au comptoir : « Bonjour, j'ai des plaques rouges qui démangent sur les mains, avec des petites fissures et la peau qui pèle. Que me conseillez-vous? »"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "- Depuis quand avez-vous ces symptômes ?",
+    "- Où sont localisées précisément les lésions ? Sont-elles sur une seule main ou les deux ?",
+    "- Avez-vous des démangeaisons ? Sont-elles constantes ou intermittentes ?",
+    "- Avez-vous des fissures, des suintements ou un aspect blanchâtre sur les zones atteintes ?",
+    "- Avez-vous déjà eu ce genre de problème auparavant ?",
+    "- Avez-vous des lésions similaires sur d'autres parties du corps, notamment les pieds ou les ongles ?",
+    "- Exercez-vous une profession qui nécessite le port de gants ou un contact fréquent avec l'eau ?",
+    "- Avez-vous d'autres problèmes de santé comme le diabète ou une baisse de l'immunité ?",
+    "- Avez-vous utilisé un traitement auparavant ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition**\n• - Infection cutanée des mains causée par des champignons (dermatophytes ou levures).,\n• - Dermatophytes (filamenteux, transmission par contact) ou Candida albicans (levure, infection opportuniste).,\n• **Symptômes**\n• - Rougeurs, démangeaisons intenses, desquamation, fissures, épaississement cutané.,\n• - Parfois vésicules, pustules, lésions entre les doigts, paume, dos de la main ; extension aux ongles possible.,\n• - **Facteurs risque**\n• - Humidité, port de gants, transpiration excessive, diabète, baisse de l'immunité, mauvaise hygiène.,\n• **Voies de contamination**\n• - Auto-contamination (souvent des pieds), contact direct interhumain, objet souillés (serviettes, tapis de salle de bain..)"
+      }
+    ]
+  },
+  "redFlags": [
+    "- Lésions récidivantes.",
+    "- Mycose s'étendant aux ongles (onychomycose).",
+    "- Personne à risque: femme enceinte, diabétique.",
+    "- Suspicion de surinfection bactérienne.",
+    "- Symptômes persistent ou s'aggravent sous traitement.",
+    "- Douleur ou gêne perturbant la qualité de vie.",
+    "- Apparition de nouvelles lésions pendant le traitement"
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Antifongique locaux**: les imidazolés",
+      "- Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®",
+      "- Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®",
+      "- Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds",
+      "**Galénique** ",
+      "- Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.",
+      "**Important**:",
+      "- Respecter la durée complète même après amélioration pour éviter les rechutes."
+    ],
+    "associatedProducts": [
+      "**Nettoyant** ",
+      "Gel à pH alcalin pour le lavage des mains.",
+      "Ex: Mycolin® ",
+      "**Crème barrière** ",
+      "- Crème mains isolante cicatrisante",
+      "- pour protéger la peau de l'eau et des irritants pour limiter le risque de rechutes",
+      "- Ex: Uriage Bariederm®, Excipial P® "
+    ],
+    "lifestyleAdvice": [
+      "- Éviter l'humidité et la transpiration excessive.",
+      "- Bien sécher les mains après la toilette ou le contact avec l'eau.",
+      "- Utiliser des gants de protection lors de travaux manuels ou de contact avec l'eau/irritants ; les changer régulièrement.",
+      "- Éviter de se gratter les lésions pour ne pas étendre l'infection.",
+      "- Ne pas partager les serviettes et articles de toilette.",
+      "Laver régulièrement le linge de toilette et les vêtements à 60°C."
+    ],
+    "dietaryAdvice": [
+      "- Adopter une alimentation équilibrée pour soutenir le système immunitaire."
+    ]
+  },
+  "references": [
+    "- Dalibon, P. (2018b). Dermatoses et onychoses infectieuses du pied. Actualités Pharmaceutiques, 57(574), 47–51. https://doi.org/10.1016/j.actpha.2018.01.010",
+    "- Denieul, A., Faure, S., & Dominique Chabasse. (2009). La prise en charge des dermatomycoses à l’officine. In Actualités Pharmaceutiques: Vol. n° 484.",
+    "- Derbré, S.(2009). Emploi de la phytothérapie et de l’aromathérapie en prévention et traitement des dermatomycoses. In Actualités Pharmaceutiques: Vol. n° 484 (pp. 19–20)",
+    "- Derbré, S., & Lamassiaude-Peyramaure, S. (2010). Comment venir à bout des mycoses. Actualités Pharmaceutiques, 49(495), 44–46. https://doi.org/10.1016/s0515-3700(10)70678-9",
+    "- Lorier Roy, E (2019). les mycoses cutanées. dermato-info.fr. https://dermato-info.fr/fr/les-maladies-de-la-peau/les-mycoses-cutan%C3%A9es",
+    "- Belin, N. (2015, June 3). Une jeune femme avec pied d’athlète et onychomycose. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/une-jeune-femme-avec-pied-dathlete-et-onychomycose",
+    "- La consultation et le traitement en cas de mycose cutanée | ameli.fr | Assuré",
+    "- Clere, N (2009). Quelle prise en charge pour les mycoses ? Actualités Pharmaceutiques n°488. EM-Consulte. https://www.em-consulte.com/article/232631/quelle-prise-en-charge-pour-les-mycoses",
+    "- Mycose de la peau : que faire ? | ameli.fr | Assuré",
+    "- Prévenir les mycoses cutanées | ameli.fr | Assuré",
+    "- Le Moniteur des pharmacies.fr. (2006). Les mycoses cutanées. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-mycoses-cutanees"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé cutanée",
+  "creationDate": "2025-10-03T20:19:13.042Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Dermatophytes",
+      "definition": "Champignons filamenteux, agents pathogènes fréquents des mycoses cutanées, transmis souvent par contact direct."
+    },
+    {
+      "term": "Candida albicans",
+      "definition": "Levure naturellement présente sur la peau et les muqueuses, pouvant devenir pathogène et causer des mycoses opportunistes, notamment en cas d'humidité excessive ou de baisse d'immunité."
+    },
+    {
+      "term": "Desquamation",
+      "definition": "Phénomène caractérisé par le détachement des couches superficielles de l'épiderme sous forme de lamelles ou de squames, souvent observé dans les infections cutanées comme la mycose."
+    },
+    {
+      "term": "Onychomycose",
+      "definition": "Infection fongique des ongles (des pieds ou des mains), pouvant être une complication ou une extension d'une mycose cutanée environnante."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quels sont les agents pathogènes les plus courants responsables de la mycose des mains ?",
+      "answer": "Les dermatophytes (champignons filamenteux) et Candida albicans (levure)."
+    },
+    {
+      "question": "Citez au moins trois facteurs favorisant une mycose des mains due à Candida albicans.",
+      "answer": "Humidité, contact fréquent avec l'eau, et des facteurs locaux ou généraux comme le diabète ou une baisse de l'immunité."
+    },
+    {
+      "question": "Quels sont les symptômes typiques d'une mycose des mains mentionnés dans la mémofiche ?",
+      "answer": "Rougeurs, démangeaisons intenses, desquamation, fissures, et épaississement cutané."
+    },
+    {
+      "question": "Comment peut se transmettre une mycose des mains ?",
+      "answer": "Par auto-contamination (souvent depuis les pieds) ou par contact direct interhumain."
+    },
+    {
+      "question": "Quand un prélèvement mycologique est-il nécessaire pour le diagnostic d'une mycose des mains ?",
+      "answer": "En cas de doute diagnostique, d'échec thérapeutique ou si une identification précise de l'agent pathogène est nécessaire."
+    },
+    {
+      "question": "Quelles sont les principales familles de molécules antifongiques locales utilisées pour traiter la mycose des mains ?",
+      "answer": "Les imidazolés (éconazole), les allylamines (terbinafine) et les dérivés de pyridone (ciclopirox)."
+    },
+    {
+      "question": "Quelle est la durée de traitement recommandée pour l'éconazole dans le cadre d'une mycose des mains ?",
+      "answer": "Une application deux fois par jour pendant 2 à 3 semaines."
+    },
+    {
+      "question": "Pourquoi est-il crucial de respecter la durée totale du traitement antifongique, même après l'amélioration des symptômes ?",
+      "answer": "Pour éviter les rechutes."
+    },
+    {
+      "question": "Dans quels cas un traitement antifongique oral est-il envisagé pour une mycose des mains ?",
+      "answer": "En cas d'échec des traitements locaux ou de lésions étendues, et toujours sur prescription médicale."
+    },
+    {
+      "question": "Citez au moins trois signaux d'alerte qui nécessitent une consultation médicale pour une mycose des mains.",
+      "answer": "Lésions récidivantes, extension aux ongles (onychomycose), patient diabétique, suspicion de surinfection bactérienne, ou persistance/aggravation des symptômes sous traitement."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la principale caractéristique des dermatophytes en tant qu'agents de la mycose des mains ?",
+      "options": [
+        "Ce sont des levures opportunistes",
+        "Ils sont transmis par contact direct",
+        "Ils sont favorisés par l'humidité intense",
+        "Ils causent principalement des pustules"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique que les dermatophytes sont des champignons filamenteux dont la transmission se fait par contact, contrairement à Candida albicans qui est une levure."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les symptômes suivants, lequel n'est PAS typique d'une mycose des mains ?",
+      "options": [
+        "Rougeurs intenses",
+        "Démangeaisons",
+        "Fièvre élevée",
+        "Desquamation"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La fièvre élevée n'est pas un symptôme courant de la mycose des mains, qui est une infection cutanée locale. Les autres symptômes sont directement mentionnés dans la mémofiche."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le délai d'application recommandé pour l'éconazole dans le traitement d'une mycose des mains ?",
+      "options": [
+        "1 application par jour pendant 10 jours",
+        "2 applications par jour pendant 2 à 3 semaines",
+        "1 application par semaine pendant 4 semaines",
+        "3 applications par jour pendant 1 semaine"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche précise pour l'éconazole : '1 application 2x/jour pendant 2 à 3 semaines'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Dans quel cas la forme galénique de poudre ou lotion est-elle à privilégier pour une mycose des mains ?",
+      "options": [
+        "Lésions sèches et épaisses",
+        "Lésions suintantes et macérées",
+        "Lésions uniquement sur le dos de la main",
+        "Lésions sous les ongles"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche conseille de choisir la forme adaptée : 'poudre/lotion pour lésions suintantes, crème/pommade pour lésions sèches'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel type de patient présente un signal d'alerte important en cas de mycose des mains et nécessite une attention particulière ?",
+      "options": [
+        "Un patient adolescent",
+        "Un patient avec des antécédents de coup de soleil",
+        "Un patient diabétique",
+        "Un patient ayant des allergies saisonnières"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le 'Patient diabétique' est explicitement listé comme un signal d'alerte, en raison des risques de complications et de l'impact sur l'immunité."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Qu'est-ce qui favorise spécifiquement les infections à Candida albicans sur les mains ?",
+      "options": [
+        "Contact avec des animaux domestiques",
+        "Forte exposition au soleil",
+        "Humidité et contact fréquent avec l'eau",
+        "Consommation excessive de sucre"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche mentionne spécifiquement que les 'Facteurs Candida' sont 'Favorisée par humidité, contact fréquent avec l'eau'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le diagnostic de la mycose des mains est toujours réalisé par un prélèvement mycologique.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le diagnostic est 'Généralement clinique' et le prélèvement mycologique n'est effectué qu'en cas de doute, d'échec thérapeutique ou de besoin d'identification précise."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'épaississement cutané fait partie des symptômes possibles de la mycose des mains.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche liste 'épaississement cutané' parmi les symptômes possibles de la mycose des mains."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La terbinafine est un antifongique local qui s'applique une fois par jour pendant 10 jours et est disponible sans ordonnance.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Bien que la terbinafine s'applique 1x/jour pendant 10 jours, la mémofiche précise qu'elle est 'Prescrit', ce qui signifie qu'elle n'est pas disponible sans ordonnance."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'apparition de nouvelles lésions pendant un traitement antifongique local n'est pas un signal d'alerte.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'apparition de nouvelles lésions pendant le traitement est explicitement listée comme un 'Signal d'alerte' nécessitant une attention médicale."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé cutanée"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/dermato/mycose-main.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "status": "Published",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": []
+}

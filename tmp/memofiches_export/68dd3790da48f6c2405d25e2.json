@@ -1,0 +1,394 @@
+{
+  "_id": "68dd3790da48f6c2405d25e2",
+  "title": "Angine: Virale ou Bactérienne ? Conseil à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une patiente âgée de 28 ans se présente au comptoir et dit : « J’ai besoin d’une boîte d’amoxicilline s'il vous plaît »."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "**-**Depuis combien de temps avez-vous ces symptômes ? Comment la maladie a-t-elle commencé?",
+    "**-**Avez-vous de la fièvre ? Si oui, quelle température ?",
+    "**-**Avez-vous des douleurs importantes à la gorge lors de la déglutition ? Quelle est l'intensité de votre douleur ?",
+    "**-**Avez-vous d'autres symptômes comme de la toux, de la fatigue ou un écoulement nasal ?",
+    "**-**Avez-vous déjà essayé un traitement ?",
+    "**-**Êtes-vous déjà traité pour d'autres maladies (immunodéficience, diabète, etc.) ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "**-L'angine** : est une inflammation aiguë infectieuse des amygdales ou du pharynx.\n**-Origine** : Majoritairement virale (**75-90%** chez l'adulte), moins souvent bactérienne, causée par une bactérie: Streptocoque Bêta-hémolytique du Groupe A, **SGA**( **10-25%** chez l'adulte). L'angine bactérienne est plus fréquente chez les enfants âgés de 5 à 15 ans (peut atteindre 40% des cas). \n**-Symptômes clés** : **Mal de gorge** (odynophagie) et **fièvre** (38-39°C).,\n**-Autres symptômes** : Toux, rhume, fatigue, maux de tête, adénopathies cervicales ( gonflement et douleur des ganglions du cou) possibles.\n**-Aspect** : Le plus souvent on parle d'angine rouge dite érythémateuse ou d'angine blanche dite érythémato-pultacée. D'autres aspects sont possibles mais sont beaucoup plus rares.\n**-Diagnostic** : Distinction entre angine **virale** et **bactérienne** est cruciale pour le traitement.\n**TROD** : Test Rapide d'Orientation Diagnostique **(Non encore disponible en Tunisie)** pour confirmer l'angine bactérienne à SGA."
+      },
+      {
+        "type": "image",
+        "value": "https://pharmaconseilbmb.com/photos/site/orl-respiration/infographie%20de%20Angine%20virale%20%20Angine%20bact%C3%A9rienne.png"
+      }
+    ]
+  },
+  "redFlags": [
+    "**-**Fièvre supérieure à 38,5°C",
+    "**-**Douleurs importantes à la déglutition.",
+    "**-**Symptômes persistants au-delà de 7 jours.",
+    "**-**Difficultés respiratoires",
+    "**-**Patients à risque: Asthmatique, immunodéprimé, diabétique, etc."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Pastilles ou sprays antiseptiques et/ou anesthésiques locaux**:",
+      "**-**Ex: Pastilles: Cantalène® (anesthésique, antiseptique, anti-œdème): Risque de fausse route (éviter avant repas), Contre Indiqué si Age < 6 ans.",
+      "**-**Ex: Spray: Hexaspray® antiseptique",
+      "**Antalgiques/antipyrétiques** : paracétamol",
+      "**Alpha-amylase** : Enzyme à visée anti-décongestionnante, dès 6 mois. ",
+      "- Ex: Maxilase®",
+      "**Traitement antibiotique** : Uniquement pour **angine bactérienne** , sur prescription médicale.",
+      "**-****Amoxicilline** : Antibiotique de 1ère intention (**6** jours).",
+      "**-**Alternatives ATB : Céphalosporines (cefpodoxime, céfuroxime) ou macrolides (clarithromycine, azithromycine) si allergies.",
+      "**Remarque**: L'utilisation des **AINS** n'est pas recommandée pour soulager la douleur de la gorge, car ils peuvent masquer l'évolution de l'angine et exposent au risque de complications infectieuses graves."
+    ],
+    "associatedProducts": [
+      "**Lavage nasal** : ",
+      "**-**Sérum physiologique ou eau de mer si rhinite associée. ",
+      "**-**Aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.",
+      "**-**Hydrate la muqueuse nasale, réduisant ainsi l'inflammation et l'inconfort.",
+      "**-**Aide à prévenir les complications comme la sinusite ou l'otite.",
+      "**Zinc** : ",
+      "**-**Antioxydant, il booste l'immunité et aide à réduire la durée et la sévérité symptômes. ",
+      "**-**Posologie en présence des symptômes: **25-50mg**/j pendant **7 **jours ",
+      "**-**Posologie en absence des symptômes: **15mg**/j",
+      "**Vitamine C** : ",
+      "**-**Antioxydante, elle renforce l'immunité et aide à réduire la fatigue. ",
+      "**-**Posologie: **1000**-**2000**mg/j durant l'infection.",
+      "**Échinacée** :",
+      "**-**Aide à stimuler le système immunitaire. ",
+      "**-**Posologie: **300**mg (poudre) **3**x/j ou **200**mg extrait sec/j. ",
+      "**-**Contre-indications: maladies auto-immunes, allergies. ",
+      "**Propolis/Gelée royale** :  ",
+      "- Aide à stimuler les défenses immunitaires",
+      "**Anti-tussifs** : ",
+      "**-**Soulage la toux sèche irritative",
+      "**-**Ex: Toumix®"
+    ],
+    "lifestyleAdvice": [
+      "**-**Lavage fréquent des mains au savon (30 secondes).",
+      "**-**Tousser/éternuer dans un mouchoir ou le pli du coude.",
+      "**-**Éviter de fumer et l'exposition au tabagisme passif.",
+      "**-**Aérer les pièces régulièrement.",
+      "**-**Maintenir la température 18-20°C, humidifier l'air si nécessaire.",
+      "**-**Éviter de forcer sur la voix pendant quelques jours.",
+      "**-**Éviter les contacts directs et porter un masque près des personnes fragiles.",
+      "**-**Ne pas partager les objets: verres, couverts"
+    ],
+    "dietaryAdvice": [
+      "**-**Boire abondamment (eau, tisanes, bouillons). Les boissons froides ou la glace peuvent avoir un effet anesthésiant.",
+      "**-**Privilégier les purées, les soupes, les compotes en cas de douleurs à la déglutition.",
+      "**-**Éviter certains aliments: Acides, épicés ou trop salés."
+    ]
+  },
+  "references": [
+    "- Belin, N. (2022, January 20). Les angines. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-angines",
+    "- Belin, N. (2018, March 20). Les angines. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-angines-2",
+    "- Belin, N. (2010, December 1). l’angine à streptocoque A. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/langine-a-streptocoque-a",
+    "- Maugez, M. (2020, September 24). Les tests rapides d’orientation diagnostique pour angine. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/les-tests-rapides-dorientation-diagnostique-pour-angine",
+    "- Anne-Gaëlle Harlaut, Sandrine Canale, & Franck Lhermitte. (2022). Les angines. In L’ordo (p. 583) [Journal-article]. https://www.porphyre.fr",
+    "- Berthélémy, S. (2016). Conseils à un patient souffrant d’une angine. Actualités Pharmaceutiques, 55(554), 35–38. https://doi.org/10.1016/j.actpha.2016.01.007",
+    "- Clere, N. (2013c). Toux et maux de gorge : quel conseil officinal ? Actualités Pharmaceutiques, 52(530), 38–41. https://doi.org/10.1016/j.actpha.2013.09.009",
+    "- Couic-Marinier, F., & Pillon, F. (2017d). Une angine à streptocoque β-hémolytique du groupe A. Actualités Pharmaceutiques, 56(565), 13–15. https://doi.org/10.1016/j.actpha.2017.02.003",
+    "Intérêt des huiles essentielles dans les angines à Streptococcus pyogenes.pdf",
+    "- Lamassiaude-Peyramaure, S. (2008) Soigner le mal de gorge autrement. In Actualités Pharmaceutiques: Vol. n° 478.",
+    "- Yalim, H., Eveillard, M., & Apaire-Marchais, V. (2020). Dépistage de l’angine à streptocoque du groupe A à l’officine. Actualités Pharmaceutiques, 59(593), 41–44. https://doi.org/10.1016/j.actpha.2019.12.016"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-10-01T14:15:44.442Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Dysphagie",
+      "definition": "Douleur ressentie lors de la déglutition, communément appelée mal de gorge."
+    },
+    {
+      "term": "Adénopathies cervicales",
+      "definition": "Augmentation du volume des ganglions lymphatiques situés au niveau du cou, souvent palpable et sensible."
+    },
+    {
+      "term": "TROD",
+      "definition": "Test Rapide d'Orientation Diagnostique, utilisé pour distinguer rapidement une angine virale d'une angine bactérienne, notamment à SGA."
+    },
+    {
+      "term": "SGA",
+      "definition": "Streptocoque Bêta-hémolytique du Groupe A, bactérie responsable d'une partie des angines bactériennes."
+    },
+    {
+      "term": "Érythémato-pultacée",
+      "definition": "Désigne un aspect d'angine où les amygdales sont rouges (érythémateuses) et recouvertes de dépôts blanchâtres (pultacée)."
+    },
+    {
+      "term": "AINS",
+      "definition": "Anti Inflammatoires Non Stéroïdiens"
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition d'une angine?",
+      "answer": "Une inflammation aiguë infectieuse des amygdales ou du pharynx."
+    },
+    {
+      "question": "Quel type d'angine est plus fréquent chez l'adulte?",
+      "answer": "L'angine est majoritairement virale (75-90%)."
+    },
+    {
+      "question": "Quels sont les deux symptômes clés d'une angine ?",
+      "answer": "Mal de gorge, Fièvre (38-39°C)."
+    },
+    {
+      "question": "Quel est l'objectif du Test Rapide d'Orientation Diagnostique (TROD)?",
+      "answer": "Confirmer une angine bactérienne à Streptocoque Bêta-hémolytique du Groupe A (SGA)."
+    },
+    {
+      "question": "Une douleur de gorge associées à une toux et un rhume est une angine d'origine",
+      "answer": "Virale"
+    },
+    {
+      "question": "Citez deux signaux d'alerte qui nécessitent une consultation médicale pour un mal de gorge",
+      "answer": "Fièvre persistante (> 38,5°C > 48h), douleurs intenses à la déglutition, difficultés respiratoires, symptômes persistants (> 7 jours), ou patient à risque (asthme, immunodépression, diabète)."
+    },
+    {
+      "question": "Pourquoi les AINS sont-ils à éviter en cas de maux de gorge?",
+      "answer": "En raison des risques de complications graves et de masquage de l'infection."
+    },
+    {
+      "question": "Quel antibiotique est de première intention pour une angine bactérienne et quelle est la durée du traitement?",
+      "answer": "L'Amoxicilline, pour 6 jours."
+    },
+    {
+      "question": "Quel est le traitement symptomatique de première intention pour les maux de gorge?",
+      "answer": "Les produits locaux antiseptiques et/ou anesthésiques, le Paracétamol si douleur ou fièvre"
+    },
+    {
+      "question": "Quelles mesures hygiéniques conseiller au patient?",
+      "answer": "Boire abondamment (eau, tisanes, bouillons), Privilégier les purées, les soupes, les compotes en cas de douleurs à la déglutition."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est l'origine majoritaire des angines chez l'adulte?",
+      "options": [
+        "Bactérienne (10-25%)",
+        "Virale (75-90%)",
+        "Fongique (<5%)",
+        "Allergique "
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les angines sont majoritairement virales chez l'adulte (75-90%)."
+    },
+    {
+      "questionType": "QCM",
+      "question": "L'angine bactérienne est plus fréquente chez: ",
+      "options": [
+        "Les nourrissons",
+        "Les enfants",
+        "Les adultes",
+        "L'âge n'a pas d'importance"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'angine bactérienne est plus fréquente chez les enfants de 5 à 15 ans, majoritairement due au SGA."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel symptôme décrit par le patient est-il en faveur d'une angine virale?",
+      "options": [
+        "Mal de gorge intense",
+        "Fièvre",
+        "Courbatures",
+        "Toux légère"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "La présence des signes de rhume et de toux  oriente vers l'origine virale de l'angine"
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le traitement symptomatique de première intention recommandé pour les maux de gorge?",
+      "options": [
+        "Alpha-amylase",
+        "Amoxicilline",
+        "Antiseptique et/ou anesthésique local",
+        "Ibuprofène"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les produits locaux à visée antiseptique et/ ou anesthésique et le Paracétamol sont le traitement de première intention pour soulager les symptômes du mal de gorge."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi les AINS sont-ils généralement déconseillés pour les maux de gorge?",
+      "options": [
+        "Risque de troubles digestifs sévères",
+        "Efficacité limitée par rapport au paracétamol",
+        "Risque de complications graves ou de masquage de l'infection",
+        "Interférence avec les traitements locaux"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les AINS sont à éviter en raison du risque de complications infectieuses graves ou de masquage de l'infection."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Les anesthésiques locaux doivent être administrés:",
+      "options": [
+        "Juste avant les repas pour éviter les douleurs lors de la déglutition",
+        "Une heure avant les repas pour éviter les fausses routes",
+        "Une heure avant les repas pour éviter la diminution de l'absorption du produit",
+        "A n'importe quel moment de la journée, au cours ou en dehors des repas"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les produits renfermant un anesthésique local doit être administré idéalement une heure avant les repas pour éviter les risques de fausse route."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le zinc est recommandé en cas d'angine virale car il a une action antiseptique sur la gorge.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le zinc permet de stimuler le système immunitaire et donc aide à une guérison rapide."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les traitements locaux (pastilles, sprays) peuvent être utilisés sans limitation de durée pour soulager la douleur de l'angine.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les traitements locaux doivent être limités à 5 jours, notamment ceux contenant des anesthésiques, pour éviter les risques et ne pas masquer une aggravation."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une fièvre supérieure à 38,5°C pendant plus de 48 heures est un signal d'alerte nécessitant une consultation médicale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Une fièvre persistante et/ou supérieure à 38,5°C pendant plus de 48 heures peut être le signe d'une surinfection bactérienne nécessitant une consultation médicale. "
+    },
+    {
+      "question": "Et concernant l'air de la pièce dans laquelle se trouve le malade:",
+      "options": [
+        "L'air sec est recommandé pour une guérison rapide",
+        "On conseille de réchauffer l'air à 30°C",
+        "L'air humidifié est recommandé car il respecte les muqueuses et limite la contagion",
+        "On conseille de refroidir l'air à 15°C"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Durant les épisodes des maladies hivernales, on conseille d'humidifier l'air et de le maintenir à une température de 18 à 20°C."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/mal-de-gorge.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/SU4lylCcHtA",
+      "title": "Angine virale ou bactérienne: conseils à l'officine"
+    }
+  ],
+  "sectionOrder": [],
+  "status": "Published"
+}

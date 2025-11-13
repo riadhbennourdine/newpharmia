@@ -1,0 +1,321 @@
+{
+  "_id": "68e031d380baf8b7cf531997",
+  "title": "Mycose des Grands Plis: Mémofiche conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une patiente de 50 ans s'est présentée à la pharmacie: \"Bonjour, j’ai des rougeurs et ça me démange sous les seins. C’est très irritant et humide. Que me conseillez-vous?\""
+      }
+    ]
+  },
+  "keyQuestions": [
+    "- Depuis quand ressentez-vous ces symptômes ?",
+    "- Avez-vous déjà eu ce type de problème auparavant ?",
+    "- Avez-vous remarqué des facteurs qui semblent aggraver la situation (chaleur, transpiration, activité physique) ?",
+    "- Avez-vous d'autres symptômes, comme des fissures ou des suintements ?",
+    "- Êtes-vous enceinte ou allaitez-vous ?",
+    "- Prenez-vous des médicaments en ce moment ?",
+    "- Avez-vous des problèmes de santé particuliers (diabète, immunodépression) ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition** Intertrigo:\n• infection cutanée des grands plis (sous les seins, aine, aisselles, orteils).\n• - **Mécanisme** Inflammation favorisée par macération, chaleur, humidité.\n• - **Agents** Prolifération de champignons (Candida, dermatophytes) ou bactéries.\n• - **Symptômes** Rougeurs, démangeaisons, sensations de brûlure.\n• - **Signes associés** Fissures, suintements, dépôt blanchâtre malodorant, desquamation fine en périphérie.\n• - **Facteurs de risque** Transpiration excessive, obésité, diabète.\n• - **Autres facteurs** Mauvaise hygiène, immunosuppresseurs, antibiotiques."
+      }
+    ]
+  },
+  "redFlags": [
+    "- Lésions étendues.",
+    "- Lésions récidivantes.",
+    "- Patient diabétique.",
+    "- Suspicion de surinfection bactérienne.",
+    "- Symptômes persistent ou s'aggravent sous traitement.",
+    "- Femme enceinte."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Antifongique locaux**: les imidazolés",
+      "- Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®",
+      "- Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®",
+      "- Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds",
+      "**Galénique** ",
+      "- Préférer les formes poudre/lotion pur limiter la macération",
+      "**Important**:",
+      "- Respecter la durée complète même après amélioration pour éviter les rechutes ",
+      "- Éviter l'utilisation de l'éosine aqueuse qui peut masquer l'évolution des lésions."
+    ],
+    "associatedProducts": [
+      "**Gel nettoyant** pH alcalin ",
+      "- Ex: Mycolin ",
+      "**Lotion asséchante** ",
+      "- Appliquer pour absorber l'humidité, limiter la prolifération des champignons et favoriser la cicatrisation ",
+      "- Ex: Avène Cicalfate Lotion®"
+    ],
+    "lifestyleAdvice": [
+      "- Bien sécher la peau après la toilette, en particulier dans les plis.",
+      "- Éviter les vêtements trop serrés ou synthétiques; préférer amples et en coton.",
+      "- Maintenir une bonne hygiène corporelle, notamment au niveau des plis.",
+      "- Utiliser une serviette propre et douce, et la changer quotidiennement.",
+      "- Éviter l'humidité et la macération.",
+      "- Laver les vêtements et le linge de toilette à 60°C."
+    ],
+    "dietaryAdvice": [
+      "- Adopter une alimentation équilibrée pour renforcer le système immunitaire."
+    ]
+  },
+  "references": [
+    "- Dalibon, P. (2018b). Dermatoses et onychoses infectieuses du pied. Actualités Pharmaceutiques, 57(574), 47–51. https://doi.org/10.1016/j.actpha.2018.01.010",
+    "- Denieul, A., Faure, S., & Dominique Chabasse. (2009). La prise en charge des dermatomycoses à l’officine. In Actualités Pharmaceutiques: Vol. n° 484.",
+    "- Derbré, S.(2009). Emploi de la phytothérapie et de l’aromathérapie en prévention et traitement des dermatomycoses. In Actualités Pharmaceutiques: Vol. n° 484 (pp. 19–20)",
+    "- Derbré, S., & Lamassiaude-Peyramaure, S. (2010). Comment venir à bout des mycoses. Actualités Pharmaceutiques, 49(495), 44–46. https://doi.org/10.1016/s0515-3700(10)70678-9",
+    "- Lorier Roy, E (2019). les mycoses cutanées. dermato-info.fr. https://dermato-info.fr/fr/les-maladies-de-la-peau/les-mycoses-cutan%C3%A9es",
+    "- Belin, N. (2015, June 3). Une jeune femme avec pied d’athlète et onychomycose. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/une-jeune-femme-avec-pied-dathlete-et-onychomycose",
+    "- La consultation et le traitement en cas de mycose cutanée | ameli.fr | Assuré",
+    "- Clere, N (2009). Quelle prise en charge pour les mycoses ? Actualités Pharmaceutiques n°488. EM-Consulte. https://www.em-consulte.com/article/232631/quelle-prise-en-charge-pour-les-mycoses",
+    "- Mycose de la peau : que faire ? | ameli.fr | Assuré",
+    "- Prévenir les mycoses cutanées | ameli.fr | Assuré",
+    "- Le Moniteur des pharmacies.fr. (2006). Les mycoses cutanées. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-mycoses-cutanees"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé cutanée",
+  "creationDate": "2025-10-03T20:28:03.733Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Intertrigo",
+      "definition": "Infection cutanée des grands plis du corps (sous les seins, aine, aisselles, orteils), favorisée par la macération, la chaleur et l'humidité."
+    },
+    {
+      "term": "Dermatophytes",
+      "definition": "Type de champignons filamenteux kératinophiles responsables de mycoses cutanées, comme l'intertrigo."
+    },
+    {
+      "term": "Macération",
+      "definition": "Ramollissement et altération des tissus cutanés due à une exposition prolongée à l'humidité, souvent observée dans les plis."
+    },
+    {
+      "term": "Imidazolés",
+      "definition": "Classe d'antifongiques azolés agissant par inhibition de la synthèse de l'ergostérol de la membrane fongique, utilisés pour traiter les mycoses."
+    },
+    {
+      "term": "Allylamines",
+      "definition": "Classe d'antifongiques agissant par inhibition de la squalène époxydase, utilisés notamment contre les dermatophytes."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que l'intertrigo?",
+      "answer": "C'est une infection cutanée des grands plis du corps (sous les seins, aine, aisselles, orteils)."
+    },
+    {
+      "question": "Quels sont les principaux agents pathogènes responsables de l'intertrigo mycosique?",
+      "answer": "Des champignons, notamment Candida et dermatophytes. Des bactéries peuvent aussi être impliquées."
+    },
+    {
+      "question": "Quels sont les symptômes courants de l'intertrigo?",
+      "answer": "Rougeurs, démangeaisons, sensations de brûlure."
+    },
+    {
+      "question": "Citez trois signes associés à l'intertrigo.",
+      "answer": "Fissures, suintements, dépôt blanchâtre malodorant, desquamation fine en périphérie."
+    },
+    {
+      "question": "Quels sont les principaux facteurs de risque favorisant l'intertrigo?",
+      "answer": "Transpiration excessive, obésité, diabète."
+    },
+    {
+      "question": "Quelles formes galéniques sont recommandées pour les lésions suintantes d'intertrigo?",
+      "answer": "Les poudres ou lotions antifongiques locales."
+    },
+    {
+      "question": "Quelles formes galéniques sont recommandées pour les lésions sèches d'intertrigo?",
+      "answer": "Les crèmes ou pommades antifongiques locales."
+    },
+    {
+      "question": "Citez deux classes de molécules antifongiques locales utilisées pour l'intertrigo.",
+      "answer": "Les imidazolés (ex: éconazole) et les allylamines (ex: terbinafine)."
+    },
+    {
+      "question": "Pourquoi est-il important de respecter la durée du traitement antifongique même si les symptômes s'améliorent?",
+      "answer": "Pour éviter les récidives et assurer l'éradication complète de l'infection."
+    },
+    {
+      "question": "Dans quelles situations doit-on orienter un patient souffrant d'intertrigo vers un médecin pour un traitement oral?",
+      "answer": "En cas d'échec du traitement local ou de lésions étendues."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la définition correcte de l'intertrigo?",
+      "options": [
+        "Une infection bactérienne des couches profondes de la peau.",
+        "Une inflammation cutanée des grands plis favorisée par l'humidité.",
+        "Une réaction allergique aux agents irritants externes.",
+        "Une maladie auto-immune affectant les articulations."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'intertrigo est une infection cutanée des grands plis caractérisée par une inflammation, souvent d'origine fongique ou bactérienne, favorisée par la macération et l'humidité."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quels sont les principaux facteurs de risque d'intertrigo mentionnés dans la mémofiche?",
+      "options": [
+        "Âge avancé, alimentation riche en sucre, manque d'exercice.",
+        "Transpiration excessive, obésité, diabète.",
+        "Exposition prolongée au soleil, peau sèche, carence en vitamine D.",
+        "Consommation excessive d'alcool, tabagisme, stress."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique que la transpiration excessive, l'obésité et le diabète sont des facteurs de risque majeurs pour l'intertrigo."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pour des lésions d'intertrigo suintantes, quelle forme galénique d'antifongique local est la plus appropriée?",
+      "options": [
+        "Crème",
+        "Pommade",
+        "Poudre ou lotion",
+        "Gel"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche recommande les poudres ou lotions pour les lésions suintantes afin de réduire l'humidité et la macération."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la durée de traitement recommandée pour la terbinafine en cas d'intertrigo mycosique, selon la mémofiche?",
+      "options": [
+        "2-3 semaines",
+        "10 jours",
+        "5 jours",
+        "4 semaines"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche mentionne spécifiquement une durée de 10 jours pour la terbinafine, tandis que l'éconazole/ciclopirox est de 2-3 semaines."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les molécules suivantes, laquelle est un imidazolé mentionné pour le traitement de l'intertrigo?",
+      "options": [
+        "Terbinafine",
+        "Ciclopirox",
+        "Éconazole",
+        "Amphotéricine B"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'éconazole est cité comme un imidazolé, tandis que la terbinafine est une allylamine et le ciclopirox un dérivé de pyridone."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les signaux d'alerte suivants, lequel justifie une orientation vers un médecin pour l'intertrigo?",
+      "options": [
+        "Présence de démangeaisons légères.",
+        "Amélioration des symptômes après 2 jours de traitement.",
+        "Femme enceinte.",
+        "Peau légèrement rouge mais sèche."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La grossesse est un signal d'alerte spécifique mentionné dans la mémofiche qui nécessite une consultation médicale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les lésions d'intertrigo sont toujours causées par des champignons.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique que l'intertrigo peut être causé par des champignons (Candida, dermatophytes) OU par des bactéries."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est conseillé d'arrêter le traitement antifongique dès la disparition des symptômes pour éviter un surdosage.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche insiste sur l'importance de respecter la durée du traitement même si une amélioration est observée, pour prévenir les récidives."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Un patient diabétique présentant un intertrigo doit être considéré comme un signal d'alerte nécessitant une vigilance particulière.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Le diabète est listé comme un facteur de risque et 'Patient diabétique' est un signal d'alerte dans la mémofiche."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les antibiotiques peuvent être un facteur favorisant le développement de l'intertrigo.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche mentionne les antibiotiques comme un 'Autre facteur' de risque, car ils peuvent déséquilibrer la flore cutanée et favoriser la prolifération de champignons."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé cutanée"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/dermato/mycose-plis.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "status": "Published",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": []
+}

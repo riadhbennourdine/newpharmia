@@ -1,0 +1,401 @@
+{
+  "_id": "68eedcba7bbad6638099c5cd",
+  "title": "Fiche conseil : Onychomycoses (Demande spontanée)",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un patient de 40 ans s’est présenté à la pharmacie: Bonjour, j'ai remarqué que mon ongle d'orteils a changé d'aspect. Il est épais, jauni, et se casse facilement. Que me conseillez-vous ?\""
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand observez-vous ces changements sur votre ongle?",
+    "-Avez-vous des démangeaisons, des rougeurs ou des fissures entre les orteils?",
+    "-Avez-vous déjà essayé un traitement pour cette condition?",
+    "-Souffrez-vous de diabète, de troubles circulatoires ou d'une immunodépression?",
+    "-Pratiquez-vous des sports (natation, course) ou des activités favorisant la macération des pieds?",
+    "-Portez-vous des chaussures non aérées ou de sécurité?",
+    "-D'autres personnes de votre entourage présentent-elles des symptômes similaires?",
+    "-D'autres ongles sont-ils affectés?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition**:\n• Infection fongique de l'ongle, principalement des dermatophytes, levures (Candida) ou moisissures.\n• - **Symptômes**:\n• Ongle épaissi, jauni/décoloré, décollé, friable, parfois avec des taches blanches.\n• - **Facteurs favorisants**:\n• Humidité, chaleur, macération, microtraumatismes, âge avancé.\n• - **Conditions associées**:\n• Diabète, immunodépression, troubles circulatoires, psoriasis.\n• - **Lieux à risque**:\n• Piscines, douches collectives, gymnases.\n• - **Transmission**:\n• Contact direct (peau à peau) ou indirect (objets, surfaces contaminées).\n• - **Contagiosité**:\n• L'infection est contagieuse et auto-inoculable."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Plus de deux ongles atteints ou atteinte de la base de l'ongle (matrice)",
+    "-Ongle très épaissi ou décollé.",
+    "-Comorbidités: Diabète, immunodépression, troubles circulatoires.",
+    "-Absence d'amélioration après 3 mois de traitement local.",
+    "-Douleur importante ou suspicion de surinfection bactérienne.",
+    "-Femme enceinte ou allaitante",
+    "-Onychomycose chez l'enfant."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "- **Vernis antifongiques**: ",
+      "**Produits Conseil**: vernis antifongiques à base de **ciclopirox** (Mycoster 8%)",
+      "-Les vernis à base de ciclopirox sont utilisés quotidiennement.",
+      "-Il faut appliquer une couche fine de vernis à base de ciclopirox (Mycoster)  sur toute la surface de l’ongle infecté chaque jour, de préférence le soir.",
+      "-Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.",
+      "**Produits Prescrits**: vernis antifongiques à base d’**amorolfine** (Locéryl).",
+      "Ces vernis doivent être appliqués **une à deux fois par semaine**.",
+      "Il faut appliquer une couche fine de vernis sur toute la surface de l’ongle infecté, de préférence le soir.",
+      "Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.",
+      "**Attention!!** Il faut nettoyer les résidus de limage de l’ongle. (ils peuvent causer l’infestation d’un autre ongle ou bien les plis interdigitaux) ",
+      "- **Hygiène des outils**: Nettoyer et désinfecter les limes et spatules après chaque utilisation, ou les jeter si jetables, pour éviter l'auto-contamination.",
+      "- **Durée**: Poursuivre le traitement sur plusieurs mois (jusqu'à repousse complète d'un ongle sain) en respectant scrupuleusement la posologie.",
+      "- **Restrictions**: Éviter les vernis colorés et les faux ongles pendant la durée du traitement."
+    ],
+    "associatedProducts": [
+      "- **Kératolytiques (urée 40%)**: ",
+      "Pour ramollir et éliminer l'ongle épaissi, facilitant la pénétration des antifongiques. ",
+      "Application quotidienne sous pansement occlusif. ",
+      "ex: SVR Xerial 40 ongles",
+      "- **Poudres antifongiques**: ",
+      "Pour décontaminer chaussures et chaussettes (ex: éconazole), à appliquer 2-3 fois/semaine.",
+      "- **Huiles essentielles**: ",
+      "Arbre à thé ou Lavande, utilisées sous forme de bain de pieds diluées avec du bicarbonate de soude.",
+      "- **Bicarbonate de soude**: ",
+      "Pour alcaliniser le milieu et limiter la prolifération fongique dans les bains de pieds.",
+      "- **Gels nettoyants à pH alcalin**: ",
+      "Pour la toilette quotidienne des pieds ",
+      "ex: Mycolin, Dermacare pH8",
+      "- **Anti-transpirants**: ",
+      "En cas de transpiration excessive des pieds ",
+      "ex: Etiaxil, SVR Spirial"
+    ],
+    "lifestyleAdvice": [
+      "-Toujours **sécher minutieusement** les pieds après la douche ou le bain, en insistant entre les orteils. Une lotion asséchante peut être utile.",
+      "-Porter des **chaussures aérées**, éviter les chaussures serrées et en matières synthétiques. Alterner les paires de chaussures pour les laisser sécher.",
+      "-Changer de chaussettes tous les jours, **privilégier le coton** et les laver à **60°C**.",
+      "-Ne jamais marcher pieds nus dans les lieux publics (piscines, vestiaires, douches communes) et utiliser des chaussons en caoutchouc.",
+      "-Décontaminer régulièrement les chaussures avec des poudres ou sprays antifongiques et poudrer les chaussettes avant de les enfiler.",
+      "- Utiliser des **serviettes individuelles** pour les pieds, les laver à 60°C. Éviter de partager serviettes, chaussures et chaussons.",
+      "-Couper les **ongles courts** et **désinfecter le matériel** de pédicurie (ciseaux, limes) à l'alcool après chaque utilisation.",
+      "-Nettoyer fréquemment les sols de la salle de bain et aspirer tapis/moquettes **pour éliminer les spores**.",
+      "-Laver les pieds quotidiennement avec **un savon doux à pH alcalin**.",
+      "-Éviter de manipuler les lésions sans se laver soigneusement les mains après tout contact.",
+      "-Traiter **systématiquement tout intertrigo** associé (ex: pied d'athlète) pour prévenir les récidives de l'onychomycose."
+    ],
+    "dietaryAdvice": [
+      "Aucune recommandation alimentaire spécifique n'est établie pour l'onychomycose."
+    ]
+  },
+  "references": [
+    "Belin, N. (2011, Nov 1). Les topiques antimycosiques. Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-topiques-antimycosiques",
+    "Belin, N. (2015, June 3). Une jeune femme avec pied d’athlète et onychomycose. Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/une-jeune-femme-avec-pied-dathlete-et-onychomycose?authuser=0",
+    "Belin, N. (2020, April 27). Mon ongle est jaune et s’effrite ! Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/mon-ongle-est-jaune-et-seffrite",
+    "Bodman, M. A., Syed, H. A., & Krishnamurthy, K. (2024, January 9). Onychomycosis. StatPearls - NCBI Bookshelf.",
+    "Dalibon, P. (2018). Dermatoses et onychoses infectieuses du pied. Actualités Pharmaceutiques, 57(574), 47–51.",
+    "Derbré, S., & Lamassiaude-Peyramaure, S. (2010). Comment venir à bout des mycoses. Actualités Pharmaceutiques, 49(495), 44–46. https://doi.org/10.1016/s0515-3700(10)70678-9",
+    "Dermatol Venereol, A (2007) Onychomycoses: Modalités de diagnostic et prise en charge 134; 5S7-16.",
+    "Denieul, A., & Faure, S. (2009). La prise en charge des dermatomycoses à l’officine. Actualités Pharmaceutiques, 48(484), 21–24. https://doi.org/10.1016/s0515-3700(09)70412-4",
+    "Clere, N (2009). Quelle prise en charge pour les mycoses ? Actualités Pharmaceutiques n°488. EM-Consulte. https://www.em-consulte.com/article/232631/quelle-prise-en-charge-pour-les-mycoses-"
+  ],
+  "id": "",
+  "type": "maladie",
+  "theme": "Maladies courantes",
+  "system": "Santé cutanée",
+  "creationDate": "2025-10-14T23:28:58.770Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Onychomycose",
+      "definition": "Infection fongique de l'ongle, généralement causée par des dermatophytes, levures (Candida) ou moisissures."
+    },
+    {
+      "term": "Dermatophytes",
+      "definition": "Type de champignons filamenteux, principale cause d'infections cutanées, capillaires et unguéales comme l'onychomycose."
+    },
+    {
+      "term": "Levures (Candida)",
+      "definition": "Type de champignons unicellulaires qui peuvent également provoquer des infections, notamment des onychomycoses chez les patients immunodéprimés ou diabétiques."
+    },
+    {
+      "term": "Friable",
+      "definition": "Se dit d'un ongle qui se casse, s'effrite ou se désagrège facilement, symptôme courant de l'onychomycose."
+    },
+    {
+      "term": "Macération",
+      "definition": "Ramollissement et blanchiment de la peau ou de l'ongle dû à une humidité excessive et prolongée, facteur favorisant les mycoses."
+    },
+    {
+      "term": "Auto-inoculable",
+      "definition": "Caractérise une infection qui peut se propager d'une partie du corps à une autre chez la même personne par contact direct."
+    },
+    {
+      "term": "Ciclopirox",
+      "definition": "Substance active antifongique utilisée sous forme de vernis pour le traitement local de l'onychomycose, à application quotidienne."
+    },
+    {
+      "term": "Amorolfine",
+      "definition": "Substance active antifongique utilisée sous forme de vernis pour le traitement local de l'onychomycose, à application hebdomadaire ou bimensuelle."
+    },
+    {
+      "term": "Matrice de l'ongle",
+      "definition": "Zone située à la base de l'ongle, sous la peau, responsable de sa croissance. Son atteinte est un signal d'alerte pour une consultation médicale."
+    },
+    {
+      "term": "Comorbidités",
+      "definition": "La présence simultanée de deux ou plusieurs affections ou maladies chez un même individu, comme le diabète ou l'immunodépression en cas d'onychomycose."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que l'onychomycose?",
+      "answer": "Une infection fongique de l'ongle, principalement causée par des dermatophytes, levures (Candida) ou moisissures."
+    },
+    {
+      "question": "Quels sont les principaux symptômes d'une onychomycose?",
+      "answer": "Ongle épaissi, jauni/décoloré, décollé, friable, parfois avec des taches blanches."
+    },
+    {
+      "question": "Citez deux facteurs favorisant le développement d'une onychomycose.",
+      "answer": "Humidité, chaleur, macération, microtraumatismes, âge avancé (deux au choix)."
+    },
+    {
+      "question": "Quelles conditions associées nécessitent une vigilance particulière en cas d'onychomycose?",
+      "answer": "Diabète, immunodépression, troubles circulatoires, psoriasis."
+    },
+    {
+      "question": "Quels sont les deux principes actifs de vernis antifongiques mentionnés pour le traitement des onychomycoses?",
+      "answer": "Ciclopirox et Amorolfine."
+    },
+    {
+      "question": "Quelle est la fréquence d'application recommandée pour un vernis à base de ciclopirox?",
+      "answer": "Quotidienne."
+    },
+    {
+      "question": "Quelle est la fréquence d'application recommandée pour un vernis à base d'amorolfine?",
+      "answer": "1 à 2 fois par semaine."
+    },
+    {
+      "question": "Quelles sont les étapes clés pour préparer l'ongle avant chaque application de vernis antifongique?",
+      "answer": "Limer et couper l'ongle pour éliminer la partie infectée, puis utiliser un dissolvant pour retirer les couches précédentes."
+    },
+    {
+      "question": "Combien de temps dure généralement le traitement d'une onychomycose?",
+      "answer": "Plusieurs mois, jusqu'à la repousse complète d'un ongle sain."
+    },
+    {
+      "question": "Quelles sont les restrictions concernant les produits cosmétiques pour les ongles pendant le traitement d'une onychomycose?",
+      "answer": "Éviter les vernis colorés et les faux ongles."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la cause principale de l'onychomycose selon la mémofiche?",
+      "options": [
+        "Bactéries",
+        "Virus",
+        "Dermatophytes",
+        "Parasites"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche indique que l'onychomycose est 'principalement des dermatophytes, levures (Candida) ou moisissures', les dermatophytes étant les plus courants."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel de ces symptômes n'est PAS typiquement associé à une onychomycose selon la mémofiche?",
+      "options": [
+        "Ongle épaissi",
+        "Ongle jauni",
+        "Décollement de l'ongle",
+        "Douleur intense dès le début"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "La mémofiche mentionne 'gêne ou douleur' comme une évolution possible sans traitement, mais pas comme un symptôme initial typique. Les autres sont des symptômes directs de l'infection."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les facteurs suivants, lequel n'est PAS un facteur favorisant l'onychomycose?",
+      "options": [
+        "L'humidité",
+        "La chaleur",
+        "L'âge avancé",
+        "Une application quotidienne de vernis incolore"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "L'humidité, la chaleur et l'âge sont des facteurs favorisants. L'application de vernis incolore n'est pas mentionnée comme un facteur favorisant."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel vernis antifongique est généralement appliqué 1 à 2 fois par semaine?",
+      "options": [
+        "Ciclopirox",
+        "Amorolfine",
+        "Terbinafine (oral)",
+        "Fluconazole (oral)"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche précise que l'amorolfine est appliquée '1-2 fois/semaine' et le ciclopirox 'quotidien'."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est l'étape essentielle de préparation de l'ongle avant l'application d'un vernis antifongique?",
+      "options": [
+        "Appliquer une base protectrice",
+        "Limer et couper la partie infectée de l'ongle",
+        "Appliquer un hydratant cuticulaire",
+        "Désinfecter le pied entier"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique : 'Avant chaque application, limer et couper l'ongle pour éliminer la partie infectée, puis utiliser un dissolvant pour retirer les couches précédentes.'"
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi ces situations, laquelle n'est PAS considérée comme un signal d'alerte nécessitant un avis médical?",
+      "options": [
+        "Atteinte de plus de deux ongles",
+        "Diabète associé",
+        "Absence d'amélioration après 3 mois de traitement local",
+        "Un patient de 30 ans en bonne santé sans comorbidités"
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Les autres options (atteinte de plus de deux ongles, diabète, échec thérapeutique après 3 mois) sont explicitement listées comme des signaux d'alerte dans la mémofiche."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'onychomycose est une infection non contagieuse.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche indique clairement que 'L'infection est contagieuse et auto-inoculable.'"
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le traitement des onychomycoses avec des vernis antifongiques doit être poursuivi seulement pendant quelques semaines.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche stipule de 'Poursuivre le traitement sur plusieurs mois (jusqu'à repousse complète d'un ongle sain)'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est recommandé d'utiliser des vernis colorés sur les ongles pendant la durée du traitement antifongique.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche conseille d' 'Éviter les vernis colorés et les faux ongles pendant la durée du traitement'."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'onychomycose chez l'enfant est un signal d'alerte pour une consultation médicale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche liste 'Onychomycose chez l'enfant' dans les 'Signaux d'alerte' nécessitant une consultation."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé cutanée"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/dermato/16.jpg",
+  "youtubeLinks": [],
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "coverImagePosition": "top",
+  "customSections": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "shortDescription": "",
+  "ventesAdditionnelles": {},
+  "sectionOrder": [],
+  "status": "Published"
+}

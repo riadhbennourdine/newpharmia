@@ -1,0 +1,381 @@
+{
+  "_id": "6907d68c238277cd48c994b9",
+  "title": "La Toux: conseils à l'officine",
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": "Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, que puis-je prendre ? »."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "**-Durée:** Depuis quand toussez-vous ?",
+    "**-Type de toux:** Est-elle sèche (irritative, sans crachats) ou grasse (productive, avec mucosités) ? Ressentez-vous des sécrétions ?",
+    "**-Symptômes associés:** Avez-vous d'autres signes (fièvre, vomissements, fatigue, courbatures, rhume, maux de tête) ?",
+    "**-Signes de gravité:** Souffrez-vous de troubles respiratoires, essoufflement, douleurs thoraciques?",
+    "**-Facteurs déclenchants:** Quels sont les éléments qui déclenchent ou aggravent votre toux ?",
+    "**-Traitements actuels:** Suivez-vous un traitement médicamenteux ?",
+    "**-Antécédents médicaux:** Souffrez-vous de problèmes respiratoires ou cardiaques ?"
+  ],
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": [
+      {
+        "type": "text",
+        "value": "**-Définition** : La toux est un réflexe naturel de défense de l'organisme pour expulser les agents irritants des voies respiratoires: C'est une expiration brusque et sonore de l'air des poumons, impliquant des récepteurs spécifiques. \n**-Classification** : On classe la toux en: Aiguë (Durée< 3 semaines), Subaiguë (Durée de 3 à 8 semaines), Chronique (Durée > 8 semaines). \n**-Types:**\n**.Toux Sèche** : Irritative, non-productive, sans expectorations, souvent fatigante et nocturne. \n**.Toux Grasse** : Productive, permet l'évacuation des sécrétions et impuretés.\n**-Causes de la toux:**\n**.Virales** : Fréquemment due à des **infections respiratoires virales** (rhino-pharyngite, bronchite, trachéite). \n**.Environnementales** : Tabagisme, poussières, substances irritantes peuvent déclencher la toux. \n**.Médicamenteuses** : Les **Inhibiteurs de l'Enzyme de Conversion** (IEC) peuvent provoquer une toux irritative sèche\n**.Autres** : Infections bactériennes (coqueluche), allergies, asthme, reflux gastro-œsophagien (RGO), cardiopathies, BPCO. \n**-Principes de traitement** : Le traitement de la toux est symptomatique:\n**.Toux grasse**: Faciliter la toux pour dégager les voies respiratoires.\n **.Toux sèche**: Bloquer la toux pour diminuer l'irritation et soulager le patient."
+      },
+      {
+        "type": "image",
+        "value": "https://pharmaconseilbmb.com/photos/site/orl-respiration/toux.jpg"
+      }
+    ]
+  },
+  "redFlags": [
+    "**-Persistance:** La toux persiste plus de **2** semaines et/ou les symptômes s'aggravent malgré un traitement.",
+    "**-Fièvre:** Une fièvre persiste depuis plus de **48** heures.",
+    "**-Hémoptysie:** Présence de **sang** dans les expectorations.",
+    "**-Dyspnée:** Difficultés respiratoires (essoufflement).",
+    "**-Altération de l'état général:** Altération de l'état général (ex: amaigrissement, fatigue importante).",
+    "**-Patients à Risque:** La toux survient chez un patient souffrant d'une maladie chronique: asthme, insuffisance cardiaque, immunodépression."
+  ],
+  "mainTreatment": [
+    "**Toux Sèche (Non productive, irritative)** : ",
+    "-Le traitement de choix sont les **antitussifs** ",
+    "-Ils agissent en bloquant l’arc réflexe de la toux",
+    "-On distingue **trois classes principales: **opiacés**, **antihistaminiques**, **non-opiacés non-antihistaminiques**",
+    "**Toux Grasse (Productive)** : ",
+    "-Il ne faut pas stopper la toux mais faciliter l'évacuation les sécrétions bronchiques ",
+    "-On distingue trois classes principales: **mucolytiques**, **expectorants**, **mucorégulateurs** ",
+    "-La durée d'utilisation **maximale** de médicament contre la toux est de **5 jours**",
+    "**Précautions d'usage** : Ne pas réutiliser de vieux sirops ouverts (> 2 mois). Vérifier la présence d'alcool dans les sirops."
+  ],
+  "associatedProducts": [],
+  "lifestyleAdvice": [
+    "**Environnement** : **Éviter** les atmosphères **sèches et chaudes** ; utiliser des humidificateurs électriques ou un bol d'eau sur radiateur dans les pièces.",
+    "**Température** : Maintenir la température des chambres à 18°C (19-20°C pour les enfants) ; ne pas surchauffer la maison.",
+    "**Aération** : **Aérer régulièrement** les pièces de la maison (au minimum une fois par jour).",
+    "**Tabagisme** : **Éviter de fumer** et de rester dans une ambiance enfumée ; ne pas exposer les enfants à la fumée de tabac.",
+    "**Repos Nocturne** : Surélever la tête du matelas ou utiliser des oreillers supplémentaires en cas de toux nocturne.",
+    "**Hygiène Nasale** : Se laver le nez au sérum physiologique plusieurs fois par jour.",
+    "**Mouchoirs** : Utiliser des mouchoirs **jetables.**",
+    "**Hygiène des Mains** : Se laver régulièrement les mains avec du savon (pendant 30 secondes) ou utiliser une solution hydro-alcoolique.",
+    "**Contacts** : Limiter les contacts avec les personnes fragiles et les enfants ; éviter les poignées de main et les embrassades.",
+    "**Protection** : Porter un masque jetable pour protéger votre entourage, en le changeant toutes les 4 heures ou dès qu'il est mouillé."
+  ],
+  "dietaryAdvice": [
+    "**Hydratation** : **Boire abondamment** et régulièrement (environ 1,5 litre d'eau par jour) pour **fluidifier les sécrétions** et rester hydraté.",
+    "**Boissons Chaudes** : Préférer les tisanes, le thé léger, l'eau, les boissons chaudes avec du citron et du miel, les infusions de thym ou d'eucalyptus."
+  ],
+  "references": [
+    "Berthélémy, S. Couic-Marinier, F. (2012). Prise en charge d'un patient se plaignant d'une toux. Actualités pharmaceutiques n° 515",
+    "Dalibon, P. (2016). Comprendre le mécanisme de la toux pour mieux la prendre en charge. Actualités Pharmaceutiques, 55(561), 18–20. https://doi.org/10.1016/j.actpha.2016.10.004",
+    "Dalibon, P. (2016b). Recherche de l’étiologie de la toux et démarche diagnostique. Actualités Pharmaceutiques, 55(561), 21–22. https://doi.org/10.1016/j.actpha.2016.10.005",
+    "Fischberg, S., Adler, D., Janssens, J.-P., M. Le Braz, & J. Caliri. (2017). TOUX CHRONIQUE (N.-T. Tran & H. Spechbach, Eds.). https://www.hug.ch/sites/interhug/files/structures/medecine_de_premier_recours/Strategies/strategie_toux_chronique.pdf",
+    "Malbos, D. (2020). Prise en charge de la toux à l’officine. Actualités Pharmaceutiques, 59(601), 24–26. https://doi.org/10.1016/j.actpha.2020.10.007",
+    "Belin, N. (2012, February 1). « Je voudrais quelque chose contre la toux ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-contre-la-toux",
+    "Bontemps, F. (2003, October 1). Calmer la toux. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/calmer-la-toux",
+    "Julien, C. (2010, February 1). « Je tousse ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-tousse",
+    "Belin, N. (2019, January 23). Les solutions « naturelles » contre la toux. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/conseils/sante-naturelle/les-solutions-naturelles-contre-la-toux",
+    "Belin, N. (2018, January 29). Les antitussifs. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-antitussifs"
+  ],
+  "status": "Published",
+  "id": "",
+  "type": "maladie",
+  "theme": "Maladies courantes",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-11-02T22:09:16.427Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Toux",
+      "definition": "Réflexe naturel de défense de l'organisme visant à expulser des agents irritants des voies respiratoires."
+    },
+    {
+      "term": "Toux Sèche",
+      "definition": "Toux irritative, non-productive, sans expectorations, souvent fatigante, notamment la nuit."
+    },
+    {
+      "term": "Toux Grasse",
+      "definition": "Toux productive qui permet l'évacuation des sécrétions et impuretés des voies respiratoires."
+    },
+    {
+      "term": "Antitussifs",
+      "definition": "Médicaments utilisés pour bloquer ou réduire la toux sèche, agissant sur le réflexe tussigène."
+    },
+    {
+      "term": "Mucolytiques",
+      "definition": "Médicaments qui fluidifient les sécrétions bronchiques (mucus) pour faciliter leur expectoration."
+    },
+    {
+      "term": "Expectorants",
+      "definition": "Médicaments qui aident à l'élimination des sécrétions bronchiques en stimulant le réflexe d'expectoration."
+    },
+    {
+      "term": "Hémoptysie",
+      "definition": "Présence de sang dans les expectorations, signal d'alerte nécessitant une consultation médicale."
+    },
+    {
+      "term": "Dyspnée",
+      "definition": "Difficulté respiratoire ou essoufflement, un signal d'alerte important en cas de toux."
+    },
+    {
+      "term": "IEC (Inhibiteurs de l'Enzyme de Conversion)",
+      "definition": "Classe de médicaments utilisés pour l'hypertension et l'insuffisance cardiaque, pouvant causer une toux comme effet indésirable."
+    },
+    {
+      "term": "RGO (Reflux Gastro-Œsophagien)",
+      "definition": "Remontée du contenu de l'estomac dans l'œsophage, pouvant être une cause de toux chronique."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que la toux ?",
+      "answer": "Un réflexe naturel de défense de l'organisme pour expulser les agents irritants des voies respiratoires."
+    },
+    {
+      "question": "Comment classifie-t-on la toux selon sa durée ?",
+      "answer": "Aiguë (< 3 semaines), Subaiguë (3-8 semaines), Chronique (> 8 semaines)."
+    },
+    {
+      "question": "Quelles sont les caractéristiques d'une toux sèche ?",
+      "answer": "Irritative, non-productive, sans expectorations, souvent fatigante et nocturne."
+    },
+    {
+      "question": "Quelle famille de médicament peut-elle provoquer une toux ?",
+      "answer": "Les inhibiteurs de l'enzyme de conversion (IEC) peuvent causer une toux sèche chez les patients."
+    },
+    {
+      "question": "Citez deux maladies virales pouvant être associées à une toux. ",
+      "answer": "La Rhino-pharyngite (Rhume) , La Bronchite."
+    },
+    {
+      "question": "Quel est le principe de traitement d'une toux sèche ?",
+      "answer": "Bloquer la toux sèche par utilisation des antitussifs (opiacés, antihistaminiques, non-opiacés)."
+    },
+    {
+      "question": "Peut-on stopper une toux grasse ? Pourquoi?",
+      "answer": "Non, car elle est productive et permet l'élimination des sécrétions et impuretés et donc dégager les voies respiratoires."
+    },
+    {
+      "question": "A partir de quel âge la codéine est-elle utilisable chez l'enfant?",
+      "answer": "La codéine peut être utilisée chez l'enfant comme antitussif à partir de l'âge de 12 ans."
+    },
+    {
+      "question": "Quels sont les effets indésirables de la carbocistéine?",
+      "answer": "La carbocistéine peut provoquer des troubles gastrointestinaux type gastralgies, nausées et diarrhées."
+    },
+    {
+      "question": "Quelle est la durée maximale d'utilisation des médicaments contre la toux?",
+      "answer": "On conseille le patient de ne pas prolonger le traitement par les médicaments de la toux plus de 5 jours."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la définition correcte de la toux ?",
+      "options": [
+        "Un réflexe de relaxation des voies respiratoires.",
+        "Un réflexe naturel de défense pour expulser des agents irritants.",
+        "Une contraction involontaire des muscles abdominaux.",
+        "Un signe systématique d'infection bactérienne."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La toux est un mécanisme de défense de l'organisme pour éliminer les substances irritantes des voies respiratoires."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les caractéristiques suivantes, laquelle décrit une toux sèche ?",
+      "options": [
+        "Elle produit des expectorations.",
+        "Elle doit être facilitée et non stoppée.",
+        "Elle est irritative, non-productive et souvent nocturne.",
+        "Elle est principalement causée par des infections bactériennes."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La toux sèche est irritative, non-productive, sans expectorations, et souvent fatigante et nocturne."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Concernant la toux grasse:",
+      "options": [
+        "Elle est productive et permet l'évacuation des sécrétions.",
+        "On doit la stopper pour soulager le patient.",
+        "Elle est irritative et sans expectorations.",
+        "Elle est traitée par la codéine."
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La toux grasse est productive et son rôle est d'aider à évacuer les sécrétions. Il ne faut pas la stopper, mais la faciliter pour dégager les voies respiratoires"
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quels types de médicaments ne doivent jamais être associés dans le traitement de la toux ?",
+      "options": [
+        "Antitussifs et Homéopathie.",
+        "Fluidifiants et Antitussifs.",
+        "Mucolytiques et Phytothérapie.",
+        "Expectorants et Aromathérapie."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Il est impératif de ne jamais associer un fluidifiant (comme un mucolytique ou expectorant) et un antitussif, car bloquer la toux grasse empêcherait l'élimination des sécrétions fluidifiées, ce qui pourrait être dangereux."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un asthmatique se présente et veut un antitussif pour sa toux: ",
+      "options": [
+        "Je lui conseille un sirop à base de plantes pour éviter les effets indésirables.",
+        "Je lui propose AerolⓇ avec le sirop antitussif.",
+        "Il faut éviter surtout de conseiller la codéine.",
+        "Je l'envoie à son médecin traitant."
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "La toux chez un asthmatique ou tout autre patient souffrant d'une maladie respiratoire nécessite une consultation médicale, car elle peut être liée à des difficultés respiratoires. D'autre part, la codéine est contre-indiquée chez l'asthmatique."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Cocher l'effet indésirable qui n'est pas lié à la codéine:",
+      "options": [
+        "Constipation",
+        "Diarrhée",
+        "Dépression respiratoire chez les personnes à risque",
+        "Somnolence"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les effets indésirables de la codéine sont: somnolence, nausées, vomissements, constipation et dépression respiratoire."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La carbocistéine est le produit de choix en cas de toux chez les patients qui souffrent d'un ulcère gastro-duodénal.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La carbocistéine peut entrainer des effets indésirables gastriques type gastralgie, elle doit être évitée chez les patients ulcéreux."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La dernière prise des mucolytiques ne doit pas être au delà de 18h pour éviter les douleurs gastriques durant la nuit.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "On déconseille les prises tardives des mucolytiques pour éviter l'encombrement bronchique et les crises de toux nocturnes pouvant altérer la qualité de sommeil du patient. "
+    },
+    {
+      "question": "Lequel parmi ces principes actifs n'est pas un produit pour la toux grasse ?",
+      "options": [
+        "Dextrométhorphane",
+        "Carbocistéine ",
+        "Acétylcystéine",
+        "Ambroxol"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Le dextrométhorphane est un antitussif de la famille des opiacés."
+    },
+    {
+      "question": "Et concernant le Lierre Grimpant:",
+      "options": [
+        "C'est un antitussif à conseiller en cas de toux sèche.",
+        "C'est un mucolytique à conseiller en cas de toux grasse.",
+        "C'est un expectorant à conseiller en cas de toux grasse.",
+        "C'est un mucolytique antispasmodique à conseiller en cas de toux sèche ou grasse."
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Le lierre grimpant est un produit à effets mucolytique et antispasmodique, on peut donc le conseiller en cas de toux sèche ou grasse."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/toux.jpg",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/_soeEVUqcJw",
+      "title": "Gestion de la Toux à l'officine"
+    }
+  ],
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "customSections": [
+    {
+      "id": "custom-1762124720053",
+      "title": "Toux Grasse",
+      "content": [
+        {
+          "type": "text",
+          "value": "**Mucolytiques** : \n-**Diminuer la viscosité** du mucus pour le rendre plus facile à expectorer\n-Carbocistéine: Bronchokod®\n-Acétylcystéine: Mucolyse®\n-Bromhexine: Bromisol®\n-Prise avant 17-18 heures pour éviter une toux nocturne\n**Expectorants** : \n-Stimuler la sécrétion bronchique et l'activité ciliaire.\n-Ambroxol: Muxol®\n**Mucorégulateurs**: \n-Améliorer la composition du mucus (quantité et viscosité).\n-Carbocystéine: Bronchokod®\n**Produits à base de Plantes Toux Grasse** : \n-Eucalyptus: expectorant \n-Lierre grimpant: antispasmodique et mucolytique\n-Romarin: fluidifiant \n-Plantain \n-ex: Prospan®, Pectal®.\n**Effets indésirables**: nausées, vomissements ou diarrhées\n**Contre-indications**: Ulcère gastro-duodénal, enfant< 2ans\n**Homéopathie Toux Grasse** :\n-Bryonia alba 5 CH : Conseillé à raison de 5 granules toutes les 2 heures"
+        }
+      ]
+    },
+    {
+      "id": "custom-1762124722140",
+      "title": "Toux sèche",
+      "content": [
+        {
+          "type": "text",
+          "value": "**Antitussifs Opiacés (sur prescription médicale)** : Codéine, Dextrométhorphane \n-Effets indésirables principaux: somnolence, dépression respiratoire, constipation, dépendance\n-Contre-indication: insuffisance respiratoire, enfant<12 ans, asthme, grossesse\n-Ex:Pectolyse®, Pulmosérum® \n**Antitussifs Antihistaminiques H1** : Oxomémazine \n-Utile pour toux nocturne,\n-Effets indésirables: Somnolence, \n-Contre-indication: Nourrissons <2 ans, rétention urinaire, troubles prostatiques, glaucome à angle fermé\n-Ex: Toplexil®\n**Antitussifs Non-Opiacés Non-Histaminiques**: Oxéladine\n-ex: Paxeladine®\n**Homéopathie Toux Sèche** : Bryonia alba 5 CH, Drosera 5 CH, spécialités comme Stodal®.\n**Phytothérapie Toux Sèche** : \n-Mauve, Guimauve, Plantain: adoucissantes et antitussives \n-Thym: antiseptique\n-Lierre grimpant: antispasmodique, expectorant\n-ex: Tussiben®, Biocalm®\n"
+        }
+      ]
+    }
+  ],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "custom-1762124720053",
+    "custom-1762124722140",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints",
+    "associatedProducts"
+  ],
+  "shortDescription": "",
+  "ventesAdditionnelles": {},
+  "memoSections": []
+}

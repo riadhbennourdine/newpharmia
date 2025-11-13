@@ -1,0 +1,329 @@
+{
+  "_id": "69098f63ab450e3bc8996b42",
+  "title": "Diabète Type 2 : Mémofiche 1: La Pathologie",
+  "shortDescription": "Cette mémofiche fournit un aperçu détaillé du diabète de type 2 (DT2), abordant son contexte épidémiologique spécifique à la Tunisie, ses mécanismes physiopathologiques, les symptômes révélateurs et les complications majeures à moyen et long terme. Elle est destinée à harmoniser et améliorer la prise en charge pharmaceutique de cette pathologie chronique.",
+  "memoSections": [
+    {
+      "id": "memo-0",
+      "title": "Contexte Tunisien et Épidémiologie",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **-Défi Sanitaire**: Le diabète de type 2 (DT2) est une maladie chronique représentant un défi sanitaire majeur en Tunisie. \n• **-Prévalence Croissante**: L'augmentation est constante, liée aux modifications du mode de vie et à l'accroissement de l'espérance de vie des Tunisiens. \n• **-Statistiques (Enquête THES 2016)**: **15,5%** des personnes âgées de 15 ans et plus en Tunisie étaient diabétiques. \n• **-Impact**: Le DT2 est responsable d'une morbi-mortalité importante et de dépenses de santé considérables dans le pays. \n• **-Facteur de Risque Majeur**: Selon une étude tunisienne, l'**Obésité** est présente chez **49,2%** des patients DT2 \n• **Objectif des Guides**: L'élaboration de guides (ex: INEAS, STEDIAM) vise à harmoniser et améliorer la qualité de la prise en charge nationale."
+        }
+      ]
+    },
+    {
+      "id": "memo-1",
+      "title": "Pathologie et Symptômes du DT2",
+      "content": [
+        {
+          "type": "text",
+          "value": "**-**Le DT2 est la forme **la plus fréquente** de diabète, représentant **80** à **95%** de tous les cas. \n**-** Il concerne surtout les personnes âgées de plus de **40 ans**.\n**-**La pathologie est caractérisée par une **Hyperglycémie Chronique**; Glycémie **≥ 1.26g/L**. \n• **-Mécanismes Physiopathologiques Majeurs**: \n    • **.Insulinorésistance**: Les tissus cibles (muscle, foie, adipocytes) deviennent **moins sensibles** à l'action de l'**insuline**. \n    • **.Défaut de Sécrétion d'Insuline**: Incapacité progressive des cellules β du pancréas à produire suffisamment d'insuline. \n**-**Plusieurs **Facteurs de risque**: Obésité, Antécédents familiaux, Age, HyperTension Artérielle, Dyslipidémie, Sédentarité, Tabagisme.\n**-**La maladie est souvent à début **asymptomatique** ou insidieux, entraînant fréquemment un retard diagnostique. Puis les **symptômes révélateurs** apparaissent: \n    • **.Polyurie**: Mictions fréquentes dues à la glucosurie. \n    • **.Polydipsie**: Soif excessive. \n    • **.Amaigrissement et Asthénie**: Perte de poids et fatigue. \n    • **.Infections Récidivantes**: Infections traînantes ou récurrentes: vaginales, urinaires, de la gencive.\n    **.**Vision floue, Insensibilité ou fourmillement des pieds et des mains."
+        }
+      ]
+    },
+    {
+      "id": "memo-2",
+      "title": "Complications du DT2",
+      "content": [
+        {
+          "type": "text",
+          "value": "• **Complications à Moyen et à Long terme**:\n**-**L'**Hyperglycémie chronique** est la cause principale de ces complications.\n• **-** Environ **50%** des patients DT2 présentent déjà des complications chroniques au moment du diagnostic. \n• **-Microangiopathie**: \n    • **.**Atteinte des **petits vaisseaux sanguins**. \n    • **.Conséquences Graves**: **Rétinopathie diabétique** (1ère cause de cécité), **Néphropathie diabétique** (1ère cause d'Insuffisance Rénale Terminale), **Neuropathie diabétique** (atteinte des nerfs). \n\n• **-Macroangiopathie**: :\n    • **.** **Athérosclérose** accélérée des **gros vaisseaux**. \n    • **.Impact**: Représente la première cause de décès chez les patients DT2. \n    • **.Conséquences Graves**: **Maladie coronarienne** (ex: Infarctus du myocarde - IDM), **Accident Vasculaire Cérébral** (AVC), **Artériopathie Oblitérante des Membres Inférieurs** (AOMI). \n\n• **-Pied Diabétique**: \n    • **.Origine**: Résulte de la combinaison de la neuropathie et de l'artériopathie. \n    • **.Conséquences**: Ulcérations, infections et risque élevé d'amputation des membres inférieurs. \n\n• **Complications Aiguës, à Court terme**: \n    • **-Hypoglycémie**: Glycémie **< 0.7g/L**: Grave, notamment sous traitement par insuline ou sulfamides. \n    • **-Coma Hyperosmolaire**: État grave caractérisé par une déshydratation intense."
+        }
+      ]
+    }
+  ],
+  "status": "Published",
+  "id": "",
+  "type": "savoir",
+  "theme": "Pharmacologie",
+  "system": "Diabète",
+  "creationDate": "2025-11-04T05:30:11.643Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Hyperglycémie",
+      "definition": "Taux de glucose (sucre) trop élevé dans le sang."
+    },
+    {
+      "term": "Insuline",
+      "definition": "Hormone produite par le pancréas, essentielle pour permettre au glucose d'entrer dans les cellules et être utilisé comme énergie."
+    },
+    {
+      "term": "Insulinorésistance",
+      "definition": "État où les cellules du corps répondent moins bien à l'action de l'insuline, nécessitant plus d'insuline pour maintenir une glycémie normale."
+    },
+    {
+      "term": "Polydipsie",
+      "definition": "Soif excessive, un symptôme courant du diabète."
+    },
+    {
+      "term": "Polyurie",
+      "definition": "Urination fréquente et abondante, un autre symptôme du diabète."
+    },
+    {
+      "term": "Néphropathie diabétique",
+      "definition": "Complication rénale du diabète, pouvant endommager les reins et mener à l'insuffisance rénale."
+    },
+    {
+      "term": "Rétinopathie diabétique",
+      "definition": "Complication oculaire du diabète, affectant les vaisseaux sanguins de la rétine et pouvant entraîner une perte de vision."
+    },
+    {
+      "term": "Neuropathie diabétique",
+      "definition": "Lésion nerveuse causée par le diabète, affectant souvent les pieds et les mains."
+    },
+    {
+      "term": "Hémoglobine glyquée (HbA1c)",
+      "definition": "Mesure du taux moyen de glucose dans le sang sur les 2 à 3 derniers mois, utilisée pour le diagnostic et le suivi du diabète."
+    },
+    {
+      "term": "Hypoglycémie",
+      "definition": "Taux de glucose (sucre) trop bas dans le sang."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que le Diabète de Type 2 ?",
+      "answer": "C'est une maladie chronique caractérisée par une hyperglycémie due à une insulinorésistance et/ou un déficit de sécrétion d'insuline."
+    },
+    {
+      "question": "Quels sont les principaux facteurs de risque du Diabète de Type 2 ?",
+      "answer": "L'obésité, la sédentarité, les antécédents familiaux, l'âge et l'hypertension artérielle."
+    },
+    {
+      "question": "Citez trois symptômes courants du Diabète de Type 2.",
+      "answer": "Polyurie (uriner souvent), polydipsie (soif intense), polyphagie (faim excessive), fatigue, vision floue ou infections fréquentes."
+    },
+    {
+      "question": "Quelle est la principale caractéristique de l'insulinorésistance ?",
+      "answer": "Les cellules du corps ne répondent pas efficacement à l'insuline, ce qui empêche le glucose d'entrer dans les cellules et élève le taux de sucre dans le sang."
+    },
+    {
+      "question": "Nommez deux complications macrovasculaires du Diabète de Type 2.",
+      "answer": "Maladie coronarienne, accident vasculaire cérébral (AVC) ou artériopathie des membres inférieurs."
+    },
+    {
+      "question": "Nommez deux complications microvasculaires du Diabète de Type 2.",
+      "answer": "Rétinopathie diabétique, néphropathie diabétique ou neuropathie diabétique."
+    },
+    {
+      "question": " Quelles sont les complications à court terme du diabète du type 2 ?",
+      "answer": "L'Hypoglycémie, Le Coma Hyperosmolaire. "
+    },
+    {
+      "question": "Quel est l'objectif principal du traitement du Diabète de Type 2 ?",
+      "answer": "Maintenir la glycémie à des niveaux cibles pour prévenir les complications à long terme."
+    },
+    {
+      "question": "Pourquoi la détection précoce du Diabète de Type 2 est-elle importante ?",
+      "answer": "Pour initier rapidement le traitement et ralentir ou prévenir l'apparition des complications graves."
+    },
+    {
+      "question": "Quelle hormone est-elle déficiente ou inefficace dans le Diabète de Type 2 ?",
+      "answer": "L'Insuline."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est le mécanisme physiopathologique du Diabète de Type 2 ?",
+      "options": [
+        "Destruction des cellules bêta du pancréas",
+        "Insulinorésistance et/ou déficit de sécrétion d'insuline",
+        "Production excessive de glucagon",
+        "Absence totale d'insuline"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le Diabète de Type 2 est caractérisé par une résistance des cellules à l'insuline et/ou une insuffisance de la production d'insuline par le pancréas."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel des énoncés suivants décrit le mieux l'insulinorésistance ?",
+      "options": [
+        "Le pancréas ne produit pas du tout d'insuline",
+        "Le corps produit trop d'insuline",
+        "Les cellules du corps ne répondent pas efficacement à l'insuline",
+        "Le glucose est complètement absent du sang"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'insulinorésistance se produit lorsque les cellules du corps ne répondent pas adéquatement à l'insuline, ce qui rend difficile pour le glucose d'entrer dans ces cellules."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle complication microvasculaire du diabète affecte les reins ?",
+      "options": [
+        "Néphropathie",
+        "Neuropathie",
+        "Rétinopathie",
+        "Athérosclérose"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La néphropathie diabétique est une complication du diabète qui endommage les reins et peut conduire à l'insuffisance rénale."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Cocher la complication à court terme du diabète type 2 parmi les propositions suivantes:",
+      "options": [
+        "Hypoglycémie",
+        "Infarctus du Myocarde: IDM",
+        "Pied diabétique",
+        "Accident Vasculaire Cérébral: AVC"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "L'hypoglycémie est une complication à court terme du DT2, notamment chez les patients traités par les sulfamides et l'insuline. L'IDM, l'AVC et le Pied diabétique sont des complications qui apparaissent au bout de quelques années de maladie."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les facteurs suivants, lequel est un facteur de risque majeur pour le développement du Diabète de Type 2 ?",
+      "options": [
+        "Un régime alimentaire riche en fibres",
+        "L'activité physique régulière ",
+        "L'obésité",
+        "Une consommation excessive de protéines"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "L'obésité, en particulier l'obésité abdominale, est un facteur de risque majeur et bien établi pour le développement de l'insulinorésistance et du Diabète de Type 2."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La prise des médicaments antidiabétiques pendant plusieurs années explique la survenue des complications à moyen et à long terme.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "En effet, c'est l'augmentation constante du taux de glucose dans le sang qui est responsable des lésions des petits vaisseaux sanguins, de l'accélération de l'athérosclérose et de l'altération des nerfs d'où les complications.   "
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le Diabète de Type 2 se caractérise toujours par un début brutal et des symptômes très intenses.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le Diabète de Type 2 a souvent un début insidieux, se développant progressivement sur de nombreuses années, et les symptômes peuvent être légers ou absents pendant longtemps."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Equilibrer et surveiller son alimentation et faire de l'exercice physique régulièrement peut suffire pour abaisser la glycémie .",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "L'adoption d'un mode vie sain, comprenant une alimentation équilibrée et une activité physique régulière, sont fondamentales pour la gestion du Diabète de Type 2 et peuvent souvent suffire à contrôler la glycémie dans les stades précoces."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Sinon, dans les stades les plus avancé, seuls les médicaments sont efficaces pour gérer le Diabète de Type 2 ; l'alimentation n'a qu'un rôle mineur.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'alimentation équilibrée est une composante essentielle et fondamentale de la gestion du Diabète de Type 2, souvent aussi importante que les médicaments, pour contrôler la glycémie et prévenir les complications."
+    },
+    {
+      "question": "Et concernant le pharmacien et son équipe:",
+      "options": [
+        "L'équipe officinale n'intervient pas, le médecin prend en charge son patient totalement.",
+        "Le rôle de l'équipe officinale est de dispenser les médicaments prescrits uniquement.",
+        "Le rôle de l'équipe officinale est de montrer au patient la méthode d'utilisation du glucomètre uniquement.",
+        "L'équipe officinale est le meilleur allié du patient pour contrôler sa maladie grâce à ses conseils associés à la délivrance des ordonnances."
+      ],
+      "correctAnswerIndex": 3,
+      "explanation": "Le pharmacien et son équipe assurent la sensibilisation et l'éducation thérapeutique du patient, en donnant les conseils hygiéno-diététiques adéquats, en lui recommandant la surveillance de sa glycémie et en lui apprenant les mesures à suivre pour éviter les complications."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Pharmacologie",
+    "clinical": "Diabète"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/diabete/dt2-bis.jpg",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/d1ZCDrtSPlg",
+      "title": "DIABÈTE TYPE 2 - FOCUS MALADIE"
+    }
+  ],
+  "analyseOrdonnance": [],
+  "associatedProducts": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "customSections": [],
+  "dietaryAdvice": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "keyQuestions": [],
+  "level": "Facile",
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": []
+  },
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "redFlags": [],
+  "references": [
+    "1. INEAS. Prise en charge du diabète de type 2 chez l’adulte. Les Guides de l’INEAS. Tunis, INEAS, 2023. 217p.",
+    "2. Institut national d’excellence en santé et en services sociaux (INESSS). Autosurveillance glycémique chez les adultes atteints de diabète de type 2 non traités par l’insuline : Rapport d’évaluation des technologies de la santé Document rédigé par Christine Lobè, Hélène Guay, Éric Tremblay et Alain Prémont. ETMIS 2013; 9(10): 1-129.",
+    "3. International Diabetes Federation. IDF Diabetes Atlas, 10th edn. Brussels, Belgium: International Diabetes Federation, 2021, www.diabetesatlas.org.",
+    "4. Institut Nationale de Santé Publique (INSP), Office National de la Famille et de la Population (ONFP), *et al.* (STEDIAM, OMS). « Tunisian Health Examination Survey-2016 » : Indicateurs clefs de la santé des Tunisiens Résultats de l’enquête [Internet]. 2019.",
+    "5. Foretz M, Viollet B. Les nouvelles promesses de la metformine. Vers une meilleure compréhension de ses mécanismes d’action. Med Sci (Paris). 2014;30(1):82-92.",
+    "6. Chenafa *et al.* (2021). Natural flavonoid $\\alpha$-glucosidase inhibitors from Retama raetam: Enzyme inhibition and molecular docking reveal important interactions with the enzyme active site. Bioorganic Chemistry, 87(January), 736–742.",
+    "7. Haute Autorité de Santé. Guide du parcours de soins - Maladie rénale chronique de l’adulte. 2023 [consulté en ligne le 3 mars 2025].",
+    "8. HAS/ANSM. Stratégie médicamenteuse du contrôle glycémique du diabète de type 2. Recommandations. Janvier 2013. www.has-sante.fr/portail/upload/ docs/application/pdf/2013-02/10irp04_reco_diabete_ type_2.pdf.",
+    "9. Boulton AJ, Vileikyte L, Ragnarson-Tennvall G, Apelqvist J. The global burden of diabetic foot disease. Lancet. 2005;366(9498):1719-24.",
+    "10. Garnier *et al.* (2009). Hypoglycémie Diminution de la quantité de glucose contenue dans le sang au-dessous de 2,8 mmol/L."
+  ],
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "ventesAdditionnelles": {}
+}

@@ -1,0 +1,374 @@
+{
+  "_id": "68f017ecf63ea93cbfe67b0c",
+  "title": "Optimisation de l'utilisation des inhalateurs de poudre sèche (DPI) dans l'asthme : Guide pour le pharmacien",
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Délivrance initiale ou renouvellement**: Le patient se présente pour une première délivrance d'un traitement inhalé ou pour le renouvellement d'un DPI.\n• **Consommation excessive de bêta-2-mimétiques**: Le patient renouvelle fréquemment son traitement de crise (plus d'un aérosol doseur par trimestre), signalant un asthme non contrôlé.\n• **Patient sous corticoïde inhalé (CSI)**: Un patient asthmatique adulte qui utilise un CSI depuis au moins 6 mois, ou qui a débuté un CSI au cours des 12 derniers mois.\n• **Difficulté d'utilisation**: Le patient exprime des difficultés à manipuler son inhalateur ou à réaliser la technique d'inhalation correcte.\n• **Effets indésirables locaux**: Le patient signale des symptômes tels que la raucité de la voix ou des candidoses oropharyngées suite à l'utilisation de son CSI.\n• **Questionnement sur l'efficacité**: Le patient doute de l'efficacité de son traitement, notamment s'il ne ressent pas la poudre après l'inhalation."
+      }
+    ]
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Éducation thérapeutique**: Promouvoir activement le bon usage des dispositifs inhalés et l'observance du traitement.\n• **Différenciation des traitements**: Expliquer clairement la distinction entre le traitement de fond (quotidien, anti-inflammatoire) et le traitement de crise (rapide, symptomatique).\n• **Démonstration et évaluation**: Effectuer une démonstration pratique de la technique d'inhalation avec des dispositifs placebos et faire pratiquer le patient pour corriger les erreurs.\n• **Adéquation du dispositif**: Vérifier que le DPI est adapté aux capacités physiques du patient, en particulier son débit inspiratoire et sa coordination.\n• **Prévention des effets indésirables**: Insister sur le rinçage buccal systématique après l'inhalation de corticoïdes (CSI) pour prévenir candidose et raucité.\n• **Suivi de l'observance et du contrôle**: Utiliser l'historique des délivrances et des outils comme l'ACT (Test de Contrôle de l'Asthme) pour évaluer le niveau de contrôle et l'observance.\n• **Optimisation du dépôt pulmonaire**: Conseiller sur la bonne position, l'étanchéité labiale, et le maintien de l'apnée post-inhalation (5-10 secondes).\n• **Maintenance du dispositif**: Informer sur le nettoyage adéquat de l'embout buccal (chiffon sec) et les précautions de conservation (à l'abri de l'humidité pour les DPI).\n• **Proposer un accompagnement**: Orienter les patients éligibles vers les entretiens de Bon Usage des Médicaments (BUM) Asthme pour un suivi approfondi."
+      }
+    ]
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Asthme**: Maladie inflammatoire chronique des voies respiratoires caractérisée par une obstruction bronchique réversible, des sifflements, une toux, une oppression thoracique et une dyspnée. Les dispositifs d'inhalation sont essentiels pour le contrôle des symptômes et la prévention des exacerbations.\n• **Asthme persistant**: Forme d'asthme nécessitant une corticothérapie inhalée (CSI) quotidienne pour réduire l'inflammation sous-jacente et maintenir un contrôle à long terme. La bonne utilisation des DPI est cruciale pour l'efficacité des CSI.\n• **Asthme non contrôlé**: État où les symptômes asthmatiques persistent malgré le traitement, souvent signalé par une utilisation fréquente des bêta-2-mimétiques de courte durée d'action. L'optimisation de la technique d'inhalation est une étape clé pour améliorer le contrôle.\n• **Candidose oropharyngée**: Infection fongique de la bouche et de la gorge, fréquemment observée chez les utilisateurs de CSI sans rinçage buccal adéquat, due au dépôt local du corticoïde. Une bonne technique et le rinçage sont préventifs.\n• **Raucité de la voix (dysphonie)**: Altération de la qualité de la voix, autre effet indésirable local possible des CSI, également prévenu par un rinçage buccal post-inhalation.\n• **Crise d'asthme sévère**: Exacerbation aiguë de l'asthme où le débit inspiratoire du patient peut être très faible, rendant l'utilisation des DPI moins efficace en raison de l'exigence d'une inspiration vive et profonde. Les DPI ne sont généralement pas adaptés à la gestion de la crise sévère."
+      }
+    ]
+  },
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Administration ciblée**: Permet de délivrer le principe actif directement dans les bronches, optimisant son action locale et minimisant les effets systémiques.\n• **Simplicité d'utilisation**: Ne nécessitant pas de coordination main-poumon (contrairement aux pMDI), les DPI peuvent être plus faciles à utiliser pour certains patients.\n• **Efficacité du traitement de fond**: Contribuent à un contrôle efficace de l'inflammation bronchique, réduisant ainsi la fréquence et la gravité des crises d'asthme.\n• **Prévention des complications**: Une technique d'inhalation maîtrisée est synonyme d'une meilleure efficacité thérapeutique, prévenant les exacerbations et les hospitalisations.\n• **Adaptabilité aux patients**: La variété des DPI disponibles permet d'adapter le dispositif aux capacités inspiratoires et aux préférences individuelles de chaque patient.\n• **Information claire sur la dose**: De nombreux DPI intègrent des compteurs de doses visibles, assurant au patient la prise effective du médicament."
+      }
+    ]
+  },
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Amélioration du contrôle de l'asthme**: L'utilisation correcte des DPI assure un dépôt optimal du médicament, conduisant à une meilleure maîtrise des symptômes et une meilleure qualité de vie.• **Réduction des exacerbations**: Un traitement de fond bien administré diminue la fréquence et l'intensité des crises d'asthme, réduisant le recours aux urgences.• **Prévention des effets indésirables**: Le respect des bonnes pratiques (ex: rinçage après CSI) minimise les risques de candidose oropharyngée et de raucité de la voix.• **Optimisation de l'observance**: Une bonne compréhension et maîtrise du dispositif favorisent l'adhésion au traitement, essentielle pour une gestion efficace de l'asthme.• **Autonomie et confiance du patient**: Le patient acquiert une meilleure autonomie dans la gestion de sa maladie et une confiance accrue dans son traitement.• **Diminution de la dépendance aux traitements de crise**: Un asthme bien contrôlé réduit la nécessité d'utiliser fréquemment les bronchodilatateurs de secours, indicateur d'une meilleure santé respiratoire."
+      }
+    ]
+  },
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Inhalateurs de Poudre Sèche (DPI)**: Dispositifs n'utilisant pas de gaz propulseur, activés par l'inspiration du patient, exigeant une inspiration vive et profonde.\n• **DPI à Gélule/Capsule (Unidose)**: Pour les patients capables de manipuler une gélule et de vérifier qu'elle est vide. \nExemples: Aerolizer (Foradil®, Eolide®, Aeoronide ).\n• **DPI Multidoses à Réservoir**: Adaptés aux patients nécessitant un débit inspiratoire relativement faible et un compteur de doses. Exemples: Turbuhaler (Pulmicort®, Symbicort®).\n• **DPI Multidoses à Plaquette**: Pour une protection individuelle des doses et un compteur visible. Exemples: Diskus (Flixotide®, Seretide®).\n• **Autres systèmes autodéclenchés**: Intègrent un mécanisme de chargement et de déclenchement par l'inspiration. Exemples: Nexthaler (Foster®).\n• **Dispositifs de démonstration**: Outils essentiels pour l'éducation thérapeutique et la pratique de la technique d'inhalation en officine.\n• **Chambres d'inhalation**: À conseiller systématiquement en association avec les aérosols-doseurs pressurisés (pMDI) contenant des corticoïdes, pour optimiser le dépôt pulmonaire et réduire les effets indésirables oropharyngés."
+      },
+      {
+        "type": "video",
+        "value": "https://www.youtubeeducation.com/watch?v=CRpFU3m_AUQ"
+      }
+    ]
+  },
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **\"Je ne sens rien quand j'inhale, donc le médicament ne passe pas.\"**: Rappeler que certains DPI (sans lactose) peuvent ne pas donner de sensation de poudre. Expliquer que si le compteur de doses a avancé, la dose a bien été délivrée. Insister sur l'importance de ne pas renouveler la prise sans avis médical ou pharmaceutique.• **\"Mon inhalateur est trop compliqué à utiliser.\"**: Proposer une nouvelle démonstration pas à pas avec un dispositif placebo. Vérifier si un autre type de DPI serait plus adapté aux capacités du patient (ex: débit inspiratoire, coordination). Simplifier les étapes clés et mettre en place une grille d'évaluation si besoin.• **\"J'ai la voix rauque et la bouche irritée à cause de mon corticoïde.\"**: Expliquer que le rinçage de la bouche (et le gargarisme) avec de l'eau, à cracher systématiquement après chaque prise de CSI, est crucial pour prévenir ces effets locaux. Pour les pMDI, conseiller l'usage d'une chambre d'inhalation.• **\"Je dois prendre mon traitement de crise trop souvent.\"**: Expliquer que c'est un signe de mauvais contrôle de l'asthme et que le traitement de fond doit être bien pris. Suggérer une consultation médicale pour réévaluer la stratégie thérapeutique et proposer les entretiens BUM Asthme pour un accompagnement.• **\"Je souffle dans l'appareil avant de prendre ma dose.\"**: Informer le patient qu'en soufflant dans un DPI chargé, la dose de poudre est dispersée et perdue. Expliquer qu'il faut préparer une nouvelle dose et inspirer vivement par la bouche, sans souffler dans l'embout."
+      }
+    ]
+  },
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "references": [
+    "• **Le présent guide synthétique des bonnes pratiques pour l'usage optimal des dispositifs d'inhalation**"
+  ],
+  "id": "",
+  "type": "dispositifs-medicaux",
+  "theme": "Dispositifs médicaux",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-10-15T21:53:48.930Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "DPI",
+      "definition": "Inhalateur de Poudre Sèche (Dry Powder Inhaler). Dispositif qui délivre un médicament sous forme de poudre sèche directement dans les poumons lors de l'inhalation active du patient."
+    },
+    {
+      "term": "Asthme",
+      "definition": "Maladie inflammatoire chronique des voies respiratoires caractérisée par une hyperréactivité bronchique et une obstruction variable des voies aériennes, entraînant des sifflements, une toux, une dyspnée et une sensation d'oppression thoracique."
+    },
+    {
+      "term": "Coordination main-poumon",
+      "definition": "Capacité à synchroniser l'activation d'un inhalateur (spray) avec l'inspiration profonde et lente, essentielle pour l'efficacité des inhalateurs-doseurs pressurisés (MDI)."
+    },
+    {
+      "term": "Flux inspiratoire",
+      "definition": "Volume d'air inspiré par unité de temps. Un flux inspiratoire suffisant est nécessaire pour désagréger et entraîner la poudre des DPI dans les poumons."
+    },
+    {
+      "term": "Corticoïde inhalé",
+      "definition": "Médicament anti-inflammatoire administré par inhalation, essentiel dans le traitement de fond de l'asthme pour réduire l'inflammation des voies respiratoires."
+    },
+    {
+      "term": "Bronchodilatateur",
+      "definition": "Médicament qui provoque la dilatation des bronches, soulageant les symptômes de l'asthme tels que la sensation d'oppression et la dyspnée, notamment les bêta-2 agonistes."
+    },
+    {
+      "term": "Exacerbation",
+      "definition": "Aggravation aiguë des symptômes de l'asthme nécessitant souvent une modification du traitement habituel, voire une hospitalisation."
+    },
+    {
+      "term": "Candidose orale",
+      "definition": "Infection fongique de la bouche causée par Candida albicans, un effet secondaire fréquent des corticoïdes inhalés, prévenu par le rinçage buccal."
+    },
+    {
+      "term": "Dysphonie",
+      "definition": "Altération de la voix, pouvant se manifester par un enrouement, un autre effet secondaire potentiel des corticoïdes inhalés."
+    },
+    {
+      "term": "Adhérence thérapeutique",
+      "definition": "Degré auquel le comportement d'un patient (prise du médicament, respect du régime, exécution des changements de mode de vie) correspond aux recommandations convenues d'un professionnel de la santé."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quel est l'objectif principal de l'optimisation de l'utilisation des inhalateurs de poudre sèche (DPI) dans l'asthme?",
+      "answer": "Assurer une administration efficace du médicament, améliorer le contrôle des symptômes de l'asthme et réduire les exacerbations."
+    },
+    {
+      "question": "Pourquoi la technique d'inhalation est-elle cruciale pour l'efficacité d'un DPI?",
+      "answer": "Une technique correcte garantit que la dose de médicament atteint les voies respiratoires inférieures, là où elle doit agir, maximisant ainsi l'efficacité thérapeutique."
+    },
+    {
+      "question": "Quels sont les avantages des DPI par rapport aux inhalateurs-doseurs pressurisés (MDI) pour certains patients?",
+      "answer": "Les DPI ne nécessitent pas de coordination main-poumon aussi stricte que les MDI, et l'absence de propulseurs les rend écologiquement plus favorables."
+    },
+    {
+      "question": "Cite un inconvénient potentiel des DPI.",
+      "answer": "Ils nécessitent un flux inspiratoire suffisant de la part du patient, ce qui peut être un défi pour les jeunes enfants, les personnes âgées ou celles avec des exacerbations sévères."
+    },
+    {
+      "question": "Quel conseil le pharmacien doit-il donner au patient après l'inhalation d'un corticoïde en poudre sèche?",
+      "answer": "Rincer la bouche et se gargariser avec de l'eau, puis cracher, afin de prévenir les candidoses orales et la dysphonie."
+    },
+    {
+      "question": "Quand le pharmacien devrait-il réévaluer la technique d'inhalation d'un patient utilisant un DPI?",
+      "answer": "Lors de chaque dispensation, lors de l'introduction d'un nouveau dispositif, en cas de contrôle insuffisant de l'asthme, ou si le patient rapporte des difficultés."
+    },
+    {
+      "question": "Qu'est-ce qu'un «placebo test» ou une démonstration avec un inhalateur vide peut apporter?",
+      "answer": "Cela permet de vérifier et de corriger la technique du patient sans administrer de médicament, renforçant ainsi la confiance et l'apprentissage."
+    },
+    {
+      "question": "Pourquoi est-il important de ne pas secouer certains DPI avant utilisation?",
+      "answer": "Les DPI contiennent la poudre en vrac ou en capsules, et secouer le dispositif pourrait altérer l'intégrité des doses ou leur libération."
+    },
+    {
+      "question": "Comment le pharmacien peut-il vérifier l'adhérence du patient à son traitement par DPI?",
+      "answer": "En discutant avec le patient de sa routine, en vérifiant les dates de renouvellement et le nombre de doses restantes dans l'appareil."
+    },
+    {
+      "question": "Quel est le rôle du pharmacien dans la sélection de l'inhalateur pour un patient asthmatique?",
+      "answer": "Le pharmacien conseille sur le type d'inhalateur le plus adapté en fonction des capacités du patient, de ses préférences et de l'observance, en collaboration avec le médecin."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est le principal avantage des DPI par rapport aux MDI en termes de technique pour certains patients?",
+      "options": [
+        "Ils sont plus petits et portables.",
+        "Ils nécessitent une moindre coordination main-poumon.",
+        "Ils ont un goût plus agréable.",
+        "Ils sont uniquement utilisés pour les traitements de crise."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les DPI nécessitent une inhalation profonde et rapide plutôt qu'une coordination précise entre l'activation du dispositif et l'inspiration, ce qui peut être plus facile pour certains patients."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le risque principal si un patient n'inspire pas suffisamment fort avec un DPI?",
+      "options": [
+        "Le médicament atteindra l'estomac.",
+        "La poudre ne sera pas correctement désagrégée et n'atteindra pas les poumons.",
+        "Le patient développera une toux sévère.",
+        "Le dispositif se bloquera et deviendra inutilisable."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Un flux inspiratoire suffisant est essentiel pour que la poudre sèche soit libérée du dispositif et transportée efficacement vers les voies respiratoires inférieures."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi est-il recommandé de rincer la bouche après l'utilisation d'un DPI contenant un corticoïde?",
+      "options": [
+        "Pour améliorer le goût du médicament.",
+        "Pour hydrater les voies respiratoires.",
+        "Pour prévenir les candidoses orales et la dysphonie.",
+        "Pour nettoyer le dispositif."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les résidus de corticoïdes dans la bouche peuvent favoriser la croissance de levures (Candida albicans) et irriter la gorge, entraînant une candidose orale ou une voix enrouée (dysphonie)."
+    },
+    {
+      "questionType": "QCM",
+      "question": "À quelle fréquence le pharmacien devrait-il idéalement vérifier la technique d'inhalation d'un patient utilisant un DPI?",
+      "options": [
+        "Une fois par an.",
+        "Uniquement lors du premier emploi.",
+        "À chaque dispensation du médicament ou si le contrôle de l'asthme est insuffisant.",
+        "Seulement si le patient le demande explicitement."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Une vérification régulière assure que la technique reste correcte, surtout en cas de changement de dispositif ou de persistance des symptômes."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel type de médicament est le plus souvent administré via un DPI pour le traitement de fond de l'asthme?",
+      "options": [
+        "Antibiotiques.",
+        "Analgésiques.",
+        "Corticoïdes inhalés.",
+        "Antihistaminiques."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les corticoïdes inhalés sont la pierre angulaire du traitement de fond de l'asthme pour leur action anti-inflammatoire locale."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle action est déconseillée avec la plupart des DPI avant utilisation?",
+      "options": [
+        "Ouvrir le capuchon.",
+        "Secouer vigoureusement le dispositif.",
+        "Expirer complètement loin du dispositif.",
+        "Inspirer rapidement et profondément."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Secouer certains DPI peut perturber la répartition de la poudre ou endommager le mécanisme de dosage, affectant la délivrance correcte du médicament."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les DPI sont généralement recommandés pour les nourrissons et les jeunes enfants.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Les DPI nécessitent un flux inspiratoire suffisant et une capacité de coopération que les nourrissons et jeunes enfants n'ont généralement pas. Les MDI avec chambre d'inhalation sont souvent préférés pour cette population."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le pharmacien a un rôle clé dans l'éducation du patient sur la bonne utilisation de son DPI.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. Le pharmacien est souvent le dernier professionnel de santé à voir le patient avant qu'il n'utilise son médicament et est idéalement placé pour enseigner et vérifier la technique d'inhalation."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Un DPI doit être nettoyé régulièrement avec de l'eau savonneuse.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. La plupart des DPI ne doivent pas être nettoyés avec de l'eau, car l'humidité peut endommager la poudre et le mécanisme. Un nettoyage avec un chiffon sec est généralement suffisant pour l'extérieur du dispositif."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est important d'expirer complètement *dans* le DPI avant d'inspirer le médicament.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Il faut expirer complètement *loin* du DPI avant d'inspirer pour éviter d'expulser la poudre hors du dispositif et pour pouvoir prendre une inspiration profonde."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Dispositifs médicaux",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/cao-asthme.jpg",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/KyWj2Ytxr3Y",
+      "title": "Maîtriser l'inhalation"
+    },
+    {
+      "url": "https://www.youtubeeducation.com/watch?v=LeFR55YLUwY",
+      "title": "DPI Diskus - exemple: SERETIDE ®"
+    }
+  ],
+  "analyseOrdonnance": [],
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "customSections": [
+    {
+      "title": "Turbuhaler - exemple: SYMBICORT ®",
+      "content": [
+        {
+          "type": "video",
+          "value": "https://www.youtubeeducation.com/watch?v=SxmUjLgmqEw"
+        }
+      ]
+    },
+    {
+      "title": "Diskus - exemple: SERETIDE ®",
+      "content": [
+        {
+          "type": "video",
+          "value": "https://www.youtubeeducation.com/watch?v=LeFR55YLUwY"
+        }
+      ]
+    },
+    {
+      "title": "Aerolizer - exemple: AERONIDE ®",
+      "content": [
+        {
+          "type": "video",
+          "value": "https://www.youtubeeducation.com/watch?v=BtNn9HJ3giM"
+        }
+      ]
+    },
+    {
+      "title": "Nexthaler - exemple: FOSTER ® poudre",
+      "content": [
+        {
+          "type": "video",
+          "value": "https://www.youtubeeducation.com/watch?v=FSkrBdyZ0hQ"
+        }
+      ]
+    },
+    {
+      "title": "Aérosol doseur - exemple: AEROL ® ",
+      "content": [
+        {
+          "type": "video",
+          "value": "https://www.youtubeeducation.com/watch?v=CRpFU3m_AUQ"
+        }
+      ]
+    }
+  ],
+  "informationsMaladie": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "keyQuestions": [],
+  "level": "Facile",
+  "ordonnance": [],
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": []
+  },
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "recommendations": {
+    "mainTreatment": [],
+    "associatedProducts": [],
+    "lifestyleAdvice": [],
+    "dietaryAdvice": []
+  },
+  "redFlags": [],
+  "referencesBibliographiquesDM": [],
+  "shortDescription": "",
+  "ventesAdditionnelles": {},
+  "sectionOrder": [],
+  "status": "Published"
+}

@@ -1,0 +1,342 @@
+{
+  "_id": "68defa7480b6cee3d8f2c8b2",
+  "title": "Dysménorrhée: MémoFiche Conseil à l'officine ",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une jeune femme âgée de 24 ans se présente au comptoir: \"Puis-je avoir une boite d’Antafen®?\""
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand souffrez-vous de ces douleurs ?",
+    "-Quelle est l'intensité de vos douleurs (légère, modérée, intense) ?",
+    "-Ces douleurs sont-elles habituelles ou plus fortes que d'habitude ?",
+    "-Ces douleurs perturbent-elles vos activités quotidiennes ?",
+    "-Où précisément ressentez-vous la douleur ? Irradie-t-elle vers le dos ou les cuisses ?",
+    "-Que prenez-vous pour les soulager ? Est-ce efficace ?",
+    "-Avez-vous des règles abondantes?",
+    "-Avez-vous d'autres symptômes associés (nausées, vomissements, diarrhée, fatigue, vertige) ?",
+    "-Êtes-vous suivie régulièrement par un gynécologue ?",
+    "-Avez-vous des antécédents médicaux particuliers (ulcères gastriques ou duodénaux, insuffisance hépatique ou rénale sévère, asthme, sensibilité aux AINS) ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition**\n• Douleurs abdominales (crampes) survenant avant ou pendant les menstruations.,\n• - **Primaire**:\n• Absence de maladie pelvienne identifiable, liée à l'hypersécrétion de prostaglandines.,\n• La douleur est maximale au début des règles (24-36h), peut irradier vers le bas du dos et les cuisses.,\n• Symptômes associés:  Nausées, vomissements, maux de tête, fatigue, irritabilité, vertiges fréquents.,\n• - **Secondaire**\n• Causée par une pathologie pelvienne sous-jacente: endométriose, fibromes, syndrome des Ovaires Polykystiques (SOPK).\n• Apparaît généralement vers la trentaine.,\n• La douleur peut apparaître jusqu'à une semaine avant les règles et persister plus longtemps."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Douleurs intenses ou persistantes malgré un traitement symptomatique (suspicion d'endométriose).",
+    "-Saignements anormalement abondants ou présence de caillots.",
+    "-Saignements en dehors des menstruations.",
+    "-Douleurs s'intensifiant cycle après cycle.",
+    "-Douleur non améliorée après deux cycles de traitement.",
+    "-Douleurs accompagnées de fièvre."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Paracétamol** ",
+      "-500 mg à 1g par prise, trois fois par jour, à renouveler au bout de 4h min, sans dépasser 4g/jour.",
+      "**AINS** ",
+      "-Inhibent la synthèse des prostaglandines, responsables des contractions utérines douloureuses.",
+      "-Conseillé dès le premier jour des règles ou dès le début des douleurs.",
+      "-Dose la plus faible possible, durée la plus courte possible (max 5 jours).",
+      "-De préférence au cours des repas pour limiter les troubles gastro-intestinaux.",
+      "-Ibuprofène: 200 mg par prise, à renouveler toutes les 6 heures sans dépasser 1200 mg par jour. ",
+      "-Ex: Dolven® 200"
+    ],
+    "associatedProducts": [
+      "**Antispasmodiques** Phloroglucinol ",
+      "-160 mg/prise, si besoin 3x/jour, espacer d'au moins 2h",
+      "-Privilégier les comprimés effervescents ou lyoc. ",
+      "-Ex: Nospasm®",
+      "**Magnésium** ",
+      "-Aide à la relaxation musculaire, réduit les crampes et prévient les signes prémenstruels.",
+      "-300-400 mg/jour, en cure de 1 à 3 mois, à débuter 7 à 10 jours avant les règles.",
+      "-Préférer les sels organiques (citrate, malate) ou bisglycinate/glycinate pour une meilleure assimilation. ",
+      "-Ex: Kela Mag®",
+      "**Vitamine B6** ",
+      "-Réduit les symptômes émotionnels du SPM, ",
+      "-Augmente l’absorption du magnésium (1.5-2mg/jour).",
+      "**Gattilier** ",
+      "-Aide à réguler le cycle menstruel et réduit les symptômes du SPM ",
+      "-Conseillé du 8e au 21e jour du cycle, pendant 3 cycles",
+      "-Contre-indiqué chez les -18 ans, femmes enceintes et allaitantes. ",
+      "-Ex: Bioherbs Gattilier®",
+      "**Huile d'Onagre** ",
+      "-Riche en acides gras essentiels, aide à réduire l'inflammation",
+      "-Conseillée 10 derniers jours du cycle, à renouveler 3 mois ",
+      "-Ex: 3chênes Onagre bourrache®",
+      "**Mélisse** ",
+      "-Antispasmodique, relaxante ",
+      "-300 à 600 mg/jour d'extrait sec ",
+      "-Ex: Thérapia Mélisse®"
+    ],
+    "lifestyleAdvice": [
+      "-Se reposer et dormir suffisamment.",
+      "-Placer un coussin chauffant ou une bouillotte sur le ventre (effet relaxant sur l'utérus).",
+      "-Prendre un bain ou une douche chaude.",
+      "-Pratiquer une activité physique légère à modérée",
+      "-Éviter le tabac.",
+      "-Réduire le stress.",
+      "-Éviter les produits d'hygiène intime agressifs, privilégier savons sans parfum à pH neutre."
+    ],
+    "dietaryAdvice": [
+      "-Adopter une alimentation équilibrée.",
+      "-Privilégier une alimentation riche en oméga-3 (saumon, thon, maquereau).",
+      "-Limiter la caféine, l'alcool et le tabac.",
+      "-Boire suffisamment d'eau."
+    ]
+  },
+  "references": [
+    "-Piussan, F., & Piussan, F. (2016, April 26). “Je voudrais calmer mes règles douloureuses.” Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-calmer-mes-regles-douloureuses-2",
+    "-Le Moniteur des pharmacies. (2008). « J’ai des règles douloureuses ». Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-des-regles-douloureuses",
+    "-Karleskind, B., Mercier, B., & Veroli, P. (2013). Guide pratique des compléments alimentaires. https://www.thierrysouccar.com",
+    "-Clere, N. (2010) Les dysménorrhées quel conseil à l’officine Actualités pharmaceutiques n°495. Doi:ACTPHA-04-2010-49-495-0515-3700-101019-201001418",
+    "-Karleskind, B. (2013). Guide pratique des compléments alimentaires Comment les utiliser pour prendre en charge les maladies les plus courantes... ( etc.) (z-lib.org)",
+    "-Guillou, E. (2009). Les dysménorrhées. In Actualités Pharmaceutiques: Vol. n° 484.",
+    "-La survenue de douleurs pendant les règles | ameli.fr | Assuré",
+    "-Mach, F., Marchandin, H., & Bichon, F. (2021). Les dysménorrhées, des troubles qui altèrent la qualité de vie. Actualités Pharmaceutiques, 60(604), 42–45. https://doi.org/10.1016/j.actpha.2021.01.013",
+    "-Prise en charge des douleurs menstruelles - Gynécologie pédiatrique | HUG - Hôpitaux Universitaires de Genève"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé Féminine",
+  "creationDate": "2025-10-02T22:19:32.002Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Dysménorrhée",
+      "definition": "Douleurs abdominales (crampes) survenant avant ou pendant les menstruations."
+    },
+    {
+      "term": "Prostaglandines",
+      "definition": "Substances lipidiques produites par l'organisme, impliquées notamment dans les processus inflammatoires et les contractions utérines. Leur hypersécrétion est souvent la cause de la dysménorrhée primaire."
+    },
+    {
+      "term": "Endométriose",
+      "definition": "Pathologie caractérisée par la présence de tissu endométrial (muqueuse utérine) en dehors de l'utérus, pouvant causer des douleurs pelviennes chroniques et être une cause de dysménorrhée secondaire."
+    },
+    {
+      "term": "AINS (Anti-Inflammatoires Non Stéroïdiens)",
+      "definition": "Classe de médicaments ayant des propriétés analgésiques, antipyrétiques et anti-inflammatoires, agissant en inhibant la synthèse des prostaglandines."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Comment définit-on la dysménorrhée?",
+      "answer": "Douleurs abdominales (crampes) survenant avant ou pendant les menstruations."
+    },
+    {
+      "question": "Quelle est la caractéristique principale de la dysménorrhée primaire ?",
+      "answer": "Absence de maladie pelvienne identifiable, liée à l'hypersécrétion de prostaglandines."
+    },
+    {
+      "question": "Quand la douleur de la dysménorrhée primaire est-elle maximale et où peut-elle irradier ?",
+      "answer": "Maximale au début des règles (24-36h), peut irradier vers le bas du dos et les cuisses."
+    },
+    {
+      "question": "Citez deux symptômes associés fréquents de la dysménorrhée.",
+      "answer": "Nausées, vomissements, maux de tête, fatigue, irritabilité, vertiges."
+    },
+    {
+      "question": "Quelles sont les causes de la dysménorrhée secondaire ?",
+      "answer": "Endométriose, fibromes, Syndrome des Ovaires Polykystiques (SOPK)."
+    },
+    {
+      "question": "Quel est le mécanisme d'action des AINS pour soulager la dysménorrhée ?",
+      "answer": "Ils inhibent la synthèse des prostaglandines, responsables des contractions utérines douloureuses."
+    },
+    {
+      "question": "Quelle est la posologie maximale journalière du Paracétamol et la fréquence de renouvellement ?",
+      "answer": "4g/jour maximum, à renouveler au bout de 4h minimum (500mg à 1g par prise)."
+    },
+    {
+      "question": "Quand est-il conseillé de prendre les AINS pour la dysménorrhée ?",
+      "answer": "Dès le premier jour des règles ou dès le début des douleurs."
+    },
+    {
+      "question": "Quelle est la posologie par prise de l'Ibuprofène et la dose maximale journalière ?",
+      "answer": "200 mg par prise, sans dépasser 1200 mg par jour."
+    },
+    {
+      "question": "Citez un signal d'alerte important nécessitant une consultation médicale pour des douleurs menstruelles.",
+      "answer": "Douleurs intenses ou persistantes malgré un traitement, saignements anormalement abondants, saignements intercycliques, aggravation des douleurs cycle après cycle, échec de traitement après deux cycles, douleurs accompagnées de fièvre."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Qu'est-ce qui caractérise la dysménorrhée primaire?",
+      "options": [
+        "Elle est toujours causée par l'endométriose.",
+        "Elle apparaît généralement vers la trentaine.",
+        "Elle est liée à l'hypersécrétion de prostaglandines sans pathologie pelvienne identifiable.",
+        "La douleur apparaît jusqu'à une semaine avant les règles."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La dysménorrhée primaire est définie par l'absence de maladie pelvienne identifiable et est liée à l'hypersécrétion de prostaglandines."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel symptôme associé est fréquemment cité pour la dysménorrhée ?",
+      "options": [
+        "Douleurs articulaires intenses.",
+        "Nausées et vomissements.",
+        "Toux persistante.",
+        "Éruptions cutanées."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche mentionne les nausées, vomissements, maux de tête, fatigue, irritabilité et vertiges comme symptômes associés fréquents."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les pathologies suivantes, laquelle est une cause de dysménorrhée secondaire?",
+      "options": [
+        "Rhume commun.",
+        "Syndrome des Ovaires Polykystiques (SOPK).",
+        "Hypertension artérielle.",
+        "Grippe saisonnière."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La mémofiche cite l'endométriose, les fibromes et le Syndrome des Ovaires Polykystiques (SOPK) comme causes de dysménorrhée secondaire."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le mécanisme d'action principal des AINS pour soulager les douleurs de la dysménorrhée?",
+      "options": [
+        "Ils augmentent la production d'œstrogènes.",
+        "Ils inhibent la synthèse des prostaglandines.",
+        "Ils dilatent les vaisseaux sanguins utérins.",
+        "Ils agissent comme un sédatif direct."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les AINS inhibent la synthèse des prostaglandines, qui sont responsables des contractions utérines douloureuses."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la dose maximale journalière recommandée de Paracétamol pour soulager les douleurs des règles ?",
+      "options": [
+        "2g par jour.",
+        "3g par jour.",
+        "4g par jour.",
+        "1g par jour."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La posologie du paracétamol est de 500 mg à 1g par prise, sans dépasser 4g/jour."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel signal d'alerte devrait inciter à une consultation médicale pour des douleurs menstruelles ?",
+      "options": [
+        "Douleurs légères améliorées par le paracétamol.",
+        "Douleurs intenses ou persistantes malgré un traitement symptomatique.",
+        "Saignements très légers.",
+        "Apparition de douleurs vers 20 ans."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Des douleurs intenses ou persistantes malgré un traitement symptomatique (suspicion d'endométriose) sont un signal d'alerte."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La dysménorrhée secondaire est plus fréquente vers la trentaine.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche indique que l'apparition de la dysménorrhée secondaire est plus fréquente vers la trentaine."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Il est conseillé de prendre les AINS uniquement après plusieurs jours de douleurs pour évaluer la sévérité.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Il est conseillé de prendre les AINS dès le premier jour des règles ou dès le début des douleurs."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'Ibuprofène peut être pris sans dépasser 1200 mg par jour, avec une durée maximale de 5 jours.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La mémofiche stipule une dose maximale de 1200 mg par jour pour l'Ibuprofène et une durée la plus courte possible (max 5 jours) pour les AINS en général."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Des saignements en dehors des menstruations (intercycliques) ne sont pas considérés comme un signal d'alerte.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les saignements intercycliques sont explicitement mentionnés comme un signal d'alerte dans la mémofiche."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé Féminine"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/gyneco/dysmenorrhee.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "https://kahoot.it/challenge/005572480?challenge-id=ce72474c-f579-45bb-9168-e288af0db70d_1723785229353",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published"
+}

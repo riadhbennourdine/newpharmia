@@ -1,0 +1,347 @@
+{
+  "_id": "68ddb4f30534882ebdb64cf9",
+  "title": "Dyspepsie: Mémofiche conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une femme de 35 ans s'est présentée à la pharmacie: “Je digère mal. Que me conseillez-vous?”."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand ressentez-vous ces symptômes ?",
+    "-Quels sont les symptômes précis que vous ressentez (pesanteur, douleurs, ballonnements) ?",
+    "-Ces symptômes sont-ils liés aux repas ?",
+    "-Avez-vous fait des excès alimentaires récemment ? Avez-vous modifié récemment votre alimentation ?",
+    "-Êtes-vous stressé(e) ou anxieux(se) ?",
+    "-Prenez-vous des médicaments ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "**Définition**: \n-Ensemble de troubles digestifs post-repas (pesanteur gastrique, douleurs abdominales, ballonnements, rots fréquents)\n**Causes aiguës**: \n-Excès alimentaires, aliments irritants (épicés, gras), alcool, certains médicaments (ex: AINS)\n**Causes chroniques**: \n-RGO, ulcères (gastrique/duodénal), gastrite, SII, maladies chroniques (diabète, thyroïde), stress/anxiété\n**Rôle hépatique**: \n-Le foie produit la bile, essentielle à l’absorption des graisses et l’élimination des toxines.\n**Foie surchargé**: \n-Peut diminuer la production ou la qualité de la bile, rendant la digestion des graisses plus difficile\n-Sensation de malaise digestif après un excès alimentaire\n"
+      }
+    ]
+  },
+  "redFlags": [
+    "-Symptômes persistent > 2 semaines malgré mesures hygiéno-diététiques.",
+    "-Douleurs abdominales intenses ou persistantes.",
+    "-Perte de poids inexpliquée.",
+    "-Difficultés à avaler.",
+    "-Vomissements fréquents ou répétés.",
+    "-Présence de sang dans les selles.",
+    "-Fièvre associée.",
+    "-Jaunisse (Ictère).",
+    "-Perte d'appétit prolongée."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Boldine **: ",
+      "-Cholérétique: stimule sécrétion de bile",
+      "-Cholagogue: facilite évacuation de la bile",
+      "-Posologie: 1 comprimé avant les 3 principaux repas.",
+      "-Contre-indications: Maladie du foie, obstruction des voies biliaires",
+      "-Ex: Oxyboldine®"
+    ],
+    "associatedProducts": [
+      "**Antispasmodiques**: Phloroglucinol ",
+      "-Réduire les douleurs abdominales ",
+      "-Ex: Spasmocalm®",
+      "**Pansements gastro-intestinaux** ",
+      "-Neutralisent l'acidité",
+      "-Ex: Apyrosis®",
+      "**Probiotiques**: ",
+      "-Équilibrer la flore intestinale.",
+      "**Phytothérapie**: ",
+      "**Plantes digestives, carminatives**: fenouil, menthe, gingembre ou angélique",
+      "-Favoriser la digestion ; limiter la formation de gaz dans le tractus digestif ",
+      "-Ex: Phytokad digestion®",
+      "**Plantes détoxifiantes**:  Artichaut, radis noir, desmodium, chardon marie ",
+      "-Stimulent la production et/ou l'évacuation de la bile",
+      "-Ex: Keravel Hepator®",
+      "**Homéopathie**: ",
+      "-Nux vomica 9CH 1 Dose avant tout repas copieux"
+    ],
+    "lifestyleAdvice": [
+      "-Gérer le stress par des techniques de relaxation.",
+      "-Pratiquer une activité physique régulière.",
+      "-Éviter de s'allonger juste après les repas.",
+      "-Porter des vêtements amples au niveau abdominal.",
+      "-Arrêter le tabac."
+    ],
+    "dietaryAdvice": [
+      "-Manger lentement et bien mastiquer les aliments.",
+      "-Prendre des repas légers et fractionnés.",
+      "-Éviter les aliments gras, épicés, acides ou fermentescibles.",
+      "-Limiter la consommation de café, thé, alcool et boissons gazeuses.",
+      "-Boire suffisamment d'eau en dehors des repas."
+    ]
+  },
+  "references": [
+    "-Milan, A (2024b, August 9). « Je souffre d’indigestion ». Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-souffre-dindigestion",
+    "-Le Moniteur des pharmacies.fr (2024c, August 9). « J’ai du mal à digérer ». https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jai-du-mal-a-digerer",
+    "-Causes et symptômes des troubles de la digestion-dyspepsie | ameli.fr | Assuré",
+    "-Consulter et agir en cas de mauvaise digestion-dyspepsie | ameli.fr | Assuré",
+    "-Costil, V., Létard, J., Morin, M., Tarrerias, A., & De L’Hôpital Lari, N. É. D. (2014). Dyspepsie, colopathie fonctionnelle, ballonnements et gaz digestifs en excès. HEGEL - HEpato-GastroEntérologie Libérale, N° 3(Supp), S24–S25. https://doi.org/10.3917/heg.hs1.0s24",
+    "-Derbré, S., & Leclerc, M. (2013). Prise en charge alternative des dyspepsies. Actualités Pharmaceutiques, 52(527), 52–55. https://doi.org/10.1016/j.actpha.2013.03.023",
+    "-Mazzola.O, Girardin.M, (2017) Dyspepsie ‐ Service de médecine de premier recours – DMCPRU – HUG",
+    "-Traitement de la mauvaise digestion-dyspepsie | ameli.fr | Assuré"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Digestion",
+  "creationDate": "2025-10-01T23:10:43.660Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Dyspepsie",
+      "definition": "Ensemble de troubles digestifs ressentis après les repas, tels que lourdeur gastrique, douleurs abdominales, ballonnements ou rots fréquents."
+    },
+    {
+      "term": "Cholérétique",
+      "definition": "Substance qui stimule la sécrétion de bile par le foie."
+    },
+    {
+      "term": "Cholagogue",
+      "definition": "Substance qui facilite l'évacuation de la bile de la vésicule biliaire vers l'intestin."
+    },
+    {
+      "term": "RGO",
+      "definition": "Reflux Gastro-Œsophagien, une affection où le contenu de l'estomac remonte dans l'œsophage, causant des brûlures et des régurgitations."
+    },
+    {
+      "term": "Ictère",
+      "definition": "Coloration jaune de la peau et des muqueuses due à un excès de bilirubine dans le sang, communément appelé jaunisse."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Définissez la dyspepsie.",
+      "answer": "C'est un ensemble de troubles digestifs post-repas incluant pesanteur gastrique, douleurs abdominales, ballonnements et rots fréquents."
+    },
+    {
+      "question": "Citez deux causes aiguës de la dyspepsie.",
+      "answer": "Excès alimentaires, aliments irritants (épicés, gras), alcool ou certains médicaments (ex: AINS)."
+    },
+    {
+      "question": "Quel est le rôle du foie dans la digestion des graisses?",
+      "answer": "Le foie produit la bile, essentielle à l'absorption des graisses et à l'élimination des toxines."
+    },
+    {
+      "question": "Qu'est-ce qu'un 'foie encrassé'?",
+      "answer": "C'est une sensation de malaise digestif après un excès alimentaire, indiquant une surcharge hépatique et biliaire temporaire."
+    },
+    {
+      "question": "Quel est l'impact d'un foie surchargé sur la production de bile?",
+      "answer": "Un foie surchargé peut diminuer la production ou la qualité de la bile, rendant la digestion des graisses plus difficile."
+    },
+    {
+      "question": "Quel est le nom commercial de la Boldine mentionnée dans la mémofiche?",
+      "answer": "Oxyboldine."
+    },
+    {
+      "question": "Expliquez l'action cholérétique de la Boldine.",
+      "answer": "La Boldine stimule la sécrétion de bile."
+    },
+    {
+      "question": "Quelle est la posologie recommandée pour l'Oxyboldine?",
+      "answer": "1 comprimé avant les 3 principaux repas."
+    },
+    {
+      "question": "Citez une contre-indication à la prise de Boldine (Oxyboldine).",
+      "answer": "Maladie du foie ou obstruction des voies biliaires."
+    },
+    {
+      "question": "Donnez un exemple de signal d'alerte en cas de dyspepsie nécessitant une consultation médicale.",
+      "answer": "Symptômes persistant > 2 semaines, douleurs abdominales intenses, perte de poids inexpliquée, dysphagie, vomissements fréquents, sang dans les selles, fièvre, ictère ou anorexie."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "La dyspepsie se caractérise par des troubles digestifs survenant :",
+      "options": [
+        "Avant les repas",
+        "Pendant les repas",
+        "Post-repas",
+        "Indépendamment des repas"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La dyspepsie est définie comme un ensemble de troubles digestifs ressentis après les repas."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les causes aiguës de dyspepsie, on peut retrouver :",
+      "options": [
+        "Un ulcère gastrique",
+        "Le syndrome de l'intestin irritable (SII)",
+        "Des excès alimentaires",
+        "Une maladie thyroïdienne"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les excès alimentaires sont une cause aiguë de dyspepsie, tandis que les autres options sont des causes chroniques ou pathologies sous-jacentes."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le rôle principal du foie dans le processus digestif mentionné dans la mémofiche?",
+      "options": [
+        "Produire des enzymes digestives pour l'estomac",
+        "Synthétiser l'insuline pour la régulation de la glycémie",
+        "Produire la bile pour l'absorption des graisses",
+        "Filtrer les toxines uniquement"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le foie produit la bile, essentielle à l'absorption des graisses et à l'élimination des toxines."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel est le double mécanisme d'action de la Boldine (Oxyboldine)?",
+      "options": [
+        "Anti-inflammatoire et antalgique",
+        "Antispasmodique et prokinétique",
+        "Cholérétique et cholagogue",
+        "Antiacide et pansement gastrique"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La Boldine est décrite comme cholérétique (stimule sécrétion de bile) et cholagogue (facilite évacuation de la bile)."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la posologie correcte de l'Oxyboldine?",
+      "options": [
+        "1 comprimé après les 3 principaux repas",
+        "2 comprimés le soir avant de dormir",
+        "1 comprimé avant les 3 principaux repas",
+        "À prendre uniquement en cas de crise douloureuse"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La posologie de l'Oxyboldine est de 1 comprimé avant les 3 principaux repas."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel de ces symptômes est un signal d'alerte pour la dyspepsie, nécessitant une consultation médicale?",
+      "options": [
+        "Ballonnements occasionnels",
+        "Rots fréquents après un repas copieux",
+        "Perte de poids inexpliquée",
+        "Sensation de lourdeur gastrique légère"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La perte de poids inexpliquée est un signal d'alerte important, tandis que les autres sont des symptômes communs de la dyspepsie non alarmants isolément."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Un foie surchargé peut améliorer la qualité de la bile produite.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Un foie surchargé peut diminuer la production ou altérer la qualité de la bile, rendant la digestion des graisses plus difficile."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La Boldine est contre-indiquée en cas d'obstruction des voies biliaires.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. L'obstruction des voies biliaires est une contre-indication à la Boldine, tout comme une maladie du foie."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La dysphagie (difficulté à avaler) est un signal d'alerte en cas de dyspepsie.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. La dysphagie fait partie des signaux d'alerte qui doivent inciter à une consultation médicale."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le Syndrome de l'Intestin Irritable (SII) est une cause aiguë de dyspepsie.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Le SII est mentionné comme une cause chronique de dyspepsie, pas une cause aiguë."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Digestion"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/digestion/dyspepsie.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

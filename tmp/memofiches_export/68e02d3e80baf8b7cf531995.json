@@ -1,0 +1,329 @@
+{
+  "_id": "68e02d3e80baf8b7cf531995",
+  "title": "Pied d’athlète: MémoFiche Conseil à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un patient de 25 ans se présente à la pharmacie: « Bonjour, j’ai des fissures, c’est blanchâtre et ça me démange entre les deux derniers orteils. Que me conseillez-vous?»"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "**-**Depuis quand avez-vous ces symptômes ?",
+    "**-**Les lésions, où sont-elles localisées précisément ?",
+    "**-**Avez-vous des démangeaisons ? Avez-vous des fissures, des suintements ou un aspect blanchâtre entre les orteils ?",
+    "**-**Avez-vous déjà eu ce genre de problème auparavant ?",
+    "**-**Fréquentez-vous des lieux publics (piscines, salles de sport) ?",
+    "**-**Portez-vous des chaussures fermées régulièrement ?",
+    "**-**Avez-vous des lésions similaires sur d'autres parties du corps (mains, ongles) ?",
+    "**-**Avez-vous d'autres problèmes de santé (diabète, immunité) ?",
+    "**-**Avez-vous utilisé un traitement auparavant ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition:**\n• - Le pied d'athlète, ou mycose interdigitale, est une infection de la peau causée par des champignons dermatophytes, le plus souvent Trichophyton rubrum.\n• - **Symptômes typiques:** Démangeaisons, rougeurs, fissures, squames, aspect blanchâtre, macération.\n• **Localisation**\n• - Généralement entre le 4ème et 5ème orteil.\n• - Peut s'étendre aux autres orteils, plante du pied, ou ongles.\n• **Facteurs de risque**\n• - Humidité, chaleur, transpiration, chaussures fermées, lieux publics, mauvaise hygiène.\n• Les facteurs de risque incluent l'humidité, la chaleur, la transpiration excessive, le port de chaussures fermées, la fréquentation de lieux publics (piscines, salles de sport), et une hygiène insuffisante."
+      }
+    ]
+  },
+  "redFlags": [
+    "- Lésions étendues ou atypiques.",
+    "- Lésions récidivantes.",
+    "- Atteinte des ongles.",
+    "- Diabète, maladie neurologique, artérite des membres inférieurs.",
+    "- Suspicion de surinfection bactérienne.",
+    "- Persistance ou aggravation sous traitement.",
+    "- Gêne importante ou douleur.",
+    "- Femme enceinte, enfant < 12 ans."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Antifongique locaux**: les imidazolés",
+      "- Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®",
+      "- Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®",
+      "- Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds",
+      "**Galénique** ",
+      "- Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.",
+      "**Important**:",
+      "- Respecter la durée complète même après amélioration pour éviter les rechutes."
+    ],
+    "associatedProducts": [
+      "**Poudre antifongique** ",
+      "- Traiter les chaussures pour limiter les récidives",
+      "- Ex: Perozyl® poudre",
+      "**Gel pH alcalin** ",
+      "- Pour le lavage des pieds",
+      "- Ex: Mycolin®",
+      "**Bain de pied** ",
+      "- Avec HE de lavande (antifongique) et bicarbonate de soude (alcalinisant)."
+    ],
+    "lifestyleAdvice": [
+      "- Bien sécher les pieds, surtout entre les orteils.",
+      "- Éviter l'humidité prolongée et la macération.",
+      "- Porter des chaussettes en coton, les changer quotidiennement.",
+      "- Préférer des chaussures aérées, éviter les fermées longtemps.",
+      "- Ne pas partager serviettes, chaussures, articles de toilette.",
+      "- Laver linge et vêtements à 60°C.",
+      "**Lieux publics** Éviter de marcher pieds nus."
+    ],
+    "dietaryAdvice": [
+      "- Adopter une alimentation équilibrée pour soutenir le système immunitaire."
+    ]
+  },
+  "references": [
+    "- Dalibon, P. (2018b). Dermatoses et onychoses infectieuses du pied. Actualités Pharmaceutiques, 57(574), 47–51. https://doi.org/10.1016/j.actpha.2018.01.010",
+    "- Denieul, A., Faure, S., & Dominique Chabasse. (2009). La prise en charge des dermatomycoses à l’officine. In Actualités Pharmaceutiques: Vol. n° 484.",
+    "- Derbré, S.(2009). Emploi de la phytothérapie et de l’aromathérapie en prévention et traitement des dermatomycoses. In Actualités Pharmaceutiques: Vol. n° 484 (pp. 19–20)",
+    "- Derbré, S., & Lamassiaude-Peyramaure, S. (2010). Comment venir à bout des mycoses. Actualités Pharmaceutiques, 49(495), 44–46. https://doi.org/10.1016/s0515-3700(10)70678-9",
+    "- Lorier Roy, E (2019). les mycoses cutanées. dermato-info.fr. https://dermato-info.fr/fr/les-maladies-de-la-peau/les-mycoses-cutan%C3%A9es",
+    "- Belin, N. (2015, June 3). Une jeune femme avec pied d’athlète et onychomycose. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/une-jeune-femme-avec-pied-dathlete-et-onychomycose",
+    "- La consultation et le traitement en cas de mycose cutanée | ameli.fr | Assuré",
+    "- Ce qu’il faut retenir sur les dermatomycoses. (2009). Actualités Pharmaceutiques, 48(484), 24. https://doi.org/10.1016/s0515-3700(09)70413-6",
+    "- Clere, N (2009). Quelle prise en charge pour les mycoses ? Actualités Pharmaceutiques n°488. EM-Consulte. https://www.em-consulte.com/article/232631/quelle-prise-en-charge-pour-les-mycoses",
+    "- Mycose de la peau : que faire ? | ameli.fr | Assuré",
+    "- Prévenir les mycoses cutanées | ameli.fr | Assuré",
+    "- Le Moniteur des pharmacies.fr. (2006). Les mycoses cutanées. Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-mycoses-cutanees"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé cutanée",
+  "creationDate": "2025-10-03T20:08:30.288Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Dermatophytes",
+      "definition": "Type de champignons filamenteux kératinophiles responsables d'infections cutanées, des cheveux et des ongles chez l'homme et l'animal."
+    },
+    {
+      "term": "Macération",
+      "definition": "État de la peau qui devient molle et blanchâtre en raison d'une humidité excessive et prolongée, favorisant les infections."
+    },
+    {
+      "term": "Onychomycose",
+      "definition": "Infection fongique des ongles (pieds ou mains), souvent causée par les mêmes agents que le pied d'athlète, et qui nécessite un traitement spécifique."
+    },
+    {
+      "term": "Imidazolés",
+      "definition": "Classe de médicaments antifongiques à large spectre d'action, utilisés pour traiter diverses infections fongiques, y compris le pied d'athlète (ex: éconazole, miconazole)."
+    },
+    {
+      "term": "Galénique",
+      "definition": "Science et art de la préparation des médicaments, influençant leur forme pharmaceutique (crème, poudre, gel) en fonction de l'application et de la zone à traiter."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que le 'Pied d'athlète' ou mycose interdigitale?",
+      "answer": "C'est une infection cutanée causée par des champignons dermatophytes."
+    },
+    {
+      "question": "Quel est l'agent pathogène le plus souvent responsable du pied d'athlète?",
+      "answer": "Trichophyton rubrum."
+    },
+    {
+      "question": "Citez trois symptômes courants du pied d'athlète.",
+      "answer": "Démangeaisons, rougeurs, fissures, squames, aspect blanchâtre, macération."
+    },
+    {
+      "question": "Quelle est la localisation la plus fréquente du pied d'athlète?",
+      "answer": "Généralement entre le 4ème et le 5ème orteil."
+    },
+    {
+      "question": "Donnez deux facteurs favorisant le développement du pied d'athlète.",
+      "answer": "Humidité, chaleur, transpiration, chaussures fermées, lieux publics, mauvaise hygiène."
+    },
+    {
+      "question": "Quel est le principal mode de diagnostic du pied d'athlète?",
+      "answer": "Le diagnostic est principalement clinique."
+    },
+    {
+      "question": "Quel type de traitement est recommandé pour le pied d'athlète?",
+      "answer": "Une application locale d'antifongique (crème, gel, solution, poudre)."
+    },
+    {
+      "question": "Citez deux classes de molécules antifongiques utilisées pour le pied d'athlète.",
+      "answer": "Les imidazolés (éconazole, miconazole) et les allylamines (terbinafine), ou le ciclopirox."
+    },
+    {
+      "question": "Quelle est la durée de traitement recommandée pour l'éconazole en cas de pied d'athlète?",
+      "answer": "1 application 2 fois par jour pendant 2 à 3 semaines."
+    },
+    {
+      "question": "Dans quelles situations un professionnel de santé doit-il alerter ou référer un patient atteint de pied d'athlète?",
+      "answer": "Lésions étendues/atypiques, récidives, onychomycose, diabète, surinfection suspectée, échec du traitement, femme enceinte, enfant < 12 ans."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est l'agent pathogène le plus souvent impliqué dans le pied d'athlète?",
+      "options": [
+        "Candida albicans",
+        "Trichophyton rubrum",
+        "Staphylococcus aureus",
+        "Malassezia furfur"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le Trichophyton rubrum est l'espèce de dermatophyte la plus fréquemment isolée dans les cas de pied d'athlète."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les symptômes suivants, lequel n'est PAS typique du pied d'athlète?",
+      "options": [
+        "Démangeaisons intenses",
+        "Apparition de verrues plantaires",
+        "Fissures et squames",
+        "Aspect blanchâtre et macération entre les orteils"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le pied d'athlète se caractérise par des démangeaisons, rougeurs, fissures, squames, aspect blanchâtre et macération. Les verrues plantaires sont causées par un virus (HPV), non un champignon."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la localisation la plus fréquente du pied d'athlète?",
+      "options": [
+        "Sous la plante du pied",
+        "Sur le dessus du pied",
+        "Entre le 4ème et le 5ème orteil",
+        "Uniquement sur le talon"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le pied d'athlète se développe généralement entre le 4ème et le 5ème orteil, où l'humidité et la chaleur sont souvent plus importantes."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel de ces facteurs n'est PAS un facteur favorisant le pied d'athlète?",
+      "options": [
+        "Le port de chaussures ouvertes",
+        "La transpiration excessive",
+        "La fréquentation de lieux publics humides (piscines)",
+        "Une mauvaise hygiène des pieds"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Le port de chaussures ouvertes permet une meilleure aération et réduit l'humidité, ce qui est généralement défavorable au développement des champignons. Les chaussures fermées, l'humidité et la transpiration sont des facteurs favorisants."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la durée de traitement recommandée pour un antifongique comme l'éconazole en cas de pied d'athlète?",
+      "options": [
+        "1 semaine",
+        "2 à 3 jours",
+        "2 à 3 semaines",
+        "6 mois"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Pour l'éconazole, le traitement est de 1 application 2 fois par jour pendant 2 à 3 semaines, même après amélioration des symptômes."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quand un prélèvement mycologique est-il recommandé pour confirmer un diagnostic de pied d'athlète?",
+      "options": [
+        "Dès les premiers symptômes",
+        "Uniquement si le diagnostic clinique est douteux, en cas d'étendue ou de résistance au traitement",
+        "Systématiquement avant tout traitement",
+        "Jamais, le diagnostic est toujours clinique"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le diagnostic est principalement clinique. Un prélèvement mycologique est réservé aux cas de doute diagnostique, de lésions étendues ou de résistance au traitement initial."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les antifongiques locaux peuvent être arrêtés dès la disparition des démangeaisons et des rougeurs pour éviter une rechute.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Il est crucial de respecter la durée complète du traitement prescrit, même après l'amélioration des symptômes, pour éradiquer complètement l'infection et prévenir les rechutes."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une atteinte des ongles (onychomycose) est un signal d'alerte qui nécessite une consultation médicale.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. L'onychomycose, une infection des ongles, est un signal d'alerte car elle peut être plus difficile à traiter et nécessiter une approche différente ou un traitement oral."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le pied d'athlète ne peut pas s'étendre au-delà des orteils et de la plante du pied.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Faux. Le pied d'athlète peut s'étendre aux autres orteils, à la plante du pied, et même aux ongles (onychomycose)."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les patients diabétiques atteints de pied d'athlète doivent être référés à un médecin.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Vrai. Les comorbidités comme le diabète, les maladies neurologiques ou l'artérite des membres inférieurs sont des signaux d'alerte qui justifient une consultation médicale en raison du risque accru de complications."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Ordonnances",
+    "clinical": "Santé cutanée"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/dermato/15.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "status": "Published",
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": []
+}

@@ -1,0 +1,335 @@
+{
+  "_id": "68de818b0534882ebdb64cfb",
+  "title": "Cystite non récidivante: Mémofiche conseils à l'officine",
+  "patientSituation": {
+    "title": "patientSituation",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Une patiente de 32 ans se présente à la pharmacie : « J’ai des brûlures quand j’urine, je veux une boîte de Fosfomycine »."
+      }
+    ]
+  },
+  "keyQuestions": [
+    "-Depuis quand ressentez-vous ces symptômes ?",
+    "-Avez-vous de la fièvre, des frissons ou des douleurs lombaires ?",
+    "-Est-ce la première fois ou est-ce récurrent (plus de 4 épisodes par an) ?",
+    "-Êtes-vous enceinte ou allaitante ?",
+    "-Prenez-vous actuellement des médicaments ?",
+    "-Souffrez-vous d’un diabète ou d’une pathologie rénale ?",
+    "-Y a-t-il du sang dans vos urines ?"
+  ],
+  "pathologyOverview": {
+    "title": "pathologyOverview",
+    "content": [
+      {
+        "type": "text",
+        "value": "• **Définition** :\n• La cystite est une inflammation de la vessie, généralement due à une infection bactérienne (Escherichia coli dans 70-95% des cas)\n• **Types** :\n• On distingue 2 types d’infection urinaire :\n• Une infection basse : cystite : fréquente mais banale pouvant être prise en charge en officine en début de la maladie sans terrain à risque\n• Une infection haute : pyélonéphrite (colonisation bactérienne des reins et des voies urinaires hautes)  rare mais plus grave\n• **Symptômes** :\n• Brûlures mictionnelles, douleurs bas-ventre, pollakiurie (fréquence excessive des mictions), impériosité, les urines peuvent être troubles, malodorantes, parfois hématurie.\n• **Incidence** :\n• Majoritairement chez la femme (20-50 ans) dû à l'anatomie: Urètre court, proximité anus/vagin, activité sexuelle.\n• **Facteurs hormonaux** :\n• Grossesse, ménopause (hypo-œstrogénie), utilisation de spermicides."
+      }
+    ]
+  },
+  "redFlags": [
+    "-Fièvre, frissons ou douleurs lombaires (pyélonéphrite).",
+    "-Persistance des symptômes > 24-48h malgré traitement.",
+    "-Récidives: Plus de 4 épisodes par an.",
+    "-Hématurie (sang dans les urines).",
+    "-Terrain à risque: Diabète ou pathologie rénale (facteurs de complications), grossesse",
+    "-Cystite chez l'enfant ou l'homme (risque de complications prostatiques ou épididymaires)."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Canneberge (PACs)** : ",
+      "-Prévient et aide à traiter les infections urinaires.",
+      "-Minimum 36 mg de Proanthocyanidines de type A (PAC A) par jour.",
+      "-Empêche l'adhérence des bactéries (notamment E. coli) aux parois de la vessie.",
+      "-Ex: Bio health Cann-Cyst.",
+      "**Fosfomycine-trométamol** : ",
+      "-Médicament prescrit",
+      "-Cet antibiotique est le traitement de première intention en prise unique pour cystite aiguë simple."
+    ],
+    "associatedProducts": [
+      "**Antispasmodiques** : ",
+      "-Paracétamol, phloroglucinol en cas de douleurs légères. ",
+      "-Ex: Nospasm®, Spasmocalm®",
+      "**AINS** : ",
+      "-À éviter pendant les cystites (risque d’allongement symptômes et effets indésirables).",
+      "**Plantes antiseptiques diurétiques** : ",
+      "-Bruyère, busserole, piloselle, orthosiphon",
+      "-Favorisent l'élimination",
+      "-Ex: 3chenes Cystinat®",
+      "**Probiotiques** : ",
+      "-Lactobacillus (L. rhamnosus, L. reuteri)",
+      "-Rééquilibrer la flore",
+      "-Ex: Feminabiane CBU®",
+      "**D-mannose** : ",
+      "-Prévention des récidives (2g/jour). ",
+      "-Inhibe l'adhérence d'E. coli",
+      "-Ex: D-mannosa®"
+    ],
+    "lifestyleAdvice": [
+      "-Adopter une bonne hygiène avec un savon gynécologique adapté respectant le pH vaginal",
+      "-Effectuer la toilette d'avant en arrière pour éviter la contamination",
+      "-Uriner après les rapports sexuels",
+      "-Porter des sous-vêtements en coton, éviter les vêtements trop serrés",
+      "-Ne pas se retenir d'uriner"
+    ],
+    "dietaryAdvice": [
+      "-Boire au moins 1,5L d'eau par jour pour favoriser le rinçage urinaire.",
+      "-Préférer une alimentation riche en fibres pour prévenir la constipation."
+    ]
+  },
+  "references": [
+    "-Clere, N. (2012). Comment venir à bout des infections urinaires. Actualités pharmaceutiques n°516.",
+    "-Dalibon, P. (2015, January). Cystites une prise en charge adaptée pour prévenir la pharmacorésistance. Actualités Pharmaceutiques n°542, Pathologies Du Tractus Urinaire.",
+    "-Pillon, F. (2012). Intérêt de la canneberge pour lutter contre la gêne urinaire. Actualités pharmaceutiques n° 512.",
+    "-ameli.fr. (2025, February 26). Le diagnostic, le traitement et l'évolution de la cystite. ameli.fr | Assuré.",
+    "-Derbré, S. (2019). Phytothérapie et troubles urogénitaux sélectionner des produits efficaces et sûrs. Actualités Pharmaceutiques n°588, La Santé Au Féminin.",
+    "-Clere, N. (2017, January). Prise en charge officinale des infections urinaires chez la femme. Actualités Pharmaceutiques n°562.",
+    "-Mach, F., Marchandin, H., & Bichon, F. (2020). Traitement et prévention des infections urinaires. Actualités Pharmaceutiques n°598, Thérapeutique.",
+    "-Berthélemy, S. (2014). Une patiente souffrant d’une infection urinaire. Actualités Pharmaceutiques, Suivi Officinal.",
+    "-Belin, N.(2018, June 30). La cystite de la femme. Le moniteur des pharmacies.https://www.lemoniteurdespharmacies.fr/conseils/pathologies/la-cystite-de-la-femme.",
+    "-Belin, N., Satger, S(2023, September 2 ). Les infections urinaires de l’adulte. Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/conseils/pathologies/les-infections-urinaires-de-ladulte.",
+    "-Belin, N. (2012, May 1). Les infections urinaires. Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/savoirs/les-infections-urinaires-8.",
+    "-Belin, N. (2015, April 19). Une jeune femme avec une récidive de cystite. Le Moniteur des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/une-jeune-femme-avec-une-recidive-de-cystite.",
+    "-ameli.fr. (2025, February 26). Cystite (infection urinaire) : symptômes et causes. ameli.fr | Assuré.",
+    "-ameli.fr. (2025, February 26). Cystite : que faire et quand consulter ? ameli.fr | Assuré."
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "Santé Féminine",
+  "creationDate": "2025-10-02T13:43:39.717Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Cystite",
+      "definition": "Inflammation bactérienne de la vessie, la plupart du temps due à Escherichia coli."
+    },
+    {
+      "term": "Pyélonéphrite",
+      "definition": "Infection urinaire haute, plus grave que la cystite, touchant les reins, souvent associée à de la fièvre et des douleurs lombaires."
+    },
+    {
+      "term": "Pollakiurie",
+      "definition": "Augmentation anormale de la fréquence des mictions, généralement avec de faibles volumes d'urine."
+    },
+    {
+      "term": "Impériosité mictionnelle",
+      "definition": "Besoin urgent et soudain d'uriner, difficilement contrôlable."
+    },
+    {
+      "term": "Proanthocyanidines de type A (PAC A)",
+      "definition": "Composés actifs présents dans la canneberge, reconnus pour leur capacité à empêcher l'adhérence des bactéries aux parois urinaires."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition de la cystite ?",
+      "answer": "La cystite est une inflammation bactérienne de la vessie, souvent causée par E. coli (70-95%)."
+    },
+    {
+      "question": "Quels sont les quatre symptômes typiques de la cystite ?",
+      "answer": "Les symptômes typiques sont les brûlures mictionnelles, les douleurs dans le bas-ventre, la pollakiurie et l'impériosité."
+    },
+    {
+      "question": "Pourquoi les femmes sont-elles plus sujettes aux cystites que les hommes ?",
+      "answer": "Les femmes sont plus sujettes aux cystites en raison de leur anatomie : un urètre plus court et la proximité de l'anus et du vagin."
+    },
+    {
+      "question": "Quels sont les principaux facteurs hormonaux ou liés au mode de vie qui peuvent favoriser les cystites chez la femme ?",
+      "answer": "La grossesse, la ménopause (due à l'hypo-œstrogénie) et l'utilisation de spermicides sont des facteurs favorisants."
+    },
+    {
+      "question": "Quel est l'ingrédient actif de la canneberge recommandé pour la prévention des infections urinaires ?",
+      "answer": "Les Proanthocyanidines de type A (PAC A)."
+    },
+    {
+      "question": "Quelle est la dose minimale journalière de PAC A recommandée pour l'efficacité de la canneberge ?",
+      "answer": "Un minimum de 36 mg de PAC A par jour."
+    },
+    {
+      "question": "Quel est le mécanisme d'action principal de la canneberge dans la prévention des cystites ?",
+      "answer": "La canneberge empêche l'adhérence des bactéries (notamment E. coli) aux parois de la vessie."
+    },
+    {
+      "question": "Quels sont les signes d'alerte indiquant une possible complication grave comme la pyélonéphrite ?",
+      "answer": "La fièvre, les frissons et les douleurs lombaires sont des signes de gravité pouvant indiquer une pyélonéphrite."
+    },
+    {
+      "question": "Dans quels cas une cystite chez l'homme ou l'enfant doit-elle être considérée comme un signal d'alerte ?",
+      "answer": "Chez l'homme ou l'enfant, une cystite est un signal d'alerte en raison du risque de complications prostatiques ou épididymaires (chez l'homme) et de complications générales (chez l'enfant)."
+    },
+    {
+      "question": "Quand considère-t-on un échec thérapeutique pour une cystite traitée ?",
+      "answer": "Un échec thérapeutique est avéré si les symptômes persistent plus de 24 à 48 heures malgré le traitement."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle bactérie est la principale responsable des cystites ?",
+      "options": [
+        "Streptococcus pneumoniae",
+        "Staphylococcus aureus",
+        "Escherichia coli",
+        "Pseudomonas aeruginosa"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Escherichia coli est responsable de 70 à 95% des cas de cystites."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel symptôme n'est PAS typiquement associé à une cystite banale ?",
+      "options": [
+        "Douleurs lombaires",
+        "Brûlures mictionnelles",
+        "Pollakiurie",
+        "Impériosité mictionnelle"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Les douleurs lombaires, surtout si accompagnées de fièvre, sont un signe de pyélonéphrite (infection urinaire haute) et non de cystite banale."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la dose minimale de Proanthocyanidines de type A (PAC A) recommandée par jour pour l'action de la canneberge ?",
+      "options": [
+        "10 mg",
+        "24 mg",
+        "36 mg",
+        "50 mg"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "La mémofiche indique un minimum de 36 mg de PAC A par jour pour une efficacité préventive ou d'aide au traitement."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Lequel de ces facteurs n'est PAS un facteur favorisant la cystite chez la femme ?",
+      "options": [
+        "Urètre court",
+        "Proximité anus/vagin",
+        "Sexe masculin",
+        "Utilisation de spermicides"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le sexe masculin est un facteur de complication, pas un facteur favorisant la cystite banale qui touche majoritairement les femmes."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un échec thérapeutique est suspecté si les symptômes d'une cystite persistent après combien de temps de traitement ?",
+      "options": [
+        "12 heures",
+        "24-48 heures",
+        "3 jours",
+        "1 semaine"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La persistance des symptômes au-delà de 24-48 heures malgré le traitement est un signal d'alerte pour un échec thérapeutique."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Le mécanisme d'action principal des PAC A de la canneberge est de :",
+      "options": [
+        "Détruire les bactéries",
+        "Acidifier les urines",
+        "Empêcher l'adhérence des bactéries aux parois vésicales",
+        "Renforcer le système immunitaire"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les PAC A empêchent spécifiquement les bactéries, notamment E. coli, de se fixer aux parois de la vessie, facilitant ainsi leur élimination."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La pyélonéphrite est une forme de cystite plus grave qui touche les reins.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La pyélonéphrite est une infection urinaire haute et grave, touchant les reins, contrairement à la cystite qui est une infection basse de la vessie."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Une cystite chez un homme est toujours considérée comme un signal d'alerte nécessitant une prise en charge particulière.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Chez l'homme, la cystite est un signal d'alerte en raison du risque de complications comme une prostatite ou une épididymite."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'hématurie (sang dans les urines) est un symptôme normal et sans gravité en cas de cystite.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'hématurie est mentionnée comme un 'signal d'alerte' dans la mémofiche, ce qui indique qu'elle doit être considérée avec attention."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La grossesse est un facteur de risque qui rend la patiente plus vulnérable en cas de cystite.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La grossesse est explicitement mentionnée comme une 'population vulnérable' en cas de cystite."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "Santé Féminine"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/gyneco/cystite.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "youtubeUrl": "",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "sectionOrder": [],
+  "type": "maladie",
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "status": "Published"
+}

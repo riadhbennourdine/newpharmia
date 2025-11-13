@@ -1,0 +1,449 @@
+{
+  "_id": "68eec6dd4f861fb0c40a2580",
+  "title": "Mémofiche CAO: Asthme",
+  "ordonnance": [
+    "- **Traitement de fond** Symbicort Turbuhaler ®400 (1 inhalation matin et soir) + Onceair 10 mg (1 comprimé le soir).",
+    "- **Traitement d'appoint** Solupred® 20 mg (1 comprimé le matin pendant 5 jours).",
+    "- **Traitement de secours** Aerol® spray (2 bouffées si besoin)."
+  ],
+  "analyseOrdonnance": [
+    "**Contexte Probable**: La présence d'une cure courte de corticoïde oral (Solupred) suggère une exacerbation d'asthme, probablement un ajustement thérapeutique pour un asthme persistant mal contrôlé.",
+    "- **Logique Thérapeutique**: La prescription est cohérente et suit les recommandations actuelles pour l'asthme.",
+    "- **Points de Vigilance**: Aucune interaction médicamenteuse majeure entre ces produits. La vigilance portera sur les antécédents du patient et la bonne compréhension des différents rôles de chaque médicament.",
+    "- **Primo-délivrance**: Le conseil doit se concentrer sur la maladie, les objectifs du traitement, la manipulation correcte des dispositifs et la distinction cruciale entre traitement de crise et traitement de fond.",
+    "- **Renouvellement**: Évaluer l'observance du patient, le contrôle de la maladie (fréquence d'utilisation du traitement de secours), la bonne utilisation des dispositifs et la recherche d'éventuels effets indésirables.",
+    "- **Profil du Patient**: Rechercher des antécédents de reflux gastro-œsophagien (RGO) ou de pathologies cardiovasculaires.",
+    "- **Traitements en Cours**: Une vigilance absolue est requise concernant les bêtabloquants (même en collyre), car ils sont contre-indiqués et peuvent provoquer un bronchospasme."
+  ],
+  "conseilsTraitement": [
+    {
+      "medicament": "Symbicort Turbuhaler 400",
+      "conseils": [
+        "**Rôle** C'est votre traitement de fond. Il traite l'inflammation de vos bronches et doit être pris tous les jours, même si vous vous sentez bien, pour prévenir les crises.",
+        "**Administration** Armer le dispositif, expirer loin du Turbuhaler, inspirer à fond et retenir sa respiration. Se rincer la bouche à l'eau après chaque utilisation pour éviter les mycoses buccales.",
+        "**Effets Possibles** Raucité de la voix, candidose buccale (risque minimisé par le rinçage)."
+      ]
+    },
+    {
+      "medicament": "Onceair 10 mg (Montelukast)",
+      "conseils": [
+        "**Rôle** Ce médicament est un traitement de fond complémentaire qui agit sur une autre voie de l'inflammation, souvent lié à l'allergie, renforçant le contrôle de votre asthme.",
+        "**Administration** Un comprimé à prendre chaque jour, généralement le soir.",
+        "**Effets Possibles** Rares troubles de l'humeur ou du sommeil sont à surveiller."
+      ]
+    },
+    {
+      "medicament": "Solupred 20 mg (Prednisone)",
+      "conseils": [
+        "**Rôle** C'est un traitement puissant et ",
+        "rapide pour éteindre l'inflammation sévère associée à la crise d'asthme que vous venez de faire.",
+        "**Administration** Un comprimé le matin pendant le repas, uniquement pour la durée prescrite (généralement 5 jours). Respectez scrupuleusement la durée courte de la prescription.",
+        "**Effets Possibles** Sur une courte durée, des troubles du sommeil, une excitation ou des troubles digestifs peuvent survenir."
+      ]
+    },
+    {
+      "medicament": "Aerol spray (Salbutamol)",
+      "conseils": [
+        "**Rôle** C'est votre traitement de secours. Il sert à vous soulager immédiatement si vous avez du mal à respirer en cas de crise.",
+        "**Administration** Agiter le spray, expirer, puis inspirer lentement et profondément en même temps que l'on appuie sur le dispositif. L'utilisation d'une chambre d'inhalation est suggérée, surtout si vous avez des difficultés de coordination.",
+        "**Signe d'Alerte** Une utilisation fréquente de ce traitement est un signal que votre asthme n'est pas bien contrôlé; il est important de revoir votre médecin.",
+        "**Effets Possibles** Des palpitations ou de légers tremblements peuvent survenir, ils sont généralement transitoires."
+      ]
+    }
+  ],
+  "informationsMaladie": [
+    "- **Asthme** Maladie chronique des bronches caractérisée par une inflammation permanente et un spasme bronchique, justifiant un traitement de fond (anti-inflammatoire) et un traitement de crise (bronchodilatateur).",
+    "- **Symptômes** Se manifestent par une difficulté à respirer (dyspnée), des sifflements, une sensation d'oppression thoracique et une toux sèche.",
+    "- **Objectif du Traitement** Deux objectifs principaux: soulager rapidement les symptômes lors d'une crise et contrôler la maladie pour prévenir les futures crises grâce au traitement de fond."
+  ],
+  "conseilsHygieneDeVie": [
+    "- **-Arrêt du tabac:** Cesser totalement et définitivement le tabac, qu'il soit actif ou passif.",
+    "- **-Éviction des allergènes:** Identifier et éviter les facteurs déclenchants connus tels que les pollens, les acariens ou les poils d'animaux.",
+    "- **-Aération du logement:** Assurer une bonne aération régulière du domicile pour renouveler l'air et limiter les irritants.",
+    "- **-Gestion du poids:** Perdre du poids en cas de surcharge pondérale, car cela peut améliorer le contrôle de l'asthme.",
+    "- **-RGO:** Prendre en charge un éventuel reflux gastro-œsophagien (RGO), souvent associé à l'asthme.",
+    "- **-Activité physique:** Pratiquer une activité physique adaptée et régulière, en accord avec le médecin traitant."
+  ],
+  "conseilsAlimentaires": [
+    "Il n'existe pas de régime alimentaire spécifique pour l'asthme allergique, mais des ajustements diététiques sont recommandés pour moduler l'inflammation, prévenir les symptômes allergiques et gérer les comorbidités (comme le reflux gastro-œsophagien ou l'obésité).",
+    "**-Aliments et Nutriments à Privilégier:**",
+    "   **1. Les aliments riches en Oméga-3 (Acides Gras Essentiels)** : Les oméga-3, trouvés dans les **poissons gras**, les **graines de lin** et les **noix**, sont à privilégier car ils possèdent des propriétés anti-inflammatoires et peuvent aider à réduire l'inflammation.",
+    "   **2. Les aliments riches en Vitamine C** : Des aliments comme les **oranges**, les **baies**, les **kiwis** et les **poivrons** sont conseillés car la vitamine C est un antihistaminique naturel et renforce le fonctionnement des cellules du système immunitaire.",
+    "   **3. L'eau et l'hydratation** : **Boire beaucoup d'eau** peut aider à soulager les symptômes de congestion. Une hydratation régulière est également recommandée.",
+    "   **4. Les fruits et légumes frais** : Une alimentation riche en **légumes et fruits** est généralement conseillée. Cela inclut les légumes verts.",
+    "**-Aliments à Éviter: **",
+    "   **1. L'alcool** : Il est recommandé d'éviter l'**alcool** car il peut aggraver les allergies et est un facteur déclenchant potentiel de rhinite. Sa consommation est fortement déconseillée.",
+    "   **2. Le sucre et les sucres rapides** : Le **sucre** est un aliment à éviter car il peut aggraver les allergies. Plus spécifiquement, il est recommandé de supprimer les **sucres d'absorption rapide** (tels que le sucre pur, les confitures, les sodas et les gâteaux).",
+    "   **3. La caféine** : La **caféine** est à éviter car elle peut aggraver les allergies. Les aliments contenant de la caféine sont également susceptibles d'induire une rhinite et sont déconseillés en cas de reflux gastro-œsophagien (RGO), une comorbidité fréquente de l'asthme.",
+    "   **4. Les produits laitiers et le chocolat** : Il est recommandé d'éviter les **produits laitiers** et le **chocolat**, car ils peuvent aggraver les allergies et sont mentionnés comme aliments déclencheurs potentiels de rhinite.",
+    "   **5. Les acides gras saturés et les acides gras trans** : Il faut limiter les apports en **acides gras saturés et trans** (tels que les viennoiseries, pizzas, quiches, margarines, barres chocolatées, plats cuisinés, ou graisses d'origine animale)."
+  ],
+  "ventesAdditionnelles": {
+    "accessoires": [],
+    "complementsAlimentaires": [
+      "**Cassis (feuille)** Permet de réduire l'inflammation des voies respiratoires, particulièrement utile pour les profils allergiques. La posologie dépend de la forme galénique; il est conseillé de se référer à la spécialité proposée et de débuter par la dose la plus faible.",
+      "**Ortie (feuille)** Agit sur les récepteurs et enzymes associés à la rhinite allergique, fréquemment présente en cas d'asthme allergique. Dose indicative: 300 mg d'extrait par jour.",
+      "**Quercétine** Flavonoïde qui inhibe la libération d'histamine par les mastocytes, contribuant ainsi à moduler la réaction allergique. Dose indicative: 500 mg 2-3 fois par jour.",
+      "**Lierre Grimpant** Démontre un effet bénéfique sur la fonction pulmonaire, notamment chez l'enfant asthmatique en traitement complémentaire, grâce à son action antitussive et fluidifiante. Exemple de forme galénique: extrait de feuille (35 mg par cuillère-mesure en sirop).",
+      "**Astragale** Son principe actif, l'astragaloside IV, a montré sa capacité à réduire l'inflammation dans l'asthme. La posologie dépend de la forme galénique; il est conseillé de se référer à la spécialité et de commencer par la dose la plus faible.",
+      "**Menthe Poivrée** Améliore les paramètres spirométriques en relaxant les muscles lisses des bronches. Peut être utilisée en infusion. Attention: l'utilisation d'huiles essentielles par voie respiratoire est très délicate et potentiellement irritante chez le patient asthmatique, à déconseiller en automédication. Privilégier des formes galéniques orales validées.",
+      "**Magnésium** Aide à maintenir un statut normal en magnésium (souvent bas chez les asthmatiques et lié à la sévérité de la maladie) et possède des propriétés anti-inflammatoires. Dose indicative: 340 mg par jour chez l'adulte.",
+      "**Vitamine C** Antioxydant majeur, qui prévient la sécrétion d'histamine. Dose indicative: 1000 mg par jour en prises fractionnées.",
+      "**Oméga-3 (Huile de poisson)** Acides gras essentiels (EPA/DHA) qui contribuent à diminuer l'inflammation générale et bronchique. Privilégier des huiles de poisson de qualité, titrées en EPA/DHA, et suivre la posologie du fabricant en visant un apport combiné d'au moins 1g/jour."
+    ],
+    "cosmetiques": [],
+    "dispositifs": [
+      "**Chambre d'inhalation** Suggérée avec l'Aerol Spray, surtout si le patient rencontre des difficultés de coordination, pour optimiser l'efficacité de l'inhalation."
+    ]
+  },
+  "references": [
+    "- **Danesch, U. C. (2004)** Petasites hybridus (butterbur root) extract in the treatment of asthma - an open trial. Alternative Medicine Review, 9(1), 54–62.",
+    "- **Gontijo-Amaral, C., Ribeiro, M. A., Gontijo-Assunção, C., Ribeiro, A. F., & Mota, J. A. C. (2007)** Oral magnesium supplementation in asthmatic children: a double-blind randomized placebo-controlled trial. European Journal of Clinical Nutrition, 61(1), 54–60.",
+    "- **Goetz, P., & Hadji-Minaglou, F. (n.d.)** Conseil en phytothérapie: Guide à l'usage du prescripteur. Lavoisier Tec & Doc.",
+    "- **Roschek, B. Jr, Fink, R. C., McMichael, M., & Alberte, R. S. (2009)** Nettle extract (Urtica dioica) affects key receptors and enzymes associated with allergic rhinitis. Phytotherapy Research, 23(7), 920–926.",
+    "- **Sabbah, L. (2016)** Les 6 processus physiopathologiques pour les 3 ans du D.E.I: L'essentiel en 200 fiches! Elsevier Health Sciences France.",
+    "- **Zeil, S., Schwanebeck, U., & Vogelberg, C. (2014)** Tolerance and effect of an add-on treatment with a cough medicine containing ivy leaves dry extract on lung function in children with bronchial asthma. Phytomedicine, 21(10), 1216–1220."
+  ],
+  "id": "",
+  "type": "ordonnances",
+  "theme": "Ordonnances",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-10-14T21:55:41.422Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Asthme",
+      "definition": "Maladie respiratoire chronique caractérisée par une inflammation et une hyperréactivité des bronches, entraînant des épisodes de sifflements, toux, essoufflement et oppression thoracique."
+    },
+    {
+      "term": "Bronchodilatateur",
+      "definition": "Médicament qui agit en relaxant les muscles autour des voies respiratoires, les élargissant pour faciliter la respiration. Utilisé pour soulager les symptômes de l'asthme."
+    },
+    {
+      "term": "Corticoïde inhalé (CSI)",
+      "definition": "Anti-inflammatoire puissant administré par inhalation, utilisé comme traitement de fond de l'asthme pour réduire l'inflammation bronchique."
+    },
+    {
+      "term": "Crise d'asthme",
+      "definition": "Épisode aigu d'aggravation des symptômes asthmatiques (essoufflement, sifflements, toux, oppression thoracique) nécessitant souvent un traitement de secours."
+    },
+    {
+      "term": "Chambre d'inhalation",
+      "definition": "Dispositif utilisé avec certains inhalateurs pour faciliter l'inhalation du médicament et en optimiser le dépôt pulmonaire, notamment chez les enfants et les personnes âgées."
+    },
+    {
+      "term": "Observance",
+      "definition": "Degré auquel le comportement d'une personne (prise de médicaments, régime alimentaire, changements de mode de vie) correspond aux recommandations convenues d'un professionnel de santé."
+    },
+    {
+      "term": "Peak Flow (Débit Expiratoire de Pointe)",
+      "definition": "Mesure du volume maximal d'air qu'une personne peut expirer de force après une inspiration complète. Utilisé pour surveiller le contrôle de l'asthme à domicile."
+    },
+    {
+      "term": "Exacerbation",
+      "definition": "Aggravation des symptômes d'une maladie chronique, comme l'asthme, au-delà des variations quotidiennes habituelles."
+    },
+    {
+      "term": "Inhalateur",
+      "definition": "Dispositif médical servant à administrer des médicaments directement dans les poumons par inhalation."
+    },
+    {
+      "term": "Allergènes",
+      "definition": "Substances, souvent inoffensives pour la plupart des gens, mais qui peuvent déclencher une réaction allergique chez les personnes sensibles, comme celles souffrant d'asthme allergique."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qu'est-ce que l'asthme?",
+      "answer": "Une maladie inflammatoire chronique des voies respiratoires, caractérisée par une hyperréactivité bronchique et une obstruction réversible des bronches."
+    },
+    {
+      "question": "Quel est le rôle principal du pharmacien dans le conseil aux patients asthmatiques?",
+      "answer": "Éduquer sur l'utilisation correcte des inhalateurs, l'observance du traitement, et la reconnaissance des signes d'alerte."
+    },
+    {
+      "question": "Quels sont les deux types de médicaments utilisés dans le traitement de l'asthme?",
+      "answer": "Les traitements de fond (contrôleurs) et les traitements de crise (bronchodilatateurs de secours)."
+    },
+    {
+      "question": "À quoi sert un bronchodilatateur de courte durée d'action (BDCA)?",
+      "answer": "À soulager rapidement les symptômes de la crise d'asthme en dilatant les bronches."
+    },
+    {
+      "question": "Quand un corticoïde inhalé (CSI) est-il généralement prescrit?",
+      "answer": "En traitement de fond pour réduire l'inflammation bronchique et prévenir les crises."
+    },
+    {
+      "question": "Quelle est l'importance de la chambre d'inhalation?",
+      "answer": "Elle optimise le dépôt du médicament dans les poumons, réduisant les effets secondaires systémiques et facilitant l'inhalation pour certains patients."
+    },
+    {
+      "question": "Citez un signal d'alerte indiquant une aggravation de l'asthme.",
+      "answer": "Augmentation de la fréquence d'utilisation du bronchodilatateur de secours, essoufflement croissant, toux nocturne persistante."
+    },
+    {
+      "question": "Comment le pharmacien peut-il vérifier l'observance du traitement chez un patient asthmatique?",
+      "answer": "En discutant de la régularité des prises, en vérifiant les dates de renouvellement et l'utilisation des dispositifs."
+    },
+    {
+      "question": "Qu'est-ce qu'un plan d'action personnalisé pour l'asthme?",
+      "answer": "Un document élaboré avec le médecin qui guide le patient sur la gestion de son asthme au quotidien et en cas de crise."
+    },
+    {
+      "question": "Quels sont les facteurs déclenchants courants de l'asthme?",
+      "answer": "Allergènes (pollen, acariens), irritants (fumée, pollution), infections respiratoires, exercice physique, stress."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quel est le principal objectif des corticoïdes inhalés dans le traitement de l'asthme?",
+      "options": [
+        "Soulager rapidement une crise",
+        "Dilater les bronches immédiatement",
+        "Réduire l'inflammation bronchique sur le long terme",
+        "Prévenir les infections respiratoires"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les corticoïdes inhalés sont des traitements de fond qui agissent en réduisant l'inflammation des voies respiratoires, prévenant ainsi les crises et améliorant le contrôle de l'asthme."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est l'une des fonctions clés du pharmacien dans le conseil aux patients asthmatiques?",
+      "options": [
+        "Prescrire de nouveaux traitements",
+        "Réaliser des spirométries",
+        "Éduquer sur la bonne technique d'inhalation",
+        "Diagnostiquer la sévérité de l'asthme"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le pharmacien joue un rôle essentiel dans l'éducation thérapeutique, notamment en montrant et en vérifiant la bonne technique d'utilisation des différents dispositifs d'inhalation."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un bronchodilatateur de courte durée d'action (BDCA) doit être utilisé principalement pour :",
+      "options": [
+        "Un usage quotidien systématique",
+        "Soulager les symptômes d'une crise d'asthme",
+        "Prévenir les crises futures",
+        "Traiter l'inflammation chronique"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les BDCA, comme le Salbutamol, sont des médicaments de secours destinés à soulager rapidement les symptômes aigus d'une crise d'asthme."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Un signal d'alerte important chez un asthmatique est :",
+      "options": [
+        "Utilisation quotidienne du traitement de fond",
+        "Diminution de l'utilisation du bronchodilatateur de secours",
+        "Augmentation de la fréquence d'utilisation du bronchodilatateur de secours",
+        "Absence de sifflements"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Une augmentation de l'utilisation du bronchodilatateur de secours indique généralement un contrôle insuffisant de l'asthme ou une aggravation de la maladie."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Pourquoi l'utilisation d'une chambre d'inhalation est-elle recommandée pour certains patients?",
+      "options": [
+        "Pour augmenter la dose de médicament",
+        "Pour réduire le dépôt du médicament dans la bouche et la gorge",
+        "Pour rendre l'inhalation plus difficile",
+        "Uniquement pour les adultes"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La chambre d'inhalation permet de réduire la vitesse d'arrivée du médicament, optimisant son dépôt dans les poumons et minimisant le dépôt oropharyngé, réduisant ainsi les effets secondaires locaux."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Parmi les facteurs suivants, lequel est un déclencheur courant de l'asthme?",
+      "options": [
+        "Une alimentation équilibrée",
+        "L'exercice physique intense chez certaines personnes",
+        "Une bonne hydratation",
+        "L'arrêt du tabac"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'exercice physique peut être un facteur déclenchant de l'asthme chez certains individus, connu sous le nom d'asthme d'effort."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "L'asthme est une maladie contagieuse.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "L'asthme est une maladie inflammatoire chronique non contagieuse."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Le pharmacien doit conseiller le patient sur la surveillance de son débit expiratoire de pointe (Peak Flow).",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "Le pharmacien peut éduquer le patient sur l'importance et la technique de mesure du Peak Flow pour le suivi de son asthme à domicile."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Un patient asthmatique doit arrêter son traitement de fond dès qu'il se sent mieux.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le traitement de fond doit être pris régulièrement, même en l'absence de symptômes, pour maintenir le contrôle de l'asthme et prévenir les crises. L'arrêt ne doit se faire que sur avis médical."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les antibiotiques sont le traitement de première intention pour une crise d'asthme.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les antibiotiques ne traitent pas l'asthme qui est une inflammation bronchique. Le traitement de première intention pour une crise est un bronchodilatateur de courte durée d'action. Les antibiotiques sont prescrits uniquement en cas de surinfection bactérienne avérée."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Ordonnances",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/asthme.jpg",
+  "youtubeLinks": [
+    {
+      "url": "https://youtu.be/6T5GGIy_K50",
+      "title": "Mémofiche CAO Asthme : Conseils à l'officine"
+    },
+    {
+      "url": "https://youtu.be/AWZaxBsgZp8",
+      "title": "Mémofiche Asthme et Micronutrition"
+    },
+    {
+      "url": "https://youtu.be/xlkrk2b9Up4",
+      "title": "Wébinaire CAO Asthme allergique et conseils à l'officine 22 04 2025"
+    }
+  ],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "customSections": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "isFree": false,
+  "kahootUrl": "",
+  "keyQuestions": [],
+  "level": "Facile",
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "recommendations": {
+    "mainTreatment": [],
+    "associatedProducts": [],
+    "lifestyleAdvice": [],
+    "dietaryAdvice": []
+  },
+  "redFlags": [],
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": [
+      {
+        "type": "text",
+        "value": ""
+      }
+    ]
+  },
+  "shortDescription": "",
+  "sectionOrder": [
+    "ordonnance",
+    "analyseOrdonnance",
+    "conseilsTraitement",
+    "informationsMaladie",
+    "conseilsHygieneDeVie",
+    "conseilsAlimentaires",
+    "ventesAdditionnelles"
+  ],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}

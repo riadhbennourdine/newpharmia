@@ -1,0 +1,371 @@
+{
+  "_id": "68dc3f909bc677ed9b956036",
+  "title": "Rhume: MémoFiche Conseil à l'officine",
+  "sections": [
+    {
+      "title": "Diagnostic Différentiel & Orientation",
+      "content": "**Rhume (Rhinopharyngite)** : Apparition progressive. Fièvre légère ou absente (< 38°C). Écoulement nasal clair puis épais. Éternuements fréquents. Mal de gorge modéré. Fatigue légère. Durée 7-10 jours.\n**Angine bactérienne** : Apparition rapide. Fièvre élevée (> 38,5°C). Douleur intense à la gorge. Ganglions cervicaux gonflés. Difficultés à avaler. Peu/pas de symptômes nasaux. Points blancs possibles sur amygdales.\n**Grippe** : Apparition brutale. Fièvre élevée (> 38,5°C) avec frissons. Courbatures intenses. Maux de tête importants. Fatigue intense. Toux sèche.\n**Rhinite allergique** : Éternuements, écoulement nasal clair et abondant. Démangeaisons nasales et oculaires. Pas de fièvre. Yeux qui piquent et larmoient.\n**Critères orientation médecin** : Fièvre > 38,5°C persistant > 48h. Symptômes durant > 10 jours. Difficultés respiratoires. Douleurs sinusiennes intenses. Terrain à risque (asthme, immunodépression). Altération importante de l'état général."
+    }
+  ],
+  "patientSituation": {
+    "title": "Cas comptoir",
+    "content": [
+      {
+        "type": "text",
+        "value": "• Un patient âgé de 45 ans se présente à la pharmacie en déclarant : « Je suis enrhumé. Que me conseillez-vous?»"
+      },
+      {
+        "type": "image",
+        "value": "https://pharmaconseilbmb.com/photos/site/orl-respiration/6.jpg"
+      }
+    ]
+  },
+  "keyQuestions": [
+    "**-**Est-ce pour vous ? et s'il s'agit d'un enfant, quel âge a-t-il?",
+    "**-**Quels sont vos symptômes précis ? (Nez qui coule, mal de gorge, toux, fièvre, éternuements, maux de tête, nez bouché ?)",
+    "**-**Depuis combien de temps avez-vous ces symptômes ?",
+    "**-**Vos sécrétions nasales sont-elles claires ou purulentes ?",
+    "**-**Avez-vous de la fièvre ou des maux de tête ?",
+    "**-**Avez-vous déjà commencé un traitement et, si oui, lequel ?",
+    "**-**Avez-vous des antécédents médicaux ou prenez-vous des médicaments actuellement ?",
+    "**-**Êtes-vous enceinte ?"
+  ],
+  "pathologyOverview": {
+    "title": "Aperçu pathologie",
+    "content": [
+      {
+        "type": "text",
+        "value": "• - **Définition** :\n**-**Le rhume, ou rhinopharyngite, est une infection **virale** bénigne des voies respiratoires supérieures, principalement causée par des rhinovirus mais aussi certains coronavirus, des myxovirus et des adénovirus. Il se caractérise par une inflammation de la muqueuse nasale et du pharynx.\n**-**C'est une infection contagieuse; La contagion se fait par voie aérienne (postillons, toux) ou par contact direct avec des objets contaminés.\n**-**Le rhume est une infection bénigne qui guérit spontanément en 7 à 10 jours\n• - **Symptômes** : Fièvre modérée (< 38-38,5°C), mal de gorge léger, nez qui coule (clair puis épais) et bouché.\n• - **Autres symptômes** : Fatigue modérée, maux de tête légers, légère toux sèche.\n• - **Facteurs favorisants** :\n**-**Baisse d'immunité (fatigue, stress),\n**-**Carence en fer \n**-**Froid\n**-**Tabagisme...\n• - **Complications possibles** : plus fréquentes chez les enfants, les personnes âgées, les immunodéprimés:\n**-**Sinusite\n**-**Otite moyenne aiguë\n**-**Bronchite"
+      }
+    ]
+  },
+  "redFlags": [
+    "**-**Température > 38,5°C persistant plus de **48**h.",
+    "**-**Douleur ou écoulement auriculaire : Risque d'otite moyenne aiguë.",
+    "**-**Douleur à la déglutition intense et persistante.",
+    "**-**Difficultés respiratoires ou douleurs thoraciques.",
+    "**-**Terrain à risque : Patient asthmatique, atteint de BPCO, diabétique, ou immunodéprimé.",
+    "**-**Altération de l'état général",
+    "**-**Aggravation des symptômes ou absence d'amélioration après 2 à 3 jours d'automédication.",
+    "**-**Douleur ou écoulement purulent des sinus, amplifiés si tête penchée en avant."
+  ],
+  "recommendations": {
+    "mainTreatment": [
+      "**Lavage nasal** : ",
+      "**-Objectifs**",
+      "**.**Il aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.",
+      "**.**Il permet de nettoyer la muqueuse nasale des virus et des autres agents irritants.",
+      "**.**Il hydrate la muqueuse nasale, réduisant ainsi l'inflammation et l'inconfort.",
+      "**.**Il aide à prévenir les complications comme la sinusite ou l'otite.",
+      "**-Posologie**: **2** à **6** fois par jour, une narine après l'autre.",
+      "**-Nez qui coule**: Sérum physiologique ou solutions d'eau de mer isotoniques.",
+      "Ex: Medimar isotonique®.",
+      "**-Nez bouché**  : Solutions hypertoniques pour un effet décongestionnant osmotique. ",
+      "Ex: Physiomer hypertonique®",
+      "**-Conseil**: Rincer l'embout à l'eau chaude et au savon après chaque utilisation.  ",
+      "**-Remarque**: Le rhume est d'origine **virale**, les **antibiotiques** sont **inutiles**. "
+    ],
+    "associatedProducts": [
+      "* **-Paracétamol :**",
+      "    * **.Usage :** Fièvre et maux de tête, en première intention.",
+      "    * **.Posologie :** **500** mg - **1000** mg  3 fois/jour.",
+      "    * **.Attention :** Ne pas dépasser 4 g/jour et respecter un intervalle de 4 à 6 h entre les prises.",
+      "* **-Antihistaminiques (Anti-H1) :**",
+      "    * **.Usage :** Rhume, éternuements, larmoiements.",
+      "    * **.Effet secondaire :** Peuvent causer de la **somnolence**.",
+      "    * **.Contre-indications (CI) :** Âge <6 ans, glaucome, troubles urétro-prostatiques, grossesse/allaitement.",
+      "* **-Vasoconstricteurs (Pseudoéphédrine) :**",
+      "    * **.Usage :** Décongestion nasale, traitement du nez bouché",
+      "    * **.Durée max. :** 5  jours.",
+      "    * **.CI absolues :** Âge <15 ans, grossesse/allaitement, AVC, HTA sévère, maladies cardiovasculaires, glaucome, IMAO, maladies rénales.",
+      "    * **.Alerte médicale :** Consulter en cas de maux de tête soudains et sévères, nausées, vomissements, confusion, convulsions, ou troubles visuels.",
+      "**-Autres Soins et Suppléments**",
+      "* **.Crèmes apaisantes :** Soulagent l'irritation des narines (Ex: Homéoplasmine®).",
+      "* **.Inhalations chaudes :** Effet décongestionnant/antiseptique (huiles essentielles/dérivés terpéniques). ",
+      "* **.Inhalations sèches/Sprays :** HE (eucalyptus, menthe) sur mouchoir ou vaporisées.",
+      "* **.Zinc :** Antioxydant, booste l'immunité, réduit durée/sévérité des symptômes. **Posologie** :**25** mg/j pendant **7** jours si symptômes ; **15** mg/j en prévention.",
+      "* **.Vitamine C :** Antioxydante, renforce l'immunité, réduit la fatigue. **Posologie** :** 1000** à  **2000** mg/j si symptômes.",
+      "* **.Vitamine D :** Régule l'immunité, réduit le risque d'infections respiratoires. **Posologie**: Jusqu'à **4000** UI/j si symptômes ; **800** à **1200** UI/j en prévention.",
+      "* **.Échinacée :** Stimule le système immunitaire. **CI :** Maladies auto-immunes, allergies.",
+      "* **.Sureau noir :** Réduit la durée et l'intensité des symptômes du rhume. **CI :** Diabète. **Interaction :** Diurétiques."
+    ],
+    "lifestyleAdvice": [
+      "**-**Se laver les mains régulièrement (eau/savon ou SHA), surtout après s'être mouché/toussé/éternué.",
+      "**-**Utiliser des mouchoirs à usage unique et les jeter immédiatement dans une poubelle fermée.",
+      "**-**Se couvrir la bouche et le nez (de préférence dans le pli du coude) lors d'un éternuement ou d'une toux.",
+      "**-**Aérer régulièrement les pièces. Maintenir une atmosphère fraîche (18-20°C). Éviter de surchauffer et les climatiseurs.",
+      "**-**Éviter le tabac et les atmosphères enfumées, qui aggravent les symptômes et favorisent les récidives.",
+      "**-**Porter un masque jetable si nécessaire pour limiter la contagion.",
+      "**-**Ne pas partager les objets personnels (verre, sprays d'eau de mer).",
+      "**-**Proscrire les changements de température brutaux."
+    ],
+    "dietaryAdvice": [
+      "**-**Boire abondamment (eau, tisanes, bouillons chauds) pour rester hydraté et fluidifier les sécrétions.",
+      "**-**Consommer des aliments riches en vitamine C (agrumes, kiwi, poivrons) pour soutenir l'immunité."
+    ]
+  },
+  "references": [
+    "- Milan, A. (2002, November 1). « J’en ai assez de ce rhume ! ». Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/jen-ai-assez-de-ce-rhume",
+    "- Julien, C. (2010, November 1). « Je suis enrhumé ». Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-suis-enrhume-2",
+    "- Belin, N. (2020, October 27). “Je voudrais un anti-rhume naturel !” Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-un-anti-rhume-naturel",
+    "- Belin, N. (2024, January 19). “Un traitement naturel contre le rhume ?” Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/un-traitement-naturel-contre-le-rhume",
+    "- Belin, N. (2016, January 26). “Je voudrais quelque chose de naturel contre le rhume.” Le Moniteur Des Pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-quelque-chose-de-naturel-contre-le-rhume-2",
+    "- Bontemps, F. (2004, November 1). Je suis enrhumé. Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-suis-enrhume",
+    "- Rambert, H. (2011, December 1). « Je voudrais soigner mon rhume avec des médecines naturelles ». Le Moniteur des pharmacies. https://www.lemoniteurdespharmacies.fr/preparateurs/delivrance/je-voudrais-soigner-mon-rhume-avec-des-medecines-naturelles",
+    "- Berthélémy, S. (2013a). Conseils à un patient se plaignant d’un rhume. Actualités Pharmaceutiques, 52(524), 45–48. https://doi.org/10.1016/j.actpha.2013.01.017",
+    "- Lamassiaude- Peyramare, S. (2009)Comment soigner naturellement le rhume Actualités Pharmaceutiques N°481 ",
+    "- Clere, N. (2010).  Le rhume, osez un conseil complet. Actualités Pharmaceutiques. N°492 ",
+    "- Clere, N (2008). Maux de gorge et rhumes, les tracas de l’automne. Actualités Pharmaceutiques. N°478",
+    "- ANSM. (2020). Conseils & Prévention: Vous avez un rhume: que faire?"
+  ],
+  "id": "",
+  "theme": "Maladies courantes",
+  "system": "ORL & Respiration",
+  "creationDate": "2025-09-30T20:37:36.244Z",
+  "keyPoints": [],
+  "glossary": [
+    {
+      "term": "Rhinopharyngite",
+      "definition": "Terme médical désignant le rhume, une infection virale bénigne des voies respiratoires supérieures."
+    },
+    {
+      "term": "Solutions isotoniques",
+      "definition": "Solutions dont la concentration en sels est similaire à celle des fluides corporels, idéales pour un lavage nasal doux."
+    },
+    {
+      "term": "Solutions hypertoniques",
+      "definition": "Solutions dont la concentration en sels est supérieure à celle des fluides corporels, créant un effet osmotique qui aide à décongestionner les muqueuses nasales obstruées."
+    },
+    {
+      "term": "BPCO",
+      "definition": "Broncho-Pneumopathie Chronique Obstructive, une maladie pulmonaire chronique qui rend la respiration difficile et représente un terrain à risque en cas de rhume."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quelle est la définition du rhume ?",
+      "answer": "Le rhume est une infection virale bénigne des voies respiratoires supérieures, également appelée rhinopharyngite."
+    },
+    {
+      "question": "Quels sont les principaux agents causaux du rhume ?",
+      "answer": "Les rhinovirus, mais aussi les coronavirus, myxovirus et adénovirus."
+    },
+    {
+      "question": "Citez deux facteurs favorisant l'apparition du rhume.",
+      "answer": "La baisse d'immunité (fatigue, stress), la carence en fer, le froid ou le tabagisme."
+    },
+    {
+      "question": "Quel est le traitement principal à instaurer dès les premiers signes d'un rhume ?",
+      "answer": "Le lavage nasal."
+    },
+    {
+      "question": "Et les antibiotiques, quel est leur rôle dans le traitement du rhume?",
+      "answer": "Le rhume est d'origine virale, et les antibiotiques sont inefficaces contre les virus."
+    },
+    {
+      "question": "Citez deux bénéfices du lavage nasal.",
+      "answer": "Il évacue les sécrétions, humidifie la muqueuse, améliore l'efficacité des traitements et prévient les complications."
+    },
+    {
+      "question": "Quels types de produits sont recommandés pour le lavage nasal courant ?",
+      "answer": "Le **sérum physiologique** ou les solutions d'eau de mer **isotoniques**."
+    },
+    {
+      "question": "Dans quel cas les solutions nasales hypertoniques sont-elles spécifiquement recommandées ?",
+      "answer": "Pour un nez particulièrement bouché, grâce à leur effet décongestionnant osmotique."
+    },
+    {
+      "question": "En combien de temps un rhume guérit-il spontanément ?",
+      "answer": "Un rhume guérit spontanément en 7 à 10 jours."
+    },
+    {
+      "question": "Citez un signal d'alerte nécessitant une consultation médicale pour un rhume.",
+      "answer": "Fièvre élevée (> 38,5°C persistant plus de 48h), Symptômes prolongés (> 10 jours), Douleur auriculaire, Difficultés respiratoires, Terrain à risque (asthmatique, diabétique, immunodéprimé)."
+    }
+  ],
+  "quiz": [
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la cause principale du rhume ?",
+      "options": [
+        "Bactéries",
+        "Champignons",
+        "Virus",
+        "Allergènes"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le rhume est une infection virale des voies respiratoires supérieures, principalement causée par des rhinovirus."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quels sont les symptômes typiques du rhume ?",
+      "options": [
+        "Fièvre élevée (>39°C), douleurs thoraciques intenses, écoulement nasal purulent.",
+        "Fièvre modérée (<38,5°C), mal de gorge léger, nez qui coule/bouché, légère toux sèche.",
+        "Douleur auriculaire intense, symptômes prolongés au-delà de 15 jours.",
+        "Taches cutanées, gonflement des ganglions lymphatiques."
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les symptômes classiques du rhume incluent une fièvre modérée, un léger mal de gorge, un nez qui coule puis bouché, une fatigue modérée et une légère toux sèche."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quel type de produit peut-on conseiller comme traitement principal du rhume?",
+      "options": [
+        "Solutions antibiotiques",
+        "Solutions antiseptiques",
+        "Sérum physiologique ou solutions d'eau de mer isotoniques",
+        "Solutions d'eau de mer hypertonique"
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Le lavage nasal doit être effectué avec du sérum physiologique ou des solutions d'eau de mer isotoniques pour un nettoyage doux et efficace."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quelle est la fréquence recommandée pour le lavage nasal chez l'adulte enrhumé ?",
+      "options": [
+        "Une fois par jour",
+        "2 à 6 fois par jour",
+        "Seulement le soir avant de dormir",
+        "Uniquement quand le nez est très bouché"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Il est recommandé d'effectuer un lavage nasal 2 à 6 fois par jour pour maintenir une bonne hygiène et évacuer les sécrétions."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Quand un patient enrhumé devrait-il consulter un médecin ?",
+      "options": [
+        "Si les symptômes persistent au-delà de 3 jours.",
+        "Si la fièvre est modérée et dure 2 jours.",
+        "Si la fièvre dépasse 38,5°C et persiste plus de 48h, ou en cas de difficultés respiratoires.",
+        "Uniquement si le nez est très bouché."
+      ],
+      "correctAnswerIndex": 2,
+      "explanation": "Les signaux d'alerte majeurs incluent une fièvre élevée persistant plus de 48h, des difficultés respiratoires, douleur et écoulement auriculaire, douleur intense à la déglutition."
+    },
+    {
+      "questionType": "QCM",
+      "question": "Le maléate de phéniramine peut être conseillé pour soulager le symptôme suivant:",
+      "options": [
+        "L'obstruction nasale",
+        "L'écoulement nasal: Rhinorrhée",
+        "La fatigue",
+        "La toux sèche"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Le maléate de phéniramine est un anti histaminique (anti-H1) qui agit sur la rhinorrhée, les éternuements et les larmoiements. "
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "La pseudoéphédrine est le produit de choix pour traiter le nez bouché.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "La pseudoéphédrine permet de soulager l'obstruction nasale, mais elle est à éviter à cause de son effet vasoconstricteur expliquant ses nombreuses contre-indications."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "En période de rhume, on conseille le zinc à raison de 25mg/jour.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 0,
+      "explanation": "La posologie du zinc chez les patients présentant des symptômes de rhume est 25 à 50 mg/ jour.  "
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "En période de rhume, la dose quotidienne maximale de vitamine C est de 1 g/jour.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "En période de rhume, la posologie de vitamine C à conseiller est: 1g à 2g /jour."
+    },
+    {
+      "questionType": "VRAI_FAUX",
+      "question": "Les compléments alimentaires à base d'échinacée sont les produits de choix à conseiller pour stimuler l'immunité chez les personnes allergiques.",
+      "options": [
+        "Vrai",
+        "Faux"
+      ],
+      "correctAnswerIndex": 1,
+      "explanation": "Les produits à base d'échinacée sont reconnus pour leur effet immunostimulant, mais ils peuvent induire des réactions allergiques; ils doivent être donc évités chez les individus à terrain allergique."
+    }
+  ],
+  "taxonomies": {
+    "pedagogical": "Maladies courantes",
+    "clinical": "ORL & Respiration"
+  },
+  "coverImageUrl": "https://pharmaconseilbmb.com/photos/site/orl-respiration/rhume.jpg",
+  "customSections": [],
+  "isFree": false,
+  "kahootUrl": "",
+  "level": "Facile",
+  "shortDescription": "",
+  "sourceText": "",
+  "youtubeUrl": "",
+  "type": "maladie",
+  "analyseOrdonnance": [],
+  "beneficesSante": {
+    "title": "Bénéfices pour la santé",
+    "content": []
+  },
+  "casComptoir": {
+    "title": "Cas comptoir",
+    "content": []
+  },
+  "conseilsAlimentaires": [],
+  "conseilsHygieneDeVie": [],
+  "conseilsTraitement": [],
+  "dispositifsAConseiller": {
+    "title": "Dispositifs à conseiller ou à dispenser",
+    "content": []
+  },
+  "informationsMaladie": [],
+  "interetDispositif": {
+    "title": "Intérêt du dispositif",
+    "content": []
+  },
+  "objectifsConseil": {
+    "title": "Objectifs de conseil",
+    "content": []
+  },
+  "ordonnance": [],
+  "pagesSponsorisees": {
+    "title": "Pages sponsorisées",
+    "content": []
+  },
+  "pathologiesConcernees": {
+    "title": "Pathologies concernées",
+    "content": []
+  },
+  "referencesBibliographiquesDM": [],
+  "reponsesObjections": {
+    "title": "Réponses aux objections des clients",
+    "content": []
+  },
+  "ventesAdditionnelles": {},
+  "youtubeLinks": [],
+  "sectionOrder": [
+    "patientSituation",
+    "keyQuestions",
+    "pathologyOverview",
+    "redFlags",
+    "mainTreatment",
+    "associatedProducts",
+    "lifestyleAdvice",
+    "dietaryAdvice",
+    "keyPoints"
+  ],
+  "status": "Published",
+  "associatedProducts": [],
+  "dietaryAdvice": [],
+  "lifestyleAdvice": [],
+  "mainTreatment": [],
+  "memoSections": []
+}
