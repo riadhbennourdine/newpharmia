@@ -19,7 +19,7 @@ export const TOPIC_CATEGORIES = [
         category: "Systèmes et Organes",
         topics: [
             "Cardiovasculaire",
-            "Respiratoire",
+            "ORL & Respiration",
             "Digestif",
             "Endocrinien",
             "Nerveux",
