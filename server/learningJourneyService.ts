@@ -88,7 +88,7 @@ export async function queryLearningAssistant(query: string, history: { role: str
         contents.push({ role: 'user', parts: [{ text: query }] });
 
         const result = await genAI.models.generateContent({
-            model: 'gemini-2.5-flash', // Use an appropriate model
+            model: 'gemini-latest', // Use an appropriate model
             contents: contents,
             tools: [{
                 fileSearch: {
@@ -108,7 +108,6 @@ export async function queryLearningAssistant(query: string, history: { role: str
 
 export async function initializeFileStore() {
     await listFileStores(); // Log existing stores first
-    await listAvailableModels(); // Log available models
 
     try {
         const fileSearchStore = await getOrCreateFileStore();
