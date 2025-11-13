@@ -300,7 +300,7 @@ const WebinarsPage: React.FC = () => {
 
                     {/* Next Upcoming Webinar (if not live) */}
                     {nearestWebinar && liveWebinars.length === 0 && (
-                        <div className="mb-12 p-6 bg-white rounded-lg shadow-xl border-t-4 border-teal-500 max-w-4xl">
+                        <div className="mb-12 p-6 bg-white rounded-lg shadow-xl border-8 border-green-600 max-w-4xl">
                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">
                                 Prochain Webinaire
                             </h2>
