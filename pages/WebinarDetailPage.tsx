@@ -317,7 +317,9 @@ const WebinarDetailPage: React.FC = () => {
                                 ) : (
                                     <AddToCartForm webinarId={webinarId!} />
                                 )}
-
+                                <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
+                                    Pass journée: 80,000 DT
+                                </p>
                             </div>
 
                             {user?.role === UserRole.ADMIN && webinar.attendees && (
