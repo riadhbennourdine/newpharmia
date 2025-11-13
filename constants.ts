@@ -20,7 +20,7 @@ export const TOPIC_CATEGORIES = [
         topics: [
             "Cardiovasculaire",
             "ORL & Respiration",
-            "Digestif",
+            "DIGESTION",
             "Endocrinien",
             "Nerveux",
             "Urinaire",

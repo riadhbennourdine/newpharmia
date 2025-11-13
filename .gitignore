@@ -30,3 +30,6 @@ dist-server/
 server.js
 server/*.js
 types.js
+
+# Custom scripts
+scripts/
