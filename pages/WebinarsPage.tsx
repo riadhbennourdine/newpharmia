@@ -262,6 +262,14 @@ const WebinarsPage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {renderTabs()}
 
+            <div className="mb-8">
+                <img 
+                    src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762983569288-457142038.png" 
+                    alt="Couverture Webinaires" 
+                    className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
+                />
+            </div>
+
             {isLoading ? (
                 <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>
             ) : error ? (
