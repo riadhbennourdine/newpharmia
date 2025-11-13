@@ -1,8 +1,8 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part, Content } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part, Content, SchemaType } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
-// The schemas now use the official JSON Schema format required by the SDK.
+// The schemas now use the official SchemaType enum for defining data types.
 
 const getApiKey = () => {
   const API_KEY = process.env.GEMINI_API_KEY;
@@ -15,18 +15,18 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   let jsonStructure: Schema = {
-    type: "object",
+    type: SchemaType.OBJECT,
     properties: {
-      title: { type: "string" },
-      patientSituation: { type: "string" },
-      keyQuestions: { type: "array", items: { type: "string" } },
-      pathologyOverview: { type: "string" },
-      redFlags: { type: "array", items: { type: "string" } },
-      mainTreatment: { type: "array", items: { type: "string" } },
-      associatedProducts: { type: "array", items: { type: "string" } },
-      lifestyleAdvice: { type: "array", items: { type: "string" } },
-      dietaryAdvice: { type: "array", items: { type: "string" } },
-      references: { type: "array", items: { type: "string" } },
+      title: { type: SchemaType.STRING },
+      patientSituation: { type: SchemaType.STRING },
+      keyQuestions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      pathologyOverview: { type: SchemaType.STRING },
+      redFlags: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      mainTreatment: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      associatedProducts: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      lifestyleAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      dietaryAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
     },
     required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'],
   };
@@ -37,17 +37,17 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
-      type: "object",
+      type: SchemaType.OBJECT,
       properties: {
-        title: { type: "string" },
-        shortDescription: { type: "string" },
+        title: { type: SchemaType.STRING },
+        shortDescription: { type: SchemaType.STRING },
         memoSections: {
-          type: "array",
+          type: SchemaType.ARRAY,
           items: {
-            type: "object",
+            type: SchemaType.OBJECT,
             properties: {
-              title: { type: "string" },
-              content: { type: "string" },
+              title: { type: SchemaType.STRING },
+              content: { type: SchemaType.STRING },
             },
             required: ['title', 'content'],
           },
@@ -57,18 +57,18 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = {
-      type: "object",
+      type: SchemaType.OBJECT,
       properties: {
-        title: { type: "string" },
-        casComptoir: { type: "string" },
-        objectifsConseil: { type: "string" },
-        pathologiesConcernees: { type: "string" },
-        interetDispositif: { type: "string" },
-        beneficesSante: { type: "string" },
-        dispositifsAConseiller: { type: "string" },
-        reponsesObjections: { type: "string" },
-        pagesSponsorisees: { type: "string" },
-        references: { type: "array", items: { type: "string" } },
+        title: { type: SchemaType.STRING },
+        casComptoir: { type: SchemaType.STRING },
+        objectifsConseil: { type: SchemaType.STRING },
+        pathologiesConcernees: { type: SchemaType.STRING },
+        interetDispositif: { type: SchemaType.STRING },
+        beneficesSante: { type: SchemaType.STRING },
+        dispositifsAConseiller: { type: SchemaType.STRING },
+        reponsesObjections: { type: SchemaType.STRING },
+        pagesSponsorisees: { type: SchemaType.STRING },
+        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
       },
       required: [
         'title',
@@ -85,53 +85,53 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'ordonnances') {
     jsonStructure = {
-      type: "object",
+      type: SchemaType.OBJECT,
       properties: {
-        title: { type: "string" },
-        ordonnance: { type: "array", items: { type: "string" } },
-        analyseOrdonnance: { type: "array", items: { type: "string" } },
+        title: { type: SchemaType.STRING },
+        ordonnance: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        analyseOrdonnance: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
         conseilsTraitement: {
-          type: "array",
+          type: SchemaType.ARRAY,
           items: {
-            type: "object",
+            type: SchemaType.OBJECT,
             properties: {
-              medicament: { type: "string" },
-              conseils: { type: "array", items: { type: "string" } },
+              medicament: { type: SchemaType.STRING },
+              conseils: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
             },
             required: ['medicament', 'conseils'],
           },
         },
-        informationsMaladie: { type: "array", items: { type: "string" } },
-        conseilsHygieneDeVie: { type: "array", items: { type: "string" } },
-        conseilsAlimentaires: { type: "array", items: { type: "string" } },
+        informationsMaladie: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        conseilsHygieneDeVie: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        conseilsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
         ventesAdditionnelles: {
-          type: "object",
+          type: SchemaType.OBJECT,
           properties: {
-            complementsAlimentaires: { type: "array", items: { type: "string" } },
-            accessoires: { type: "array", items: { type: "string" } },
-            dispositifs: { type: "array", items: { type: "string" } },
-            cosmetiques: { type: "array", items: { type: "string" } },
+            complementsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            accessoires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            dispositifs: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            cosmetiques: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
           },
         },
-        references: { type: "array", items: { type: "string" } },
+        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   } else if (memoFicheType === 'communication') {
     jsonStructure = {
-      type: "object",
+      type: SchemaType.OBJECT,
       properties: {
-        title: { type: "string" },
-        shortDescription: { type: "string" },
-        summary: { type: "string" },
-        patientSituation: { type: "string" },
+        title: { type: SchemaType.STRING },
+        shortDescription: { type: SchemaType.STRING },
+        summary: { type: SchemaType.STRING },
+        patientSituation: { type: SchemaType.STRING },
         customSections: {
-          type: "array",
+          type: SchemaType.ARRAY,
           items: {
-            type: "object",
+            type: SchemaType.OBJECT,
             properties: {
-              title: { type: "string" },
-              content: { type: "string" },
+              title: { type: SchemaType.STRING },
+              content: { type: SchemaType.STRING },
             },
             required: ['title', 'content'],
           },
@@ -179,50 +179,50 @@ ${prompt}`;
 };
 
 const learningToolsSchema: Schema = {
-    type: "object",
+    type: SchemaType.OBJECT,
     properties: {
         flashcards: {
-            type: "array",
+            type: SchemaType.ARRAY,
             items: {
-                type: "object",
+                type: SchemaType.OBJECT,
                 properties: {
-                    question: { type: "string" },
-                    answer: { type: "string" },
+                    question: { type: SchemaType.STRING },
+                    answer: { type: SchemaType.STRING },
                 },
                 required: ['question', 'answer'],
             },
             description: "Crée exactement 10 flashcards pertinentes pour aider à mémoriser les points clés de la mémofiche."
         },
         glossary: {
-            type: "array",
+            type: SchemaType.ARRAY,
             items: {
-                type: "object",
+                type: SchemaType.OBJECT,
                 properties: {
-                    term: { type: "string" },
-                    definition: { type: "string" },
+                    term: { type: SchemaType.STRING },
+                    definition: { type: SchemaType.STRING },
                 },
                 required: ['term', 'definition'],
             },
             description: "Crée un glossaire d'exactement 10 termes techniques importants mentionnés dans la mémofiche."
         },
         quiz: {
-            type: "array",
+            type: SchemaType.ARRAY,
             items: {
-                type: "object",
+                type: SchemaType.OBJECT,
                 properties: {
                     questionType: {
-                        type: "string",
+                        type: SchemaType.STRING,
                         enum: ['QCM', 'VRAI_FAUX'],
                         description: "Le type de question : QCM (Question à Choix Multiples) ou VRAI_FAUX."
                     },
-                    question: { type: "string" },
+                    question: { type: SchemaType.STRING },
                     options: {
-                        type: "array", 
-                        items: { type: "string" },
+                        type: SchemaType.ARRAY, 
+                        items: { type: SchemaType.STRING },
                         description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
                     },
-                    correctAnswerIndex: { type: "integer" },
-                    explanation: { type: "string" }
+                    correctAnswerIndex: { type: SchemaType.INTEGER },
+                    explanation: { type: SchemaType.STRING }
                 },
                 required: ['questionType', 'question', 'options', 'correctAnswerIndex', 'explanation']
             },
