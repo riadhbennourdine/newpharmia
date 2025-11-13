@@ -60,8 +60,55 @@ async function listFileStores() {
     }
 }
 
+async function listAvailableModels() {
+    try {
+        console.log("Listing available Gemini models...");
+        const pager = await genAI.models.list();
+        if (!pager.page || pager.page.length === 0) {
+            console.log("No Gemini models found.");
+            return;
+        }
+        for (const model of pager.page) {
+            console.log(`- Found model: ${model.name} (Display Name: ${model.displayName})`);
+        }
+    } catch (error) {
+        console.error("Error listing Gemini models:", error);
+    }
+}
+
+export async function queryLearningAssistant(query: string, history: { role: string; parts: { text: string }[] }[]) {
+    try {
+        const fileSearchStore = await getOrCreateFileStore(); // Ensure store exists and get its name
+        const fileSearchStoreName = fileSearchStore.name;
+
+        const contents = history.map(msg => ({
+            role: msg.role,
+            parts: msg.parts,
+        }));
+        contents.push({ role: 'user', parts: [{ text: query }] });
+
+        const result = await genAI.models.generateContent({
+            model: 'gemini-2.5-flash', // Use an appropriate model
+            contents: contents,
+            tools: [{
+                fileSearch: {
+                    fileSearchStoreNames: [fileSearchStoreName],
+                },
+            }],
+        } as any); // Cast to any to allow the 'tools' property
+
+        const response = result.candidates[0].content.parts[0].text;
+        return response;
+
+    } catch (error) {
+        console.error("Error querying learning assistant:", error);
+        throw error;
+    }
+}
+
 export async function initializeFileStore() {
     await listFileStores(); // Log existing stores first
+    await listAvailableModels(); // Log available models
 
     try {
         const fileSearchStore = await getOrCreateFileStore();

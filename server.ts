@@ -26,7 +26,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('/data/uploads'));
 
-import { initializeFileStore } from './server/learningJourneyService.js';
+import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
 
 app.post('/api/learning-journey/initialize', async (req, res) => {
     try {
@@ -39,6 +39,20 @@ app.post('/api/learning-journey/initialize', async (req, res) => {
     } catch (error: any) {
         console.error('Error initializing learning journey:', error);
         res.status(500).json({ message: `Erreur interne du serveur lors de l'initialisation du parcours d'apprentissage.` });
+    }
+});
+
+app.post('/api/learning-assistant/ask', async (req, res) => {
+    try {
+        const { query, history } = req.body;
+        if (!query) {
+            return res.status(400).json({ message: 'Query is required.' });
+        }
+        const response = await queryLearningAssistant(query, history || []);
+        res.json({ response });
+    } catch (error: any) {
+        console.error('Error in learning assistant ask endpoint:', error);
+        res.status(500).json({ message: `Erreur interne du serveur lors de la requête à l'assistant d'apprentissage: ${error.message}` });
     }
 });
 
