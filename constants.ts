@@ -23,8 +23,7 @@ export const TOPIC_CATEGORIES = [
             "DIGESTION",
             "Endocrinien",
             "Nerveux",
-            "Urinaire",
-            "Reproducteur",
+            "Santé Féminine",
             "Ostéo-articulaire",
             "Pédiatrie",
         ]
