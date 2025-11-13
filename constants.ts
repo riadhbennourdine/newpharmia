@@ -25,7 +25,7 @@ export const TOPIC_CATEGORIES = [
             "Nerveux",
             "Santé Féminine",
             "Ostéo-articulaire",
-            "Pédiatrie",
+            "Santé cutanée",
         ]
     }
 ];
