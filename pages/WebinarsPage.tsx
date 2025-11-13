@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext'; // Import useCart
+import ExpandableText from '../components/ExpandableText'; // Import the new component
 import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon } from '../components/Icons';
 
 const CropTunisIntro: React.FC = () => (
@@ -125,9 +126,14 @@ const WebinarCard: React.FC<{
                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>
             </div>
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
-                <p className="text-xl font-bold text-teal-600 py-2">
-                    {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                </p>
+                <div>
+                    <p className="text-xl font-bold text-teal-600 py-2">
+                        {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    </p>
+                    <p className="text-2xl font-extrabold text-red-600">
+                        80,000 DT
+                    </p>
+                </div>
                 {renderButtons()}
             </div>
         </div>
@@ -268,9 +274,11 @@ const WebinarsPage: React.FC = () => {
                     alt="Couverture Webinaires" 
                     className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
                 />
-                <p className="mt-4 text-sm text-slate-600 font-light max-w-4xl line-clamp-4">
-                    Préparateurs en Ligne - Saison 2: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.
-                </p>
+                <ExpandableText
+                    text='<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d\'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l\'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d\'un même thème) afin de ne pas perturber l\'organisation quotidienne de la pharmacie. L\'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.'
+                    maxLength={250} // Truncate after 250 characters
+                    className="mt-4 text-sm text-slate-600 font-light max-w-4xl"
+                />
             </div>
 
             {isLoading ? (
