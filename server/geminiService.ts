@@ -212,6 +212,7 @@ const learningToolsSchema: Schema = {
                 properties: {
                     questionType: {
                         type: SchemaType.STRING,
+                        format: 'enum',
                         enum: ['QCM', 'VRAI_FAUX'],
                         description: "Le type de question : QCM (Question à Choix Multiples) ou VRAI_FAUX."
                     },
