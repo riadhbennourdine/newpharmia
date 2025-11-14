@@ -39,16 +39,23 @@ const ReadFichesPage: React.FC = () => {
                 const { readFiches: userReadFiches } = await readFichesResponse.json();
 
                 if (userReadFiches && userReadFiches.length > 0) {
-                    // Fetch details for each read fiche
+                    // Fetch full details for each fiche
                     const fichesPromises = userReadFiches.map(async (readInfo: { ficheId: string; readAt: Date; }) => {
-                        const res = await fetch(`/api/memofiches/${readInfo.ficheId}`);
-                        if (res.ok) {
-                            const ficheDetails = await res.json();
-                            return { ...ficheDetails, readAt: new Date(readInfo.readAt) }; // Combine details with read date
+                        try {
+                            const headers: HeadersInit = {};
+                            if (authUser) {
+                                headers['x-user-id'] = authUser._id as string;
+                            }
+                            const ficheResponse = await fetch(`/api/memofiches/${readInfo.ficheId}`, { headers });
+                            if (ficheResponse.ok) {
+                                const ficheData = await ficheResponse.json();
+                                return { ...ficheData, readAt: new Date(readInfo.readAt) };
+                            }
+                            return null;
+                        } catch {
+                            return null;
                         }
-                        return null;
                     });
-
                     const fichesDetails = await Promise.all(fichesPromises);
                     setReadFiches(fichesDetails.filter(Boolean) as (CaseStudy & { readAt: Date; })[]); // Filter out any null results
                 } else {
