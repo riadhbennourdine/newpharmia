@@ -27,20 +27,20 @@ const getGroupLogo = (group: WebinarGroup): string => {
 
 // Simplified component for time slot selection leading to Add to Cart or updating registration
 const AddToCartForm: React.FC<{ 
-    webinarId: string;
+    webinar: Webinar; // Added webinar prop
     initialSelectedSlots?: WebinarTimeSlot[]; // For already registered users
     onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
-}> = ({ webinarId, initialSelectedSlots, onUpdateRegistration }) => {
+}> = ({ webinar, initialSelectedSlots, onUpdateRegistration }) => {
     const { addToCart, findItem } = useCart();
     const navigate = useNavigate();
     const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(() => {
         // If initialSelectedSlots are provided (for registered users), use them.
         // Otherwise, check if the item is in the cart.
-        return initialSelectedSlots || (findItem(webinarId)?.slots || []);
+        return initialSelectedSlots || (findItem(webinar._id as string)?.slots || []);
     });
     
     // Check if the item is in the cart on initial render (only relevant for non-registered flow)
-    const isInitiallyInCart = !!findItem(webinarId);
+    const isInitiallyInCart = !!findItem(webinar._id as string);
     const [isAdded, setIsAdded] = useState(isInitiallyInCart);
 
     // Determine if we are in "update registration" mode
@@ -54,7 +54,9 @@ const AddToCartForm: React.FC<{
             
             // If in cart mode and item is already in cart, update it immediately
             if (!isUpdateMode && isInitiallyInCart) {
-                addToCart({ webinarId, slots: newSlots });
+                // We need to update the item in the cart context if slots change
+                // This assumes addToCart can also handle updates if item exists
+                addToCart(webinar, newSlots);
             }
             return newSlots;
         });
@@ -72,7 +74,7 @@ const AddToCartForm: React.FC<{
             alert("Vos créneaux horaires ont été mis à jour avec succès.");
         } else {
             // Add to cart flow
-            addToCart({ webinarId, slots: selectedSlots });
+            addToCart(webinar, selectedSlots);
             setIsAdded(true);
         }
     };
@@ -295,29 +297,28 @@ const WebinarDetailPage: React.FC = () => {
                                             <>
                                                 <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
                                                 {/* Display current slots or allow modification */}
-                                                <AddToCartForm 
-                                                    webinarId={webinarId!} 
-                                                    initialSelectedSlots={registeredAttendee.timeSlots}
-                                                    onUpdateRegistration={handleUpdateRegistration}
-                                                />
-                                            </>
-                                        )}
-                                        {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (
-                                            <a
-                                                href={webinar.googleMeetLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
-                                            >
-                                                <span className="mr-2">Rejoindre la conférence</span>
-                                                <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
-                                            </a>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <AddToCartForm webinarId={webinarId!} />
-                                )}
-                                <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
+                                                                                                 <AddToCartForm 
+                                                                                                    webinar={webinar} // Pass the webinar object
+                                                                                                    initialSelectedSlots={registeredAttendee.timeSlots}
+                                                                                                    onUpdateRegistration={handleUpdateRegistration}
+                                                                                                />
+                                                                                            </>
+                                                                                        )}
+                                                                                        {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (
+                                                                                            <a
+                                                                                                href={webinar.googleMeetLink}
+                                                                                                target="_blank"
+                                                                                                rel="noopener noreferrer"
+                                                                                                className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                                                                                            >
+                                                                                                <span className="mr-2">Rejoindre la conférence</span>
+                                                                                                <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
+                                                                                            </a>
+                                                                                        )}
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <AddToCartForm webinar={webinar} /> // Pass the webinar object
+                                                                                )}                                <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
                                     Pass journée: 80,000 DT
                                 </p>
                             </div>

@@ -1,17 +1,19 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { WebinarTimeSlot } from '../types';
+import { WebinarTimeSlot, Webinar } from '../types';
 
 // Define the shape of a single cart item
 export interface CartItem {
   webinarId: string;
   slots: WebinarTimeSlot[];
+  webinarDate: Date;
+  webinarTitle: string;
 }
 
 // Define the shape of the context data
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (webinar: Webinar, selectedSlots: WebinarTimeSlot[]) => void;
   removeFromCart: (webinarId: string) => void;
   updateItemSlots: (webinarId: string, newSlots: WebinarTimeSlot[]) => void;
   clearCart: () => void;
@@ -44,17 +46,32 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem('webinarCart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = (webinar: Webinar, selectedSlots: WebinarTimeSlot[]) => {
+    const now = new Date();
+    const webinarDateTime = new Date(webinar.date);
+
+    if (webinarDateTime < now) {
+      console.warn(`Cannot add past webinar "${webinar.title}" to cart.`);
+      return;
+    }
+
     setCartItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(i => i.webinarId === item.webinarId);
+      const existingItemIndex = prevItems.findIndex(i => i.webinarId === webinar._id);
+      const newItem: CartItem = {
+        webinarId: webinar._id as string,
+        slots: selectedSlots,
+        webinarDate: webinar.date,
+        webinarTitle: webinar.title,
+      };
+
       if (existingItemIndex > -1) {
         // Item already exists, update its slots
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex] = item;
+        updatedItems[existingItemIndex] = newItem;
         return updatedItems;
       } else {
         // Item does not exist, add it
-        return [...prevItems, item];
+        return [...prevItems, newItem];
       }
     });
   };
