@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part, Content, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part, Content, SchemaType } from "@google/genai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
