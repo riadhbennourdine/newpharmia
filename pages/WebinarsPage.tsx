@@ -180,35 +180,25 @@ const WebinarsPage: React.FC = () => {
                     .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
                 const pastWebinars = data
                     .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
-                    .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                    .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Tri décroissant pour les passés
 
-                setWebinars(data);
+                setWebinars(data); // Garder tous les webinaires pour le rendu
 
+                // Trouver le webinaire le plus proche parmi les prochains
                 const nearest = upcomingWebinars.length > 0 ? upcomingWebinars[0] : null;
-                const nearestWebinarDate = nearest ? new Date(nearest.date) : null;
+                setNearestWebinar(nearest);
 
-                if (nearestWebinarDate && (nearestWebinarDate.getMonth() !== currentMonth || nearestWebinarDate.getFullYear() !== currentYear)) {
-                    setNearestWebinar(nearest);
-                } else {
-                    setNearestWebinar(null);
-                }
-
+                // Séparer les webinaires du mois en cours et des mois futurs pour les prochains webinaires
                 const currentMonthUpcoming = upcomingWebinars.filter(w => {
                     const d = new Date(w.date);
-                    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                    // Exclure le nearestWebinar de cette liste
+                    return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearest ? w._id.toString() !== nearest._id.toString() : true);
                 });
                 setCurrentMonthWebinars(currentMonthUpcoming);
 
                 const futureMonthsUpcoming = upcomingWebinars.filter(w => {
                     const d = new Date(w.date);
-                    const isCurrentMonth = d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-                    const isNearest = nearest ? w._id.toString() === nearest._id.toString() : false;
-                    
-                    // Exclude all from current month, and the nearest if it's not in the current month
-                    if (isCurrentMonth) return false;
-                    if (nearestWebinar && isNearest) return false;
-                    
-                    return true;
+                    return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
                 });
 
                 const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
@@ -224,6 +214,7 @@ const WebinarsPage: React.FC = () => {
                 }, {} as Record<string, Webinar[]>);
                 setFutureMonthsWebinars(groupedFutureWebinars);
 
+                // Stocker les webinaires live et passés séparément pour le rendu
                 setLiveWebinars(liveWebinars);
                 setPastWebinars(pastWebinars);
 
@@ -333,6 +324,9 @@ const WebinarsPage: React.FC = () => {
                     {/* Upcoming Webinars (Current Month) */}
                     {currentMonthWebinars.length > 0 && (
                          <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Autres webinaires ce mois-ci
+                            </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {currentMonthWebinars.map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
