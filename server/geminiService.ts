@@ -296,7 +296,24 @@ Comment puis-je vous aider aujourd'hui ?` }] },
         },
       });
 
-    const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\\n\\nQUESTION: ${question}`);
-    const response = result.response;
-    return response.text().trim();
-};
+        const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\\n\\nQUESTION: ${question}`);
+
+        const response = result.response;
+
+        return response.text().trim();
+
+    };
+
+    
+
+    export const listModels = async (): Promise<any[]> => {
+
+        const genAI = new GoogleGenerativeAI(getApiKey());
+
+        const { models } = await genAI.listModels();
+
+        return models;
+
+    };
+
+    

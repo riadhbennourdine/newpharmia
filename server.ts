@@ -8,7 +8,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -787,6 +787,16 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
 
     } catch (error: any) {
         console.error('Error in chat endpoint:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/gemini/models', async (req, res) => {
+    try {
+        const models = await listModels();
+        res.json(models);
+    } catch (error: any) {
+        console.error('Error listing models:', error);
         res.status(500).json({ message: error.message });
     }
 });
