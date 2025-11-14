@@ -436,6 +436,15 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }
   };
 
+    const chatContext = {
+        title: caseStudy.title,
+        patientSituation: caseStudy.patientSituation,
+        pathologyOverview: caseStudy.pathologyOverview,
+        keyPoints: caseStudy.keyPoints,
+        mainTreatment: caseStudy.mainTreatment,
+        redFlags: caseStudy.redFlags,
+    };
+
   return (
     <div className="animate-fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {caseStudy.coverImageUrl ? (
@@ -502,7 +511,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
                 </div>
               )}
           </div>
-          <aside className="lg:col-span-1 z-10"><div className="sticky top-24"><CustomChatBot title={caseStudy.title} context={JSON.stringify(caseStudy)} /></div></aside>
+          <aside className="lg:col-span-1 z-10"><div className="sticky top-24"><CustomChatBot title={caseStudy.title} context={JSON.stringify(chatContext)} /></div></aside>
       </div>
     </div>
   );

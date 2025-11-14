@@ -769,7 +769,7 @@ app.post('/api/gemini/generate-learning-tools', async (req, res) => {
     }
 });
 
-app.post('/api/gemini/chat', async (req, res) => {
+app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
     try {
         const { messages, context } = req.body;
 
