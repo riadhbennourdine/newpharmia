@@ -333,10 +333,7 @@ const WebinarsPage: React.FC = () => {
                     {/* Upcoming Webinars (Current Month) */}
                     {currentMonthWebinars.length > 0 && (
                          <div>
-                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
-                                Prochains webinaires ce mois-ci
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {currentMonthWebinars.map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
@@ -353,7 +350,7 @@ const WebinarsPage: React.FC = () => {
                             {Object.entries(futureMonthsWebinars).map(([monthYear, monthWebinars]) => (
                                 <div key={monthYear} className="mb-12">
                                     <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                         {monthWebinars.map(webinar => (
                                             <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                         ))}
@@ -369,7 +366,7 @@ const WebinarsPage: React.FC = () => {
                             <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">
                                 Webinaires Passés
                             </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {pastWebinars.map(webinar => (
                                     <WebinarCard key={webinar._id.toString()} webinar={webinar} />
                                 ))}
