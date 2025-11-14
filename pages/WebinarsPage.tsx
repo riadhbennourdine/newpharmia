@@ -33,6 +33,17 @@ const WebinarCard: React.FC<{
                 <p className="text-sm text-slate-500 italic">Webinaire passé</p>
             );
         }
+        // New condition for confirmed registration without a Google Meet link (or before it's live)
+        if (webinar.registrationStatus === 'CONFIRMED' && !webinar.googleMeetLink) {
+            return (
+                <button
+                    onClick={() => navigate(`/webinars/${webinar._id}`)}
+                    className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
+                >
+                    Inscription validée
+                </button>
+            );
+        }
         if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink) {
             return (
                 <a
