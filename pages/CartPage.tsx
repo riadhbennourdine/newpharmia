@@ -183,6 +183,9 @@ const CartPage: React.FC = () => {
                 >
                   {isCreatingOrder ? <Spinner className="h-5 w-5" /> : 'Procéder au paiement'}
                 </button>
+                <Link to="/webinars" className="w-full mt-4 text-center text-teal-600 font-semibold py-2 px-4 rounded-lg hover:bg-teal-50 transition-colors block">
+                  Continuer à choisir un autre wébinaire
+                </Link>
                 <button 
                   onClick={clearCart} 
                   className="w-full mt-4 text-sm text-slate-600 hover:text-red-500"
