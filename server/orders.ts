@@ -126,7 +126,7 @@ router.post('/:orderId/submit-payment', authenticateToken, async (req: Authentic
         if (!order) {
             return res.status(404).json({ message: 'Order not found.' });
         }
-        if (order.userId.toString() !== userId.toString()) {
+        if (!order.userId.equals(new ObjectId(userId))) {
             return res.status(403).json({ message: 'You are not authorized to update this order.' });
         }
         if (order.status !== OrderStatus.PENDING_PAYMENT) {
