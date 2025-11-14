@@ -93,7 +93,10 @@ const WebinarCard: React.FC<{
                 </Link>
                 <div className="p-4 flex flex-col">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                        <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
+                            <SparklesIcon className="h-5 w-5 text-teal-500 mr-2" />
+                            {webinar.title}
+                        </h3>
                         {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && (
                             <a
                                 href={webinar.googleMeetLink}
@@ -120,7 +123,10 @@ const WebinarCard: React.FC<{
                 )}
             </Link>
             <div className="p-4 flex-grow flex flex-col">
-                <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate">{webinar.title}</h3>
+                <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
+                    <SparklesIcon className="h-5 w-5 text-teal-500 mr-2" />
+                    {webinar.title}
+                </h3>
                 <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mt-1">Animé par {webinar.presenter}</p>
                 <p className="text-xs text-slate-500 mt-1">Le {new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                 <p className="mt-2 text-sm text-slate-600 line-clamp-3 flex-grow">{webinar.description}</p>

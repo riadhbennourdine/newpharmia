@@ -46,6 +46,11 @@ const AddToCartForm: React.FC<{
     // Determine if we are in "update registration" mode
     const isUpdateMode = !!onUpdateRegistration;
 
+    // Check if the webinar date has passed
+    const now = new Date();
+    const webinarDateTime = new Date(webinar.date);
+    const isPastWebinar = webinarDateTime < now;
+
     const handleCheckboxChange = (slot: WebinarTimeSlot) => {
         setSelectedSlots(prev => {
             const newSlots = prev.includes(slot)
@@ -98,6 +103,14 @@ const AddToCartForm: React.FC<{
                 ? 'bg-orange-500 text-white hover:bg-orange-600'
                 : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed')
     }`;
+
+    if (isPastWebinar && !isUpdateMode) { // If it's a past webinar and not in update mode (meaning not already registered)
+        return (
+            <div className="text-center text-red-600 font-semibold mt-4">
+                Ce webinaire est passé. L'inscription n'est plus possible.
+            </div>
+        );
+    }
 
     return (
         <div>
