@@ -50,11 +50,15 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
         const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
+        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
             webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
-            if (userIdString) {
+
+            if (isAdmin) {
+                // Admins can see everything, so we don't delete anything.
+            } else if (userIdString) {
                 const attendee = webinar.attendees.find(
                     att => att.userId.toString() === userIdString
                 );
@@ -132,7 +136,11 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
 
         const authReq = req as AuthenticatedRequest;
-        if (authReq.user) {
+        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
+
+        if (isAdmin) {
+            // Admins can see everything.
+        } else if (authReq.user) {
             const userIdString = authReq.user._id.toString();
             console.log(`[Webinar Debug] Authenticated user ID: ${userIdString}`);
             console.log('[Webinar Debug] Webinar attendees:', JSON.stringify(webinar.attendees, null, 2));
