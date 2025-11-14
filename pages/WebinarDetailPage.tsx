@@ -138,6 +138,14 @@ const AddToCartForm: React.FC<{
             >
                 {buttonText}
             </button>
+            {isAdded && !isUpdateMode && (
+                <button
+                    onClick={() => navigate('/webinars')}
+                    className="w-full mt-2 text-center text-teal-600 font-semibold py-2 px-4 rounded-lg hover:bg-teal-50 transition-colors"
+                >
+                    Continuer à choisir un autre wébinaire
+                </button>
+            )}
         </div>
     );
 };
