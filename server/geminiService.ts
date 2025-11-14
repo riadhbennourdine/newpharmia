@@ -310,7 +310,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
 
         const genAI = new GoogleGenerativeAI(getApiKey());
 
-        const { models } = await genAI.listModels();
+        const { models } = await genAI.models.list();
 
         return models;
 
