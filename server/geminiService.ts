@@ -92,11 +92,25 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
   const jsonText = response.candidates[0].content.parts[0].text.trim();
 
+  // Use a regex to extract the JSON object from the response text
+  const jsonMatch = jsonText.match(/```json\s*([\s\S]*?)\s*```/);
+  let extractedJsonString = jsonText;
+  if (jsonMatch && jsonMatch[1]) {
+    extractedJsonString = jsonMatch[1];
+  } else if (jsonText.startsWith('{') && jsonText.endsWith('}')) {
+    // If it's not wrapped in ```json, but is a valid JSON object string
+    extractedJsonString = jsonText;
+  } else {
+    console.error("Texte reçu de Gemini (pas de JSON trouvé ou format inattendu):", jsonText);
+    throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide ou est dans un format inattendu.");
+  }
+
   try {
-    return JSON.parse(jsonText);
+    return JSON.parse(extractedJsonString);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
+    console.error("JSON extrait pour parsing:", extractedJsonString);
     throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide.");
   }
 };
