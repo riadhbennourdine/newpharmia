@@ -143,8 +143,55 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
     console.error("JSON extrait pour parsing:", extractedJsonString);
-    throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide.");
+    
+    // Attempt to clean and re-parse
+    const cleanedString = cleanMalformedJson(extractedJsonString);
+    console.error("JSON nettoyé pour re-parsing:", cleanedString);
+    try {
+      return JSON.parse(cleanedString);
+    } catch (cleanError) {
+      console.error("Erreur de parsing JSON après nettoyage:", cleanError);
+      throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide même après nettoyage.");
+    }
   }
+};
+
+function cleanMalformedJson(jsonString: string): string {
+  let cleanedString = jsonString;
+
+  // Remove any non-JSON characters before the first { and after the last }
+  const firstCurly = cleanedString.indexOf('{');
+  const lastCurly = cleanedString.lastIndexOf('}');
+  if (firstCurly !== -1 && lastCurly !== -1 && lastCurly > firstCurly) {
+    cleanedString = cleanedString.substring(firstCurly, lastCurly + 1);
+  }
+
+  // Replace single quotes with double quotes for string values
+  cleanedString = cleanedString.replace(/'/g, '"');
+
+  // Remove trailing commas from objects and arrays
+  // This regex is more robust for various whitespace and newline scenarios
+  cleanedString = cleanedString.replace(/,\s*([}\]])/g, '$1');
+
+  // Escape unescaped double quotes within string values
+  // This is a common issue where "key": "value with "quotes"" breaks JSON
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\"/g, (match, p1) => {
+    // Only escape if the inner content contains unescaped double quotes
+    if (p1.includes('"') && !p1.includes('\\"')) {
+      return `"${p1.replace(/"/g, '\\"')}"`;
+    }
+    return match;
+  });
+
+  // Escape unescaped newlines within string values
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\n/g, (match, p1) => `"${p1}\\n`);
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\r/g, (match, p1) => `"${p1}\\r`);
+
+  // Remove comments (single-line and multi-line) - sometimes models output these
+  cleanedString = cleanedString.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+
+  return cleanedString;
+}
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
