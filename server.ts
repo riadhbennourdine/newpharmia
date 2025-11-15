@@ -359,11 +359,12 @@ app.post('/api/admin/filesearch/search', authenticateToken, async (req: Authenti
     }
 
     try {
-                    const fileParts = files.map(file => ({
-                        fileData: {
-                            fileUri: file.uri,
-                        },
-                    }));  const searchResult = await searchInFiles(query, fileParts);
+                                const fileParts = files.map(file => ({
+                                    fileData: {
+                                        mimeType: file.mimeType,
+                                        fileUri: file.uri,
+                                    },
+                                }));  const searchResult = await searchInFiles(query, fileParts);
         res.json({ result: searchResult });
     } catch (error: any) {
         console.error('Error searching in files:', error);
