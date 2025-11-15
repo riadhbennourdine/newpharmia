@@ -72,11 +72,22 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     `;
 
   const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Le contenu de la mémofiche est : "${context}".
+
+  Les outils pédagogiques (flashcards, glossaire, quiz) doivent être DIRECTEMENT DÉRIVÉS des informations clés et spécifiques présentes dans le "context" de la mémofiche fournie. Ne générez pas d'informations générales ou non présentes dans le contexte.
+
   Toutes les valeurs de chaîne de caractères dans le JSON doivent avoir les guillemets doubles internes échappés avec une barre oblique inverse (\\") et les nouvelles lignes échappées avec \\n.
+
   La réponse doit être un objet JSON valide et complet avec les clés "flashcards", "glossary", et "quiz".
-  "flashcards" doit être un tableau de 10 objets avec "question" and "answer".
-  "glossary" doit être un tableau de 10 objets avec "term" and "definition".
-  "quiz" doit être un tableau de 10 questions : 6 QCM avec 4 options et 4 Vrai/Faux. Chaque question doit avoir "questionType", "question", "options", "correctAnswerIndex", et "explanation".
+
+  "flashcards" doit être un tableau de 10 objets avec "question" et "answer". Chaque flashcard doit porter sur un point clé du contexte.
+  Exemple de flashcard: {"question": "Quel est l'objectif du traitement d'attaque dans le psoriasis?", "answer": "Réduire rapidement l'inflammation et l'épaisseur des squames."}
+
+  "glossary" doit être un tableau de 10 objets avec "term" et "definition". Chaque terme doit être un concept important du contexte.
+  Exemple de glossaire: {"term": "Phénomène de Koebner", "definition": "Apparition de lésions psoriasiques sur des zones de peau saine ayant subi un traumatisme."}
+
+  "quiz" doit être un tableau de 10 questions : 6 QCM avec 4 options et 4 Vrai/Faux. Chaque question doit être basée sur le contexte et avoir "questionType", "question", "options", "correctAnswerIndex", et "explanation".
+  Exemple de QCM: {"questionType": "QCM", "question": "Quelle est la dose maximale hebdomadaire pour l'association calcipotriol/bétaméthasone?", "options": ["50g", "100g", "150g", "200g"], "correctAnswerIndex": 1, "explanation": "La dose ne doit pas dépasser 100g par semaine."}
+  Exemple de Vrai/Faux: {"questionType": "VraiFaux", "question": "Le psoriasis est une maladie contagieuse.", "options": ["Vrai", "Faux"], "correctAnswerIndex": 1, "explanation": "Le psoriasis est une dermatose inflammatoire chronique et non contagieuse."}
   `;
 
   const request = {
