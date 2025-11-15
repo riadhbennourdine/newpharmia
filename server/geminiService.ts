@@ -63,13 +63,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
   const model = getGenerativeModel('gemini-2.0-flash-001');
 
-  const context = `
-        Titre: ${memoContent.title}
-        Situation: ${memoContent.patientSituation}
-        Pathologie: ${memoContent.pathologyOverview}
-        Traitements: ${(memoContent.mainTreatment ?? []).join(', ')}
-        Signaux d'alerte: ${(memoContent.redFlags ?? []).join(', ')}
-    `;
+  console.log("Contenu de memoContent avant construction du prompt:", JSON.stringify(memoContent, null, 2));
 
   const fullPrompt = `À partir des informations détaillées de la mémofiche suivante, génère des outils pédagogiques (flashcards, glossaire, quiz) pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json).
 
