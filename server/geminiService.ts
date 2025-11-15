@@ -92,16 +92,25 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
   const jsonText = response.candidates[0].content.parts[0].text.trim();
 
-  // Use a regex to extract the JSON object from the response text
-  const jsonMatch = jsonText.match(/```json\s*([\s\S]*?)\s*```/);
   let extractedJsonString = jsonText;
-  if (jsonMatch && jsonMatch[1]) {
-    extractedJsonString = jsonMatch[1];
-  } else if (jsonText.startsWith('{') && jsonText.endsWith('}')) {
-    // If it's not wrapped in ```json, but is a valid JSON object string
-    extractedJsonString = jsonText;
+
+  // If the response starts with ```json, remove it
+  if (extractedJsonString.startsWith('```json')) {
+    extractedJsonString = extractedJsonString.substring(7).trim();
+  }
+  // If the response ends with ```, remove it
+  if (extractedJsonString.endsWith('```')) {
+    extractedJsonString = extractedJsonString.substring(0, extractedJsonString.length - 3).trim();
+  }
+
+  // Find the first '{' and the last '}' to robustly extract the JSON object
+  const firstCurly = extractedJsonString.indexOf('{');
+  const lastCurly = extractedJsonString.lastIndexOf('}');
+
+  if (firstCurly !== -1 && lastCurly !== -1 && lastCurly > firstCurly) {
+    extractedJsonString = extractedJsonString.substring(firstCurly, lastCurly + 1);
   } else {
-    console.error("Texte reçu de Gemini (pas de JSON trouvé ou format inattendu):", jsonText);
+    console.error("Texte reçu de Gemini (pas de JSON valide trouvé après extraction):", jsonText);
     throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide ou est dans un format inattendu.");
   }
 
