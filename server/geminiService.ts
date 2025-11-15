@@ -2,7 +2,7 @@ import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 import { vertexAI } from './vertexAI.js';
 import { HarmCategory, HarmBlockThreshold } from '@google-cloud/vertexai';
-import { CaseStudy, MemoFicheStatus } from '../types.js';
+import { CaseStudy, MemoFicheStatus, Flashcard, GlossaryTerm, QuizQuestion } from '../types.js';
 
 const getGenerativeModel = (modelName: string) => {
   return vertexAI.getGenerativeModel({
