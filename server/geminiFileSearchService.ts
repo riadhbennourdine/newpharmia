@@ -17,9 +17,9 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
   const base64File = fileBytes.toString('base64');
 
   const filePart: Part = {
-    fileData: {
+    inlineData: {
       mimeType,
-      fileUri: `data:${mimeType};base64,${base64File}`,
+      data: base64File,
     },
   };
 
