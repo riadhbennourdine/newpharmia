@@ -76,7 +76,13 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
   - **Informations Maladie** : ${(memoContent.informationsMaladie ?? []).join('; ')}
   - **Conseils Hygiène de Vie** : ${(memoContent.conseilsHygieneDeVie ?? []).join('; ')}
   - **Conseils Alimentaires** : ${(memoContent.conseilsAlimentaires ?? []).join('; ')}
-  - **Ventes Additionnelles** : ${memoContent.ventesAdditionnelles ? `Compléments: ${(memoContent.ventesAdditionnelles.complementsAlimentaires ?? []).join(', ')}; Cosmétiques: ${(memoContent.ventesAdditionnelles.cosmetiques ?? []).join(', ')}` : ''}
+  - **Ventes Additionnelles** : ${
+    Array.isArray(memoContent.ventesAdditionnelles)
+      ? (memoContent.ventesAdditionnelles as string[]).join('; ')
+      : memoContent.ventesAdditionnelles
+        ? `Compléments: ${(memoContent.ventesAdditionnelles.complementsAlimentaires ?? []).join(', ')}; Cosmétiques: ${(memoContent.ventesAdditionnelles.cosmetiques ?? []).join(', ')}`
+        : ''
+  }
   - **Signaux d'alerte** : ${(memoContent.redFlags ?? []).join('; ')}
 
   Les outils pédagogiques doivent être DIRECTEMENT DÉRIVÉS des informations clés et spécifiques présentes dans CES SECTIONS de la mémofiche. Ne générez pas d'informations générales ou non présentes dans le contexte fourni.
