@@ -7,7 +7,7 @@ import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-  const genAI = new GoogleGenerativeAI();
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
   let jsonStructure: Schema = {
@@ -230,7 +230,7 @@ const learningToolsSchema: Schema = {
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-    const genAI = new GoogleGenerativeAI();
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     const context = `
@@ -257,7 +257,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    const genAI = new GoogleGenerativeAI();
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
@@ -303,7 +303,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
     /*
     export const listModels = async (): Promise<any[]> => {
 
-        const genAI = new GoogleGenerativeAI();
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
         const { models } = await genAI.models.list();
 
