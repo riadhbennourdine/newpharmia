@@ -768,11 +768,11 @@ app.post('/api/gemini/generate-draft', async (req, res) => {
 
 app.post('/api/gemini/generate-learning-tools', async (req, res) => {
     try {
-        const memoContent = req.body as Partial<CaseStudy>;
-        if (!memoContent) {
-            return res.status(400).json({ message: 'MemoFiche content is required.' });
+        const { memoFicheId, ...memoContent } = req.body as Partial<CaseStudy> & { memoFicheId: string };
+        if (!memoContent || !memoFicheId) {
+            return res.status(400).json({ message: 'MemoFiche content and ID are required.' });
         }
-        const tools = await generateLearningTools(memoContent);
+        const tools = await generateLearningTools(memoContent, memoFicheId);
         res.json(tools);
     } catch (error: any) {
         console.error('Error generating learning tools:', error);

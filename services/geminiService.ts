@@ -28,12 +28,13 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   return handleResponse(response);
 };
 
-export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
+export const generateLearningTools = async (memoContent: Partial<CaseStudy>, memoFicheId: string): Promise<Partial<CaseStudy>> => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error("Jeton d'authentification non trouvé.");
   
   const body = {
     ...memoContent,
+    memoFicheId, // Pass memoFicheId to the backend
     generationConfig: {
       glossary: {
         count: 10,
