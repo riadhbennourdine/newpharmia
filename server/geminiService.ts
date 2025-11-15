@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Schema, Part, Content, SchemaType } from "@google/genai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, Schema, SchemaType } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
@@ -304,8 +304,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
 
     };
 
-    
-
+    /*
     export const listModels = async (): Promise<any[]> => {
 
         const genAI = new GoogleGenerativeAI(getApiKey());
@@ -315,5 +314,4 @@ Comment puis-je vous aider aujourd'hui ?` }] },
         return models;
 
     };
-
-    
+    */

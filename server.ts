@@ -8,7 +8,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -26,11 +26,12 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('/data/uploads'));
 
-import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
+// import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
 
+/*
 app.post('/api/learning-journey/initialize', async (req, res) => {
     try {
-        const result = await initializeFileStore();
+            // const result = await initializeFileStore();
         if (result.success) {
             res.json({ message: result.message });
         } else {
@@ -41,20 +42,23 @@ app.post('/api/learning-journey/initialize', async (req, res) => {
         res.status(500).json({ message: `Erreur interne du serveur lors de l'initialisation du parcours d'apprentissage.` });
     }
 });
+*/
 
+/*
 app.post('/api/learning-assistant/ask', async (req, res) => {
     try {
         const { query, history } = req.body;
         if (!query) {
             return res.status(400).json({ message: 'Query is required.' });
         }
-        const response = await queryLearningAssistant(query, history || []);
+                // const response = await queryLearningAssistant(query, history || []);
         res.json({ response });
     } catch (error: any) {
         console.error('Error in learning assistant ask endpoint:', error);
         res.status(500).json({ message: `Erreur interne du serveur lors de la requête à l'assistant d'apprentissage: ${error.message}` });
     }
 });
+*/
 
 // In production, serve static files from the build directory
 if (process.env.NODE_ENV === 'production') {
@@ -791,6 +795,7 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
     }
 });
 
+/*
 app.get('/api/gemini/models', async (req, res) => {
     try {
         const models = await listModels();
@@ -800,6 +805,7 @@ app.get('/api/gemini/models', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+*/
 
 /*
 // KONNECT PAYMENT ROUTES
