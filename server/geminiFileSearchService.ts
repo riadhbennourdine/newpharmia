@@ -1,15 +1,6 @@
-import { VertexAI } from '@google-cloud/vertexai';
+import { vertexAI } from './vertexAI.js';
 import * as fs from 'fs';
 import { Part } from '@google-cloud/vertexai';
-
-const PROJECT_ID = process.env.GOOGLE_PROJECT_ID;
-const LOCATION = 'us-central1';
-
-if (!PROJECT_ID) {
-  throw new Error('La variable d\'environnement GOOGLE_PROJECT_ID est requise.');
-}
-
-const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
 
 const getGenerativeModel = (modelName: string) => {
   return vertexAI.getGenerativeModel({ model: modelName });
