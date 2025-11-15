@@ -1,3 +1,5 @@
+import clientPromise from './mongo.js';
+import { ObjectId } from 'mongodb';
 import { vertexAI } from './vertexAI.js';
 import { HarmCategory, HarmBlockThreshold } from '@google-cloud/vertexai';
 import { CaseStudy, MemoFicheStatus } from '../types.js';
@@ -60,10 +62,31 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 
 
 
-export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
+export const generateLearningTools = async (memoContent: Partial<CaseStudy>, memoFicheId: string): Promise<Partial<CaseStudy>> => {
   const model = getGenerativeModel('gemini-2.0-flash-001');
 
   console.log("Contenu de memoContent avant construction du prompt:", JSON.stringify(memoContent, null, 2));
+
+  const client = await clientPromise;
+  const db = client.db('pharmia');
+  const memoFichesCollection = db.collection<CaseStudy>('memofiches');
+
+  // Try to find the memoFiche in the database
+  const existingMemoFiche = await memoFichesCollection.findOne({ _id: new ObjectId(memoFicheId) });
+
+  if (!existingMemoFiche) {
+    throw new Error(`MemoFiche with ID ${memoFicheId} not found.`);
+  }
+
+  // Check if learning tools are already cached
+  if (
+    existingMemoFiche.flashcards && existingMemoFiche.flashcards.length > 0 &&
+    existingMemoFiche.glossary && existingMemoFiche.glossary.length > 0 &&
+    existingMemoFiche.quiz && existingMemoFiche.quiz.length > 0
+  ) {
+    console.log(`Learning tools for MemoFiche ${memoFicheId} found in cache. Returning cached data.`);
+    return existingMemoFiche;
+  }
 
   const fullPrompt = `À partir des informations détaillées de la mémofiche suivante, génère des outils pédagogiques (flashcards, glossaire, quiz) pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json).
 
@@ -137,8 +160,9 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide ou est dans un format inattendu.");
   }
 
+  let generatedLearningTools: { flashcards: Flashcard[]; glossary: GlossaryTerm[]; quiz: QuizQuestion[] };
   try {
-    return JSON.parse(extractedJsonString);
+    generatedLearningTools = JSON.parse(extractedJsonString);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
@@ -148,12 +172,32 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     const cleanedString = cleanMalformedJson(extractedJsonString);
     console.error("JSON nettoyé pour re-parsing:", cleanedString);
     try {
-      return JSON.parse(cleanedString);
+      generatedLearningTools = JSON.parse(cleanedString);
     } catch (cleanError) {
       console.error("Erreur de parsing JSON après nettoyage:", cleanError);
       throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide même après nettoyage.");
     }
   }
+
+  // Update the existing memoFiche with the newly generated learning tools
+  await memoFichesCollection.updateOne(
+    { _id: new ObjectId(memoFicheId) },
+    {
+      $set: {
+        flashcards: generatedLearningTools.flashcards,
+        glossary: generatedLearningTools.glossary,
+        quiz: generatedLearningTools.quiz,
+      },
+    }
+  );
+
+  // Return the updated memoFiche
+  return {
+    ...existingMemoFiche,
+    flashcards: generatedLearningTools.flashcards,
+    glossary: generatedLearningTools.glossary,
+    quiz: generatedLearningTools.quiz,
+  };
 };
 
 function cleanMalformedJson(jsonString: string): string {
