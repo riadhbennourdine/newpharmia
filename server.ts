@@ -332,6 +332,7 @@ app.post('/api/admin/filesearch/upload', authenticateToken, fileSearchUpload.sin
         return res.status(400).json({ message: 'Aucun fichier envoyé.' });
     }
 
+    console.log('req.file.mimetype:', req.file.mimetype);
     try {
         const geminiFile = await uploadFileToGemini(req.file.path, req.file.mimetype);
         fs.unlinkSync(req.file.path); // Clean up the temporary file
@@ -352,6 +353,7 @@ app.post('/api/admin/filesearch/search', authenticateToken, async (req: Authenti
     }
 
     const { query, files } = req.body;
+    console.log('Files received in search request:', files);
     if (!query || !files || !Array.isArray(files) || files.length === 0) {
         return res.status(400).json({ message: 'La requête et une liste de fichiers sont requises.' });
     }
