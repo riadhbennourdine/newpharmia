@@ -90,6 +90,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     `;
 
   const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Le contenu de la mémofiche est : "${context}".
+  Toutes les valeurs de chaîne de caractères dans le JSON doivent avoir les guillemets doubles internes échappés avec une barre oblique inverse (\\") et les nouvelles lignes échappées avec \\n.
   La réponse doit être un objet JSON valide et complet avec les clés "flashcards", "glossary", et "quiz".
   "flashcards" doit être un tableau de 10 objets avec "question" and "answer".
   "glossary" doit être un tableau de 10 objets avec "term" and "definition".
