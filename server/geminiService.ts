@@ -58,25 +58,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   }
 };
 
-function cleanMalformedJson(jsonString: string): string {
-  let cleanedString = jsonString;
 
-  // 1. Replace single quotes with double quotes for string values
-  cleanedString = cleanedString.replace(/'/g, '"');
-
-  // 2. Remove trailing commas from objects and arrays
-  cleanedString = cleanedString.replace(/,(\s*[}\]])/g, '$1');
-
-  // 3. Fix prematurely closed strings with escaped double quotes followed by comma
-  // This targets the specific pattern observed: `?\",` should be `?",`
-  cleanedString = cleanedString.replace(/\\\",/g, '",');
-
-  // 4. Escape unescaped newlines within string values (if any remain)
-  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\n/g, (match, p1) => `"${p1}\\n`);
-  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\r/g, (match, p1) => `"${p1}\\r`);
-
-  return cleanedString;
-}
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
   const model = getGenerativeModel('gemini-2.0-flash-001');
@@ -110,24 +92,11 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
   const jsonText = response.candidates[0].content.parts[0].text.trim();
 
-  // Use a regex to extract the JSON object from the response text
-  const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    console.error("Texte reçu de Gemini (pas de JSON trouvé):", jsonText);
-    throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide.");
-  }
-  const extractedJsonString = jsonMatch[0];
-  console.log("JSON extrait (avant nettoyage):", extractedJsonString);
-  const cleanedJsonString = cleanMalformedJson(extractedJsonString);
-  console.log("JSON nettoyé (avant parsing):", cleanedJsonString);
-
   try {
-    return JSON.parse(cleanedJsonString);
+    return JSON.parse(jsonText);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
-    console.error("JSON extrait:", extractedJsonString);
-    console.error("JSON nettoyé:", cleanedJsonString);
     throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide.");
   }
 };
