@@ -37,7 +37,7 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
  * @returns The search results as a string.
  */
 export const searchInFiles = async (query: string, fileParts: Part[]) => {
-  const model = getGenerativeModel('gemini-1.5-pro');
+  const model = getGenerativeModel('gemini-2.0-flash-001');
 
   const prompt = `
     Tu es un assistant de recherche expert. Ta tâche est de répondre à la question de l'utilisateur en te basant EXCLUSIVEMENT sur le contenu des fichiers fournis.
