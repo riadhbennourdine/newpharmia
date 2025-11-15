@@ -89,12 +89,16 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
   const jsonText = response.candidates[0].content.parts[0].text.trim();
 
-  const cleanedJsonText = jsonText.startsWith('```json')
-    ? jsonText.substring(7, jsonText.length - 3).trim()
-    : jsonText;
+  // Use a regex to extract the JSON object from the response text
+  const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    console.error("Texte reçu de Gemini (pas de JSON trouvé):", jsonText);
+    throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide.");
+  }
+  const extractedJsonString = jsonMatch[0];
 
   try {
-    return JSON.parse(cleanedJsonText);
+    return JSON.parse(extractedJsonString);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
