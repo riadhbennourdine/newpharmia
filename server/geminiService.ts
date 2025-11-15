@@ -192,7 +192,6 @@ function cleanMalformedJson(jsonString: string): string {
 
   return cleanedString;
 }
-};
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const model = getGenerativeModel('gemini-2.0-flash-001');
