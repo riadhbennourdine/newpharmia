@@ -334,7 +334,7 @@ app.post('/api/admin/filesearch/upload', authenticateToken, fileSearchUpload.sin
 
     console.log('req.file.mimetype:', req.file.mimetype);
     try {
-        const geminiFile = await uploadFileToGemini(req.file.path, req.file.mimetype);
+        const geminiFile = await uploadFileToGemini(req.file.path, req.file.mimetype, req.file.originalname);
         fs.unlinkSync(req.file.path); // Clean up the temporary file
         res.json(geminiFile);
     } catch (error: any) {

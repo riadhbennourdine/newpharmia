@@ -12,22 +12,13 @@ const getGenerativeModel = (modelName: string) => {
  * @param mimeType The MIME type of the file.
  * @returns The Gemini File API object.
  */
-export const uploadFileToGemini = async (path: string, mimeType: string) => {
-  const fileBytes = fs.readFileSync(path);
+export const uploadFileToGemini = async (filePath: string, mimeType: string, name: string) => {
+  const fileBytes = fs.readFileSync(filePath);
   const base64File = fileBytes.toString('base64');
+  const fileUri = `data:${mimeType};base64,${base64File}`;
 
-  const filePart: Part = {
-    inlineData: {
-      mimeType,
-      data: base64File,
-    },
-  };
-
-  // With the new SDK, we don't upload files beforehand.
-  // We pass the file data directly when generating content.
-  // This function will now just prepare the file part.
-  console.log(`Preparing file for Gemini: ${path}`);
-  return filePart;
+  console.log(`Preparing file for Gemini: ${filePath}`);
+  return { name, uri: fileUri, mimeType };
 };
 
 /**

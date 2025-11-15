@@ -79,6 +79,8 @@ const FileSearchAdmin: React.FC = () => {
     setError(null);
     setSearchResult('');
 
+    console.log('Uploaded Gemini Files before search:', uploadedGeminiFiles);
+
     try {
       const response = await fetch('/api/admin/filesearch/search', {
         method: 'POST',
