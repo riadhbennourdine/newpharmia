@@ -59,20 +59,31 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 };
 
 function cleanMalformedJson(jsonString: string): string {
-  // Remove common issues:
-  // 1. Remove unescaped newlines within string values (replace with escaped newlines)
-  let cleanedString = jsonString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\"/g, (match, p1) => {
-    return '"' + p1.replace(/\n/g, '\\n').replace(/\r/g, '\\r') + '"';
+  let cleanedString = jsonString;
+
+  // 1. Remove unescaped newlines within string values
+  // This regex looks for a double quote, then any characters that are not a double quote or a backslash,
+  // then a newline character, and replaces the newline with '\n'.
+  // It's a bit tricky to get right without being too aggressive.
+  // A simpler approach for now: remove all newlines within potential string values,
+  // and let JSON.parse handle escaped newlines.
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\n/g, (match, p1) => {
+    return `"${p1}\\n`;
+  });
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\r/g, (match, p1) => {
+    return `"${p1}\\r`;
   });
 
   // 2. Remove trailing commas from objects and arrays
   cleanedString = cleanedString.replace(/,(\s*[}\]])/g, '$1');
 
-  // 3. Replace single quotes with double quotes for keys and string values
+  // 3. Replace single quotes with double quotes for string values (but not for keys yet)
   cleanedString = cleanedString.replace(/'([^']*)'/g, '"$1"');
 
-  // 4. Ensure keys are double-quoted (simple approach, might need refinement for complex cases)
-  cleanedString = cleanedString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
+  // 4. Attempt to double-quote unquoted keys. This is very fragile and might break valid JSON.
+  // A safer approach is to only fix keys that are clearly unquoted identifiers.
+  // For now, let's remove this aggressive key quoting and rely on Gemini to quote keys.
+  // If Gemini consistently fails to quote keys, a more sophisticated parser is needed.
 
   return cleanedString;
 }
@@ -115,13 +126,16 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide.");
   }
   const extractedJsonString = jsonMatch[0];
+  console.log("JSON extrait (avant nettoyage):", extractedJsonString);
   const cleanedJsonString = cleanMalformedJson(extractedJsonString);
+  console.log("JSON nettoyé (avant parsing):", cleanedJsonString);
 
   try {
     return JSON.parse(cleanedJsonString);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
+    console.error("JSON extrait:", extractedJsonString);
     console.error("JSON nettoyé:", cleanedJsonString);
     throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide.");
   }
