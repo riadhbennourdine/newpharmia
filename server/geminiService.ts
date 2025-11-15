@@ -61,29 +61,19 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 function cleanMalformedJson(jsonString: string): string {
   let cleanedString = jsonString;
 
-  // 1. Remove unescaped newlines within string values
-  // This regex looks for a double quote, then any characters that are not a double quote or a backslash,
-  // then a newline character, and replaces the newline with '\n'.
-  // It's a bit tricky to get right without being too aggressive.
-  // A simpler approach for now: remove all newlines within potential string values,
-  // and let JSON.parse handle escaped newlines.
-  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\n/g, (match, p1) => {
-    return `"${p1}\\n`;
-  });
-  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\r/g, (match, p1) => {
-    return `"${p1}\\r`;
-  });
+  // 1. Replace single quotes with double quotes for string values
+  cleanedString = cleanedString.replace(/'/g, '"');
 
   // 2. Remove trailing commas from objects and arrays
   cleanedString = cleanedString.replace(/,(\s*[}\]])/g, '$1');
 
-  // 3. Replace single quotes with double quotes for string values (but not for keys yet)
-  cleanedString = cleanedString.replace(/'([^']*)'/g, '"$1"');
+  // 3. Fix prematurely closed strings with escaped double quotes followed by comma
+  // This targets the specific pattern observed: `?\",` should be `?",`
+  cleanedString = cleanedString.replace(/\\\",/g, '",');
 
-  // 4. Attempt to double-quote unquoted keys. This is very fragile and might break valid JSON.
-  // A safer approach is to only fix keys that are clearly unquoted identifiers.
-  // For now, let's remove this aggressive key quoting and rely on Gemini to quote keys.
-  // If Gemini consistently fails to quote keys, a more sophisticated parser is needed.
+  // 4. Escape unescaped newlines within string values (if any remain)
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\n/g, (match, p1) => `"${p1}\\n`);
+  cleanedString = cleanedString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\r/g, (match, p1) => `"${p1}\\r`);
 
   return cleanedString;
 }
