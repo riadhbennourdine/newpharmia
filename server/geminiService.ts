@@ -58,6 +58,25 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   }
 };
 
+function cleanMalformedJson(jsonString: string): string {
+  // Remove common issues:
+  // 1. Remove unescaped newlines within string values (replace with escaped newlines)
+  let cleanedString = jsonString.replace(/\"([^"\\]*(?:\\.[^"\\]*)*)\"/g, (match, p1) => {
+    return '"' + p1.replace(/\n/g, '\\n').replace(/\r/g, '\\r') + '"';
+  });
+
+  // 2. Remove trailing commas from objects and arrays
+  cleanedString = cleanedString.replace(/,(\s*[}\]])/g, '$1');
+
+  // 3. Replace single quotes with double quotes for keys and string values
+  cleanedString = cleanedString.replace(/'([^']*)'/g, '"$1"');
+
+  // 4. Ensure keys are double-quoted (simple approach, might need refinement for complex cases)
+  cleanedString = cleanedString.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
+
+  return cleanedString;
+}
+
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
   const model = getGenerativeModel('gemini-2.0-flash-001');
 
@@ -96,12 +115,14 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     throw new Error("La réponse de l'API Gemini ne contient pas de JSON valide.");
   }
   const extractedJsonString = jsonMatch[0];
+  const cleanedJsonString = cleanMalformedJson(extractedJsonString);
 
   try {
-    return JSON.parse(extractedJsonString);
+    return JSON.parse(cleanedJsonString);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
+    console.error("JSON nettoyé:", cleanedJsonString);
     throw new Error("La réponse de l'API Gemini pour les outils pédagogiques n'est pas un JSON valide.");
   }
 };
