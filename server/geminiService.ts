@@ -71,21 +71,33 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
         Signaux d'alerte: ${(memoContent.redFlags ?? []).join(', ')}
     `;
 
-  const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Le contenu de la mémofiche est : "${context}".
+  const fullPrompt = `À partir des informations détaillées de la mémofiche suivante, génère des outils pédagogiques (flashcards, glossaire, quiz) pour un professionnel de la pharmacie. La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json).
 
-  Les outils pédagogiques (flashcards, glossaire, quiz) doivent être DIRECTEMENT DÉRIVÉS des informations clés et spécifiques présentes dans le "context" de la mémofiche fournie. Ne générez pas d'informations générales ou non présentes dans le contexte.
+  Voici les sections de la mémofiche :
+  - **Titre** : ${memoContent.title}
+  - **Situation Patient** : ${memoContent.patientSituation}
+  - **Aperçu Pathologie** : ${memoContent.pathologyOverview}
+  - **Analyse Ordonnance** : ${(memoContent.analyseOrdonnance ?? []).join('; ')}
+  - **Conseils Traitement** : ${(memoContent.conseilsTraitement ?? []).map(ct => `${ct.medicament}: ${ct.conseils.join(', ')}`).join('; ')}
+  - **Informations Maladie** : ${(memoContent.informationsMaladie ?? []).join('; ')}
+  - **Conseils Hygiène de Vie** : ${(memoContent.conseilsHygieneDeVie ?? []).join('; ')}
+  - **Conseils Alimentaires** : ${(memoContent.conseilsAlimentaires ?? []).join('; ')}
+  - **Ventes Additionnelles** : ${memoContent.ventesAdditionnelles ? `Compléments: ${(memoContent.ventesAdditionnelles.complementsAlimentaires ?? []).join(', ')}; Cosmétiques: ${(memoContent.ventesAdditionnelles.cosmetiques ?? []).join(', ')}` : ''}
+  - **Signaux d'alerte** : ${(memoContent.redFlags ?? []).join('; ')}
+
+  Les outils pédagogiques doivent être DIRECTEMENT DÉRIVÉS des informations clés et spécifiques présentes dans CES SECTIONS de la mémofiche. Ne générez pas d'informations générales ou non présentes dans le contexte fourni.
 
   Toutes les valeurs de chaîne de caractères dans le JSON doivent avoir les guillemets doubles internes échappés avec une barre oblique inverse (\\") et les nouvelles lignes échappées avec \\n.
 
   La réponse doit être un objet JSON valide et complet avec les clés "flashcards", "glossary", et "quiz".
 
-  "flashcards" doit être un tableau de 10 objets avec "question" et "answer". Chaque flashcard doit porter sur un point clé du contexte.
+  "flashcards" doit être un tableau de 10 objets avec "question" et "answer". Chaque flashcard doit porter sur un point clé du contenu de la mémofiche.
   Exemple de flashcard: {"question": "Quel est l'objectif du traitement d'attaque dans le psoriasis?", "answer": "Réduire rapidement l'inflammation et l'épaisseur des squames."}
 
-  "glossary" doit être un tableau de 10 objets avec "term" et "definition". Chaque terme doit être un concept important du contexte.
+  "glossary" doit être un tableau de 10 objets avec "term" et "definition". Chaque terme doit être un concept important ou un mot-clé présent dans le contenu de la mémofiche.
   Exemple de glossaire: {"term": "Phénomène de Koebner", "definition": "Apparition de lésions psoriasiques sur des zones de peau saine ayant subi un traumatisme."}
 
-  "quiz" doit être un tableau de 10 questions : 6 QCM avec 4 options et 4 Vrai/Faux. Chaque question doit être basée sur le contexte et avoir "questionType", "question", "options", "correctAnswerIndex", et "explanation".
+  "quiz" doit être un tableau de 10 questions : 6 QCM avec 4 options et 4 Vrai/Faux. Chaque question doit être basée sur le contenu de la mémofiche et avoir "questionType", "question", "options", "correctAnswerIndex", et "explanation".
   Exemple de QCM: {"questionType": "QCM", "question": "Quelle est la dose maximale hebdomadaire pour l'association calcipotriol/bétaméthasone?", "options": ["50g", "100g", "150g", "200g"], "correctAnswerIndex": 1, "explanation": "La dose ne doit pas dépasser 100g par semaine."}
   Exemple de Vrai/Faux: {"questionType": "VraiFaux", "question": "Le psoriasis est une maladie contagieuse.", "options": ["Vrai", "Faux"], "correctAnswerIndex": 1, "explanation": "Le psoriasis est une dermatose inflammatoire chronique et non contagieuse."}
   `;
