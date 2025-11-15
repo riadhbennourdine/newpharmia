@@ -1,10 +1,18 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as fs from "fs";
+import { VertexAI } from '@google-cloud/vertexai';
+import * as fs from 'fs';
+import { Part } from '@google-cloud/vertexai';
 
-const getApiKey = () => {
-  const API_KEY = process.env.GEMINI_API_KEY;
-  if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
-  return API_KEY;
+const PROJECT_ID = process.env.GOOGLE_PROJECT_ID;
+const LOCATION = 'us-central1';
+
+if (!PROJECT_ID) {
+  throw new Error('La variable d\'environnement GOOGLE_PROJECT_ID est requise.');
+}
+
+const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
+
+const getGenerativeModel = (modelName: string) => {
+  return vertexAI.getGenerativeModel({ model: modelName });
 };
 
 /**
@@ -14,11 +22,21 @@ const getApiKey = () => {
  * @returns The Gemini File API object.
  */
 export const uploadFileToGemini = async (path: string, mimeType: string) => {
-  const genAI = new GoogleGenerativeAI(getApiKey());
-  console.log(`Uploading file: ${path} with mimeType: ${mimeType}`);
-  const result = await (genAI as any).uploadFile(path, mimeType);
-  console.log(`Upload successful for ${path}. Gemini file name: ${result.file.name}`);
-  return result.file;
+  const fileBytes = fs.readFileSync(path);
+  const base64File = fileBytes.toString('base64');
+
+  const filePart: Part = {
+    fileData: {
+      mimeType,
+      fileUri: `data:${mimeType};base64,${base64File}`,
+    },
+  };
+
+  // With the new SDK, we don't upload files beforehand.
+  // We pass the file data directly when generating content.
+  // This function will now just prepare the file part.
+  console.log(`Preparing file for Gemini: ${path}`);
+  return filePart;
 };
 
 /**
@@ -27,33 +45,32 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
  * @param files An array of Gemini File API objects to search within.
  * @returns The search results as a string.
  */
-export const searchInFiles = async (query: string, files: { name: string; uri: string; mimeType: string; }[]) => {
-  const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-  const fileParts = files.map(file => ({
-    fileData: {
-      mimeType: file.mimeType,
-      fileUri: file.uri,
-    },
-  }));
+export const searchInFiles = async (query: string, fileParts: Part[]) => {
+  const model = getGenerativeModel('gemini-1.5-flash');
 
   const prompt = `
     Tu es un assistant de recherche expert. Ta tâche est de répondre à la question de l'utilisateur en te basant EXCLUSIVEMENT sur le contenu des fichiers fournis.
     Analyse attentivement chaque fichier pour trouver les informations les plus pertinentes.
-    Lorsque tu trouves une information pertinente, cite le passage exact et mentionne le nom du fichier d'où il provient.
+    Lorsque tu trouves une information pertinente, cite le passage exact.
     Si tu ne trouves pas de réponse dans les documents, réponds "Je n'ai pas trouvé d'information correspondante dans les documents fournis."
     Ne fournis aucune information qui ne provient pas directement des fichiers.
 
     Question de l'utilisateur : "${query}"
   `;
 
-  console.log(`Performing search for query: "${query}" in ${files.length} files.`);
+  console.log(`Performing search for query: "${query}" in ${fileParts.length} files.`);
 
-  const result = await model.generateContent([prompt, ...fileParts]);
-  const response = await result.response;
-  const text = response.text();
+  const contents = [{ role: 'user', parts: [ {text: prompt}, ...fileParts] }];
 
-  console.log("Search result from Gemini:", text);
+  const result = await model.generateContent({ contents });
+  const response = result.response;
+
+  if (!response.candidates?.[0]?.content?.parts?.[0]?.text) {
+    throw new Error('Réponse invalide de l\'API Gemini.');
+  }
+
+  const text = response.candidates[0].content.parts[0].text;
+
+  console.log('Search result from Gemini:', text);
   return text;
 };
