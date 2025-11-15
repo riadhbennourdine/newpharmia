@@ -167,7 +167,7 @@ function cleanMalformedJson(jsonString: string): string {
   }
 
   // Replace single quotes with double quotes for string values
-  cleanedString = cleanedString.replace(/'/g, '"');
+  // cleanedString = cleanedString.replace(/'/g, '"'); // This line is causing issues, single quotes are fine within double-quoted JSON strings.
 
   // Remove trailing commas from objects and arrays
   // This regex is more robust for various whitespace and newline scenarios
