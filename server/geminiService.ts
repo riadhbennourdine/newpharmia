@@ -89,8 +89,12 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
   const jsonText = response.candidates[0].content.parts[0].text.trim();
 
+  const cleanedJsonText = jsonText.startsWith('```json')
+    ? jsonText.substring(7, jsonText.length - 3).trim()
+    : jsonText;
+
   try {
-    return JSON.parse(jsonText);
+    return JSON.parse(cleanedJsonText);
   } catch (error) {
     console.error("Erreur de parsing JSON pour les outils pédagogiques:", error);
     console.error("Texte reçu de Gemini:", jsonText);
