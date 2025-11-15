@@ -21,7 +21,7 @@ const getGenerativeModel = (modelName: string) => {
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-  const model = getGenerativeModel('Gemini 2.0 Flash'); // Using a specific version for stability
+  const model = getGenerativeModel('gemini-2.0-flash-001'); // Using a specific version for stability
 
   let fullPrompt = `
     ${prompt}
@@ -59,7 +59,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-  const model = getGenerativeModel('Gemini 2.0 Flash');
+  const model = getGenerativeModel('gemini-2.0-flash-001');
 
   const context = `
         Titre: ${memoContent.title}
@@ -99,7 +99,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    const model = getGenerativeModel('Gemini 2.0 Flash');
+    const model = getGenerativeModel('gemini-2.0-flash-001');
 
     const system_prompt = 
 `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
