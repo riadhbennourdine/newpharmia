@@ -477,12 +477,12 @@ app.get('/api/memofiches', async (req, res) => {
 
                 const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
 
-                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+                const hasSub = (subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date());
+                const isAssigned = group && group.assignedFiches.some(f => f.ficheId.toString() === fiche._id.toString());
+
+                if (hasSub || isAssigned) {
                     hasAccess = true;
                 }
-                    if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
-                        hasAccess = true;
-                    }
                 }
             }
 
@@ -607,7 +607,7 @@ app.get('/api/memofiches/:id', async (req, res) => {
             if (user.groupId) {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
 
-                if (group && group.assignedFiches.some(f => f.ficheId === id)) {
+                if (group && group.assignedFiches.some(f => f.ficheId.toString() === id)) {
                     console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Group Assigned).`);
                     return res.json({
                         ...fiche,
