@@ -542,6 +542,7 @@ router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedR
 
 // POST for an admin to confirm a payment
 router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+    console.log('Attempting to reach /api/webinars/:webinarId/attendees/:userId/confirm (POST). Params:', req.params);
     try {
         const { webinarId, userId } = req.params;
 
