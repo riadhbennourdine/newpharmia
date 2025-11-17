@@ -85,24 +85,6 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
-    memoSections: ensureArray(caseStudy?.memoSections).map((section, index) => {
-      if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
-        const content = ensureArray(section.content).map(item => {
-          if (typeof item === 'object' && item !== null && 'type' in item && 'value' in item) {
-            return { type: item.type, value: item.value };
-          }
-          if (typeof item === 'string') {
-            return { type: 'text', value: item };
-          }
-          return { type: 'text', value: '' };
-        });
-        return { id: section.id || `memo-${index}`, title: section.title, content };
-      }
-      if (typeof section === 'string') {
-          return { id: `memo-${index}`, title: 'Section', content: [{ type: 'text', value: section }] };
-      }
-      return { id: (section as any)?.id || `memo-${index}`, title: (section as any)?.title || '', content: [] };
-    }),
     customSections: safeCustomSections,
     status: caseStudy?.status || MemoFicheStatus.DRAFT, // Initialize status
 
@@ -278,11 +260,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         let allSections: any[] = [];
 
         if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
-            allSections = (caseStudy.memoSections || []).map(section => ({
-                id: section.id,
-                title: section.title,
-                isMemoSection: true
-            }));
+            allSections = [];
         } else {
             const sections: any[] = [];
             if (caseStudy.type === 'maladie') {
@@ -335,7 +313,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     };
 
     buildSections();
-  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder, caseStudy.memoSections]);
+  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder]);
 
   const moveSection = (index: number, direction: 'up' | 'down') => {
     const newSections = [...displayedSections];
@@ -593,15 +571,6 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                         newCustomSections[customSectionIndex] = newSection;
                         handleCustomSectionChange(newCustomSections);
                     }} onRemove={() => removeCustomSection(sectionInfo.id)} openImageModal={openImageModal} />;
-                }
-            } else if (sectionInfo.isMemoSection) {
-                const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
-                if (memoSectionIndex > -1) {
-                    content = <RichContentSectionEditor section={caseStudy.memoSections[memoSectionIndex]} onChange={(newSection) => {
-                        const newMemoSections = [...caseStudy.memoSections];
-                        newMemoSections[memoSectionIndex] = newSection;
-                        setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
-                    }} showTitle={true} openImageModal={openImageModal} />;
                 }
             } else {
                 switch (sectionInfo.id) {
