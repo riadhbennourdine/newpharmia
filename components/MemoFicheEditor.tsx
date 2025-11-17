@@ -62,7 +62,7 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
   return {
     _id: caseStudy?._id || '',
     id: caseStudy?.id || '',
-    type: caseStudy?.type || 'maladie',
+    type: caseStudy?.type || '',
     title: caseStudy?.title || '',
     shortDescription: caseStudy?.shortDescription || '',
     theme: caseStudy?.theme || '',
