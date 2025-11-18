@@ -379,4 +379,46 @@ router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), asyn
     }
 });
 
+router.put('/profile', authenticateToken, async (req, res) => {
+    try {
+        const { email, phoneNumber } = req.body;
+        const userId = (req as any).user.id;
+
+        if (!email && !phoneNumber) {
+            return res.status(400).json({ message: 'Veuillez fournir un email ou un numéro de téléphone.' });
+        }
+
+        const { usersCollection } = await getCollections();
+        const { ObjectId } = await import('mongodb');
+
+        // Check if the new email is already taken by another user
+        if (email) {
+            const existingUser = await usersCollection.findOne({ email: email, _id: { $ne: new ObjectId(userId) } });
+            if (existingUser) {
+                return res.status(409).json({ message: 'Cet email est déjà utilisé par un autre compte.' });
+            }
+        }
+
+        const updateData: { email?: string, phoneNumber?: string } = {};
+        if (email) updateData.email = email;
+        if (phoneNumber) updateData.phoneNumber = phoneNumber;
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: updateData }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+        }
+
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        res.json(updatedUser);
+
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour du profil.' });
+    }
+});
+
 export default router;

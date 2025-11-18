@@ -63,6 +63,9 @@ const Header: React.FC = () => {
           <NavLink to="/dashboard" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Tableau de bord
           </NavLink>
+          <NavLink to="/profile" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+            Mon Profil
+          </NavLink>
           <NavLink to="/memofiches" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Mémofiches
           </NavLink>
@@ -129,6 +132,9 @@ const Header: React.FC = () => {
         <div className="pt-2 pb-3 space-y-1">
           <NavLink to="/dashboard" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Tableau de bord
+          </NavLink>
+          <NavLink to="/profile" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+            Mon Profil
           </NavLink>
           <NavLink to="/memofiches" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Mémofiches

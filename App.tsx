@@ -55,6 +55,8 @@ import FileSearchAdmin from './pages/admin/FileSearchAdmin';
 import CartPage from './pages/CartPage'; // Import CartPage
 import CheckoutPage from './pages/CheckoutPage'; // Import CheckoutPage
 
+import ProfilePage from './pages/ProfilePage';
+
 // Other
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -87,6 +89,7 @@ const App: React.FC = () => (
                             <Route path="/checkout/:orderId" element={<CheckoutPage />} />
                             {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
                             <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/profile" element={<ProfilePage />} />
                             <Route path="/memofiches" element={<MemoFichesPage />} />
                             <Route path="/memofiche/:id" element={<MemoFichePage />} />
                             <Route path="/quiz/:id" element={<QuizPage />} />
