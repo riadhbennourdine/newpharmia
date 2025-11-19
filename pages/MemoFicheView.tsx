@@ -178,44 +178,8 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
 };
 
 const SubSectionRenderer: React.FC<{ content: string | undefined }> = ({ content }) => {
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
-
-    const handleToggle = (title: string) => {
-        setOpenAccordion(openAccordion === title ? null : title);
-    };
-
     if (!content) return null;
-
-    // A sub-section starts with '• **Title**:'
-    const subSectionRegex = /•\s*\*\*(.*?)\*\*:/g;
-    const parts = content.split(subSectionRegex);
-
-    if (parts.length <= 1) {
-        return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
-    }
-
-    const subSections: {title: string, content: string}[] = [];
-    for (let i = 1; i < parts.length; i += 2) {
-        const title = parts[i];
-        const sectionContent = parts[i + 1] || '';
-        subSections.push({ title, content: sectionContent.trim() });
-    }
-
-    return (
-        <div>
-            {subSections.map(({ title, content }, index) => (
-                <AccordionSection
-                    key={index}
-                    title={title}
-                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-sky-600 text-white rounded-full font-bold text-sm">i</div>}
-                    isOpen={openAccordion === title}
-                    onToggle={() => handleToggle(title)}
-                >
-                    <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />
-                </AccordionSection>
-            ))}
-        </div>
-    );
+    return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
 };
 
 interface DetailedMemoFicheViewProps {
