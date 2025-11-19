@@ -74,15 +74,15 @@ Instructions spécifiques par section :
     const pharmacologieFormattingInstructions = `
 
 Instructions de formatage impératives :
-- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
-- Vous devez générer UNIQUEMENT les sections personnalisées.
-- Interdiction formelle d'utiliser les sections suivantes, car elles ne sont absolument pas pertinentes pour la pharmacologie ou les dispositifs médicaux : "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
-
-Instructions spécifiques pour les sections personnalisées :
-- Vous devez générer un tableau de sections personnalisées dans le champ "customSections".
-- Chaque section doit avoir un "title" et un "content".
-- Les titres des sections doivent être pertinents pour le sujet de la pharmacologie.
-- Le contenu de chaque section doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+- Votre unique tâche est de convertir le texte brut fourni en une mémofiche structurée au format JSON.
+- Vous devez respecter scrupuleusement le plan et le contenu du texte original. N'ajoutez, ne supprimez et ne reformulez aucune information.
+- Le processus est le suivant :
+    1. Identifiez les titres dans le texte brut.
+    2. Chaque titre deviendra le "title" d'une section dans le tableau "customSections".
+    3. Le texte qui suit chaque titre est le contenu de cette section. Vous devez le conserver intégralement.
+    4. Formatez ce contenu en une liste à puces. Chaque point de la liste doit commencer par le caractère "•". Si le texte original contient déjà des listes ou des points, conservez-les.
+- Vous devez générer UNIQUEMENT les sections personnalisées dans le champ "customSections".
+- Interdiction formelle d'utiliser les sections suivantes : "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
 `;
 
     const dispositifsMedicauxFormattingInstructions = `
@@ -124,7 +124,7 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
     if (memoFicheType === 'maladie') {
         prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
-        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
+        prompt = `Convertis le texte brut suivant en une mémofiche de pharmacologie structurée. Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}". Le texte à analyser est :\n\n${sourceText}${pharmacologieFormattingInstructions}`;
     } else if (memoFicheType === 'dispositifs-medicaux') {
         prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
     } else if (memoFicheType === 'dermocosmetique') {
@@ -141,8 +141,9 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
 Le processus est le suivant :
 1.  **Extraire les titres** : Identifie tous les titres présents dans le texte brut.
 2.  **Créer les sections Mémo** : Chaque titre identifié doit devenir le "title" d'une section dans le tableau "memoSections".
-3.  **Réécrire le contenu** : Pour chaque section, reprends le texte qui suit le titre correspondant dans le texte brut et réécris-le dans un style synthétique, professionnel et facile à comprendre pour un professionnel de la pharmacie. Le contenu réécrit doit être placé dans le champ "content" de la section correspondante. Le contenu doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-4.  **Générer les outils pédagogiques** : À partir du texte brut, génère également les sections "flashcards", "quiz" et "glossary".
+3.  **Conserver le contenu** : Pour chaque section, reprends le texte qui suit le titre correspondant dans le texte brut et conserve-le intégralement. Place ce contenu dans le champ "content" de la section correspondante.
+4.  **Formater le contenu** : Le contenu doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Si le texte original contient déjà une structure de liste, respecte-la.
+5.  **Générer les outils pédagogiques** : À partir du texte brut, génère également les sections "flashcards", "quiz" et "glossary".
 
 Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
 
