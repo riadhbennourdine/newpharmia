@@ -316,7 +316,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   };
 
   const memoContent = useMemo(() => {
-    if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
+    if (caseStudy.type === 'savoir') {
       const content = (caseStudy.memoSections || []).map((section, index) => ({
         id: section.id || `memoSection-${index}`,
         title: section.title,
@@ -327,6 +327,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
       );
       return content;
+    } else if (caseStudy.type === 'pharmacologie') {
+        const customSections = (caseStudy.customSections || []).map((section, index) => ({
+            id: section.id || `customSection-${index}`,
+            title: section.title,
+            icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+            content: renderContentWithKeywords(section.content),
+        }));
+        customSections.push(
+            { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+        );
+        return customSections;
     } else if (caseStudy.type === 'ordonnances') {
       const content = [
         { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance) },
