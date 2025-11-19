@@ -25,7 +25,7 @@ const AccordionSection: React.FC<{
         >
             <div className="flex items-center">
                 {icon}
-                <h3 className={`text-lg font-bold ${isAlert ? 'text-red-600' : 'text-slate-800'}`}>{title}</h3>
+                <h3 className={`text-lg font-bold transition-colors hover:text-teal-600 ${isAlert ? 'text-red-600' : 'text-slate-800'}`}>{title}</h3>
             </div>
             <svg
                 className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`}
@@ -173,6 +173,47 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
                     {renderList(aEviter)}
                 </AccordionSection>
             )}
+        </div>
+    );
+};
+
+const SubSectionRenderer: React.FC<{ content: string | undefined }> = ({ content }) => {
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+    const handleToggle = (title: string) => {
+        setOpenAccordion(openAccordion === title ? null : title);
+    };
+
+    if (!content) return null;
+
+    // A sub-section starts with '• **Title**:'
+    const subSectionRegex = /•\s*\*\*(.*?)\*\*:/g;
+    const parts = content.split(subSectionRegex);
+
+    if (parts.length <= 1) {
+        return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
+    }
+
+    const subSections: {title: string, content: string}[] = [];
+    for (let i = 1; i < parts.length; i += 2) {
+        const title = parts[i];
+        const sectionContent = parts[i + 1] || '';
+        subSections.push({ title, content: sectionContent.trim() });
+    }
+
+    return (
+        <div>
+            {subSections.map(({ title, content }, index) => (
+                <AccordionSection
+                    key={index}
+                    title={title}
+                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-sky-600 text-white rounded-full font-bold text-sm">i</div>}
+                    isOpen={openAccordion === title}
+                    onToggle={() => handleToggle(title)}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />
+                </AccordionSection>
+            ))}
         </div>
     );
 };
@@ -332,7 +373,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
             id: section.id || `customSection-${index}`,
             title: section.title,
             icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
-            content: renderContentWithKeywords(section.content),
+            content: <SubSectionRenderer content={(section.content || []).map(c => c.type === 'text' ? c.value : '').join('\n')} />,
         }));
         customSections.push(
             { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
