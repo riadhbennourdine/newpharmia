@@ -52,6 +52,21 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   try {
     const generatedData = JSON.parse(jsonText);
     console.log("Données générées brutes de Gemini :", JSON.stringify(generatedData, null, 2));
+
+    // Transform content from string[] to MemoFicheSectionContent[]
+    if (generatedData.customSections) {
+        generatedData.customSections = generatedData.customSections.map(section => {
+            if (Array.isArray(section.content) && section.content.every(item => typeof item === 'string')) {
+                const combinedValue = section.content.join('\n');
+                return {
+                    ...section,
+                    content: [{ type: 'text', value: combinedValue }]
+                };
+            }
+            return section;
+        });
+    }
+
     return { ...generatedData, status: MemoFicheStatus.DRAFT };
   } catch (error) {
     console.error("Erreur de parsing JSON:", error);
