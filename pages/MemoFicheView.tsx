@@ -178,8 +178,44 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
 };
 
 const SubSectionRenderer: React.FC<{ content: string | undefined }> = ({ content }) => {
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+    const handleToggle = (title: string) => {
+        setOpenAccordion(openAccordion === title ? null : title);
+    };
+
     if (!content) return null;
-    return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
+
+    // A sub-section starts with '• **Title**:'
+    const subSectionRegex = /•\s*\*\*(.*?)\*\*:/g;
+    const parts = content.split(subSectionRegex);
+
+    if (parts.length <= 1) {
+        return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
+    }
+
+    const subSections: {title: string, content: string}[] = [];
+    for (let i = 1; i < parts.length; i += 2) {
+        const title = parts[i];
+        const sectionContent = parts[i + 1] || '';
+        subSections.push({ title, content: sectionContent.trim() });
+    }
+
+    return (
+        <div>
+            {subSections.map(({ title, content }, index) => (
+                <AccordionSection
+                    key={index}
+                    title={title}
+                    icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-sky-600 text-white rounded-full font-bold text-sm">i</div>}
+                    isOpen={openAccordion === title}
+                    onToggle={() => handleToggle(title)}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />
+                </AccordionSection>
+            ))}
+        </div>
+    );
 };
 
 interface DetailedMemoFicheViewProps {
@@ -193,6 +229,96 @@ interface DetailedMemoFicheViewProps {
 
 type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot';
 
+const getYoutubeEmbedUrl = (url: string | undefined): string | null => {
+  if (!url) return null;
+  let videoId = '';
+  try {
+      const urlObj = new URL(url);
+      if (urlObj.hostname === 'youtu.be') videoId = urlObj.pathname.slice(1);
+      else if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtubeeducation.com')) videoId = urlObj.searchParams.get('v') || '';
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch (error) {
+      console.error("Invalid YouTube URL:", error);
+      return null;
+  }
+};
+
+const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
+  if (!content) return '';
+
+  if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
+      const text = Array.isArray(content) ? content.join('\n') : content;
+      let html = text;
+      
+      const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+      html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+      
+      const lines = html.split('\n');
+      let inList = false;
+      const processedLines = lines.map(line => {
+          const trimmedLine = line.trim();
+          if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
+              const listItem = `<li>${trimmedLine.substring(2)}</li>`;
+              if (!inList) {
+                  inList = true;
+                  return `<ul>${listItem}`;
+              }
+              return listItem;
+          } else {
+              if (inList) {
+                  inList = false;
+                  return `</ul><p>${line}</p>`;
+              }
+              return line ? `<p>${line}</p>` : '';
+          }
+      });
+      if (inList) {
+          processedLines.push('</ul>');
+      }
+      return processedLines.join('');
+  }
+
+  const contentArray = content as MemoFicheSectionContent[];
+  return contentArray.map(item => {
+      if (item.type === 'image') {
+          return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
+      }
+      if (item.type === 'video') {
+          const embedUrl = getYoutubeEmbedUrl(item.value);
+          if (embedUrl) {
+              return `<div class="w-full" style="padding-bottom: 56.25%; position: relative; height: 0; margin-top: 1rem; margin-bottom: 1rem;"><iframe src="${embedUrl}" title="Vidéo YouTube" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-md"></iframe></div>`;
+          }
+          return '';
+      }
+      // Handle text
+      let html = item.value;
+      const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+      html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+      const lines = html.split('\n');
+      let inList = false;
+      const processedLines = lines.map(line => {
+          const trimmedLine = line.trim();
+          if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
+              const listItem = `<li>${trimmedLine.substring(2)}</li>`;
+              if (!inList) {
+                  inList = true;
+                  return `<ul>${listItem}`;
+              }
+              return listItem;
+          } else {
+              if (inList) {
+                  inList = false;
+                  return `</ul><p>${line}</p>`;
+              }
+              return line ? `<p>${line}</p>` : '';
+          }
+      });
+      if (inList) {
+          processedLines.push('</ul>');
+      }
+      return processedLines.join('');
+  }).join('');
+};
 
 export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ caseStudy, onBack, onStartQuiz, onEdit, onDelete, isPreview = false }) => {
   useEffect(() => {
@@ -227,98 +353,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }
   };
 
-  const getYoutubeEmbedUrl = (url: string | undefined): string | null => {
-    if (!url) return null;
-    let videoId = '';
-    try {
-        const urlObj = new URL(url);
-        if (urlObj.hostname === 'youtu.be') videoId = urlObj.pathname.slice(1);
-        else if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtubeeducation.com')) videoId = urlObj.searchParams.get('v') || '';
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-    } catch (error) {
-        console.error("Invalid YouTube URL:", error);
-        return null;
-    }
-  };
-
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-
-  const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
-    if (!content) return '';
-
-    if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
-        const text = Array.isArray(content) ? content.join('\n') : content;
-        let html = text;
-        
-        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
-        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
-        
-        const lines = html.split('\n');
-        let inList = false;
-        const processedLines = lines.map(line => {
-            const trimmedLine = line.trim();
-            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
-                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
-                if (!inList) {
-                    inList = true;
-                    return `<ul>${listItem}`;
-                }
-                return listItem;
-            } else {
-                if (inList) {
-                    inList = false;
-                    return `</ul><p>${line}</p>`;
-                }
-                return line ? `<p>${line}</p>` : '';
-            }
-        });
-        if (inList) {
-            processedLines.push('</ul>');
-        }
-        return processedLines.join('');
-    }
-
-    const contentArray = content as MemoFicheSectionContent[];
-    return contentArray.map(item => {
-        if (item.type === 'image') {
-            return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
-        }
-        if (item.type === 'video') {
-            const embedUrl = getYoutubeEmbedUrl(item.value);
-            if (embedUrl) {
-                return `<div class="w-full" style="padding-bottom: 56.25%; position: relative; height: 0; margin-top: 1rem; margin-bottom: 1rem;"><iframe src="${embedUrl}" title="Vidéo YouTube" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-md"></iframe></div>`;
-            }
-            return '';
-        }
-        // Handle text
-        let html = item.value;
-        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
-        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
-        const lines = html.split('\n');
-        let inList = false;
-        const processedLines = lines.map(line => {
-            const trimmedLine = line.trim();
-            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
-                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
-                if (!inList) {
-                    inList = true;
-                    return `<ul>${listItem}`;
-                }
-                return listItem;
-            } else {
-                if (inList) {
-                    inList = false;
-                    return `</ul><p>${line}</p>`;
-                }
-                return line ? `<p>${line}</p>` : '';
-            }
-        });
-        if (inList) {
-            processedLines.push('</ul>');
-        }
-        return processedLines.join('');
-    }).join('');
-  };
 
   const memoContent = useMemo(() => {
     if (caseStudy.type === 'savoir') {
