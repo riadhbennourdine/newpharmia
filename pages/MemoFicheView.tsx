@@ -186,13 +186,14 @@ const SubSectionRenderer: React.FC<{ content: string | undefined }> = ({ content
 
     if (!content) return null;
 
-    // A sub-section starts with '• **Title**:'
-    const subSectionRegex = /•\s*\*\*(.*?)\*\*:/g;
+    const subSectionRegex = /\$\$(.*?)\$\$/g;
     const parts = content.split(subSectionRegex);
 
     if (parts.length <= 1) {
         return <div dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(content) }} />;
     }
+
+    const introContent = parts[0] ? parts[0].trim() : '';
 
     const subSections: {title: string, content: string}[] = [];
     for (let i = 1; i < parts.length; i += 2) {
@@ -203,6 +204,7 @@ const SubSectionRenderer: React.FC<{ content: string | undefined }> = ({ content
 
     return (
         <div>
+            {introContent && <div className="mb-4" dangerouslySetInnerHTML={{ __html: renderContentWithKeywords(introContent) }} />}
             {subSections.map(({ title, content }, index) => (
                 <AccordionSection
                     key={index}

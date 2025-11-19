@@ -80,7 +80,8 @@ Instructions de formatage impératives :
     1. Identifiez les titres dans le texte brut.
     2. Chaque titre deviendra le "title" d'une section dans le tableau "customSections".
     3. Le texte qui suit chaque titre est le contenu de cette section. Vous devez le conserver intégralement.
-    4. Formatez ce contenu en une liste à puces. Chaque point de la liste doit commencer par le caractère "•". Si le texte original contient déjà des listes ou des points, conservez-les.
+    4. **IMPORTANT**: Au sein de ce contenu, si vous identifiez des sous-titres (ex: "Mécanisme", "Exemples", "EI Majeurs"), vous devez les formater en les entourant de doubles dollars. Par exemple, le sous-titre "Mécanisme" doit devenir "$$Mécanisme$$".
+    5. Le reste du contenu doit être formaté en une liste à puces, où chaque point commence par "•".
 - Vous devez générer UNIQUEMENT les sections personnalisées dans le champ "customSections".
 - Interdiction formelle d'utiliser les sections suivantes : "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
 `;
