@@ -119,6 +119,13 @@ app.post('/api/auth/login', async (req, res) => {
                     user.hasActiveSubscription = false;
                 }
 
+                // Check if profile is incomplete (e.g., missing phone number)
+                if (!user.phoneNumber) {
+                    user.profileIncomplete = true;
+                } else {
+                    user.profileIncomplete = false;
+                }
+
                 // Passwords match, generate a real JWT
                 const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your_default_secret', { expiresIn: '24h' });
                 res.json({ token, user });

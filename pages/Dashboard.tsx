@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
 import { UserRole } from '../types';
@@ -9,6 +10,13 @@ import { isPharmacienOrAdminWebinar } from '../utils/roles';
 const Dashboard: React.FC = () => {
     const { user } = useAuth();
     const { fetchFiches } = useData();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user?.profileIncomplete && (user.role === UserRole.PREPARATEUR || user.role === UserRole.APPRENANT)) {
+            navigate('/profile');
+        }
+    }, [user, navigate]);
 
     useEffect(() => {
         fetchFiches({ page: 1, limit: 3, sortBy: 'newest' });

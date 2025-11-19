@@ -391,17 +391,10 @@ router.put('/profile', authenticateToken, async (req, res) => {
         const { usersCollection } = await getCollections();
         const { ObjectId } = await import('mongodb');
 
-        // Check if the new email is already taken by another user
-        if (email) {
-            const existingUser = await usersCollection.findOne({ email: email, _id: { $ne: new ObjectId(userId) } });
-            if (existingUser) {
-                return res.status(409).json({ message: 'Cet email est déjà utilisé par un autre compte.' });
-            }
-        }
-
-        const updateData: { email?: string, phoneNumber?: string } = {};
+        const updateData: { email?: string, phoneNumber?: string, profileIncomplete?: boolean } = {};
         if (email) updateData.email = email;
         if (phoneNumber) updateData.phoneNumber = phoneNumber;
+        updateData.profileIncomplete = false; // Mark profile as complete
 
         const result = await usersCollection.updateOne(
             { _id: new ObjectId(userId) },
