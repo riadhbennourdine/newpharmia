@@ -1,3 +1,4 @@
+// Force recompile
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, Schema, SchemaType } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
@@ -12,7 +13,32 @@ const getApiKey = () => {
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  // Temporarily list models to identify available ones
+  const { models } = await genAI.listModels();
+  console.log("Available Gemini Models:");
+  for (const model of models) {
+    console.log(model.name);
+  }
+
+  // Fallback to gemini-1.5-flash for now
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ], });
 
   let jsonStructure: Schema = {
     type: SchemaType.OBJECT,
@@ -109,50 +135,19 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           properties: {
             complementsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
             accessoires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            dispositifs: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            cosmetiques: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            dispositifs: { type: Type.ARRAY, items: { type: Type.STRING } },
+            cosmetiques: { type: Type.ARRAY, items: { type: Type.STRING } },
           },
         },
-        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   } else if (memoFicheType === 'communication') {
-    jsonStructure = {
-      type: SchemaType.OBJECT,
-      properties: {
-        title: { type: SchemaType.STRING },
-        shortDescription: { type: SchemaType.STRING },
-        summary: { type: SchemaType.STRING },
-        patientSituation: { type: SchemaType.STRING },
-        customSections: {
-          type: SchemaType.ARRAY,
-          items: {
-            type: SchemaType.OBJECT,
-            properties: {
-              title: { type: SchemaType.STRING },
-              content: { type: SchemaType.STRING },
-            },
-            required: ['title', 'content'],
-          },
-        },
-      },
-      required: ['title', 'shortDescription', 'summary', 'patientSituation', 'customSections'],
-    };
-  }
-
-  if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
-    const expertRole = memoFicheType === 'pharmacologie' ? 'pharmacologie et ingénieur pédagogique' : 'connaissances pharmaceutiques';
-    fullPrompt = `En tant qu\\'expert en ${expertRole} pour les professionnels de la pharmacie, votre mission est de transformer le texte brut suivant en une mémofiche de type '${memoFicheType}' claire, détaillée et directement utilisable au comptoir.\\n\\n**Objectif :** Extraire et structurer l\\'information clé du texte source pour créer un outil de référence rapide et fiable. Il est impératif de conserver la profondeur et la précision scientifique du texte original.\\n\\n**Structure de la mémofiche :**\\n\\n1.  **Titre :** Un titre précis et informatif (ex: "Les inhibiteurs de la pompe à protons (IPP)").\\n2.  **Courte description :** Un résumé de 2-3 phrases qui présente la classe thérapeutique ou le principe actif et son importance.\\n3.  **Sections (memoSections) :** Plusieurs sections thématiques qui décomposent le sujet de manière logique.\\n\\n**Instructions détaillées pour les \`memoSections\` :**\\n\\n*   **Titres de section :** Les titres doivent être clairs et correspondre aux grandes catégories de la pharmacologie. Exemples de titres de section à utiliser si pertinent :\\n    *   Mécanisme d\\'action\\n    *   Indications principales\\n    *   Posologie et mode d\\'administration\\n    *   Effets indésirables et gestion\\n    *   Contre-indications et précautions d\\'emploi\\n    *   Interactions médicamenteuses\\n    *   Conseils aux patients\\n    *   Molécules de la classe\\n\\n*   **Contenu des sections :**\\n    *   **Fidélité et détail :** Le contenu doit être une synthèse fidèle et détaillée du texte source. **Ne pas simplifier à l\\'extrême.** Conserver la terminologie médicale et pharmaceutique précise.\\n    *   **Formatage :** Le contenu de chaque section doit être une liste à puces. Chaque point doit commencer par le caractère "•" suivi d\\'un espace.\\n    *   **Mise en évidence :** Chaque point de la liste doit commencer par un mot-clé ou un concept clé mis en évidence en gras (entouré de doubles astérisques). Exemple : "**Effet principal** : Diminution de la sécrétion ...`;
-  } else if (memoFicheType === 'dispositifs-medicaux') {
-    fullPrompt = `En tant qu'expert en dispositifs médicaux pour la pharmacie, analyse le texte suivant et génère une mémofiche de type 'dispositifs-medicaux'. La mémofiche doit inclure un titre pertinent et remplir les sections suivantes avec un contenu détaillé, professionnel et pertinent pour un pharmacien : casComptoir, objectifsConseil, pathologiesConcernees, interetDispositif, beneficesSante, dispositifsAConseiller, reponsesObjections, pagesSponsorisees. Le contenu de chaque section doit être un texte unique et bien structuré. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace. Le texte à analyser est :
+    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
 
 ${prompt}`;
-  } else if (memoFicheType === 'communication') {
-    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
-
-${prompt}`;
-  }
+      }
     
   console.log("memoFicheType:", memoFicheType);
   console.log("jsonStructure:", JSON.stringify(jsonStructure, null, 2));
@@ -274,7 +269,8 @@ Si l'utilisateur te dit simplement "Bonjour" ou une salutation similaire, répon
 "Bonjour! Je suis PharmIA, votre Assistant, Expert pour un conseil de Qualité à l'officine. Ici je peux vous conseiller sur **${title}**."
 Ne rajoute rien d'autre à cette réponse de salutation.
 
-Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.`;
+Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.
+`;
 
     const history: Content[] = [
         { role: "user", parts: [{ text: system_prompt }] },
@@ -283,9 +279,9 @@ Pour toutes les autres questions, base tes réponses sur le contexte de la mémo
 **${title}**
 
 Comment puis-je vous aider aujourd'hui ?` }] },
-        ...chatHistory.map(msg => ({ 
-            role: msg.role === 'user' ? 'user' : 'model', 
-            parts: [{ text: msg.text }] 
+        ...chatHistory.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
         })),
     ];
 
@@ -296,7 +292,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
         },
       });
 
-        const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\\n\\nQUESTION: ${question}`);
+        const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
 
         const response = result.response;
 
