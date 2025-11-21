@@ -13,12 +13,7 @@ const getApiKey = () => {
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
 
-  // Temporarily list models to identify available ones
-  const { models } = await genAI.listModels();
-  console.log("Available Gemini Models:");
-  for (const model of models) {
-    console.log(model.name);
-  }
+
 
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: [
     {
