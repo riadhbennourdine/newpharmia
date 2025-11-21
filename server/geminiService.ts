@@ -1,4 +1,3 @@
-// Force recompile
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, Schema, SchemaType } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
@@ -13,6 +12,7 @@ const getApiKey = () => {
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
+
   // Temporarily list models to identify available ones
   const { models } = await genAI.listModels();
   console.log("Available Gemini Models:");
@@ -20,7 +20,6 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     console.log(model.name);
   }
 
-  // Fallback to gemini-1.5-flash for now
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: [
     {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -91,7 +90,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         pathologiesConcernees: { type: SchemaType.STRING },
         interetDispositif: { type: SchemaType.STRING },
         beneficesSante: { type: SchemaType.STRING },
-        dispositifsAConseiller: { type: SchemaType.STRING },
+        exemplesArticles: { type: SchemaType.STRING },
         reponsesObjections: { type: SchemaType.STRING },
         pagesSponsorisees: { type: SchemaType.STRING },
         references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
@@ -103,7 +102,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
         'pathologiesConcernees',
         'interetDispositif',
         'beneficesSante',
-        'dispositifsAConseiller',
+        'exemplesArticles',
         'reponsesObjections',
         'pagesSponsorisees',
         'references',
@@ -135,11 +134,11 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
           properties: {
             complementsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
             accessoires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            dispositifs: { type: Type.ARRAY, items: { type: Type.STRING } },
-            cosmetiques: { type: Type.ARRAY, items: { type: Type.STRING } },
+            dispositifs: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            cosmetiques: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
           },
         },
-        references: { type: Type.ARRAY, items: { type: Type.STRING } },
+        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
@@ -230,7 +229,7 @@ const learningToolsSchema: Schema = {
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const context = `
         Titre: ${memoContent.title}
@@ -257,7 +256,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
 Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
@@ -305,7 +304,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
 
         const genAI = new GoogleGenerativeAI(getApiKey());
 
-        const { models } = await genAI.models.list();
+        const { models } = await genAI.listModels();
 
         return models;
 
