@@ -12,7 +12,7 @@ const getApiKey = () => {
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", safetySettings: [
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: [
     {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
       threshold: HarmBlockThreshold.BLOCK_NONE,
@@ -217,7 +217,7 @@ const learningToolsSchema: ObjectSchema = {
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const context = `
         Titre: ${memoContent.title}
@@ -246,7 +246,7 @@ Le contenu de la mémofiche est : "${context}".`;
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
 Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
