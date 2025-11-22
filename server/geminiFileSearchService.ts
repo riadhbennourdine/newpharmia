@@ -1,4 +1,4 @@
-import * as GenAI from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import * as fs from "fs";
 
 const getApiKey = () => {
@@ -14,7 +14,7 @@ const getApiKey = () => {
  * @returns The Gemini File API object.
  */
 export const uploadFileToGemini = async (path: string, mimeType: string) => {
-  const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+  const genAI = new GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
   console.log(`Uploading file: ${path} with mimeType: ${mimeType}`);
   const result = await (genAI as any).uploadFile(path, mimeType);
   console.log(`Upload successful for ${path}. Gemini file name: ${result.file.name}`);
@@ -28,7 +28,7 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
  * @returns The search results as a string.
  */
 export const searchInFiles = async (query: string, files: { name: string; uri: string; mimeType: string; }[]) => {
-  const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+  const genAI = new GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
   const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const fileParts = files.map(file => ({

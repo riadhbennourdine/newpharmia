@@ -9,6 +9,8 @@ import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchServ
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
+import { GoogleGenAI } from '@google/genai';
+console.log('Inspecting GoogleGenAI:', GoogleGenAI);
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';

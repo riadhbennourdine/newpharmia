@@ -1,5 +1,4 @@
-import * as GenAI from "@google/genai";
-import { HarmCategory, HarmBlockThreshold, Part, Content, Schema, Type } from "@google/genai";
+import { GoogleGenAI, HarmCategory, HarmBlockThreshold, Part, Content, Schema, Type } from "@google/genai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
@@ -12,7 +11,7 @@ const getApiKey = () => {
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-  const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+  const genAI = new GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
 
 
 
@@ -268,7 +267,7 @@ const learningToolsSchema: Schema = {
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-    const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+    const genAI = new GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
     const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const context = `
@@ -293,7 +292,7 @@ Le contenu de la mémofiche est : "${context}".`;
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+    const genAI = new GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
     const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
