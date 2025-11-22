@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Group, User, UserRole } from '../../types';
+import { Group, User, UserRole, CaseStudy } from '../../types';
 import { useAuth } from '../hooks/useAuth';
 
 interface GroupManagementModalProps {
@@ -15,6 +15,8 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds?.map(id => id.toString()) || []);
   const [subscriptionAmount, setSubscriptionAmount] = useState<number | undefined>(group?.subscriptionAmount);
   const [managedBy, setManagedBy] = useState<string | undefined>(group?.managedBy?.toString());
+  const [primaryMemoFicheId, setPrimaryMemoFicheId] = useState<string | undefined>(group?.primaryMemoFicheId);
+  const [instructionFiches, setInstructionFiches] = useState<string[]>(group?.instructionFiches || []);
   
   // State for the subscription date input
   const [subscriptionEndDate, setSubscriptionEndDate] = useState<string>('');
@@ -22,6 +24,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
   const [allPreparators, setAllPreparators] = useState<User[]>([]);
   const [allManagers, setAllManagers] = useState<User[]>([]);
+  const [allMemofiches, setAllMemofiches] = useState<CaseStudy[]>([]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
@@ -36,10 +39,16 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
     fetchPharmacists();
     fetchPreparators();
     fetchManagers();
+    fetchAllMemofiches();
 
     // Initialize subscription date from group prop
     if (group?.subscriptionEndDate) {
       setSubscriptionEndDate(formatDateForInput(group.subscriptionEndDate));
+    }
+    // Initialize memo fiche states from group prop
+    if (group) {
+        setPrimaryMemoFicheId(group.primaryMemoFicheId);
+        setInstructionFiches(group.instructionFiches || []);
     }
   }, [group]);
 
@@ -54,6 +63,15 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
       }
     }
   }, [managedBy, allManagers]);
+
+  const fetchAllMemofiches = async () => {
+    try {
+      const response = await fetch('/api/memofiches/all');
+      setAllMemofiches(await response.json());
+    } catch (error) {
+      console.error('Error fetching all memofiches:', error);
+    }
+  };
 
 
   const fetchPharmacists = async () => {
@@ -105,7 +123,9 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
       preparatorIds, 
       subscriptionAmount,
       managedBy,
-      subscriptionEndDate: subscriptionEndDate || null // Send null if empty
+      subscriptionEndDate: subscriptionEndDate || null, // Send null if empty
+      primaryMemoFicheId: primaryMemoFicheId || null,
+      instructionFiches: instructionFiches,
     };
 
     try {
@@ -254,6 +274,49 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
+
+          <div className="border-t border-slate-200 pt-4 mt-4">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">Mémofiches Associées</h3>
+            <div className="mb-4">
+                <label htmlFor="primaryMemoFiche" className="block text-sm font-medium text-slate-700">Mémofiche Principale</label>
+                <select
+                    id="primaryMemoFiche"
+                    value={primaryMemoFicheId || ''}
+                    onChange={(e) => setPrimaryMemoFicheId(e.target.value || undefined)}
+                    className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                >
+                    <option value="">-- Sélectionner une mémofiche principale --</option>
+                    {allMemofiches.map(fiche => (
+                        <option key={fiche._id as string} value={fiche._id as string}>
+                            {fiche.title}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Mémofiches d'Instruction</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto border p-2 rounded-md">
+                    {allMemofiches.map(fiche => (
+                        <div key={fiche._id as string} className="flex items-center">
+                            <input
+                                type="checkbox"
+                                id={`instruction-fiche-${fiche._id}`}
+                                checked={instructionFiches.includes(fiche._id as string)}
+                                onChange={() => {
+                                    setInstructionFiches(prev =>
+                                        prev.includes(fiche._id as string)
+                                            ? prev.filter(id => id !== (fiche._id as string))
+                                            : [...prev, (fiche._id as string)]
+                                    );
+                                }}
+                                className="h-4 w-4 text-teal-600 border-gray-300 rounded-md focus:ring-teal-500"
+                            />
+                            <label htmlFor={`instruction-fiche-${fiche._id}`} className="ml-2 block text-sm text-gray-900">{fiche.title}</label>
+                        </div>
+                    ))}
+                </div>
+            </div>
           <div className="border-t border-slate-200 pt-4 mt-4">
             <div className="flex justify-between items-center">
                 <div className="text-sm text-slate-600">

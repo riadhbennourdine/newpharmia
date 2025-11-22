@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType, ObjectSchema, ArraySchema } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
+import fetch from 'node-fetch';
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
 
@@ -139,8 +140,6 @@ ${prompt}`;
     jsonStructure.required = ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'];
   }
     
-  console.log("Prompt envoyé à Gemini :", fullPrompt);
-
   const result = await model.generateContent({
     contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
     generationConfig: {
@@ -288,14 +287,14 @@ Comment puis-je vous aider aujourd'hui ?` }] },
 
     };
 
-    /*
-    export const listModels = async (): Promise<any[]> => {
+    interface ListModelsResponse {
+  models: any[];
+}
 
-        const genAI = new GoogleGenerativeAI(getApiKey());
-
-        const { models } = await genAI.listModels();
-
-        return models;
-
-    };
-    */
+export const listModels = async (): Promise<any[]> => {
+  const apiKey = getApiKey();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+  const response = await fetch(url);
+  const data = await response.json() as ListModelsResponse;
+  return data.models;
+};

@@ -8,7 +8,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -775,7 +775,6 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
     }
 });
 
-/*
 app.get('/api/gemini/models', async (req, res) => {
     try {
         const models = await listModels();
@@ -785,7 +784,6 @@ app.get('/api/gemini/models', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-*/
 
 /*
 // KONNECT PAYMENT ROUTES

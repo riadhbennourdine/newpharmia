@@ -208,7 +208,7 @@ adminRouter.get('/:id', async (req, res) => {
 // Update a group
 adminRouter.put('/:id', async (req, res) => {
   try {
-    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount, subscriptionEndDate } = req.body;
+    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount, subscriptionEndDate, primaryMemoFicheId, instructionFiches } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
     const groupId = new ObjectId(req.params.id);
 
@@ -238,7 +238,21 @@ adminRouter.put('/:id', async (req, res) => {
     if (managedBy) {
       updateFields.managedBy = new ObjectId(managedBy);
     } else if (managedBy === '' || managedBy === null) {
-      updateFields.$unset = { managedBy: "" };
+      updateFields.managedBy = null; // Explicitly set to null to clear
+    }
+
+    // Handle primaryMemoFicheId
+    if (primaryMemoFicheId) {
+        updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
+    } else if (primaryMemoFicheId === null) {
+        updateFields.primaryMemoFicheId = null; // Explicitly set to null to clear
+    }
+
+    // Handle instructionFiches
+    if (instructionFiches && Array.isArray(instructionFiches)) {
+        updateFields.instructionFiches = instructionFiches.map((id: string) => new ObjectId(id));
+    } else if (instructionFiches === null || instructionFiches === undefined) {
+        updateFields.instructionFiches = []; // Explicitly set to empty array to clear
     }
 
     const updatedGroup = await groupsCollection.findOneAndUpdate(
