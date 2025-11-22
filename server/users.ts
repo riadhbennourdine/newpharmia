@@ -6,20 +6,22 @@ import { authenticateToken, checkRole } from './authMiddleware.js';
 
 console.log('server/users.ts: Initializing users router.');
 
-const router = express.Router();
+const adminRouter = express.Router();
+const nonAdminRouter = express.Router();
 
-router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
-    try {
-        const { usersCollection } = await getCollections();
-        const users = await usersCollection.find({}).toArray();
-        res.json(users);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des utilisateurs.' });
-    }
-});
+async function getCollections() {
+  const client = await clientPromise;
+  const db = client.db('pharmia');
+  return {
+    usersCollection: db.collection<User>('users'),
+  };
+}
 
-router.get('/pharmacists', async (req, res) => {
+// ===============================================
+// NON-ADMIN ROUTES
+// ===============================================
+
+nonAdminRouter.get('/pharmacists', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const pharmacists = await usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } }).toArray();
@@ -30,7 +32,7 @@ router.get('/pharmacists', async (req, res) => {
     }
 });
 
-router.get('/preparateurs', async (req, res) => {
+nonAdminRouter.get('/preparateurs', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const preparateurs = await usersCollection.find({ role: UserRole.PREPARATEUR }).toArray();
@@ -41,7 +43,7 @@ router.get('/preparateurs', async (req, res) => {
     }
 });
 
-router.get('/subscribers', async (req, res) => {
+nonAdminRouter.get('/subscribers', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const subscribers = await usersCollection.find({
@@ -54,16 +56,8 @@ router.get('/subscribers', async (req, res) => {
     }
 });
 
-async function getCollections() {
-  const client = await clientPromise;
-  const db = client.db('pharmia');
-  return {
-    usersCollection: db.collection<User>('users'),
-  };
-}
-
 // Get all managers (admins and formateurs)
-router.get('/managers', async (req, res) => {
+nonAdminRouter.get('/managers', async (req, res) => {
   try {
     const { usersCollection } = await getCollections();
     const managers = await usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray();
@@ -74,7 +68,7 @@ router.get('/managers', async (req, res) => {
 });
 
 // Get preparateurs for a group
-router.get('/groups/:id/preparateurs', async (req, res) => {
+nonAdminRouter.get('/groups/:id/preparateurs', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const preparateurs = await usersCollection.find({ groupId: new ObjectId(req.params.id), role: UserRole.PREPARATEUR }).toArray();
@@ -85,7 +79,7 @@ router.get('/groups/:id/preparateurs', async (req, res) => {
 });
 
 // Get user by email
-router.get('/by-email/:email', async (req, res) => {
+nonAdminRouter.get('/by-email/:email', async (req, res) => {
   try {
     const { usersCollection } = await getCollections();
     const user = await usersCollection.findOne({ email: req.params.email });
@@ -98,7 +92,7 @@ router.get('/by-email/:email', async (req, res) => {
   }
 });
 
-router.get('/:userId', async (req, res) => {
+nonAdminRouter.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
 
@@ -123,7 +117,7 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-router.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
+nonAdminRouter.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
     try {
         const { preparateurId } = req.params;
         const { pharmacistId } = req.body;
@@ -155,7 +149,7 @@ router.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) =>
     }
 });
 
-router.get('/pharmacists/:pharmacistId/team', async (req, res) => {
+nonAdminRouter.get('/pharmacists/:pharmacistId/team', async (req, res) => {
     try {
         const { pharmacistId } = req.params;
         const { ObjectId } = await import('mongodb');
@@ -173,7 +167,7 @@ router.get('/pharmacists/:pharmacistId/team', async (req, res) => {
     }
 });
 
-router.put('/:userId/subscription', async (req, res) => {
+nonAdminRouter.put('/:userId/subscription', async (req, res) => {
     try {
         const { userId } = req.params;
         const { subscriptionEndDate, planName } = req.body;
@@ -216,7 +210,7 @@ router.put('/:userId/subscription', async (req, res) => {
     }
 });
 
-router.get('/:userId/read-fiches', async (req, res) => {
+nonAdminRouter.get('/:userId/read-fiches', async (req, res) => {
     console.log('Received request for /api/users/:userId/read-fiches. User ID:', req.params.userId);
     try {
         const { userId } = req.params;
@@ -242,7 +236,7 @@ router.get('/:userId/read-fiches', async (req, res) => {
     }
 });
 
-router.get('/:userId/quiz-history', async (req, res) => {
+nonAdminRouter.get('/:userId/quiz-history', async (req, res) => {
     console.log('Attempting to reach /api/users/:userId/quiz-history. Params:', req.params);
     try {
         const { userId } = req.params;
@@ -271,7 +265,7 @@ router.get('/:userId/quiz-history', async (req, res) => {
     }
 });
 
-router.post('/:userId/read-fiches', async (req, res) => {
+nonAdminRouter.post('/:userId/read-fiches', async (req, res) => {
     console.log('Attempting to reach /api/users/:userId/read-fiches (POST). Params:', req.params);
     try {
         const { userId } = req.params;
@@ -308,7 +302,7 @@ router.post('/:userId/read-fiches', async (req, res) => {
     }
 });
 
-router.post('/:userId/quiz-history', async (req, res) => {
+nonAdminRouter.post('/:userId/quiz-history', async (req, res) => {
     console.log('Attempting to reach /api/users/:userId/quiz-history (POST). Params:', req.params);
     try {
         const { userId } = req.params;
@@ -346,7 +340,30 @@ router.post('/:userId/quiz-history', async (req, res) => {
     }
 });
 
-router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+// ===============================================
+// ADMIN ROUTES
+// ===============================================
+
+// Get all users (with optional role filter for admin)
+adminRouter.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const { role } = req.query;
+        let query: any = {};
+
+        if (role && typeof role === 'string' && Object.values(UserRole).includes(role as UserRole)) {
+            query.role = role;
+        }
+
+        const users = await usersCollection.find(query).toArray();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des utilisateurs.' });
+    }
+});
+
+adminRouter.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { userId } = req.params;
         const { role } = req.body;
@@ -379,4 +396,42 @@ router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), asyn
     }
 });
 
-export default router;
+// Assign a memofiche to a user
+adminRouter.post('/:userId/assign-fiche', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { ficheId } = req.body;
+
+        if (!ficheId) {
+            return res.status(400).json({ message: 'ficheId is required.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $addToSet: { assignedFichesToUser: { ficheId, assignedAt: new Date() } } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        if (result.modifiedCount === 0) {
+            return res.status(200).json({ message: 'Fiche already assigned to this user.' });
+        }
+
+        res.status(200).json({ message: 'Mémofiche assignée avec succès à l\'utilisateur.' });
+    } catch (error) {
+        console.error('Error assigning fiche to user:', error);
+        res.status(500).json({ message: 'Erreur lors de l\'assignation de la mémofiche à l\'utilisateur.', error });
+    }
+});
+
+
+export { adminRouter, nonAdminRouter };

@@ -5,7 +5,7 @@ import { useData } from '../context/DataContext';
 import { CaseStudy, UserRole, MemoFicheStatus } from '../types';
 import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon, UserGroupIcon } from '../components/Icons';
 import { TOPIC_CATEGORIES } from '../constants';
-import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
+import AssignFicheModal from '../components/AssignFicheModal';
 
 // This is the full-featured card, kept for the main memo fiches page
 const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: CaseStudy) => void }> = ({ caseStudy, onAssign }) => {
@@ -249,7 +249,7 @@ const MemoFichesPage: React.FC = () => {
             )}
 
             {isAssignModalOpen && selectedFiche && (
-                <AssignFicheToGroupModal fiche={selectedFiche} onClose={handleCloseAssignModal} />
+                <AssignFicheModal fiche={selectedFiche} onClose={handleCloseAssignModal} />
             )}
         </div>
     );
