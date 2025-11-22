@@ -292,7 +292,7 @@ app.get('/api/auth/me', authenticateToken, (req: AuthenticatedRequest, res) => {
 
 import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
-import { adminRouter as adminUsersRouter, nonAdminRouter as nonAdminUsersRouter } from './server/users.js';
+import usersRoutes from './server/users.js';
 import webinarsRouter from './server/webinars.js';
 import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
@@ -304,8 +304,7 @@ import imageThemesRouter from './server/imageThemes.js';
 app.use('/api/admin/crm', crmRoutes);
 app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
-app.use('/api/admin/users', adminUsersRouter);
-app.use('/api/users', nonAdminUsersRouter);
+app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
