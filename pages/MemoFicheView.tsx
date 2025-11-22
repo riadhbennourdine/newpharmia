@@ -36,14 +36,13 @@ const AccordionSection: React.FC<{
         </button>
         <div
             className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
-            {typeof children === 'string' ? (
-                <div className={`p-4 pt-0 pl-12 space-y-2 prose max-w-none ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`} dangerouslySetInnerHTML={{ __html: children }}>
-                </div>
-            ) : (
-                <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
-                    {children}
-                </div>
-            )}
+            <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
+                {typeof children === 'string' ? (
+                    <div dangerouslySetInnerHTML={{ __html: children }} />
+                ) : (
+                    children
+                )}
+            </div>
         </div>
     </div>
 );
@@ -203,12 +202,9 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('caseStudy changed:', caseStudy);
     if (caseStudy.type === 'savoir' && caseStudy.memoSections && caseStudy.memoSections.length > 0) {
-      console.log('Setting open section to:', caseStudy.memoSections[0].id || 'memoSection-0');
       setOpenSection(caseStudy.memoSections[0].id || 'memoSection-0');
     } else {
-      console.log('Setting open section to: patientSituation');
       setOpenSection('patientSituation');
     }
   }, [caseStudy]);
@@ -239,81 +235,107 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
-    if (!content) return '';
+    if (!content) return null;
 
-    if (typeof content === 'string' || Array.isArray(content) && content.every(item => typeof item === 'string')) {
-        const text = Array.isArray(content) ? content.join('\n') : content;
-        let html = text;
-        
-        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
-        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
-        
-        const lines = html.split('\n');
-        let inList = false;
-        const processedLines = lines.map(line => {
-            const trimmedLine = line.trim();
-            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
-                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
-                if (!inList) {
-                    inList = true;
-                    return `<ul>${listItem}`;
-                }
-                return listItem;
-            } else {
-                if (inList) {
-                    inList = false;
-                    return `</ul><p>${line}</p>`;
-                }
-                return line ? `<p>${line}</p>` : '';
-            }
-        });
-        if (inList) {
-            processedLines.push('</ul>');
+    const text = Array.isArray(content) ? content.join('\n') : content;
+
+    // Numerical headings regex, also considering the format "• 1. Title"
+    const numericalHeadingRegex = /^\s*(?:•\s*)?(\d+\.\s.*)/gm;
+    const isLongContent = text.length > 1000; // Define 'long' content threshold
+    const hasNumericalHeadings = numericalHeadingRegex.test(text);
+
+    if (isLongContent && hasNumericalHeadings) {
+      // Split by numerical headings, preserving the delimiter for the title
+      const parts = text.split(/(^\s*(?:•\s*)?\d+\.\s.*)/gm);
+      const subsections = [];
+      let currentTitle = '';
+      let currentContent = '';
+
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i].trim();
+        if (part.match(numericalHeadingRegex)) {
+          // This is a new title
+          if (currentTitle !== '') {
+            subsections.push({ title: currentTitle, content: currentContent.trim() });
+          }
+          currentTitle = part;
+          currentContent = '';
+        } else {
+          // This is content for the current title
+          currentContent += part + '\n';
         }
-        return processedLines.join('');
+      }
+      if (currentTitle !== '') {
+        subsections.push({ title: currentTitle, content: currentContent.trim() });
+      }
+
+      // If no valid subsections were found, fall back to normal rendering
+      if (subsections.length === 0) {
+        return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(text, isRedKeywordSection) }} />;
+      }
+
+      return (
+        <div>
+          {subsections.map((subsection, index) => (
+            <AccordionSection
+              key={index}
+              title={subsection.title.replace(/^\s*•\s*/, '')} // Remove leading bullet for title
+              icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-gray-600 text-white rounded-full font-bold text-sm">{index + 1}</div>}
+              isOpen={openSection === `subsection-${index}-${subsection.title.replace(/\s+/g, '-')}`}
+              onToggle={() => handleToggle(`subsection-${index}-${subsection.title.replace(/\s+/g, '-')}`)}
+            >
+              <div dangerouslySetInnerHTML={{ __html: renderMarkdown(subsection.content, isRedKeywordSection) }} />
+            </AccordionSection>
+          ))}
+        </div>
+      );
     }
 
-    const contentArray = content as MemoFicheSectionContent[];
-    return contentArray.map(item => {
-        if (item.type === 'image') {
-            return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
-        }
-        if (item.type === 'video') {
-            const embedUrl = getYoutubeEmbedUrl(item.value);
-            if (embedUrl) {
-                return `<div class="w-full" style="padding-bottom: 56.25%; position: relative; height: 0; margin-top: 1rem; margin-bottom: 1rem;"><iframe src="${embedUrl}" title="Vidéo YouTube" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-md"></iframe></div>`;
-            }
-            return '';
-        }
-        // Handle text
-        let html = item.value;
-        const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
-        html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
-        const lines = html.split('\n');
-        let inList = false;
-        const processedLines = lines.map(line => {
-            const trimmedLine = line.trim();
-            if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
-                const listItem = `<li>${trimmedLine.substring(2)}</li>`;
-                if (!inList) {
-                    inList = true;
-                    return `<ul>${listItem}`;
-                }
-                return listItem;
-            } else {
-                if (inList) {
-                    inList = false;
-                    return `</ul><p>${line}</p>`;
-                }
-                return line ? `<p>${line}</p>` : '';
-            }
-        });
-        if (inList) {
-            processedLines.push('</ul>');
-        }
-        return processedLines.join('');
-    }).join('');
+    // Default rendering for short content or content without numerical headings
+    return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(text, isRedKeywordSection) }} />;
   };
+
+  const renderMarkdown = (text: string, isRedKeywordSection: boolean = false) => {
+    let html = text;
+
+    // Keywords (bold)
+    const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+    html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
+
+    // Headings (e.g., # H1, ## H2, ### H3)
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+    // Numerical Lists (e.g., 1. Item) - should already be handled by accordion split, but as a fallback
+    html = html.replace(/^\s*(\d+\.) (.*)/gm, '<li>$1 $2</li>');
+
+    // Bullet Points (e.g., - Item, • Item)
+    html = html.replace(/^\s*([*•-]) (.*)/gm, '<li>$2</li>');
+    
+    // Wrap consecutive list items in <ul> or <ol>
+    // This regex looks for lines starting with <li> and groups them
+    html = html.replace(/((?:^|\n)\s*<li.*?>(?:.|\n)*?<\/li>)+/g, (match) => {
+        // Check if the first li in the block is a numerical list item (e.g. contains "1.")
+        if (match.match(/<li>\d+\./)) {
+            return `<ol>${match}</ol>`;
+        } else {
+            return `<ul>${match}</ul>`;
+        }
+    });
+
+    // Paragraphs - only wrap lines that are not part of other blocks and are not empty
+    html = html.split('\n').map(line => {
+        const trimmedLine = line.trim();
+        // Check if the line is not empty and not already part of a block (like headings or lists)
+        if (trimmedLine && !trimmedLine.match(/<(h[1-6]|ul|ol|li|div|p)>/i)) {
+            return `<p>${trimmedLine}</p>`;
+        }
+        return line;
+    }).join('\n');
+
+    return html;
+  }
 
   const memoContent = useMemo(() => {
     if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
