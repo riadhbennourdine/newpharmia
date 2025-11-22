@@ -102,8 +102,6 @@ app.post('/api/auth/login', async (req, res) => {
             ]
         });
 
-        console.log('User found:', user);
-
         if (user && user.passwordHash) {
             const isMatch = await bcrypt.compare(password, user.passwordHash);
 
@@ -295,7 +293,6 @@ app.get('/api/auth/me', authenticateToken, (req: AuthenticatedRequest, res) => {
 import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
 import usersRoutes from './server/users.js';
-console.log('server.ts: usersRoutes imported successfully.');
 import webinarsRouter from './server/webinars.js';
 import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
@@ -441,8 +438,6 @@ app.get('/api/memofiches', async (req, res) => {
             ];
         }
 
-        console.log('Query:', query);
-
         const total = await memofichesCollection.countDocuments(query);
         const totalPages = Math.ceil(total / limitNum);
 
@@ -456,8 +451,6 @@ app.get('/api/memofiches', async (req, res) => {
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum)
             .toArray();
-
-        console.log('Fiches found:', fiches.length);
 
         const fichesWithAccess = fiches.map(fiche => {
             let hasAccess = false;
@@ -515,7 +508,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
-        console.log('Received request for /api/memofiches/:id. Fiche ID:', id, 'User ID:', userId);
 
         const client = await clientPromise;
         const db = client.db('pharmia');
@@ -545,21 +537,18 @@ app.get('/api/memofiches/:id', async (req, res) => {
         }
 
         if (!userId || !ObjectId.isValid(userId)) {
-            console.log(`403: Access denied for memofiche ${id}. User not authenticated.`);
             return res.status(403).json({ message: 'Accès refusé: Utilisateur non authentifié.' });
         }
 
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
-            console.log(`403: User ${userId} not found.`);
             return res.status(403).json({ message: 'Accès refusé: Utilisateur introuvable.' });
         }
 
         let group: Group | null = null;
         let pharmacist: User | null = null;
 
-        console.log('User in /api/memofiches/:id:', user, 'User Group ID:', user?.groupId);
         if (user && user.groupId) {
                         group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
             
@@ -570,7 +559,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
 
         // Admin and Formateur can access all non-free memofiches
         if (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
-            console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Admin/Formateur).`);
             return res.json({
                 ...fiche,
                 isLocked: false,
@@ -585,7 +573,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
         if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR) {
             // Check for active subscription
             if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
-                console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Active Subscription).`);
                 return res.json({
                     ...fiche,
                     isLocked: false,
@@ -601,7 +588,6 @@ app.get('/api/memofiches/:id', async (req, res) => {
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
 
                 if (group && group.assignedFiches.some(f => f.ficheId === id)) {
-                    console.log(`200: User ${user.email} (${user.role}) accessed memofiche ${id} (Group Assigned).`);
                     return res.json({
                         ...fiche,
                         isLocked: false,
@@ -613,13 +599,9 @@ app.get('/api/memofiches/:id', async (req, res) => {
                 }
             }
 
-            // If no active subscription and no group access
-            console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Subscription: ${user.hasActiveSubscription}, Group ID: ${user.groupId}, Assigned: ${user.groupId ? 'No' : 'N/A'}.`);
             return res.status(403).json({ message: 'Accès refusé: Abonnement inactif ou mémofiche non assignée.', isLocked: true });
         }
 
-        // Other roles (e.g., VISITEUR) cannot access non-free memofiches
-        console.log(`403: User ${user.email} (${user.role}) denied access to memofiche ${id}. Insufficient role.`);
         return res.status(403).json({ message: 'Accès refusé: Rôle utilisateur insuffisant.', isLocked: true });
 
     } catch (error) {
@@ -749,9 +731,7 @@ app.post('/api/gemini/generate-draft', async (req, res) => {
         if (!prompt) {
             return res.status(400).json({ message: 'Prompt is required.' });
         }
-        console.log('Calling generateCaseStudyDraft with prompt:', prompt);
         const draft = await generateCaseStudyDraft(prompt, memoFicheType);
-        console.log('generateCaseStudyDraft returned draft:', draft);
         res.json(draft);
     } catch (error: any) {
         console.error('Error generating draft:', error);

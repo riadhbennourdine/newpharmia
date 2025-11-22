@@ -17,12 +17,10 @@ const getApiKey = () => {
 export const uploadFileToGemini = async (path: string, mimeType: string) => {
   const apiKey = getApiKey();
   const fileManager = new GoogleAIFileManager(apiKey);
-  console.log(`Uploading file: ${path} with mimeType: ${mimeType}`);
   const uploadResult = await fileManager.uploadFile(path, {
     mimeType,
     displayName: path,
   });
-  console.log(`Upload successful for ${path}. Gemini file name: ${uploadResult.file.name}`);
   return uploadResult.file;
 };
 
@@ -53,12 +51,9 @@ export const searchInFiles = async (query: string, files: { name: string; uri: s
     Question de l'utilisateur : "${query}"
   `;
 
-  console.log(`Performing search for query: "${query}" in ${files.length} files.`);
-
   const result = await model.generateContent([prompt, ...fileParts]);
   const response = await result.response;
   const text = response.text();
 
-  console.log("Search result from Gemini:", text);
   return text;
 };

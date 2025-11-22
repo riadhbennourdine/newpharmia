@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType, ObjectSchema, ArraySchema } from "@google/generative-ai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
@@ -32,7 +32,7 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   ], });
 
 
-  let jsonStructure: any = {
+  let jsonStructure: ObjectSchema = {
     type: SchemaType.OBJECT,
     properties: {
       title: { type: SchemaType.STRING },
@@ -139,8 +139,6 @@ ${prompt}`;
     jsonStructure.required = ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'];
   }
     
-  console.log("memoFicheType:", memoFicheType);
-  console.log("jsonStructure:", JSON.stringify(jsonStructure, null, 2));
   console.log("Prompt envoyé à Gemini :", fullPrompt);
 
   const result = await model.generateContent({
@@ -158,12 +156,11 @@ ${prompt}`;
     ? responseText.substring(7, responseText.length - 3)
     : responseText;
   const generatedData = JSON.parse(jsonText);
-  console.log("Données générées brutes de Gemini :", JSON.stringify(generatedData, null, 2));
 
   return { ...generatedData, status: MemoFicheStatus.DRAFT };
 };
 
-const learningToolsSchema = {
+const learningToolsSchema: ObjectSchema = {
     type: SchemaType.OBJECT,
     properties: {
         flashcards: {
@@ -239,7 +236,7 @@ Le contenu de la mémofiche est : "${context}".`;
       contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
       generationConfig: {
         responseMimeType: "application/json",
-        responseSchema: learningToolsSchema as any,
+        responseSchema: learningToolsSchema,
       },
     });
     
