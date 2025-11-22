@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Group, CaseStudy } from '../../types';
+import { Group, CaseStudy } from '../types';
 
 interface AssignFicheToGroupModalProps {
   fiche: CaseStudy;
