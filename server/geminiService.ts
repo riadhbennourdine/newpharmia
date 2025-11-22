@@ -1,8 +1,9 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, Schema, SchemaType } from "@google/generative-ai";
+import * as GenAI from "@google/genai";
+import { HarmCategory, HarmBlockThreshold, Part, Content, Schema, Type } from "@google/genai";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
-// The schemas now use the official SchemaType enum for defining data types.
+
 
 const getApiKey = () => {
   const API_KEY = process.env.GEMINI_API_KEY;
@@ -11,11 +12,11 @@ const getApiKey = () => {
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-  const genAI = new GoogleGenerativeAI(getApiKey());
+  const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
 
 
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: [
+  const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash", safetySettings: [
     {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
       threshold: HarmBlockThreshold.BLOCK_NONE,
@@ -35,39 +36,41 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   ], });
 
   let jsonStructure: Schema = {
-    type: SchemaType.OBJECT,
+    type: Type.OBJECT,
     properties: {
-      title: { type: SchemaType.STRING },
-      patientSituation: { type: SchemaType.STRING },
-      keyQuestions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      pathologyOverview: { type: SchemaType.STRING },
-      redFlags: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      mainTreatment: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      associatedProducts: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      lifestyleAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      dietaryAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-      references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+      title: { type: Type.STRING },
+      patientSituation: { type: Type.STRING },
+      keyQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      pathologyOverview: { type: Type.STRING },
+      redFlags: { type: Type.ARRAY, items: { type: Type.STRING } },
+      mainTreatment: { type: Type.ARRAY, items: { type: Type.STRING } },
+      associatedProducts: { type: Type.ARRAY, items: { type: Type.STRING } },
+      lifestyleAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+      dietaryAdvice: { type: Type.ARRAY, items: { type: Type.STRING } },
+      references: { type: Type.ARRAY, items: { type: Type.STRING } },
     },
     required: ['title', 'patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'references'],
   };
 
   let fullPrompt = `
     ${prompt}
-    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Respectez impérativement la structure suivante. Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
+    La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Respectez impérativement la structure JSON suivante:
+    ${JSON.stringify(jsonStructure)}
+    Si une section contient une liste, chaque élément de la liste doit commencer par un point (•) suivi d'un espace.`;
 
   if (memoFicheType === 'pharmacologie' || memoFicheType === 'savoir') {
     jsonStructure = {
-      type: SchemaType.OBJECT,
+      type: Type.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING },
-        shortDescription: { type: SchemaType.STRING },
+        title: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
         memoSections: {
-          type: SchemaType.ARRAY,
+          type: Type.ARRAY,
           items: {
-            type: SchemaType.OBJECT,
+            type: Type.OBJECT,
             properties: {
-              title: { type: SchemaType.STRING },
-              content: { type: SchemaType.STRING },
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
             },
             required: ['title', 'content'],
           },
@@ -77,18 +80,18 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'dispositifs-medicaux') {
     jsonStructure = {
-      type: SchemaType.OBJECT,
+      type: Type.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING },
-        casComptoir: { type: SchemaType.STRING },
-        objectifsConseil: { type: SchemaType.STRING },
-        pathologiesConcernees: { type: SchemaType.STRING },
-        interetDispositif: { type: SchemaType.STRING },
-        beneficesSante: { type: SchemaType.STRING },
-        exemplesArticles: { type: SchemaType.STRING },
-        reponsesObjections: { type: SchemaType.STRING },
-        pagesSponsorisees: { type: SchemaType.STRING },
-        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        title: { type: Type.STRING },
+        casComptoir: { type: Type.STRING },
+        objectifsConseil: { type: Type.STRING },
+        pathologiesConcernees: { type: Type.STRING },
+        interetDispositif: { type: Type.STRING },
+        beneficesSante: { type: Type.STRING },
+        exemplesArticles: { type: Type.STRING },
+        reponsesObjections: { type: Type.STRING },
+        pagesSponsorisees: { type: Type.STRING },
+        references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
       required: [
         'title',
@@ -105,43 +108,89 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
     };
   } else if (memoFicheType === 'ordonnances') {
     jsonStructure = {
-      type: SchemaType.OBJECT,
+      type: Type.OBJECT,
       properties: {
-        title: { type: SchemaType.STRING },
-        ordonnance: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-        analyseOrdonnance: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        title: { type: Type.STRING },
+        ordonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
+        analyseOrdonnance: { type: Type.ARRAY, items: { type: Type.STRING } },
         conseilsTraitement: {
-          type: SchemaType.ARRAY,
+          type: Type.ARRAY,
           items: {
-            type: SchemaType.OBJECT,
+            type: Type.OBJECT,
             properties: {
-              medicament: { type: SchemaType.STRING },
-              conseils: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+              medicament: { type: Type.STRING },
+              conseils: { type: Type.ARRAY, items: { type: Type.STRING } },
             },
             required: ['medicament', 'conseils'],
           },
         },
-        informationsMaladie: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-        conseilsHygieneDeVie: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-        conseilsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        informationsMaladie: { type: Type.ARRAY, items: { type: Type.STRING } },
+        conseilsHygieneDeVie: { type: Type.ARRAY, items: { type: Type.STRING } },
+        conseilsAlimentaires: { type: Type.ARRAY, items: { type: Type.STRING } },
         ventesAdditionnelles: {
-          type: SchemaType.OBJECT,
+          type: Type.OBJECT,
           properties: {
-            complementsAlimentaires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            accessoires: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            dispositifs: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-            cosmetiques: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+            complementsAlimentaires: { type: Type.ARRAY, items: { type: Type.STRING } },
+            accessoires: { type: Type.ARRAY, items: { type: Type.STRING } },
+            dispositifs: { type: Type.ARRAY, items: { type: Type.STRING } },
+            cosmetiques: { type: Type.ARRAY, items: { type: Type.STRING } },
           },
         },
-        references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+        references: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
       required: ['title', 'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles', 'references'],
     };
   } else if (memoFicheType === 'communication') {
-    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
-
+    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Respectez impérativement la structure JSON suivante:
+    ${JSON.stringify({
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
+        introduction: { type: Type.STRING },
+        patientSituation: { type: Type.STRING },
+        customSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
+          },
+        },
+      },
+      required: ['title', 'shortDescription', 'introduction', 'patientSituation', 'customSections'],
+    })}
+    Le texte à analyser est :
 ${prompt}`;
-      }
+  } else if (memoFicheType === 'communication') { 
+    fullPrompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit commencer par un point (•) suivi d'un espace, et être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). La réponse doit être un objet JSON valide et complet, STRICTEMENT SANS AUCUN TEXTE SUPPLÉMENTAIRE NI MARKDOWN (par exemple, ne pas utiliser de blocs de code markdown json). Respectez impérativement la structure JSON suivante:
+    ${JSON.stringify({
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        shortDescription: { type: Type.STRING },
+        introduction: { type: Type.STRING },
+        patientSituation: { type: Type.STRING },
+        customSections: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+            },
+            required: ['title', 'content'],
+          },
+        },
+      },
+      required: ['title', 'shortDescription', 'introduction', 'patientSituation', 'customSections'],
+    })}
+    Le texte à analyser est :
+${prompt}`;
+  }
     
   console.log("memoFicheType:", memoFicheType);
   console.log("jsonStructure:", JSON.stringify(jsonStructure, null, 2));
@@ -149,10 +198,6 @@ ${prompt}`;
 
   const result = await model.generateContent({
     contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-    generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: jsonStructure,
-    },
   });
   
   const response = result.response;
@@ -168,51 +213,51 @@ ${prompt}`;
 };
 
 const learningToolsSchema: Schema = {
-    type: SchemaType.OBJECT,
+    type: Type.OBJECT,
     properties: {
         flashcards: {
-            type: SchemaType.ARRAY,
+            type: Type.ARRAY,
             items: {
-                type: SchemaType.OBJECT,
+                type: Type.OBJECT,
                 properties: {
-                    question: { type: SchemaType.STRING },
-                    answer: { type: SchemaType.STRING },
+                    question: { type: Type.STRING },
+                    answer: { type: Type.STRING },
                 },
                 required: ['question', 'answer'],
             },
             description: "Crée exactement 10 flashcards pertinentes pour aider à mémoriser les points clés de la mémofiche."
         },
         glossary: {
-            type: SchemaType.ARRAY,
+            type: Type.ARRAY,
             items: {
-                type: SchemaType.OBJECT,
+                type: Type.OBJECT,
                 properties: {
-                    term: { type: SchemaType.STRING },
-                    definition: { type: SchemaType.STRING },
+                    term: { type: Type.STRING },
+                    definition: { type: Type.STRING },
                 },
                 required: ['term', 'definition'],
             },
             description: "Crée un glossaire d'exactement 10 termes techniques importants mentionnés dans la mémofiche."
         },
         quiz: {
-            type: SchemaType.ARRAY,
+            type: Type.ARRAY,
             items: {
-                type: SchemaType.OBJECT,
+                type: Type.OBJECT,
                 properties: {
                     questionType: {
-                        type: SchemaType.STRING,
+                        type: Type.STRING,
                         format: 'enum',
                         enum: ['QCM', 'VRAI_FAUX'],
                         description: "Le type de question : QCM (Question à Choix Multiples) ou VRAI_FAUX."
                     },
-                    question: { type: SchemaType.STRING },
+                    question: { type: Type.STRING },
                     options: {
-                        type: SchemaType.ARRAY, 
-                        items: { type: SchemaType.STRING },
+                        type: Type.ARRAY, 
+                        items: { type: Type.STRING },
                         description: "Pour un QCM, 4 options. Pour une question VRAI_FAUX, les options doivent être ['Vrai', 'Faux']."
                     },
-                    correctAnswerIndex: { type: SchemaType.INTEGER },
-                    explanation: { type: SchemaType.STRING }
+                    correctAnswerIndex: { type: Type.INTEGER },
+                    explanation: { type: Type.STRING }
                 },
                 required: ['questionType', 'question', 'options', 'correctAnswerIndex', 'explanation']
             },
@@ -223,8 +268,8 @@ const learningToolsSchema: Schema = {
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-    const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+    const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const context = `
         Titre: ${memoContent.title}
@@ -235,14 +280,12 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
         Signaux d'alerte: ${(memoContent.redFlags ?? []).join(', ')}
     `;
 
-    const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. Réponds en JSON en respectant le schéma détaillé qui demande explicitement 10 flashcards et un quiz de 10 questions (6 QCM et 4 Vrai/Faux). Le contenu de la mémofiche est : "${context}".`;
+    const fullPrompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques pour un professionnel de la pharmacie. Réponds en JSON en respectant le schéma JSON suivant :
+${JSON.stringify(learningToolsSchema)}
+Le contenu de la mémofiche est : "${context}".`;
 
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: learningToolsSchema,
-      },
     });
     
     const response = result.response;
@@ -250,8 +293,8 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const genAI = new GenAI.GoogleGenAI({ apiKey: getApiKey(), httpOptions: { apiVersion: "v1" } });
+    const model = (genAI as any).getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
 Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
@@ -267,7 +310,6 @@ Pour toutes les autres questions, base tes réponses sur le contexte de la mémo
 `;
 
     const history: Content[] = [
-        { role: "user", parts: [{ text: system_prompt }] },
         { role: "model", parts: [{ text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :
 
 **${title}**
@@ -286,7 +328,7 @@ Comment puis-je vous aider aujourd'hui ?` }] },
         },
       });
 
-        const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
+        const result = await chat.sendMessage(`${system_prompt}\n\nCONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
 
         const response = result.response;
 
