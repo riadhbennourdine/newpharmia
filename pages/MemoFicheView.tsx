@@ -234,44 +234,65 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const formattedDate = new Date(caseStudy.creationDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  const renderContentWithKeywords = (content: string | string[] | undefined, isRedKeywordSection: boolean = false) => {
+  // Helper to check if content is MemoFicheSectionContent[]
+  const isMemoFicheSectionContentArray = (content: any): content is MemoFicheSectionContent[] => {
+    return Array.isArray(content) && content.every(item => typeof item === 'object' && item !== null && 'type' in item && 'value' in item);
+  };
+
+  const renderContentWithKeywords = (
+    content: string | string[] | MemoFicheSectionContent[] | undefined,
+    isRedKeywordSection: boolean = false
+  ) => {
     if (!content) return null;
 
-    const text = Array.isArray(content) ? content.join('\n') : content;
+    let textContent = '';
 
-    // Numerical headings regex, also considering the format "• 1. Title"
+    if (isMemoFicheSectionContentArray(content)) {
+      textContent = content.map(item => {
+        if (item.type === 'image') {
+          return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
+        }
+        if (item.type === 'video') {
+          const embedUrl = getYoutubeEmbedUrl(item.value);
+          if (embedUrl) {
+            return `<div class="w-full" style="padding-bottom: 56.25%; position: relative; height: 0; margin-top: 1rem; margin-bottom: 1rem;"><iframe src="${embedUrl}" title="Vidéo YouTube" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute top-0 left-0 w-full h-full rounded-md"></iframe></div>`;
+          }
+          return '';
+        }
+        // Assuming 'text' type
+        return item.value; // Get the raw text content for markdown processing
+      }).join('\n'); // Join all content parts for overall markdown processing
+    } else {
+      textContent = Array.isArray(content) ? content.join('\n') : content;
+    }
+
+    // Now process textContent for numerical headings and accordions
     const numericalHeadingRegex = /^\s*(?:•\s*)?(\d+\.\s.*)/gm;
-    const isLongContent = text.length > 1000; // Define 'long' content threshold
-    const hasNumericalHeadings = numericalHeadingRegex.test(text);
+    const isLongContent = textContent.length > 1000; // Define 'long' content threshold
+    // Test with the original textContent to correctly identify headings
+    const hasNumericalHeadings = numericalHeadingRegex.test(textContent);
 
     if (isLongContent && hasNumericalHeadings) {
+        // Reset regex lastIndex after testing
+        numericalHeadingRegex.lastIndex = 0; 
       // Split by numerical headings, preserving the delimiter for the title
-      const parts = text.split(/(^\s*(?:•\s*)?\d+\.\s.*)/gm);
-      const subsections = [];
-      let currentTitle = '';
-      let currentContent = '';
+      const parts = textContent.split(/(^\s*(?:•\s*)?\d+\.\s.*)/gm).filter(Boolean); // filter(Boolean) to remove empty strings
 
+      const subsections = [];
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i].trim();
         if (part.match(numericalHeadingRegex)) {
           // This is a new title
-          if (currentTitle !== '') {
-            subsections.push({ title: currentTitle, content: currentContent.trim() });
-          }
-          currentTitle = part;
-          currentContent = '';
-        } else {
-          // This is content for the current title
-          currentContent += part + '\n';
+          subsections.push({ title: part, content: '' });
+        } else if (subsections.length > 0) {
+          // This is content for the last title
+          subsections[subsections.length - 1].content += (subsections[subsections.length - 1].content ? '\n' : '') + part;
         }
       }
-      if (currentTitle !== '') {
-        subsections.push({ title: currentTitle, content: currentContent.trim() });
-      }
-
-      // If no valid subsections were found, fall back to normal rendering
-      if (subsections.length === 0) {
-        return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(text, isRedKeywordSection) }} />;
+      
+      // If no valid subsections were found or content is short, fall back to normal rendering
+      if (subsections.length === 0 || !isLongContent) {
+        return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(textContent, isRedKeywordSection) }} />;
       }
 
       return (
@@ -292,7 +313,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }
 
     // Default rendering for short content or content without numerical headings
-    return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(text, isRedKeywordSection) }} />;
+    return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(textContent, isRedKeywordSection) }} />;
   };
 
   const renderMarkdown = (text: string, isRedKeywordSection: boolean = false) => {
@@ -307,32 +328,33 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
     html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
 
-    // Numerical Lists (e.g., 1. Item) - should already be handled by accordion split, but as a fallback
-    html = html.replace(/^\s*(\d+\.) (.*)/gm, '<li>$1 $2</li>');
-
-    // Bullet Points (e.g., - Item, • Item)
-    html = html.replace(/^\s*([*•-]) (.*)/gm, '<li>$2</li>');
+    // Lists (bullet points and numerical lists)
+    // First, convert list items
+    html = html.replace(/^\s*([*•-]) (.*)/gm, '<li>$2</li>'); // Bullet points
+    html = html.replace(/^\s*(\d+\.) (.*)/gm, '<li>$1 $2</li>'); // Numerical lists (keep number in li for now)
     
-    // Wrap consecutive list items in <ul> or <ol>
-    // This regex looks for lines starting with <li> and groups them
-    html = html.replace(/((?:^|\n)\s*<li.*?>(?:.|\n)*?<\/li>)+/g, (match) => {
-        // Check if the first li in the block is a numerical list item (e.g. contains "1.")
-        if (match.match(/<li>\d+\./)) {
-            return `<ol>${match}</ol>`;
-        } else {
-            return `<ul>${match}</ul>`;
-        }
+    // Then, wrap consecutive list items in <ul> or <ol>
+    html = html.replace(/((?:^|\n)(?:\s*<li[\s\S]*?>(?:[\s\S]*?)<\/li>))+/g, (match) => {
+      // Check if the first li in the block is a numerical list item (e.g. contains "1.")
+      if (match.match(/<li[^>]*>\s*\d+\./)) {
+        return `<ol>${match}</ol>`;
+      } else {
+        return `<ul>${match}</ul>`;
+      }
     });
 
     // Paragraphs - only wrap lines that are not part of other blocks and are not empty
     html = html.split('\n').map(line => {
         const trimmedLine = line.trim();
         // Check if the line is not empty and not already part of a block (like headings or lists)
-        if (trimmedLine && !trimmedLine.match(/<(h[1-6]|ul|ol|li|div|p)>/i)) {
+        if (trimmedLine && !trimmedLine.match(/<(h[1-6]|ul|ol|li|div|p|img|iframe)>/i)) {
             return `<p>${trimmedLine}</p>`;
         }
         return line;
     }).join('\n');
+
+    // Remove any remaining empty <p></p> tags that might have been created
+    html = html.replace(/<p>\s*<\/p>/g, '');
 
     return html;
   }
@@ -346,7 +368,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         content: renderContentWithKeywords(section.content),
       }));
       content.push(
-        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+        { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
       );
       return content;
     } else if (caseStudy.type === 'ordonnances') {
@@ -396,7 +418,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }));
 
     content.push(
-      { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+      { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
     );
 
     return content;
