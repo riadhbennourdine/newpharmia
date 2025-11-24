@@ -83,6 +83,7 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
 const WebinarManagement: React.FC = () => {
     const [soonestWebinar, setSoonestWebinar] = useState<Webinar | null>(null);
     const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
+    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { token, user } = useAuth();
@@ -107,9 +108,10 @@ const WebinarManagement: React.FC = () => {
 
             const liveWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.LIVE);
             const upcomingWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.UPCOMING);
-            const pastWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.PAST); // Pour référence, même si non affiché directement
+            const past = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.PAST);
 
-            // Pour la page de gestion, nous voulons voir les webinaires LIVE et UPCOMING
+            setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+
             const relevantWebinars = [...liveWebinars, ...upcomingWebinars].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
             if (relevantWebinars.length > 0) {
@@ -307,7 +309,7 @@ const WebinarManagement: React.FC = () => {
             )}
 
             {otherWebinars.length > 0 && (
-                <div>
+                <div className="mb-12">
                     <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">Autres webinaires à venir</h2>
                     <div className="bg-white shadow-md rounded-lg overflow-hidden">
                         <ul className="divide-y divide-slate-200">
@@ -321,6 +323,38 @@ const WebinarManagement: React.FC = () => {
                                         <div className="flex gap-2">
                                             <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
                                             <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
+                                        </div>
+                                    </div>
+                                    {webinar.attendees && webinar.attendees.length > 0 && (
+                                        <AttendeesList 
+                                            attendees={webinar.attendees} 
+                                            webinarId={webinar._id.toString()}
+                                            presenter={webinar.presenter}
+                                            onConfirmPayment={handleConfirmPayment}
+                                            isConfirmingPayment={isConfirmingPayment}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
+            
+            {pastWebinars.length > 0 && (
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">Webinaires Passés</h2>
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                        <ul className="divide-y divide-slate-200">
+                            {pastWebinars.map(webinar => (
+                                <li key={webinar._id.toString()} className="p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div>
+                                            <p className="font-semibold text-slate-800">{webinar.title}</p>
+                                            <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleString('fr-FR')} - {webinar.presenter}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600" title="Modifier le wébinaire"><PencilIcon className="h-5 w-5" /></button>
                                         </div>
                                     </div>
                                     {webinar.attendees && webinar.attendees.length > 0 && (
