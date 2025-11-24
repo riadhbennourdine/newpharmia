@@ -79,7 +79,7 @@ router.get('/', softAuthenticateToken, async (req, res) => {
         });
 
         // If the user is an admin or webinar admin, populate attendee details
-        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
+        if (isAdmin) {
             const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
             const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
 
@@ -173,7 +173,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         }
 
         // Admins and webinar admins can see the full list of attendees, others cannot.
-        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
+        if (isAdmin) {
             const userIds = webinar.attendees.map(a => new ObjectId(a.userId as string));
             if (userIds.length > 0) {
                 const usersCollection = db.collection('users');
