@@ -70,7 +70,7 @@ export const sendBulkEmails = async (messages: BulkEmailMessage[]) => {
     throw new Error("Brevo API key not configured.");
   }
 
-  const url = 'https://api.brevo.com/v3/smtp/bulk-emails';
+  const url = 'https://api.brevo.com/v3/smtp/bulkEmails';
   const headers = {
     'accept': 'application/json',
     'api-key': BREVO_API_KEY,
