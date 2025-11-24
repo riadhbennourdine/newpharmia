@@ -187,6 +187,9 @@ const Newsletter: React.FC = () => {
   const [testEmail, setTestEmail] = useState('');
   const [pharmacists, setPharmacists] = useState<{ value: string; label: string }[]>([]);
   const [selectedTestEmails, setSelectedTestEmails] = useState<{ value: string; label: string }[]>([]);
+  const [webinars, setWebinars] = useState<{ value: string; label: string; googleMeetLink?: string }[]>([]);
+  const [selectedWebinar, setSelectedWebinar] = useState<{ value: string; label: string; googleMeetLink?: string } | null>(null);
+
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -221,6 +224,19 @@ const Newsletter: React.FC = () => {
             label: `${p.firstName} ${p.lastName} (${p.email})`
         }));
         setPharmacists(pharmacistOptions);
+
+        // Fetch webinars
+        const webinarsResponse = await fetch('/api/webinars');
+        if (!webinarsResponse.ok) {
+            throw new Error('Failed to fetch webinars');
+        }
+        const webinarsData = await webinarsResponse.json();
+        const webinarOptions = webinarsData.map((w: any) => ({
+            value: w._id,
+            label: w.title,
+            googleMeetLink: w.googleMeetLink,
+        }));
+        setWebinars(webinarOptions);
 
       } catch (err: any) {
         console.error(err);
@@ -316,7 +332,16 @@ const Newsletter: React.FC = () => {
       const response = await fetch('/api/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, roles: selectedRoles, cities: selectedCities, statuses: selectedStatuses, formalGroupIds: selectedFormalGroupIds }),
+        body: JSON.stringify({ 
+          subject, 
+          htmlContent: htmlContentToSend, 
+          roles: selectedRoles, 
+          cities: selectedCities, 
+          statuses: selectedStatuses, 
+          formalGroupIds: selectedFormalGroupIds,
+          webinarId: selectedWebinar ? selectedWebinar.value : null,
+          googleMeetLink: selectedWebinar ? selectedWebinar.googleMeetLink : null,
+        }),
       });
 
       const data = await response.json();
@@ -358,13 +383,13 @@ const Newsletter: React.FC = () => {
             <div className="mt-2 flex flex-wrap gap-2">
                 {staff && (
                     <div key={staff.name} className="flex items-center">
-                        <input type="checkbox" id={`role-select-${staff.name}`} checked={selectedRoles.includes(staff.name)} onChange={() => handleRoleToggle(staff.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <input type="checkbox" id={`role-select-${staff.name}`} checked={selectedRoles.includes(staff.name)} onChange={() => handleRoleToggle(staff.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" disabled={!!selectedWebinar} />
                         <label htmlFor={`role-select-${staff.name}`} className="ml-2 text-sm text-gray-700">{staff.name} ({staff.count})</label>
                     </div>
                 )}
                 {roles.map(role => (
                     <div key={role.name} className="flex items-center">
-                        <input type="checkbox" id={`role-select-${role.name}`} checked={selectedRoles.includes(role.name)} onChange={() => handleRoleToggle(role.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <input type="checkbox" id={`role-select-${role.name}`} checked={selectedRoles.includes(role.name)} onChange={() => handleRoleToggle(role.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" disabled={!!selectedWebinar} />
                         <label htmlFor={`role-select-${role.name}`} className="ml-2 text-sm text-gray-700">{role.name} ({role.count})</label>
                     </div>
                 ))}
@@ -376,7 +401,7 @@ const Newsletter: React.FC = () => {
             <div className="mt-2 flex flex-wrap gap-2">
                 {statuses.map(status => (
                     <div key={status.name} className="flex items-center">
-                        <input type="checkbox" id={`status-select-${status.name}`} checked={selectedStatuses.includes(status.name)} onChange={() => handleStatusToggle(status.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
+                        <input type="checkbox" id={`status-select-${status.name}`} checked={selectedStatuses.includes(status.name)} onChange={() => handleStatusToggle(status.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" disabled={!!selectedWebinar} />
                         <label htmlFor={`status-select-${status.name}`} className="ml-2 text-sm text-gray-700">{status.name} ({status.count})</label>
                     </div>
                 ))}
@@ -393,6 +418,7 @@ const Newsletter: React.FC = () => {
               }}
               className="mt-1"
               placeholder="Sélectionner des villes..."
+              isDisabled={!!selectedWebinar}
             />
             <p className="text-xs text-gray-500 mt-1">Si aucun groupe n'est sélectionné, la newsletter sera envoyée à tous les abonnés.</p>
           </div>
@@ -407,7 +433,33 @@ const Newsletter: React.FC = () => {
               }}
               className="mt-1"
               placeholder="Sélectionner des groupes..."
+              isDisabled={!!selectedWebinar}
             />
+          </div>
+
+          <div className="mb-4 p-4 border-t border-b border-gray-200">
+            <label className="block text-sm font-medium text-gray-700">Ou envoyer aux participants d'un webinaire</label>
+            <Select
+              options={webinars}
+              isClearable
+              onChange={(selectedOption) => {
+                setSelectedWebinar(selectedOption);
+                if (selectedOption) {
+                  // Clear other selections
+                  setSelectedRoles([]);
+                  setSelectedCities([]);
+                  setSelectedStatuses([]);
+                  setSelectedFormalGroupIds([]);
+                  // Add meeting link tag
+                  if (!content.includes('{{LIEN_MEETING}}')) {
+                    setContent(content + '\n\nRejoignez-nous via ce lien : {{LIEN_MEETING}}');
+                  }
+                }
+              }}
+              className="mt-1"
+              placeholder="Sélectionner un webinaire..."
+            />
+             <p className="text-xs text-gray-500 mt-1">Ceci désactivera les autres options de ciblage.</p>
           </div>
 
           <div className="mb-4">

@@ -1034,80 +1034,101 @@ app.post('/api/gpg/webhook', async (req, res) => {
     }
 });
 app.post('/api/newsletter/send', async (req, res) => {
+    const { subject, htmlContent, roles, cities, statuses, formalGroupIds, webinarId, googleMeetLink } = req.body;
+
+    if (!subject || !htmlContent) {
+        return res.status(400).json({ message: 'Subject and content are required.' });
+    }
+
     try {
-        const { subject, htmlContent, roles, cities, statuses, formalGroupIds } = req.body;
-
-        if (!subject || !htmlContent) {
-            return res.status(400).json({ message: 'Le sujet et le contenu HTML sont requis.' });
-        }
-
         const client = await clientPromise;
         const db = client.db('pharmia');
-        const usersCollection = db.collection<User>('users');
+        const usersCollection = db.collection('users');
+        let recipients = [];
 
-        let query: any = {
-            email: { $exists: true, $ne: null }
-        };
+        if (webinarId) {
+            // Webinar-specific logic
+            const webinarsCollection = db.collection('webinars');
+            const webinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
 
-        const finalRoles = [];
-        if (roles && roles.length > 0) {
-            if (roles.includes('Staff PharmIA')) {
-                finalRoles.push(UserRole.ADMIN, UserRole.FORMATEUR);
+            if (!webinar) {
+                return res.status(404).json({ message: 'Webinar not found.' });
             }
-            const otherRoles = roles.filter(r => r !== 'Staff PharmIA');
-            finalRoles.push(...otherRoles);
+
+            const confirmedAttendeeUserIds = webinar.attendees
+                .filter(att => att.status === 'CONFIRMED')
+                .map(att => new ObjectId(att.userId));
+
+            if (confirmedAttendeeUserIds.length === 0) {
+                return res.status(404).json({ message: 'No confirmed attendees found for this webinar.' });
+            }
+
+            recipients = await usersCollection.find({ _id: { $in: confirmedAttendeeUserIds } })
+                .project({ email: 1, firstName: 1, lastName: 1 })
+                .toArray();
+
+        } else {
+            // Existing logic for roles, cities, etc.
+            const groupsCollection = db.collection('groups');
+            let userQuery: any = { subscribed: { $ne: false } };
+            const queries = [];
+
+            if (roles && roles.length > 0) {
+                queries.push({ role: { $in: roles } });
+            }
+            if (cities && cities.length > 0) {
+                queries.push({ city: { $in: cities } });
+            }
+            if (statuses && statuses.length > 0) {
+                queries.push({ status: { $in: statuses } });
+            }
+            if (formalGroupIds && formalGroupIds.length > 0) {
+                const groupObjectIds = formalGroupIds.map((id: string) => new ObjectId(id));
+                const groups = await groupsCollection.find({ _id: { $in: groupObjectIds } }).toArray();
+                
+                const userIdsFromGroups = new Set<string>();
+                groups.forEach(group => {
+                    group.pharmacistIds.forEach((id: ObjectId) => userIdsFromGroups.add(id.toString()));
+                    group.preparatorIds.forEach((id: ObjectId) => userIdsFromGroups.add(id.toString()));
+                });
+
+                const userObjectIds = Array.from(userIdsFromGroups).map(id => new ObjectId(id));
+                queries.push({ _id: { $in: userObjectIds } });
+            }
+
+            if (queries.length > 0) {
+                userQuery = { $and: [userQuery, { $or: queries }] };
+            }
+
+            recipients = await usersCollection.find(userQuery).project({ email: 1, firstName: 1, lastName: 1 }).toArray();
         }
 
-        if (finalRoles.length > 0) {
-            query.role = { $in: finalRoles };
+        if (recipients.length === 0) {
+            return res.status(404).json({ message: 'No recipients found for the selected criteria.' });
         }
 
-        if (cities && cities.length > 0) {
-            query.city = { $in: cities };
-        }
+        console.log(`Sending newsletter to ${recipients.length} recipients.`);
 
-        if (statuses && statuses.length > 0) {
-            query.status = { $in: statuses };
-        }
+        const { sendBulkEmails } = await import('./server/emailService.js');
+        
+        const finalHtmlContent = googleMeetLink 
+            ? htmlContent.replace(/{{LIEN_MEETING}}/g, googleMeetLink) 
+            : htmlContent;
 
-        // New: Filter by formalGroupIds
-        if (formalGroupIds && formalGroupIds.length > 0) {
-            query.groupId = { $in: formalGroupIds.map((id: string) => new ObjectId(id)) };
-        }
+        const emailMessages = recipients.map(recipient => ({
+            to: [{ email: recipient.email, name: recipient.firstName || '' }],
+            subject: subject,
+            htmlContent: finalHtmlContent
+                .replace(/{{NOM_DESTINATAIRE}}/g, recipient.firstName || 'cher utilisateur')
+                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email),
+        }));
 
-        console.log('Query:', JSON.stringify(query, null, 2));
-        const subscribers = await usersCollection.find(query).toArray();
-        console.log('Subscribers found:', subscribers.length);
+        await sendBulkEmails(emailMessages);
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const validSubscribers = subscribers.filter(s => s.email && emailRegex.test(s.email));
-
-        console.log('Valid subscribers found:', validSubscribers.length);
-        console.log('Valid subscriber emails:', validSubscribers.map(s => s.email));
-
-
-        if (validSubscribers.length === 0) {
-            return res.status(404).json({ message: 'Aucun abonné valide trouvé pour les critères spécifiés.' });
-        }
-
-        const sendPromises = validSubscribers.map(async (subscriber) => {
-            const personalizedHtmlContent = htmlContent
-                .replace('{{NOM_DESTINATAIRE}}', subscriber.firstName || subscriber.email)
-                .replace('{{EMAIL_DESTINATAIRE}}', subscriber.email);
-            return sendBrevoEmail({
-                to: subscriber.email,
-                subject: `${subject} - ${new Date().toLocaleDateString()}`,
-                htmlContent: personalizedHtmlContent,
-            });
-        });
-
-        await Promise.all(sendPromises);
-
-        res.json({ message: `Newsletter envoyée à ${validSubscribers.length} abonnés.` });
-
+        res.status(200).json({ message: `Newsletter successfully sent to ${recipients.length} recipients.` });
     } catch (error) {
         console.error('Error sending newsletter:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi de la newsletter.' });
+        res.status(500).json({ message: 'An error occurred while sending the newsletter.' });
     }
 });
 
