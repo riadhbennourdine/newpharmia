@@ -187,8 +187,8 @@ const Newsletter: React.FC = () => {
   const [testEmail, setTestEmail] = useState('');
   const [pharmacists, setPharmacists] = useState<{ value: string; label: string }[]>([]);
   const [selectedTestEmails, setSelectedTestEmails] = useState<{ value: string; label: string }[]>([]);
-  const [webinars, setWebinars] = useState<{ value: string; label: string; googleMeetLink?: string }[]>([]);
-  const [selectedWebinar, setSelectedWebinar] = useState<{ value: string; label: string; googleMeetLink?: string } | null>(null);
+  const [webinars, setWebinars] = useState<{ value: string; label: string; googleMeetLink?: string; description?: string; }[]>([]);
+  const [selectedWebinar, setSelectedWebinar] = useState<{ value: string; label: string; googleMeetLink?: string; description?: string; } | null>(null);
 
 
   useEffect(() => {
@@ -235,6 +235,7 @@ const Newsletter: React.FC = () => {
             value: w._id,
             label: w.title,
             googleMeetLink: w.googleMeetLink,
+            description: w.description,
         }));
         setWebinars(webinarOptions);
 
@@ -450,10 +451,14 @@ const Newsletter: React.FC = () => {
                   setSelectedCities([]);
                   setSelectedStatuses([]);
                   setSelectedFormalGroupIds([]);
-                  // Add meeting link tag
-                  if (!content.includes('{{LIEN_MEETING}}')) {
-                    setContent(content + '\n\nRejoignez-nous via ce lien : {{LIEN_MEETING}}');
-                  }
+                  // Set content to webinar description and add meeting link
+                  setContent(`${selectedOption.description}\n\nRejoignez-nous via ce lien : {{LIEN_MEETING}}`);
+                  // Also set subject to webinar title
+                  setSubject(selectedOption.label);
+                } else {
+                  // Clear content if no webinar is selected
+                  setContent('');
+                  setSubject('');
                 }
               }}
               className="mt-1"
@@ -468,6 +473,9 @@ const Newsletter: React.FC = () => {
               <button onClick={() => insertTag('NOM_DESTINATAIRE')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Nom du destinataire</button>
               <button onClick={() => insertTag('YOUTUBE_VIDEO')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Vidéo YouTube</button>
               <button onClick={() => insertTag('IMAGE_URL')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Image URL</button>
+              {selectedWebinar && (
+                <button onClick={() => insertTag('WEBINAR_DESCRIPTION')} className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300">Description Webinaire</button>
+              )}
             </div>
             <textarea ref={contentRef} id="content" rows={10} value={content} onChange={(e) => setContent(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="Écrivez votre contenu ici..." />
           </div>

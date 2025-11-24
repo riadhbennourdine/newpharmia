@@ -1045,17 +1045,18 @@ app.post('/api/newsletter/send', async (req, res) => {
         const db = client.db('pharmia');
         const usersCollection = db.collection('users');
         let recipients = [];
+        let fetchedWebinar = null; // Declare webinar outside the block
 
         if (webinarId) {
             // Webinar-specific logic
             const webinarsCollection = db.collection('webinars');
-            const webinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
+            fetchedWebinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
 
-            if (!webinar) {
+            if (!fetchedWebinar) {
                 return res.status(404).json({ message: 'Webinar not found.' });
             }
 
-            const confirmedAttendeeUserIds = webinar.attendees
+            const confirmedAttendeeUserIds = fetchedWebinar.attendees
                 .filter(att => att.status === 'CONFIRMED')
                 .map(att => new ObjectId(att.userId));
 
@@ -1111,17 +1112,26 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         const { sendBulkEmails } = await import('./server/emailService.js');
         
-        const finalHtmlContent = googleMeetLink 
-            ? htmlContent.replace(/{{LIEN_MEETING}}/g, googleMeetLink) 
-            : htmlContent;
-
-        const emailMessages = recipients.map(recipient => ({
-            to: [{ email: recipient.email, name: recipient.firstName || '' }],
-            subject: subject,
-            htmlContent: finalHtmlContent
+        const emailMessages = recipients.map(recipient => {
+            const finalHtmlContentWithPlaceholders = htmlContent
                 .replace(/{{NOM_DESTINATAIRE}}/g, recipient.firstName || 'cher utilisateur')
-                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email),
-        }));
+                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email);
+            
+            let finalHtmlContent;
+            if (webinarId && fetchedWebinar) { // Use the 'webinar' object fetched earlier
+                finalHtmlContent = finalHtmlContentWithPlaceholders
+                    .replace(/{{LIEN_MEETING}}/g, fetchedWebinar.googleMeetLink || '')
+                    .replace(/{{WEBINAR_DESCRIPTION}}/g, fetchedWebinar.description || '');
+            } else {
+                finalHtmlContent = finalHtmlContentWithPlaceholders;
+            }
+
+            return {
+                to: [{ email: recipient.email, name: recipient.firstName || '' }],
+                subject: subject,
+                htmlContent: finalHtmlContent,
+            };
+        });
 
         await sendBulkEmails(emailMessages);
 
