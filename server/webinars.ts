@@ -550,26 +550,26 @@ router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedR
 router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { webinarId, userId } = req.params;
-        console.log(`[CONFIRM_PAYMENT] Attempting to confirm payment for webinar: ${webinarId}, user: ${userId}`);
-
         const client = await clientPromise;
-        const db = client.db('pharmia');
-        const webinarsCollection = db.collection<Webinar>('webinars');
-
-        const webinarToUpdate = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
-        console.log('[CONFIRM_PAYMENT] Webinar document before update:', JSON.stringify(webinarToUpdate, null, 2));
-
-        const result = await webinarsCollection.updateOne(
-            { _id: new ObjectId(webinarId), "attendees.userId": new ObjectId(userId) },
-            { $set: { "attendees.$.status": 'CONFIRMED' } }
-        );
-
-        console.log('[CONFIRM_PAYMENT] MongoDB update result:', result);
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ message: 'Webinar or registration not found.' });
-        }
-
+                const db = client.db('pharmia');
+                const webinarsCollection = db.collection<Webinar>('webinars');
+        
+                const result = await webinarsCollection.updateOne(
+                    { 
+                        _id: new ObjectId(webinarId), 
+                        attendees: { 
+                            $elemMatch: { 
+                                userId: new ObjectId(userId), 
+                                status: 'PAYMENT_SUBMITTED' 
+                            } 
+                        } 
+                    },
+                    { $set: { "attendees.$.status": 'CONFIRMED' } }
+                );
+        
+                if (result.matchedCount === 0) {
+                    return res.status(404).json({ message: 'Webinar or registration not found.' });
+                }
         res.json({ message: 'Payment confirmed successfully.' });
 
     } catch (error) {
