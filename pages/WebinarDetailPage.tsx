@@ -344,7 +344,7 @@ const WebinarDetailPage: React.FC = () => {
                                 </p>
                             </div>
 
-                            {user?.role === UserRole.ADMIN && webinar.attendees && (
+                            {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && webinar.attendees && (
                                  <div className="mt-8 p-4 border-t border-gray-200">
                                     <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
                                     <ul className="list-disc list-inside mt-2 text-slate-600">
@@ -354,12 +354,14 @@ const WebinarDetailPage: React.FC = () => {
                                                     {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
                                                     {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
                                                 </span>
-                                                <button
-                                                    onClick={() => handleDeleteAttendee((attendee.userId as User)._id.toString())}
-                                                    className="ml-4 text-red-500 hover:text-red-700 text-sm"
-                                                >
-                                                    Supprimer
-                                                </button>
+                                                {user?.role === UserRole.ADMIN && (
+                                                    <button
+                                                        onClick={() => handleDeleteAttendee((attendee.userId as User)._id.toString())}
+                                                        className="ml-4 text-red-500 hover:text-red-700 text-sm"
+                                                    >
+                                                        Supprimer
+                                                    </button>
+                                                )}
                                             </li>
                                         ))}
                                     </ul>
