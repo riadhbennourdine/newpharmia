@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus } from '../types.js';
@@ -644,6 +644,11 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
         console.error('Error updating attendee time slots:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des créneaux horaires.' });
     }
+});
+
+// DEBUGGING ENDPOINT
+router.get('/debug/get-role', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+    res.json(req.user);
 });
 
 export default router;
