@@ -1144,11 +1144,15 @@ app.post('/api/newsletter/send', async (req, res) => {
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
-        const { subject, htmlContent, testEmails } = req.body;
+        const { subject, htmlContent, testEmails, googleMeetLink } = req.body;
 
         if (!subject || !htmlContent || !Array.isArray(testEmails) || testEmails.length === 0) {
             return res.status(400).json({ message: 'Le sujet, le contenu HTML et une liste d\'e-mails de test sont requis.' });
         }
+
+        const finalHtmlContent = googleMeetLink
+            ? htmlContent.replace(/{{LIEN_MEETING}}/g, googleMeetLink)
+            : htmlContent;
 
         const sendPromises = testEmails.map(email => {
             if (!/\S+@\S+\.\S+/.test(email)) {
@@ -1158,7 +1162,7 @@ app.post('/api/newsletter/send-test', async (req, res) => {
             return sendBrevoEmail({
                 to: email,
                 subject: `[TEST] ${subject}`,
-                htmlContent,
+                htmlContent: finalHtmlContent,
             });
         });
 

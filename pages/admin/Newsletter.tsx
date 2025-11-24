@@ -135,7 +135,7 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
                       </tbody>
                     </table>
                   )}
-                  <div class="main-content-text" style={{ lineHeight: 1.8, color: '#4b5563', margin: 0, fontSize: '16px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
+                  <div class="main-content-text" style={{ lineHeight: 1.8, color: '#4b5563', margin: 0, fontSize: '18px', fontFamily: 'Poppins, Arial, sans-serif' }} dangerouslySetInnerHTML={{ __html: content }}></div>
                 </td>
               </tr>
               {/* Footer */}
@@ -288,7 +288,12 @@ const Newsletter: React.FC = () => {
       const response = await fetch('/api/newsletter/send-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, testEmails }),
+        body: JSON.stringify({ 
+          subject, 
+          htmlContent: htmlContentToSend, 
+          testEmails,
+          googleMeetLink: selectedWebinar ? selectedWebinar.googleMeetLink : null,
+        }),
       });
 
       const data = await response.json();
