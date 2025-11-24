@@ -40,37 +40,37 @@ router.get('/', softAuthenticateToken, async (req, res) => {
         const usersCollection = db.collection('users');
         
         const { group } = req.query;
-        const authReq = req as AuthenticatedRequest;
         
-        // Define authorization clearly at the top
-        const isAuthorizedForDetails = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
-
         const query: any = {};
         if (group) {
             query.group = group;
         }
 
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
+
+        const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
+        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
             webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
 
-            if (isAuthorizedForDetails) {
-                // Admins can see everything, so we don't hide any links.
+            if (isAdmin) {
+                // Admins can see everything, so we don't delete anything.
             } else if (userIdString) {
                 const attendee = webinar.attendees.find(
                     att => att.userId.toString() === userIdString
                 );
                 webinarResponse.isRegistered = !!attendee;
                 webinarResponse.registrationStatus = attendee?.status || null;
-                // Keep googleMeetLink only if user is CONFIRMED and webinar is LIVE or UPCOMING
-                if (!(attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING))) {
+                // Keep googleMeetLink if user is CONFIRMED AND (webinar is LIVE or UPCOMING)
+                if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                    // Do nothing, keep the link
+                } else {
                     delete webinarResponse.googleMeetLink;
                 }
             } else {
-                // Public, non-logged-in user
                 webinarResponse.isRegistered = false;
                 webinarResponse.registrationStatus = null;
                 delete webinarResponse.googleMeetLink;
@@ -78,30 +78,30 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             return webinarResponse;
         });
 
-        // Conditionally populate or strip attendee details based on the single authorization check
-        if (isAuthorizedForDetails) {
+        // If the user is an admin or webinar admin, populate attendee details
+        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
             const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
-            if (allUserIds.length > 0) {
-                const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
+            const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
+
+            if (uniqueUserIds.length > 0) {
                 const users = await usersCollection.find(
                     { _id: { $in: uniqueUserIds } },
                     { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
                 ).toArray();
+
                 const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
 
                 webinarsWithStatus.forEach(webinar => {
-                    if (webinar.attendees) {
-                        webinar.attendees.forEach(attendee => {
-                            const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
-                            if (userDetails) {
-                                attendee.userId = userDetails;
-                            }
-                        });
-                    }
+                    webinar.attendees.forEach(attendee => {
+                        const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
+                        if (userDetails) {
+                            attendee.userId = userDetails;
+                        }
+                    });
                 });
             }
         } else {
-            // For non-authorized users, strip all attendee details
+            // For non-admins, don't send attendee details
             webinarsWithStatus.forEach(webinar => {
                 delete (webinar as Partial<Webinar>).attendees;
             });
@@ -131,14 +131,49 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
 
-        const authReq = req as AuthenticatedRequest;
-        const isAuthorizedForDetails = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
-
+        console.log('[Webinar Debug] Entering GET /:id handler.');
         const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
         webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
 
-        if (isAuthorizedForDetails) {
-            // Admins and Webinar Admins can see everything. Populate details.
+        const authReq = req as AuthenticatedRequest;
+        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
+
+        if (isAdmin) {
+            // Admins can see everything.
+        } else if (authReq.user) {
+            const userIdString = authReq.user._id.toString();
+            console.log(`[Webinar Debug] Authenticated user ID: ${userIdString}`);
+            console.log('[Webinar Debug] Webinar attendees:', JSON.stringify(webinar.attendees, null, 2));
+
+            const attendee = webinar.attendees.find(
+                att => att.userId.toString() === userIdString
+            );
+
+            if (attendee) {
+                console.log(`[Webinar Debug] Match found! Attendee status: ${attendee.status}`);
+            } else {
+                console.log('[Webinar Debug] No match found for user in attendees list.');
+            }
+
+            webinarResponse.isRegistered = !!attendee;
+            webinarResponse.registrationStatus = attendee?.status || null;
+
+            // Keep googleMeetLink if user is CONFIRMED AND (webinar is LIVE or UPCOMING)
+            if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                // Do nothing, keep the link
+            } else {
+                delete webinarResponse.googleMeetLink;
+            }
+        } else {
+            console.log('[Webinar Debug] No authenticated user found.');
+            // User is not logged in
+            webinarResponse.isRegistered = false;
+            webinarResponse.registrationStatus = null;
+            delete webinarResponse.googleMeetLink;
+        }
+
+        // Admins and webinar admins can see the full list of attendees, others cannot.
+        if (authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR) {
             const userIds = webinar.attendees.map(a => new ObjectId(a.userId as string));
             if (userIds.length > 0) {
                 const usersCollection = db.collection('users');
@@ -155,24 +190,6 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
                 });
             }
         } else {
-            // For other users, determine their registration status and hide sensitive info.
-            if (authReq.user) {
-                const userIdString = authReq.user._id.toString();
-                const attendee = webinar.attendees.find(
-                    att => att.userId.toString() === userIdString
-                );
-                webinarResponse.isRegistered = !!attendee;
-                webinarResponse.registrationStatus = attendee?.status || null;
-
-                if (!(attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING))) {
-                    delete webinarResponse.googleMeetLink;
-                }
-            } else {
-                webinarResponse.isRegistered = false;
-                webinarResponse.registrationStatus = null;
-                delete webinarResponse.googleMeetLink;
-            }
-            // Always delete the full attendee list for non-authorized users
             delete webinarResponse.attendees;
         }
         
