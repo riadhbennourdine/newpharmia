@@ -260,6 +260,9 @@ const WebinarManagement: React.FC = () => {
         }
     };
 
+    console.log('Authenticated User:', user);
+    console.log('Past Webinars:', pastWebinars);
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
