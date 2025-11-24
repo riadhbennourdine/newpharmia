@@ -1144,6 +1144,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
+        console.log('[SEND-TEST] Received request body:', req.body);
         const { subject, htmlContent, testEmails, googleMeetLink } = req.body;
 
         if (!subject || !htmlContent || !Array.isArray(testEmails) || testEmails.length === 0) {
@@ -1153,6 +1154,8 @@ app.post('/api/newsletter/send-test', async (req, res) => {
         const finalHtmlContent = googleMeetLink
             ? htmlContent.replace(/{{LIEN_MEETING}}/g, googleMeetLink)
             : htmlContent;
+        
+        console.log('[SEND-TEST] Final HTML content:', finalHtmlContent);
 
         const sendPromises = testEmails.map(email => {
             if (!/\S+@\S+\.\S+/.test(email)) {
