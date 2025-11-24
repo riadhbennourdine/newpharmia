@@ -78,36 +78,30 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             return webinarResponse;
         });
 
-        // If the user is an admin or webinar admin, populate attendee details
-        if (isAdmin) {
-            const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
-            const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
+        // --- DEBUGGING: Temporarily populate details for everyone ---
+        const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
+        const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
 
-            if (uniqueUserIds.length > 0) {
-                const users = await usersCollection.find(
-                    { _id: { $in: uniqueUserIds } },
-                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
-                ).toArray();
+        if (uniqueUserIds.length > 0) {
+            const users = await usersCollection.find(
+                { _id: { $in: uniqueUserIds } },
+                { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+            ).toArray();
 
-                const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
+            const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
 
-                webinarsWithStatus.forEach(webinar => {
-                    webinar.attendees.forEach(attendee => {
-                        const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
-                        if (userDetails) {
-                            attendee.userId = userDetails;
-                        }
-                    });
-                });
-            }
-        } else {
-            // For non-admins, don't send attendee details
             webinarsWithStatus.forEach(webinar => {
-                delete (webinar as Partial<Webinar>).attendees;
+                webinar.attendees.forEach(attendee => {
+                    const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
+                    if (userDetails) {
+                        attendee.userId = userDetails;
+                    }
+                });
             });
         }
+        // --- END DEBUGGING ---
 
-        res.json(webinarsWithStatus);
+        res.json({ webinars: webinarsWithStatus, debug_role: authReq.user?.role || 'Not Logged In' });
     } catch (error) {
         console.error('Error fetching webinars:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des webinaires.' });

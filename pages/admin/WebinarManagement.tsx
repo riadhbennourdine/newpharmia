@@ -92,6 +92,7 @@ const WebinarManagement: React.FC = () => {
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [debugRole, setDebugRole] = useState<string | null>(null);
     const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
 
     const fetchWebinars = async () => {
@@ -102,7 +103,9 @@ const WebinarManagement: React.FC = () => {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!response.ok) throw new Error('Failed to fetch webinars');
-            const data: Webinar[] = await response.json();
+            const responseData = await response.json();
+            const data: Webinar[] = responseData.webinars;
+            setDebugRole(responseData.debug_role);
 
             const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -272,6 +275,8 @@ const WebinarManagement: React.FC = () => {
             </div>
 
             <p className="text-red-500 font-bold">DEBUG: Your role is: {user?.role}</p>
+
+            <p className="text-red-500 font-bold">DEBUG: Your role is: {debugRole}</p>
 
             {isLoading && <Spinner />}
             {error && <p className="text-red-500">{error}</p>}
