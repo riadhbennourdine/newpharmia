@@ -1113,23 +1113,27 @@ app.post('/api/newsletter/send', async (req, res) => {
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
-        const { subject, htmlContent, testEmail } = req.body;
+        const { subject, htmlContent, testEmails } = req.body;
 
-        if (!subject || !htmlContent || !testEmail) {
-            return res.status(400).json({ message: 'Le sujet, le contenu HTML et l\'e-mail de test sont requis.' });
+        if (!subject || !htmlContent || !Array.isArray(testEmails) || testEmails.length === 0) {
+            return res.status(400).json({ message: 'Le sujet, le contenu HTML et une liste d\'e-mails de test sont requis.' });
         }
 
-        if (!/\S+@\S+\.\S+/.test(testEmail)) {
-            return res.status(400).json({ message: 'Adresse e-mail de test invalide.' });
-        }
-
-        await sendBrevoEmail({
-            to: testEmail,
-            subject: subject,
-            htmlContent,
+        const sendPromises = testEmails.map(email => {
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                console.warn(`Invalid test email address skipped: ${email}`);
+                return Promise.resolve(); // Skip invalid emails
+            }
+            return sendBrevoEmail({
+                to: email,
+                subject: `[TEST] ${subject}`,
+                htmlContent,
+            });
         });
 
-        res.json({ message: `E-mail de test envoyé à ${testEmail}.` });
+        await Promise.all(sendPromises);
+
+        res.json({ message: `E-mail de test envoyé à ${testEmails.join(', ')}.` });
 
     } catch (error) {
         console.error('Error sending test email:', error);

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Select from 'react-select';
+import { GroupBase, OptionsOrGroups } from 'react-select/dist/declarations/src/types';
 
 // Définir les types pour les templates
 interface Template {
@@ -183,9 +185,11 @@ const Newsletter: React.FC = () => {
   const [formalGroups, setFormalGroups] = useState<FormalGroup[]>([]);
   const [selectedFormalGroupIds, setSelectedFormalGroupIds] = useState<string[]>([]);
   const [testEmail, setTestEmail] = useState('');
+  const [pharmacists, setPharmacists] = useState<{ value: string; label: string }[]>([]);
+  const [selectedTestEmails, setSelectedTestEmails] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
-    const fetchSubscriberGroupsAndFormalGroups = async () => {
+    const fetchInitialData = async () => {
       try {
         // Fetch subscriber groups (existing logic)
         const subscriberResponse = await fetch('/api/newsletter/subscriber-groups');
@@ -206,11 +210,23 @@ const Newsletter: React.FC = () => {
         const formalGroupsData = await formalGroupsResponse.json();
         setFormalGroups(formalGroupsData);
 
+        // Fetch pharmacists for test email field
+        const pharmacistsResponse = await fetch('/api/users/pharmacists');
+        if (!pharmacistsResponse.ok) {
+            throw new Error('Failed to fetch pharmacists');
+        }
+        const pharmacistsData = await pharmacistsResponse.json();
+        const pharmacistOptions = pharmacistsData.map((p: User) => ({
+            value: p.email,
+            label: `${p.firstName} ${p.lastName} (${p.email})`
+        }));
+        setPharmacists(pharmacistOptions);
+
       } catch (err: any) {
         console.error(err);
       }
     };
-    fetchSubscriberGroupsAndFormalGroups();
+    fetchInitialData();
   }, []);
 
   const handleRoleToggle = (role: string) => {
@@ -242,19 +258,20 @@ const Newsletter: React.FC = () => {
       setSendStatus('Erreur: Impossible de récupérer le contenu de la prévisualisation.');
       return;
     }
-    if (!testEmail || !/\S+@\S+\.\S+/.test(testEmail)) {
-      setSendStatus('Veuillez entrer une adresse e-mail de test valide.');
+    if (selectedTestEmails.length === 0) {
+      setSendStatus('Veuillez sélectionner au moins une adresse e-mail de test.');
       return;
     }
 
+    const testEmails = selectedTestEmails.map(o => o.value);
     const htmlContentToSend = previewRef.current.innerHTML;
-    setSendStatus(`Envoi d'un test à ${testEmail}...`);
+    setSendStatus(`Envoi d'un test à ${testEmails.join(', ')}...`);
 
     try {
       const response = await fetch('/api/newsletter/send-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, testEmail }),
+        body: JSON.stringify({ subject, htmlContent: htmlContentToSend, testEmails }),
       });
 
       const data = await response.json();
@@ -368,27 +385,29 @@ const Newsletter: React.FC = () => {
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Envoyer aux villes</label>
-            <div className="mt-2 flex flex-wrap gap-2">
-                {cities.map(city => (
-                    <div key={city.name} className="flex items-center">
-                        <input type="checkbox" id={`city-select-${city.name}`} checked={selectedCities.includes(city.name)} onChange={() => handleCityToggle(city.name)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                        <label htmlFor={`city-select-${city.name}`} className="ml-2 text-sm text-gray-700">{city.name} ({city.count})</label>
-                    </div>
-                ))}
-            </div>
+            <Select
+              isMulti
+              options={cities.map(c => ({ value: c.name, label: `${c.name} (${c.count})` }))}
+              onChange={(selectedOptions) => {
+                setSelectedCities(selectedOptions.map(o => o.value));
+              }}
+              className="mt-1"
+              placeholder="Sélectionner des villes..."
+            />
             <p className="text-xs text-gray-500 mt-1">Si aucun groupe n'est sélectionné, la newsletter sera envoyée à tous les abonnés.</p>
           </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Envoyer aux groupes formels</label>
-            <div className="mt-2 flex flex-wrap gap-2">
-                {formalGroups.map(group => (
-                    <div key={group._id} className="flex items-center">
-                        <input type="checkbox" id={`formal-group-select-${group._id}`} checked={selectedFormalGroupIds.includes(group._id)} onChange={() => handleFormalGroupToggle(group._id)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                        <label htmlFor={`formal-group-select-${group._id}`} className="ml-2 text-sm text-gray-700">{group.name} {group.memberCount ? `(${group.memberCount})` : ''}</label>
-                    </div>
-                ))}
-            </div>
+            <Select
+              isMulti
+              options={formalGroups.map(g => ({ value: g._id, label: `${g.name} ${g.memberCount ? `(${g.memberCount})` : ''}` }))}
+              onChange={(selectedOptions) => {
+                setSelectedFormalGroupIds(selectedOptions.map(o => o.value));
+              }}
+              className="mt-1"
+              placeholder="Sélectionner des groupes..."
+            />
           </div>
 
           <div className="mb-4">
@@ -412,9 +431,18 @@ const Newsletter: React.FC = () => {
           </div>
 
           <div className="mb-4 p-4 border border-gray-200 rounded-lg">
-            <label htmlFor="testEmail" className="block text-sm font-medium text-gray-700">Adresse e-mail de test</label>
+            <label htmlFor="testEmail" className="block text-sm font-medium text-gray-700">Adresses e-mail de test</label>
             <div className="mt-1 flex gap-2">
-              <input type="email" id="testEmail" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-grow p-2 border border-gray-300 rounded-md" placeholder="test@example.com" />
+                <Select
+                    isMulti
+                    options={pharmacists}
+                    value={selectedTestEmails}
+                    onChange={(selectedOptions) => {
+                        setSelectedTestEmails(selectedOptions as any);
+                    }}
+                    className="flex-grow"
+                    placeholder="Rechercher des pharmaciens..."
+                />
               <button onClick={handleSendTest} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Envoyer un test</button>
             </div>
           </div>
