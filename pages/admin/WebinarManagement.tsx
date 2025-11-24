@@ -271,8 +271,6 @@ const WebinarManagement: React.FC = () => {
                 )}
             </div>
 
-            <p className="text-red-500 font-bold">DEBUG: Your role is: {user?.role}</p>
-
             {isLoading && <Spinner />}
             {error && <p className="text-red-500">{error}</p>}
 
