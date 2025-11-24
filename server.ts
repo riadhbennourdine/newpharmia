@@ -77,7 +77,7 @@ const mockUsers: User[] = [
 
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { sendBrevoEmail } from './server/emailService.js';
+import { sendSingleEmail } from './server/emailService.js';
 import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -222,7 +222,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             <p>Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail.</p>
         `;
 
-        await sendBrevoEmail({
+        await sendSingleEmail({
             to: user.email,
             subject: 'Réinitialisation de mot de passe PharmIA',
             htmlContent,
@@ -1169,7 +1169,7 @@ app.post('/api/newsletter/send-test', async (req, res) => {
                 return Promise.resolve(); // Skip invalid emails
             }
             // The {{NOM_DESTINATAIRE}} is not replaced in test emails, which is acceptable.
-            return sendBrevoEmail({
+            return sendSingleEmail({
                 to: email,
                 subject: `[TEST] ${subject}`,
                 htmlContent: finalHtmlContent,
@@ -1210,7 +1210,7 @@ app.post('/api/contact', upload.single('attachment'), async (req, res) => {
             });
         }
 
-        await sendBrevoEmail({
+        await sendSingleEmail({
             to: 'rbpharskillseed@gmail.com',
             subject: `New message from ${name}`,
             htmlContent,
