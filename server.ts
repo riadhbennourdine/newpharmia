@@ -1144,24 +1144,31 @@ app.post('/api/newsletter/send', async (req, res) => {
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
-        console.log('[SEND-TEST] Received request body:', req.body);
-        const { subject, htmlContent, testEmails, googleMeetLink } = req.body;
+        const { subject, htmlContent, testEmails, webinarId } = req.body;
 
         if (!subject || !htmlContent || !Array.isArray(testEmails) || testEmails.length === 0) {
             return res.status(400).json({ message: 'Le sujet, le contenu HTML et une liste d\'e-mails de test sont requis.' });
         }
-
-        const finalHtmlContent = googleMeetLink
-            ? htmlContent.replace(/{{LIEN_MEETING}}/g, googleMeetLink)
-            : htmlContent;
         
-        console.log('[SEND-TEST] Final HTML content:', finalHtmlContent);
+        let finalHtmlContent = htmlContent;
+
+        if (webinarId) {
+            const client = await clientPromise;
+            const db = client.db('pharmia');
+            const webinarsCollection = db.collection('webinars');
+            const webinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
+
+            if (webinar && webinar.googleMeetLink) {
+                finalHtmlContent = htmlContent.replace(/{{LIEN_MEETING}}/g, webinar.googleMeetLink);
+            }
+        }
 
         const sendPromises = testEmails.map(email => {
             if (!/\S+@\S+\.\S+/.test(email)) {
                 console.warn(`Invalid test email address skipped: ${email}`);
                 return Promise.resolve(); // Skip invalid emails
             }
+            // The {{NOM_DESTINATAIRE}} is not replaced in test emails, which is acceptable.
             return sendBrevoEmail({
                 to: email,
                 subject: `[TEST] ${subject}`,

@@ -284,6 +284,7 @@ const Newsletter: React.FC = () => {
     const htmlContentToSend = previewRef.current.innerHTML;
     setSendStatus(`Envoi d'un test à ${testEmails.join(', ')}...`);
 
+    console.log('[handleSendTest] Selected Webinar:', selectedWebinar);
     try {
       const response = await fetch('/api/newsletter/send-test', {
         method: 'POST',
@@ -292,7 +293,7 @@ const Newsletter: React.FC = () => {
           subject, 
           htmlContent: htmlContentToSend, 
           testEmails,
-          googleMeetLink: selectedWebinar ? selectedWebinar.googleMeetLink : null,
+          webinarId: selectedWebinar ? selectedWebinar.value : null,
         }),
       });
 
