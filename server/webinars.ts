@@ -556,6 +556,9 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
+        const webinarToUpdate = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
+        console.log('[CONFIRM_PAYMENT] Webinar document before update:', JSON.stringify(webinarToUpdate, null, 2));
+
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(webinarId), "attendees.userId": new ObjectId(userId) },
             { $set: { "attendees.$.status": 'CONFIRMED' } }
