@@ -73,6 +73,8 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
 
 export const checkRole = (allowedRoles: UserRole[]) => {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        console.log('[CheckRole Middleware] User Role:', req.user?.role, 'Allowed Roles:', allowedRoles);
+
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });
         }

@@ -264,7 +264,7 @@ const WebinarManagement: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
-                {user?.role === UserRole.ADMIN && (
+                {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                     <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
                         + Créer un Webinaire
                     </button>
@@ -290,7 +290,7 @@ const WebinarManagement: React.FC = () => {
                                         <p className="font-bold text-xl text-slate-800">{soonestWebinar.title}</p>
                                         <p className="text-md text-slate-600">{new Date(soonestWebinar.date).toLocaleString('fr-FR')} - {soonestWebinar.presenter}</p>
                                     </div>
-                                    {user?.role === UserRole.ADMIN && (
+                                    {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                                         <div className="flex gap-2 flex-shrink-0 ml-4">
                                             <button onClick={() => handleOpenModal(soonestWebinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
                                             <button onClick={() => handleDeleteWebinar(soonestWebinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
@@ -324,7 +324,7 @@ const WebinarManagement: React.FC = () => {
                                             <p className="font-semibold text-slate-800">{webinar.title}</p>
                                             <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleString('fr-FR')} - {webinar.presenter}</p>
                                         </div>
-                                        {user?.role === UserRole.ADMIN && (
+                                        {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                                             <div className="flex gap-2">
                                                 <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
                                                 <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
@@ -359,7 +359,7 @@ const WebinarManagement: React.FC = () => {
                                             <p className="font-semibold text-slate-800">{webinar.title}</p>
                                             <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleString('fr-FR')} - {webinar.presenter}</p>
                                         </div>
-                                        {user?.role === UserRole.ADMIN && (
+                                        {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                                             <div className="flex gap-2">
                                                 <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600" title="Modifier le wébinaire"><PencilIcon className="h-5 w-5" /></button>
                                             </div>
