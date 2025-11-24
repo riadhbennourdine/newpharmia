@@ -50,7 +50,10 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
         const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
-        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
+        
+        // Safer, case-insensitive role check
+        const userRole = authReq.user?.role?.trim().toUpperCase();
+        const isAdmin = userRole === UserRole.ADMIN || userRole === UserRole.ADMIN_WEBINAR;
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
@@ -78,30 +81,36 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             return webinarResponse;
         });
 
-        // --- DEBUGGING: Temporarily populate details for everyone ---
-        const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
-        const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
+        // If the user is an admin or webinar admin, populate attendee details
+        if (isAdmin) {
+            const allUserIds = webinars.flatMap(w => w.attendees.map(a => new ObjectId(a.userId as string)));
+            const uniqueUserIds = [...new Set(allUserIds.map(id => id.toHexString()))].map(hex => new ObjectId(hex));
 
-        if (uniqueUserIds.length > 0) {
-            const users = await usersCollection.find(
-                { _id: { $in: uniqueUserIds } },
-                { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
-            ).toArray();
+            if (uniqueUserIds.length > 0) {
+                const users = await usersCollection.find(
+                    { _id: { $in: uniqueUserIds } },
+                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+                ).toArray();
 
-            const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
+                const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
 
-            webinarsWithStatus.forEach(webinar => {
-                webinar.attendees.forEach(attendee => {
-                    const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
-                    if (userDetails) {
-                        attendee.userId = userDetails;
-                    }
+                webinarsWithStatus.forEach(webinar => {
+                    webinar.attendees.forEach(attendee => {
+                        const userDetails = userMap.get(new ObjectId(attendee.userId as string).toHexString());
+                        if (userDetails) {
+                            attendee.userId = userDetails;
+                        }
+                    });
                 });
+            }
+        } else {
+            // For non-admins, don't send attendee details
+            webinarsWithStatus.forEach(webinar => {
+                delete (webinar as Partial<Webinar>).attendees;
             });
         }
-        // --- END DEBUGGING ---
 
-        res.json({ webinars: webinarsWithStatus, debug_role: authReq.user?.role || 'Not Logged In' });
+        res.json(webinarsWithStatus);
     } catch (error) {
         console.error('Error fetching webinars:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des webinaires.' });
@@ -130,7 +139,10 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
 
         const authReq = req as AuthenticatedRequest;
-        const isAdmin = authReq.user?.role === UserRole.ADMIN || authReq.user?.role === UserRole.ADMIN_WEBINAR;
+        
+        // Safer, case-insensitive role check
+        const userRole = authReq.user?.role?.trim().toUpperCase();
+        const isAdmin = userRole === UserRole.ADMIN || userRole === UserRole.ADMIN_WEBINAR;
 
         if (isAdmin) {
             // Admins can see everything.
