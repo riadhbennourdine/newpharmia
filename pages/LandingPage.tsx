@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { TOPIC_CATEGORIES } from '../constants';
 
 const SubscriptionForm: React.FC = () => {
@@ -215,6 +216,21 @@ const LandingPage: React.FC = () => {
                             Approfondissez votre analyse en posant des questions à notre assistant IA, disponible pour vous guider à chaque étape.
                         </FeatureCard>
                    </div>
+                </div>
+            </section>
+
+            {/* QR Code Section */}
+            <section className="py-20 bg-slate-100">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Accès Mobile Simplifié</h2>
+                    <p className="max-w-2xl mx-auto text-md text-slate-600 mb-8">
+                        Scannez ce QR code pour accéder directement à l'application sur votre appareil mobile.
+                    </p>
+                    <div className="flex justify-center">
+                        <div className="bg-white p-6 rounded-lg shadow-md">
+                            <QRCodeSVG value="https://newpharmia-production.up.railway.app/#/" size={128} />
+                        </div>
+                    </div>
                 </div>
             </section>
 
