@@ -160,7 +160,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     };
 
     return (
-        <div className="flex flex-col h-[70vh] max-h-[600px] bg-white rounded-lg shadow-lg border border-slate-200/80">
+        <div className="flex flex-col max-h-[600px] bg-white rounded-lg shadow-lg border border-slate-200/80">
             <div className="flex items-center p-4 border-b border-slate-200/80 bg-slate-50 rounded-t-lg">
                 <img src="/assets/favicon.png" alt="PharmIA Logo" className="h-6 w-6 mr-3" />
                 <h3 className="text-lg font-bold text-slate-800">Assistant PharmIA</h3>
