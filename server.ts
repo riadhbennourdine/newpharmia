@@ -764,7 +764,7 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
         const history = messages.slice(0, -1);
         const question = messages[messages.length - 1].text;
         const caseStudy = JSON.parse(context);
-        const title = caseStudy.title;
+        const title = caseStudy.title || 'cette mémofiche';
 
         const text = await getChatResponse(history, context, question, title);
         res.json({ message: text });
