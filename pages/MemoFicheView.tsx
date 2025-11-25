@@ -13,47 +13,48 @@ const AccordionSection: React.FC<{
     icon: React.ReactNode;
     children: React.ReactNode;
     isAlert?: boolean;
-    isOpen: boolean;
-    onToggle: () => void;
+    startOpen?: boolean;
     contentClassName?: string;
-}> = ({ title, icon, children, isAlert = false, isOpen, onToggle, contentClassName = '' }) => (
-    <div className="mb-2 bg-white rounded-lg shadow-sm border border-slate-200/80 overflow-hidden transition-all duration-300">
-        <button
-            onClick={onToggle}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
-            aria-expanded={isOpen}
-        >
-            <div className="flex items-center">
-                {icon}
-                <h3 className={`text-lg font-bold ${isAlert ? 'text-red-600' : 'text-slate-800'}`}>{title}</h3>
-            </div>
-            <svg
-                className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`}
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-            >
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
-            </svg>
-        </button>
-        <div
-            className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
-            <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
-                {typeof children === 'string' ? (
-                    <div dangerouslySetInnerHTML={{ __html: children }} />
-                ) : (
-                    children
-                )}
-            </div>
-        </div>
-    </div>
-);
+}> = ({ title, icon, children, isAlert = false, startOpen = false, contentClassName = '' }) => {
+    const [isOpen, setIsOpen] = useState(startOpen);
 
-const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
-
-    const handleToggle = (title: string) => {
-        setOpenAccordion(openAccordion === title ? null : title);
+    const onToggle = () => {
+        setIsOpen(!isOpen);
     };
 
+    return (
+        <div className="mb-2 bg-white rounded-lg shadow-sm border border-slate-200/80 overflow-hidden transition-all duration-300">
+            <button
+                onClick={onToggle}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
+                aria-expanded={isOpen}
+            >
+                <div className="flex items-center">
+                    {icon}
+                    <h3 className={`text-lg font-bold ${isAlert ? 'text-red-600' : 'text-slate-800'}`}>{title}</h3>
+                </div>
+                <svg
+                    className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`}
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+                </svg>
+            </button>
+            <div
+                className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
+                <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
+                    {typeof children === 'string' ? (
+                        <div dangerouslySetInnerHTML={{ __html: children }} />
+                    ) : (
+                        children
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
     const renderList = (items: string[] | undefined) => {
         if (!items || items.length === 0) return null;
         const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
@@ -81,8 +82,6 @@ const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
                         key={section.title}
                         title={section.title}
                         icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
-                        isOpen={openAccordion === section.title}
-                        onToggle={() => handleToggle(section.title)}
                     >
                         {section.content}
                     </AccordionSection>
@@ -93,12 +92,6 @@ const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
 };
 
 const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) => {
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
-
-    const handleToggle = (title: string) => {
-        setOpenAccordion(openAccordion === title ? null : title);
-    };
-
     const renderList = (items: string[] | undefined) => {
         if (!items || items.length === 0) return null;
         const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
@@ -118,8 +111,6 @@ const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) =>
                     key={index}
                     title={item.medicament}
                     icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
-                    isOpen={openAccordion === item.medicament}
-                    onToggle={() => handleToggle(item.medicament)}
                 >
                     {renderList(item.conseils)}
                 </AccordionSection>
@@ -129,12 +120,6 @@ const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) =>
 };
 
 const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseils }) => {
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
-
-    const handleToggle = (title: string) => {
-        setOpenAccordion(openAccordion === title ? null : title);
-    };
-
     const aPrivilegier = conseils.filter(c => c.toLowerCase().includes('privilégier'));
     const aEviter = conseils.filter(c => c.toLowerCase().includes('éviter'));
 
@@ -156,8 +141,6 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
                 <AccordionSection
                     title="Aliments à privilégier"
                     icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">+</div>}
-                    isOpen={openAccordion === 'privilegier'}
-                    onToggle={() => handleToggle('privilegier')}
                 >
                     {renderList(aPrivilegier)}
                 </AccordionSection>
@@ -166,8 +149,6 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
                 <AccordionSection
                     title="Aliments à éviter"
                     icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-red-600 text-white rounded-full font-bold text-sm">-</div>}
-                    isOpen={openAccordion === 'eviter'}
-                    onToggle={() => handleToggle('eviter')}
                 >
                     {renderList(aEviter)}
                 </AccordionSection>
@@ -199,18 +180,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const canDelete = user?.role === UserRole.ADMIN && !isPreview;
   const canGenerateQRCode = user?.role === UserRole.ADMIN && !isPreview;
 
-  const [openSection, setOpenSection] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (caseStudy.type === 'savoir' && caseStudy.memoSections && caseStudy.memoSections.length > 0) {
-      setOpenSection(caseStudy.memoSections[0].id || 'memoSection-0');
-    } else {
-      setOpenSection('patientSituation');
-    }
-  }, [caseStudy]);
   const [showQRCode, setShowQRCode] = useState(false);
-
-  const handleToggle = (title: string) => setOpenSection(openSection === title ? null : title);
   
   const handleDelete = () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette mémofiche ? Cette action est irréversible.")) {
@@ -302,8 +272,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
               key={index}
               title={subsection.title.replace(/^\s*•\s*/, '')} // Remove leading bullet for title
               icon={<div className="flex items-center justify-center h-6 w-6 mr-3 bg-gray-600 text-white rounded-full font-bold text-sm">{index + 1}</div>}
-              isOpen={openSection === `subsection-${index}-${subsection.title.replace(/\s+/g, '-')}`}
-              onToggle={() => handleToggle(`subsection-${index}-${subsection.title.replace(/\s+/g, '-')}`)}
+              startOpen={index === 0}
             >
               <div dangerouslySetInnerHTML={{ __html: renderMarkdown(subsection.content, isRedKeywordSection) }} />
             </AccordionSection>
@@ -366,21 +335,22 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         title: section.title,
         icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
         content: renderContentWithKeywords(section.content),
+        startOpen: index === 0,
       }));
       content.push(
-        { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+        { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
       );
       return content;
     } else if (caseStudy.type === 'ordonnances') {
       const content = [
-        { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance) },
-        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance) },
-        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} /> },
-        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie) },
-        { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie) },
-        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: <ConseilsAlimentairesSection conseils={caseStudy.conseilsAlimentaires as string[]} /> },
-        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} /> },
-        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+        { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance), startOpen: true },
+        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance), startOpen: false },
+        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} />, startOpen: false },
+        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie), startOpen: false },
+        { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie), startOpen: false },
+        { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: <ConseilsAlimentairesSection conseils={caseStudy.conseilsAlimentaires as string[]} />, startOpen: false },
+        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} />, startOpen: false },
+        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
       ];
       return content;
     }
@@ -410,15 +380,21 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       .map(id => allSections.find(s => s.id === id))
       .filter(Boolean);
 
-    const content = orderedSections.map(section => ({
-      id: section.id,
-      title: section.title,
-      icon: section.icon,
-      content: renderContentWithKeywords(section.data, section.isAlert),
-    }));
+    let isFirstSection = true;
+    const content = orderedSections.map(section => {
+        const shouldStartOpen = isFirstSection;
+        isFirstSection = false;
+        return {
+            id: section.id,
+            title: section.title,
+            icon: section.icon,
+            content: renderContentWithKeywords(section.data, section.isAlert),
+            startOpen: shouldStartOpen,
+        };
+    });
 
     content.push(
-      { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm"},
+      { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
     );
 
     return content;
@@ -448,7 +424,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const renderContent = () => {
     switch (activeTab) {
-        case 'memo': return memoContent.map(section => <AccordionSection key={section.id} {...section} isOpen={openSection === section.id} onToggle={() => handleToggle(section.id)}>{section.content}</AccordionSection>);
+        case 'memo': return memoContent.map(section => <AccordionSection key={section.id} {...section} >{section.content}</AccordionSection>);
         case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} memoFicheId={caseStudy._id as string} />;
         case 'glossary': return <div className="bg-white p-6 rounded-lg shadow-md space-y-4">{caseStudy.glossary.map((item, i) => <div key={i} className="border-b border-slate-200 pb-2"><h4 className="font-bold text-slate-800">{item.term}</h4><p className="text-slate-600">{item.definition}</p></div>)}</div>;
         case 'media':
