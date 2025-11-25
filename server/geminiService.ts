@@ -244,6 +244,12 @@ Le contenu de la mémofiche est : "${context}".`;
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
+    console.log('--- getChatResponse ---');
+    console.log('chatHistory:', JSON.stringify(chatHistory, null, 2));
+    console.log('context:', context);
+    console.log('question:', question);
+    console.log('title:', title);
+
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
