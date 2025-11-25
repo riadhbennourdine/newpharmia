@@ -260,18 +260,23 @@ Ne rajoute rien d'autre à cette réponse de salutation.
 Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.
 `;
 
-    const history: Content[] = [
-        { role: "model", parts: [{ text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :
+    const history: Content[] = chatHistory.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+    }));
 
-**${title}**
-
-Comment puis-je vous aider aujourd'hui ?` }] },
-        ...chatHistory.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-        })),
-    ];
-
+    // Ensure history starts with a user message if it's not empty
+    if (history.length > 0 && history[0].role !== 'user') {
+        // Find the first user message and start from there
+        const firstUserIndex = history.findIndex(h => h.role === 'user');
+        if (firstUserIndex > -1) {
+            history.splice(0, firstUserIndex);
+        } else {
+            // If no user message, the history is invalid for starting a chat
+            history.length = 0;
+        }
+    }
+    
     const chat = model.startChat({
         history: history,
         generationConfig: {
