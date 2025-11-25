@@ -6,7 +6,9 @@ import fetch from 'node-fetch';
 
 
 const getApiKey = () => {
-  return "YOUR_API_KEY";
+  const API_KEY = process.env.GEMINI_API_KEY;
+  if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
+  return API_KEY;
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
