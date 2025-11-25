@@ -785,6 +785,16 @@ app.get('/api/gemini/models', async (req, res) => {
     }
 });
 
+app.get('/api/gemini/list-models', async (req, res) => {
+    try {
+        const models = await listModels();
+        res.json(models);
+    } catch (error: any) {
+        console.error('Error listing models:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 /*
 // KONNECT PAYMENT ROUTES
 app.post('/api/konnect/initiate-payment', async (req, res) => {
