@@ -245,19 +245,7 @@ Le contenu de la mémofiche est : "${context}".`;
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
-Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
-Ne réponds pas aux questions qui sortent de ce contexte. Sois concis et précis.
-
-Dans tes réponses, mets en évidence les mots-clés les plus importants en les entourant de doubles astérisques (par exemple, **mot-clé**). Cela les affichera en gras et en couleur.
-
-Si l'utilisateur te dit simplement "Bonjour" ou une salutation similaire, réponds EXACTEMENT :
-"Bonjour! Je suis PharmIA, votre Assistant, Expert pour un conseil de Qualité à l'officine. Ici je peux vous conseiller sur **${title}**."
-Ne rajoute rien d'autre à cette réponse de salutation.
-
-Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.
-`;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: system_prompt });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const history: Content[] = chatHistory.map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
@@ -277,13 +265,10 @@ Pour toutes les autres questions, base tes réponses sur le contexte de la mémo
     }
     
     const chat = model.startChat({
-        history: history,
-        generationConfig: {
-          maxOutputTokens: 1000,
-        },
+        history: history
       });
 
-        const result = await chat.sendMessage(`CONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
+        const result = await chat.sendMessage(question);
 
         const response = result.response;
 
