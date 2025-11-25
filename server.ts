@@ -761,10 +761,10 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Messages and context are required.' });
         }
 
-        const history = messages.slice(0, -1);
+        const history = messages.filter(m => m.role !== 'model');
         const question = messages[messages.length - 1].text;
         const caseStudy = JSON.parse(context);
-        const title = caseStudy.title || 'cette mémofiche';
+        const title = caseStudy.title ?? 'cette mémofiche';
 
         const text = await getChatResponse(history, context, question, title);
         res.json({ message: text });
