@@ -269,6 +269,53 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     setImageModalOpen(true);
   };
 
+  const handleGenerateAI = useCallback(async (prompt: string, memoFicheType: CaseStudy['type']) => {
+    setIsGeneratingAI(true);
+    try {
+        const currentTheme = caseStudy.theme || TOPIC_CATEGORIES[0].topics[0]; // Assuming TOPIC_CATEGORIES is accessible
+        const currentSystem = caseStudy.system || TOPIC_CATEGORIES[1].topics[0]; // Assuming TOPIC_CATEGORIES is accessible
+        
+        const aiPrompt = buildAIPrompt(
+            memoFicheType,
+            prompt,
+            currentTheme,
+            currentSystem,
+            currentTheme, // Re-using for pharmaTheme if needed
+            currentSystem  // Re-using for pharmaPathology if needed
+        );
+
+        const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
+        const learningTools = await generateLearningTools(draft); // Generate learning tools after draft
+        const learningTools = await generateLearningTools(draft); // Generate learning tools after draft
+
+        const aiGeneratedCase = createSafeCaseStudy({
+            ...draft,
+            ...learningTools, // Merge learningTools here
+            _id: caseStudy._id, // Keep existing ID if editing
+            id: caseStudy.id, // Keep existing ID if editing
+            type: memoFicheType, // Use the type selected in the modal
+            status: MemoFicheStatus.DRAFT, // AI generations are always drafts initially
+            theme: draft.theme || currentTheme,
+            system: draft.system || currentSystem,
+            coverImageUrl: draft.coverImageUrl || caseStudy.coverImageUrl, // Preserve if AI doesn't provide
+            youtubeLinks: draft.youtubeLinks || caseStudy.youtubeLinks,
+            sourceText: prompt, // Store the user's prompt as source text
+            // ensure arrays are initialized from learningTools results
+            flashcards: learningTools.flashcards || [],
+            glossary: learningTools.glossary || [],
+            quiz: learningTools.quiz || [],
+        });
+        
+        setCaseStudy(aiGeneratedCase);
+        setIsGenModalOpen(false); // Close modal on success
+    } catch (error) {
+        console.error('Error generating AI memo fiche:', error);
+        alert('Erreur lors de la génération de la mémofiche par l\'IA. Veuillez réessayer.');
+    } finally {
+        setIsGeneratingAI(false);
+    }
+  }, [caseStudy]);
+
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
   }, [initialCaseStudy]);
