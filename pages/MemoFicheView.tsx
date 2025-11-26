@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
+import getAbsoluteImageUrl from '../utils/image';
 import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon } from '../components/Icons';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
@@ -220,7 +221,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     if (isMemoFicheSectionContentArray(content)) {
       textContent = content.map(item => {
         if (item.type === 'image') {
-          return `<img src="${item.value}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
+          return `<img src="${getAbsoluteImageUrl(item.value)}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
         }
         if (item.type === 'video') {
           const embedUrl = getYoutubeEmbedUrl(item.value);
@@ -338,32 +339,32 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         startOpen: index === 0,
       }));
       content.push(
-        { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
+        { id: "references", title: "Référence bibliographiques", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/22.png")} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
       );
       return content;
     } else if (caseStudy.type === 'ordonnances') {
       const content = [
-        { id: 'ordonnance', title: 'Ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance), startOpen: true },
-        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance), startOpen: false },
-        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} />, startOpen: false },
-        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie), startOpen: false },
-        { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie), startOpen: false },
+        { id: 'ordonnance', title: 'Ordonnance', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/14.png")} className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance), startOpen: true },
+        { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/15.png")} className="h-6 w-6 mr-3" alt="Analyse" />, content: renderContentWithKeywords(caseStudy.analyseOrdonnance), startOpen: false },
+        { id: 'conseilsTraitement', title: 'Conseils sur le traitement', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/18.png")} className="h-6 w-6 mr-3" alt="Conseils" />, content: <ConseilsTraitementSection conseils={caseStudy.conseilsTraitement} />, startOpen: false },
+        { id: 'informationsMaladie', title: 'Informations sur la maladie', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/16.png")} className="h-6 w-6 mr-3" alt="Maladie" />, content: renderContentWithKeywords(caseStudy.informationsMaladie), startOpen: false },
+        { id: 'conseilsHygieneDeVie', title: 'Conseils d\'hygiène de vie', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/20.png")} className="h-6 w-6 mr-3" alt="Hygiène de vie" />, content: renderContentWithKeywords(caseStudy.conseilsHygieneDeVie), startOpen: false },
         { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Alimentation" />, content: <ConseilsAlimentairesSection conseils={caseStudy.conseilsAlimentaires as string[]} />, startOpen: false },
-        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} />, startOpen: false },
-        { id: "references", title: "Références bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
+        { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/19.png")} className="h-6 w-6 mr-3" alt="Ventes" />, content: <VentesAdditionnellesSection ventes={caseStudy.ventesAdditionnelles} />, startOpen: false },
+        { id: "references", title: "Références bibliographiques", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/22.png")} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
       ];
       return content;
     }
 
     const mainSections = [
-      { id: 'patientSituation', title: 'Cas comptoir', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/14.png" className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
-      { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/15.png" className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
-      { id: 'pathologyOverview', title: "Aperçu pathologie", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/16.png" className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : caseStudy.pathologyOverview?.content, isAlert: false },
-      { id: 'redFlags', title: "Signaux d'alerte", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/17.png" className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, data: caseStudy.redFlags, isAlert: true },
-      { id: 'mainTreatment', title: 'Traitement principal', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/18.png" className="h-6 w-6 mr-3" alt="Traitement principal" />, data: caseStudy.mainTreatment || caseStudy.recommendations?.mainTreatment, isAlert: false },
-      { id: 'associatedProducts', title: 'Produits associés', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/19.png" className="h-6 w-6 mr-3" alt="Produits associés" />, data: caseStudy.associatedProducts || caseStudy.recommendations?.associatedProducts, isAlert: false },
-      { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/20.png" className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: caseStudy.lifestyleAdvice || caseStudy.recommendations?.lifestyleAdvice, isAlert: false },
-      { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/21.png" className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: caseStudy.dietaryAdvice || caseStudy.recommendations?.dietaryAdvice, isAlert: false },
+      { id: 'patientSituation', title: 'Cas comptoir', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/14.png")} className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
+      { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/15.png")} className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
+      { id: 'pathologyOverview', title: "Aperçu pathologie", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/16.png")} className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : caseStudy.pathologyOverview?.content, isAlert: false },
+      { id: 'redFlags', title: "Signaux d'alerte", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/17.png")} className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, data: caseStudy.redFlags, isAlert: true },
+      { id: 'mainTreatment', title: 'Traitement principal', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/18.png")} className="h-6 w-6 mr-3" alt="Traitement principal" />, data: caseStudy.mainTreatment || caseStudy.recommendations?.mainTreatment, isAlert: false },
+      { id: 'associatedProducts', title: 'Produits associés', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/19.png")} className="h-6 w-6 mr-3" alt="Produits associés" />, data: caseStudy.associatedProducts || caseStudy.recommendations?.associatedProducts, isAlert: false },
+      { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/20.png")} className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: caseStudy.lifestyleAdvice || caseStudy.recommendations?.lifestyleAdvice, isAlert: false },
+      { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/21.png")} className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: caseStudy.dietaryAdvice || caseStudy.recommendations?.dietaryAdvice, isAlert: false },
     ];
 
     const customSections = (caseStudy.customSections || []).map((section, index) => ({
@@ -394,7 +395,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     });
 
     content.push(
-      { id: "references", title: "Référence bibliographiques", icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/22.png" className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
+      { id: "references", title: "Référence bibliographiques", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/22.png")} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
     );
 
     return content;
@@ -469,7 +470,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     <div className="animate-fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {caseStudy.coverImageUrl ? (
           <div className="mb-8 rounded-lg overflow-hidden shadow-lg relative h-64 flex items-end p-8 text-white bg-slate-800">
-              <img src={caseStudy.coverImageUrl} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: caseStudy.coverImagePosition || 'center' }} />
+              <img src={getAbsoluteImageUrl(caseStudy.coverImageUrl)} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: caseStudy.coverImagePosition || 'center' }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
               <div className="relative z-20">
                   <h2 className="text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>

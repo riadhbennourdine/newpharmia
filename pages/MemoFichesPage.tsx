@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
 import { CaseStudy, UserRole, MemoFicheStatus } from '../types';
+import getAbsoluteImageUrl from '../utils/image';
 import { LockClosedIcon, SparklesIcon, Spinner, PencilIcon, TrashIcon, UserGroupIcon } from '../components/Icons';
 import { TOPIC_CATEGORIES } from '../constants';
 import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
@@ -42,7 +43,7 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
             <div onClick={handleNavigate} className="cursor-pointer">
                 <div className="relative">
                     <img 
-                        src={caseStudy.coverImageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} 
+                        src={getAbsoluteImageUrl(caseStudy.coverImageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop')} 
                         alt={caseStudy.title} 
                         className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         style={{ objectPosition: caseStudy.coverImagePosition || 'center' }}

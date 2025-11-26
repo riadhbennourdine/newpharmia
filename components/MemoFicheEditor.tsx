@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
+import getAbsoluteImageUrl from '../utils/image';
 import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon, ImageIcon } from './Icons';
 import { useAuth } from '../hooks/useAuth';
 import ImageUploadModal from './ImageUploadModal';
@@ -194,7 +195,7 @@ const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ sec
             {item.type === 'text' && <Textarea value={item.value} onChange={e => handleContentChange(index, e.target.value)} rows={3} className="flex-grow" />}
             {item.type === 'image' && (
               <div className="flex-grow flex items-center gap-2">
-                <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />
+                <Input type="text" value={getAbsoluteImageUrl(item.value)} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />
                 <button type="button" onClick={() => openImageModal(url => handleContentChange(index, url))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
                   <ImageIcon className="h-5 w-5 text-slate-600" />
                 </button>
@@ -591,7 +592,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           <div>
             <Label htmlFor="coverImageUrl">Image de couverture</Label>
             <div className="mt-1 flex items-center gap-2">
-                <Input type="text" name="coverImageUrl" id="coverImageUrl" value={caseStudy.coverImageUrl} onChange={handleChange} className="flex-grow" />
+                <Input type="text" name="coverImageUrl" id="coverImageUrl" value={getAbsoluteImageUrl(caseStudy.coverImageUrl)} onChange={handleChange} className="flex-grow" />
                 <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, coverImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
                     <ImageIcon className="h-5 w-5 text-slate-600" />
                 </button>

@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole } from '../types';
 import { Spinner, ArrowLeftIcon } from '../components/Icons';
 import { isPharmacienOrAdminWebinar } from '../utils/roles';
+import getAbsoluteImageUrl from '../utils/image';
 
 const ReadFichesPage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
@@ -110,7 +111,7 @@ const ReadFichesPage: React.FC = () => {
                         return (
                             <div key={fiche._id as string} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl flex flex-col">
                                 <Link to={`/memofiche/${fiche._id}`} className="flex-grow">
-                                    <img src={fiche.coverImageUrl || 'https://via.placeholder.com/300x200?text=MemoFiche'} alt={fiche.title} className="w-full h-24 object-cover" />
+                                    <img src={getAbsoluteImageUrl(fiche.coverImageUrl || 'https://via.placeholder.com/300x200?text=MemoFiche')} alt={fiche.title} className="w-full h-24 object-cover" />
                                     <div className="p-2">
                                         <h3 className="font-bold text-sm text-slate-800 mb-1 truncate">{fiche.title}</h3>
                                         {date && <p className="text-xs text-slate-500">{date.toLocaleDateString('fr-FR')}</p>}
