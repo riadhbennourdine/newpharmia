@@ -56,6 +56,7 @@ export interface User {
   groupId?: ObjectId | string;
   objectifs?: string;
   CA?: number;
+  zone?: string;
 }
 
 export interface Group {
