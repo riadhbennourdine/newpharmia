@@ -16,6 +16,7 @@ const ClientDetailPage = () => {
   // Form state
   const [notes, setNotes] = useState('');
   const [objectifs, setObjectifs] = useState('');
+  const [CA, setCA] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -133,6 +134,7 @@ const ClientDetailPage = () => {
         setClient(clientData);
         setNotes(clientData.notes || '');
         setObjectifs(clientData.objectifs || '');
+        setCA(clientData.CA || undefined);
         setStatus(clientData.status);
 
         if (teamRes.ok) {
@@ -163,7 +165,7 @@ const ClientDetailPage = () => {
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, status, objectifs }),
+          body: JSON.stringify({ notes, status, objectifs, CA }),
         }
       );
 
@@ -214,6 +216,18 @@ const ClientDetailPage = () => {
                     Activer l'abonnement
                   </button>
                 )}
+            </div>
+  
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <label htmlFor="ca" className="block text-lg font-bold text-teal-600 mb-2">Chiffre d'Affaires</label>
+              <input
+                type="number"
+                id="ca"
+                name="ca"
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                value={CA}
+                onChange={(e) => setCA(Number(e.target.value))}
+              />
             </div>
   
             <div className="bg-white p-6 rounded-lg shadow-md">
