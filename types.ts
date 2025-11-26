@@ -116,7 +116,7 @@ export interface Media {
 export interface CaseStudy {
   _id: ObjectId | string;
   id: string;
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'savoir';
+  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'le-medicament' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'savoir';
   title: string;
   shortDescription: string;
   theme: string;
@@ -157,6 +157,11 @@ export interface CaseStudy {
   customSections?: MemoFicheSection[];
   sectionOrder?: string[];
   status: MemoFicheStatus; // New status field
+
+  // New fields for "Le médicament" manual generator
+  youtubeExplainerUrl?: string;
+  infographicImageUrl?: string;
+  pdfSlideshowUrl?: string;
 
   // Dispositifs médicaux
   casComptoir?: string | MemoFicheSection;

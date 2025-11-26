@@ -18,10 +18,13 @@ const GeneratorView: React.FC = () => {
   const [isGeneratingTools, setIsGeneratingTools] = useState(false);
   const [generatedCase, setGeneratedCase] = useState<CaseStudy | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'exhaustive' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition' | 'savoir'>('maladie');
+  const [memoFicheType, setMemoFicheType] = useState<'maladie' | 'pharmacologie' | 'dermocosmetique' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'micronutrition' | 'savoir' | 'le-medicament'>('maladie');
   const [step, setStep] = useState(1); // 1: select type, 2: fill details
   const [pharmaTheme, setPharmaTheme] = useState('');
   const [pharmaPathology, setPharmaPathology] = useState('');
+  const [youtubeExplainerUrl, setYoutubeExplainerUrl] = useState(''); // New state
+  const [infographicImageUrl, setInfographicImageUrl] = useState(''); // New state
+  const [pdfSlideshowUrl, setPdfSlideshowUrl] = useState(''); // New state
   const [isImageModalOpen, setImageModalOpen] = useState(false);
   const navigate = useNavigate();
   const { saveCaseStudy } = useData();
@@ -147,8 +150,11 @@ Le processus est le suivant :
 Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
 
 Le texte à analyser est :\n\n${sourceText}`;
-    } else { // exhaustive
-        prompt = `Génère une mémofiche de synthèse exhaustive et très détaillée sur le sujet suivant : "${sourceText}".${formattingInstructions}`;
+    } else if (memoFicheType === 'le-medicament') { // New 'Le médicament' type
+        prompt = `Génère une mémofiche détaillée sur le médicament suivant : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le contenu doit inclure des informations sur sa classification, son mécanisme d'action, ses indications, sa posologie, ses effets secondaires, ses contre-indications et ses interactions médicamenteuses.`;
+    } else {
+        // Fallback for types not explicitly handled (should not happen if type definitions are exhaustive)
+        prompt = `Génère une mémofiche sur le sujet suivant : "${sourceText}".`;
     }
 
     try {
@@ -174,6 +180,9 @@ Le texte à analyser est :\n\n${sourceText}`;
         },
         coverImageUrl: coverImageUrl.trim() || undefined,
         youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
+        youtubeExplainerUrl: youtubeExplainerUrl.trim() || undefined,
+        infographicImageUrl: infographicImageUrl.trim() || undefined,
+        pdfSlideshowUrl: pdfSlideshowUrl.trim() || undefined,
         // Ordonnances
         ordonnance: draft.ordonnance || [],
         analyseOrdonnance: draft.analyseOrdonnance || [],
@@ -258,6 +267,9 @@ Le texte à analyser est :\n\n${sourceText}`;
         quiz: [],
         coverImageUrl: coverImageUrl.trim() || undefined,
         youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
+        youtubeExplainerUrl: youtubeExplainerUrl.trim() || undefined,
+        infographicImageUrl: infographicImageUrl.trim() || undefined,
+        pdfSlideshowUrl: pdfSlideshowUrl.trim() || undefined,
         sourceText: sourceText,
         memoSections: [],
         customSections: [],
@@ -280,6 +292,9 @@ Le texte à analyser est :\n\n${sourceText}`;
       setSelectedSystem('');
       setCoverImageUrl('');
       setYoutubeLinks([{ url: '', title: '' }]);
+      setYoutubeExplainerUrl(''); // Clear new state
+      setInfographicImageUrl(''); // Clear new state
+      setPdfSlideshowUrl(''); // Clear new state
       setError(null);
   }
   
@@ -325,7 +340,11 @@ Le texte à analyser est :\n\n${sourceText}`;
         isOpen={isImageModalOpen}
         onClose={() => setImageModalOpen(false)}
         onSelectImage={(url) => {
-            setCoverImageUrl(url);
+            if (memoFicheType === 'le-medicament') {
+                setInfographicImageUrl(url);
+            } else {
+                setCoverImageUrl(url);
+            }
             setImageModalOpen(false);
         }}
       />
@@ -377,7 +396,7 @@ Le texte à analyser est :\n\n${sourceText}`;
               <option value="communication">Communication</option>
               <option value="micronutrition">Micronutrition</option>
               <option value="savoir">Savoir</option>
-              <option value="exhaustive">Synthèse exhaustive</option>
+              <option value="le-medicament">Le médicament</option>
               </select>
           </div>
           <button onClick={() => setStep(2)} className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300">
@@ -481,6 +500,59 @@ Le texte à analyser est :\n\n${sourceText}`;
               />
           </div>
           
+          {(memoFicheType === 'le-medicament') && (
+            <div className="space-y-6 mb-6 p-4 border border-slate-200 rounded-md bg-slate-50">
+                <h3 className="text-xl font-bold text-slate-800">Contenu additionnel pour "Le médicament"</h3>
+                <div>
+                    <label htmlFor="youtube-explainer-url" className="block text-lg font-medium text-slate-700 mb-2">
+                    URL Vidéo YouTube Explicative (Optionnel)
+                    </label>
+                    <input
+                        id="youtube-explainer-url"
+                        type="text"
+                        value={youtubeExplainerUrl}
+                        onChange={(e) => setYoutubeExplainerUrl(e.target.value)}
+                        placeholder="URL de la vidéo explicative YouTube"
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                        disabled={isLoading}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="infographic-image-url" className="block text-lg font-medium text-slate-700 mb-2">
+                    URL ou Télécharger Infographie (Optionnel)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            id="infographic-image-url"
+                            type="text"
+                            value={infographicImageUrl}
+                            onChange={(e) => setInfographicImageUrl(e.target.value)}
+                            placeholder="URL de l'image infographique"
+                            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                            disabled={isLoading}
+                        />
+                        <button type="button" onClick={() => setImageModalOpen(true)} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                            <ImageIcon className="h-5 w-5 text-slate-600" />
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label htmlFor="pdf-slideshow-url" className="block text-lg font-medium text-slate-700 mb-2">
+                    URL Fichier PDF pour Diaporama (Optionnel)
+                    </label>
+                    <input
+                        id="pdf-slideshow-url"
+                        type="text"
+                        value={pdfSlideshowUrl}
+                        onChange={(e) => setPdfSlideshowUrl(e.target.value)}
+                        placeholder="URL du fichier PDF public"
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                        disabled={isLoading}
+                    />
+                </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                   <label htmlFor="cover-image-url" className="block text-lg font-medium text-slate-700 mb-2">

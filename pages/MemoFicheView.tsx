@@ -167,7 +167,7 @@ interface DetailedMemoFicheViewProps {
   isPreview?: boolean;
 }
 
-type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot';
+type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot' | 'supplementary';
 
 
 export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ caseStudy, onBack, onStartQuiz, onEdit, onDelete, isPreview = false }) => {
@@ -403,23 +403,28 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
     const hasMedia = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
+    const hasLeMedicamentContent = caseStudy.youtubeExplainerUrl || caseStudy.infographicImageUrl || caseStudy.pdfSlideshowUrl; // New condition
+
     const baseItems = [
       { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
       { id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
       ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
       ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
       { id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
-      { id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }
+      ...(hasMedia ? [{ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }] : []),
     ];
 
-    if (hasMedia) {
-      const mediaItem = baseItems.find(item => item.id === 'media');
-      const otherItems = baseItems.filter(item => item.id !== 'media');
-      return [mediaItem!, ...otherItems];
+    if (caseStudy.type === 'le-medicament' && hasLeMedicamentContent) {
+      // Add a dedicated tab for "Le médicament" content
+      baseItems.push({
+        id: 'supplementary' as TabName,
+        label: 'Le Médicament',
+        icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/medicament.png" className="h-8 w-8" alt="Le Médicament" /> // Placeholder icon
+      });
     }
 
     return baseItems;
-  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview]);
+  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, isPreview]);
 
   const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
 
@@ -454,6 +459,42 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
             ) : <div className="text-center text-slate-500">Aucun média disponible.</div>;
         case 'quiz': return <div className="text-center bg-white p-8 rounded-lg shadow-md"><h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances !</h3><button onClick={onStartQuiz} className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700"><CheckCircleIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz</button></div>;
         case 'kahoot': return caseStudy.kahootUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Jeu Kahoot!</h4><iframe src={caseStudy.kahootUrl} title="Kahoot! Game" frameBorder="0" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div> : <div className="text-center text-slate-600">Aucun lien Kahoot! disponible.</div>;
+        case 'supplementary':
+            return (
+                <div className="space-y-6">
+                    {caseStudy.youtubeExplainerUrl && (
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                            <h4 className="font-bold text-slate-800 mb-4">Vidéo Explicative</h4>
+                            <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
+                                <iframe
+                                    src={getYoutubeEmbedUrl(caseStudy.youtubeExplainerUrl)!}
+                                    title="Vidéo Explicative"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="absolute top-0 left-0 w-full h-full rounded-md"
+                                ></iframe>
+                            </div>
+                        </div>
+                    )}
+                    {caseStudy.infographicImageUrl && (
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                            <h4 className="font-bold text-slate-800 mb-4">Infographie</h4>
+                            <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto rounded-md" />
+                        </div>
+                    )}
+                    {caseStudy.pdfSlideshowUrl && (
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                            <h4 className="font-bold text-slate-800 mb-4">Diaporama PDF</h4>
+                            {/* Placeholder for PDF Slideshow Component */}
+                            <div className="text-center text-slate-500">PDF Slideshow will be rendered here.</div>
+                        </div>
+                    )}
+                    {!caseStudy.youtubeExplainerUrl && !caseStudy.infographicImageUrl && !caseStudy.pdfSlideshowUrl && (
+                        <div className="text-center text-slate-500">Aucun contenu supplémentaire disponible.</div>
+                    )}
+                </div>
+            );
     }
   };
 

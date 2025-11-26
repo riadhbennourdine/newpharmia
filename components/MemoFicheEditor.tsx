@@ -539,7 +539,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 <option value="ordonnances">Ordonnances</option>
                 <option value="communication">Communication</option>
                 <option value="savoir">Savoir</option>
-                <option value="exhaustive">Exhaustive</option>
+                <option value="le-medicament">Le médicament</option>
             </select>
           </div>
           <div>

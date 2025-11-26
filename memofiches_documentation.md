@@ -10,7 +10,7 @@ Les champs principaux incluent :
 
 *   **`_id`**: Identifiant unique de la mémofiche dans la base de données.
 *   **`id`**: Identifiant public de la mémofiche.
-*   **`type`**: Définit la catégorie principale de la mémofiche (ex: `maladie`, `pharmacologie`, `dermocosmetique`, `dispositifs-medicaux`, `ordonnances`, `communication`, `savoir`, `exhaustive`). Ce type influence les sections disponibles.
+*   **`type`**: Définit la catégorie principale de la mémofiche (ex: `maladie`, `pharmacologie`, `dermocosmetique`, `dispositifs-medicaux`, `ordonnances`, `communication`, `savoir`, `le-medicament`). Ce type influence les sections disponibles.
 *   **`title`**: Le titre de la mémofiche.
 *   **`shortDescription`**: Une brève description ou introduction.
 *   **`theme`**: Le thème pédagogique auquel elle est rattachée.
