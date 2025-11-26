@@ -286,9 +286,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
         const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
         const learningTools = await generateLearningTools(draft); // Generate learning tools after draft
-        const learningTools = await generateLearningTools(draft); // Generate learning tools after draft
-
-        const aiGeneratedCase = createSafeCaseStudy({
+                  const aiGeneratedCase = createSafeCaseStudy({
             ...draft,
             ...learningTools, // Merge learningTools here
             _id: caseStudy._id, // Keep existing ID if editing
