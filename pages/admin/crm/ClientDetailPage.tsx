@@ -15,6 +15,7 @@ const ClientDetailPage = () => {
 
   // Form state
   const [notes, setNotes] = useState('');
+  const [objectifs, setObjectifs] = useState('');
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -131,6 +132,7 @@ const ClientDetailPage = () => {
         const clientData = await clientRes.json();
         setClient(clientData);
         setNotes(clientData.notes || '');
+        setObjectifs(clientData.objectifs || '');
         setStatus(clientData.status);
 
         if (teamRes.ok) {
@@ -161,7 +163,7 @@ const ClientDetailPage = () => {
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, status }),
+          body: JSON.stringify({ notes, status, objectifs }),
         }
       );
 
@@ -227,6 +229,15 @@ const ClientDetailPage = () => {
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
+            </div>
+  
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-bold text-teal-600 mb-4">Objectifs</h3>
+              <textarea
+                className="w-full p-2 border rounded-md h-40"
+                value={objectifs}
+                onChange={(e) => setObjectifs(e.target.value)}
+              />
             </div>
   
             <div className="bg-white p-6 rounded-lg shadow-md">

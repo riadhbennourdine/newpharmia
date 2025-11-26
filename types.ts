@@ -54,6 +54,7 @@ export interface User {
   notes?: string;
   teamSize?: number;
   groupId?: ObjectId | string;
+  objectifs?: string;
 }
 
 export interface Group {
