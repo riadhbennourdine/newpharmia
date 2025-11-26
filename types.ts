@@ -57,6 +57,7 @@ export interface User {
   objectifs?: string;
   CA?: number;
   zone?: string;
+  secteur?: string;
 }
 
 export interface Group {

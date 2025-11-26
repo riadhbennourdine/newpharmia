@@ -18,6 +18,7 @@ const ClientDetailPage = () => {
   const [objectifs, setObjectifs] = useState('');
   const [CA, setCA] = useState<number | undefined>(undefined);
   const [zone, setZone] = useState<string | undefined>(undefined);
+  const [secteur, setSecteur] = useState<string | undefined>(undefined);
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -137,6 +138,7 @@ const ClientDetailPage = () => {
         setObjectifs(clientData.objectifs || '');
         setCA(clientData.CA || undefined);
         setZone(clientData.zone || undefined);
+        setSecteur(clientData.secteur || undefined);
         setStatus(clientData.status);
 
         if (teamRes.ok) {
@@ -167,7 +169,7 @@ const ClientDetailPage = () => {
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, status, objectifs, CA, zone }),
+          body: JSON.stringify({ notes, status, objectifs, CA, zone, secteur }),
         }
       );
 
@@ -201,6 +203,7 @@ const ClientDetailPage = () => {
                 <p><strong>Email:</strong> {client.email}</p>
                 {client.companyName && client.companyName !== 'N/A' && <p><strong>Société:</strong> {client.companyName}</p>}
                 {client.zone && <p><strong>Zone:</strong> {client.zone}</p>}
+                {client.secteur && <p><strong>Secteur:</strong> {client.secteur}</p>}
                 <hr />
                 <p><strong>Plan d'abonnement:</strong> {client.planName || 'N/A'}</p>
                 <p><strong>Date d'expiration:</strong> {client.subscriptionEndDate ? new Date(client.subscriptionEndDate).toLocaleDateString() : 'N/A'}</p>
@@ -221,6 +224,18 @@ const ClientDetailPage = () => {
                 )}
             </div>
   
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <label htmlFor="secteur" className="block text-lg font-bold text-teal-600 mb-2">Secteur</label>
+              <input
+                type="text"
+                id="secteur"
+                name="secteur"
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                value={secteur}
+                onChange={(e) => setSecteur(e.target.value)}
+              />
+            </div>
+            
             <div className="bg-white p-6 rounded-lg shadow-md">
               <label htmlFor="zone" className="block text-lg font-bold text-teal-600 mb-2">Zone</label>
               <input
