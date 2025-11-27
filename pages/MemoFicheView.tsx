@@ -404,41 +404,47 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
     const hasMedia = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
+    const isLeMedicamentManual = caseStudy.type === 'le-medicament' && !caseStudy.flashcards?.length && !caseStudy.quiz?.length;
 
-    const baseItems = [
-      { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
-      { id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
-      ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
-      ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
-      { id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
-      ...(hasMedia ? [{ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }] : []),
-    ];
+    const items: { id: TabName; label: string; icon: React.ReactNode }[] = [];
 
-    // Add new tabs for "Le médicament" content if available
+    // Prioritize "Le médicament" specific media tabs if present
     if (caseStudy.youtubeExplainerUrl) {
-        baseItems.push({
+        items.push({
             id: 'video-explainer' as TabName,
             label: 'Vidéo',
             icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216624864-416405954.png")} className="h-8 w-8" alt="Vidéo Explicative" />
         });
     }
     if (caseStudy.infographicImageUrl) {
-        baseItems.push({
+        items.push({
             id: 'infographie' as TabName,
             label: 'Infographie',
             icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216657801-11124774.png")} className="h-8 w-8" alt="Infographie" />
         });
     }
     if (caseStudy.pdfSlideshowUrl) {
-        baseItems.push({
+        items.push({
             id: 'diaporama' as TabName,
             label: 'Diaporama',
             icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216683576-633093094.png")} className="h-8 w-8" alt="Diaporama" />
         });
     }
 
-    return baseItems;
-  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl]);
+    // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
+    if (!isLeMedicamentManual) {
+        items.push(
+            { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
+            { id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
+            ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
+            ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
+            { id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
+            ...(hasMedia ? [{ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }] : []),
+        );
+    }
+    
+    return items;
+  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, caseStudy.flashcards, caseStudy.quiz]);
 
   const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
 

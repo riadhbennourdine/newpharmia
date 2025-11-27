@@ -5,7 +5,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import getAbsoluteImageUrl from '../utils/image';
 
 // Configure pdfjs worker source
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf-worker.min.js`;
 
 interface PdfSlideshowProps {
   pdfUrl: string;
