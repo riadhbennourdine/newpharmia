@@ -27,6 +27,7 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
+    console.log('File uploaded to physical path:', req.file.path); // DEBUG LOG
     const { name, theme } = req.body;
     if (!name || !theme) {
         // Clean up the uploaded file if metadata is missing
