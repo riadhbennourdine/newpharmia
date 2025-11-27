@@ -19,11 +19,9 @@ import RegisterView from './pages/RegisterView';
 import ForgotPasswordView from './pages/ForgotPasswordView';
 import ResetPasswordView from './pages/ResetPasswordView';
 import UnsubscribePage from './pages/UnsubscribePage';
-import { 
-    ActivateAccountView,
-    ContactFormView,
-    ProfileCompletionView,
-} from './pages/AuthPage';
+import ActivateAccountView from './pages/auth/ActivateAccountView';
+import ContactFormView from './pages/auth/ContactFormView';
+import ProfileCompletionView from './pages/auth/ProfileCompletionView';
 
 // Authenticated Pages
 import Dashboard from './pages/Dashboard';
