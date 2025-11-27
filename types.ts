@@ -59,6 +59,7 @@ export interface User {
   CA?: number;
   zone?: string;
   secteur?: string;
+  paymentProofUrl?: string;
 }
 
 export interface Group {

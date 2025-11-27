@@ -23,7 +23,55 @@ const ClientDetailPage = () => {
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadPaymentProof = async () => {
+    if (!selectedFile || !client) return;
+
+    setIsUploading(true);
+    try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        const uploadResponse = await fetch('/api/upload/file', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error('Failed to upload file');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        const { fileUrl } = uploadResult;
+
+        const submitResponse = await fetch(`/api/admin/crm/clients/${client._id}/payment-proof`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileUrl }),
+        });
+
+        if (!submitResponse.ok) {
+            throw new Error('Failed to submit payment proof');
+        }
+
+        alert('Pièce justificative téléversée avec succès!');
+        setClient(prevClient => prevClient ? { ...prevClient, paymentProofUrl: fileUrl } : null);
+        setSelectedFile(null);
+    } catch (err: any) {
+        setError(err.message);
+    } finally {
+        setIsUploading(false);
+    }
+  };
+  
   const handleAddAppointment = async (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => {
     try {
       const response = await fetch('/api/admin/crm/appointments', {
@@ -222,6 +270,30 @@ const ClientDetailPage = () => {
                     Activer l'abonnement
                   </button>
                 )}
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-bold text-teal-600 mb-4">Pièce justificative de paiement</h3>
+                {client.paymentProofUrl ? (
+                    <div className="mb-4">
+                        <a href={client.paymentProofUrl} target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">
+                            Voir la pièce justificative actuelle
+                        </a>
+                    </div>
+                ) : (
+                  <p className='text-sm text-gray-500 mb-4'>Aucune pièce n'a été téléversée</p>
+                )}
+                <div>
+                    <input type="file" onChange={handleFileChange} className="mb-2" />
+                    <button
+                        onClick={handleUploadPaymentProof}
+                        disabled={!selectedFile || isUploading}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+                    >
+                        {isUploading ? 'Téléversement...' : 'Uploader'}
+                    </button>
+                    {selectedFile && <p className="text-sm text-gray-500 mt-2">Fichier séléctionné: {selectedFile.name}</p>}
+                </div>
             </div>
   
             <div className="bg-white p-6 rounded-lg shadow-md">

@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Spinner } from '../../components/Icons';
 import { TOPIC_CATEGORIES } from '../../constants';
 import { Image, ImageTheme } from '../../types';
+import getAbsoluteImageUrl from '../../utils/image';
 
 const ImageManager: React.FC = () => {
     const [images, setImages] = useState<Image[]>([]);
@@ -302,7 +303,7 @@ const ImageManager: React.FC = () => {
                         {images.map(image => (
                             <div key={image._id.toString()} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
                                 <img
-                                    src={image.url}
+                                    src={getAbsoluteImageUrl(image.url)}
                                     alt={image.name}
                                     className="w-full h-32 object-cover"
                                 />

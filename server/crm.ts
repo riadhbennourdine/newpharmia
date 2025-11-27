@@ -105,6 +105,41 @@ router.put('/clients/:id', async (req, res) => {
     }
 });
 
+// POST to upload a payment proof for a client
+router.post('/clients/:id/payment-proof', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { fileUrl } = req.body;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid client ID.' });
+        }
+
+        if (!fileUrl) {
+            return res.status(400).json({ message: 'File URL is required.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { paymentProofUrl: fileUrl } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Client not found.' });
+        }
+
+        res.json({ message: 'Payment proof uploaded successfully.' });
+    } catch (error) {
+        console.error('Error uploading payment proof:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de l\'upload de la preuve de paiement.' });
+    }
+});
+
+
 // POST to create a new prospect
 router.post('/prospects', async (req, res) => {
     try {
