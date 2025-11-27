@@ -37,6 +37,7 @@ export interface User {
   pharmacistId?: ObjectId;
   hasActiveSubscription?: boolean;
   planName?: string;
+  subscriptionStartDate?: Date;
   subscriptionEndDate?: Date;
   trialExpiresAt?: Date;
   createdAt?: Date;

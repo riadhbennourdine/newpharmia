@@ -121,7 +121,24 @@ router.post('/prospects', async (req, res) => {
         // Check if user already exists
         const existingUser = await usersCollection.findOne({ email });
         if (existingUser) {
-            return res.status(409).json({ message: 'A user with this email already exists.' });
+            // If user exists, update them to be a prospect with a trial
+            const result = await usersCollection.updateOne(
+                { _id: existingUser._id },
+                { 
+                    $set: { 
+                        status: ClientStatus.PROSPECT,
+                        hasActiveSubscription: true,
+                        planName: 'Trial',
+                        subscriptionStartDate: new Date(),
+                        subscriptionEndDate: new Date(new Date().setDate(new Date().getDate() + 15)), // 15-day trial
+                    } 
+                }
+            );
+            if (result.modifiedCount > 0) {
+                return res.status(200).json({ message: 'User updated to prospect with a trial successfully.' });
+            } else {
+                return res.status(200).json({ message: 'User is already a prospect or no changes were needed.' });
+            }
         }
 
         const newUser: Partial<User> = {
@@ -132,6 +149,10 @@ router.post('/prospects', async (req, res) => {
             role: UserRole.PHARMACIEN,
             status: ClientStatus.PROSPECT,
             createdAt: new Date(),
+            hasActiveSubscription: true,
+            planName: 'Trial',
+            subscriptionStartDate: new Date(),
+            subscriptionEndDate: new Date(new Date().setDate(new Date().getDate() + 15)), // 15-day trial
         };
 
         const result = await usersCollection.insertOne(newUser as User);
