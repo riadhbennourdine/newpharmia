@@ -465,7 +465,24 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     return items;
   }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, caseStudy.flashcards, caseStudy.quiz, memoContent]);
 
-  const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
+  const [activeTab, setActiveTab] = useState<TabName>(() => {
+    // Determine the initial active tab
+    if (menuItems.length > 0) {
+        return menuItems[0].id;
+    }
+    // Fallback if no specific tabs are generated (e.g., if it's a completely empty memo fiche)
+    return 'memo'; 
+  });
+
+  // Ensure activeTab is always a valid tab from menuItems
+  useEffect(() => {
+    if (menuItems.length > 0 && !menuItems.some(item => item.id === activeTab)) {
+      setActiveTab(menuItems[0].id);
+    } else if (menuItems.length === 0 && activeTab !== 'memo') {
+      // If no other tabs, default to memo (if memo content becomes available later)
+      setActiveTab('memo');
+    }
+  }, [menuItems, activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {
