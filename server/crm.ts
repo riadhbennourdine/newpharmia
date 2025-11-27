@@ -186,12 +186,7 @@ router.get('/prospects', async (req, res) => {
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
         const prospects = await usersCollection.find({
-            role: UserRole.PHARMACIEN,
-            $or: [
-                { hasActiveSubscription: { $exists: false } },
-                { hasActiveSubscription: false },
-                { planName: 'Trial' }
-            ]
+            status: ClientStatus.PROSPECT
         }).toArray();
         res.json(prospects);
     } catch (error) {
