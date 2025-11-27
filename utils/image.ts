@@ -10,7 +10,7 @@ const getAbsoluteImageUrl = (relativePath: string | undefined): string => {
   }
 
   // Prepend the base URL from environment variables
-  const baseUrl = process.env.VITE_APP_BASE_URL || '';
+  const baseUrl = import.meta.env.VITE_APP_BASE_URL || '';
 
   // Ensure base URL doesn't end with a slash and relativePath starts with one
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
