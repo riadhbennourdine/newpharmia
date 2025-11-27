@@ -24,7 +24,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
 
@@ -1331,7 +1331,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // --- DEBUG LOGGING FOR STATIC PATHS ---
-const staticPath = path.join(process.cwd(), 'public', 'uploads');
+const staticPath = path.join(process.cwd(), 'uploads');
 console.log('[DEBUG] Current working directory:', process.cwd());
 console.log('[DEBUG] Resolved static path for /uploads:', staticPath);
 try {
