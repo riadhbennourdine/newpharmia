@@ -1330,6 +1330,22 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
+// --- DEBUG LOGGING FOR STATIC PATHS ---
+const staticPath = path.join(process.cwd(), 'public', 'uploads');
+console.log('[DEBUG] Current working directory:', process.cwd());
+console.log('[DEBUG] Resolved static path for /uploads:', staticPath);
+try {
+    const staticPathExists = fs.existsSync(staticPath);
+    console.log('[DEBUG] Does the static path exist at startup?', staticPathExists);
+    if (staticPathExists) {
+        const contents = fs.readdirSync(staticPath);
+        console.log(`[DEBUG] Contents of ${staticPath}:`, contents.length > 0 ? contents : '(empty)');
+    }
+} catch (e) {
+    console.error('[DEBUG] Error checking static path:', e);
+}
+// --- END DEBUG LOGGING ---
+
 async function migrateWebinars() {
     console.log('Checking if webinar migration is needed...');
     try {
