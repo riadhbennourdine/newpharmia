@@ -745,11 +745,22 @@ app.get('/api/proxy-pdf', async (req, res) => {
             return res.status(response.status).json({ message: `Failed to fetch PDF from external source: ${response.statusText}` });
         }
 
-        // Set appropriate headers for PDF
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="proxied.pdf"');
+        // Forward all headers from the original response
+        response.headers.forEach((value, name) => {
+            // Exclude headers that should be handled by Express or might cause issues
+            if (!['content-encoding', 'transfer-encoding', 'content-length'].includes(name)) {
+                res.setHeader(name, value);
+            }
+        });
 
-        // Stream the PDF back to the client
+        // Ensure Content-Type is application/pdf, as it might be missing or generic
+        res.setHeader('Content-Type', 'application/pdf');
+        // Optional: Set a filename if not present in original headers
+        if (!res.hasHeader('Content-Disposition')) {
+            res.setHeader('Content-Disposition', 'inline; filename="proxied.pdf"');
+        }
+
+        // Pipe the response body directly to the client
         response.body?.pipe(res);
 
     } catch (error) {
