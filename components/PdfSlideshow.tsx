@@ -18,8 +18,8 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   const [pageNumber, setPageNumber] = useState(1); // Start with page 1
   const absolutePdfUrl = getAbsoluteImageUrl(pdfUrl);
 
-  const { width, ref } = useResizeDetector(); // Use the hook to detect width
-  const pdfContainerRef = useRef<HTMLDivElement>(null); // Ref for the PDF container
+  const pdfMainContainerRef = useRef<HTMLDivElement>(null); // Main ref for the container
+  const { width, ref: resizeRef } = useResizeDetector({ targetRef: pdfMainContainerRef }); // Pass ref to useResizeDetector
 
   console.log('PdfSlideshow rendered. pdfUrl:', pdfUrl, 'absolutePdfUrl:', absolutePdfUrl, 'Current container width:', width);
 
@@ -36,9 +36,9 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
     setPageNumber((prevPageNumber) => Math.min(prevPageNumber + 1, numPages || 1));
   
   const toggleFullScreen = () => {
-    if (pdfContainerRef.current) {
+    if (pdfMainContainerRef.current) {
         if (!document.fullscreenElement) {
-            pdfContainerRef.current.requestFullscreen().catch(err => {
+            pdfMainContainerRef.current.requestFullscreen().catch(err => {
                 console.error(`Error attempting to enable full-screen: ${err.message} (${err.name})`);
             });
         } else {
@@ -52,36 +52,35 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
 
   return (
     <div className="flex flex-col items-center p-4">
-      {numPages && (
-        <div className="flex justify-between items-center w-full max-w-lg mb-4">
-          <button
-            onClick={goToPrevPage}
-            disabled={pageNumber <= 1}
-            className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:bg-gray-400"
-          >
-            Précédent
-          </button>
-          <p className="text-lg font-semibold">
-            Page {pageNumber} sur {numPages}
-          </p>
-          <button
-            onClick={goToNextPage}
-            disabled={pageNumber >= (numPages || 1)}
-            className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:bg-gray-400"
-          >
-            Suivant
-          </button>
-          <button
-            onClick={toggleFullScreen}
-            className="p-2 ml-2 bg-slate-200 rounded-md hover:bg-slate-300"
-            title="Activer/Désactiver le plein écran"
-          >
-            {document.fullscreenElement ? <ArrowsPointingInIcon className="h-5 w-5" /> : <ArrowsPointingOutIcon className="h-5 w-5" />}
-          </button>
-        </div>
-      )}
-
-      <div ref={ref} className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-full">
+      <div ref={pdfMainContainerRef} className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-full">
+        {numPages && ( // Pagination controls, now inside the fullscreen element
+            <div className="flex justify-between items-center w-full max-w-lg mb-4 p-2 bg-white rounded-t-lg">
+              <button
+                onClick={goToPrevPage}
+                disabled={pageNumber <= 1}
+                className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:bg-gray-400"
+              >
+                Précédent
+              </button>
+              <p className="text-lg font-semibold">
+                Page {pageNumber} sur {numPages}
+              </p>
+              <button
+                onClick={goToNextPage}
+                disabled={pageNumber >= (numPages || 1)}
+                className="px-4 py-2 bg-teal-600 text-white rounded-md disabled:bg-gray-400"
+              >
+                Suivant
+              </button>
+              <button
+                onClick={toggleFullScreen}
+                className="p-2 ml-2 bg-slate-200 rounded-md hover:bg-slate-300"
+                title="Activer/Désactiver le plein écran"
+              >
+                {document.fullscreenElement ? <ArrowsPointingInIcon className="h-5 w-5" /> : <ArrowsPointingOutIcon className="h-5 w-5" />}
+              </button>
+            </div>
+          )}
         {absolutePdfUrl ? ( // Only render Document if absolutePdfUrl is valid
             <Document
                 file={fileToLoad}
