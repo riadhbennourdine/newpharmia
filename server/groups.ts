@@ -21,6 +21,7 @@ async function getCollections() {
 
 // Get group for the current user
 nonAdminRouter.get('/', async (req, res) => {
+    console.log('GET /api/groups hit for non-admin user');
     const userId = req.headers['x-user-id'] as string;
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
