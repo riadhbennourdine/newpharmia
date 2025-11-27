@@ -54,14 +54,14 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
         </div>
       )}
 
-      <div ref={ref} className="border border-gray-300 rounded-lg overflow-hidden shadow-md max-w-full">
+      <div ref={ref} className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-full">
         <Document
           file={`/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={(error) => console.error('Error while loading document!', error)}
           className="flex justify-center"
         >
-          {width ? ( // Only render Page if width is available
+          {width && width > 100 ? ( // Only render Page if width is available and reasonable
             <Page pageNumber={pageNumber} width={width} renderTextLayer={false} renderAnnotationLayer={false} />
           ) : (
             <p>Chargement du PDF...</p>
