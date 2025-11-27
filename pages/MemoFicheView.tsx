@@ -8,6 +8,7 @@ import getAbsoluteImageUrl from '../utils/image';
 import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon } from '../components/Icons';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
+import PdfSlideshow from '../components/PdfSlideshow';
 
 const AccordionSection: React.FC<{
     title: string;
@@ -167,7 +168,7 @@ interface DetailedMemoFicheViewProps {
   isPreview?: boolean;
 }
 
-type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot' | 'supplementary';
+type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot' | 'video-explainer' | 'infographie' | 'diaporama';
 
 
 export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ caseStudy, onBack, onStartQuiz, onEdit, onDelete, isPreview = false }) => {
@@ -403,7 +404,6 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
     const hasMedia = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
-    const hasLeMedicamentContent = caseStudy.youtubeExplainerUrl || caseStudy.infographicImageUrl || caseStudy.pdfSlideshowUrl; // New condition
 
     const baseItems = [
       { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
@@ -414,17 +414,31 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       ...(hasMedia ? [{ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }] : []),
     ];
 
-    if (caseStudy.type === 'le-medicament' && hasLeMedicamentContent) {
-      // Add a dedicated tab for "Le médicament" content
-      baseItems.push({
-        id: 'supplementary' as TabName,
-        label: 'Le Médicament',
-        icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/medicament.png" className="h-8 w-8" alt="Le Médicament" /> // Placeholder icon
-      });
+    // Add new tabs for "Le médicament" content if available
+    if (caseStudy.youtubeExplainerUrl) {
+        baseItems.push({
+            id: 'video-explainer' as TabName,
+            label: 'Vidéo',
+            icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216624864-416405954.png")} className="h-8 w-8" alt="Vidéo Explicative" />
+        });
+    }
+    if (caseStudy.infographicImageUrl) {
+        baseItems.push({
+            id: 'infographie' as TabName,
+            label: 'Infographie',
+            icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216657801-11124774.png")} className="h-8 w-8" alt="Infographie" />
+        });
+    }
+    if (caseStudy.pdfSlideshowUrl) {
+        baseItems.push({
+            id: 'diaporama' as TabName,
+            label: 'Diaporama',
+            icon: <img src={getAbsoluteImageUrl("https://newpharmia-production.up.railway.app/uploads/imageFile-1764216683576-633093094.png")} className="h-8 w-8" alt="Diaporama" />
+        });
     }
 
     return baseItems;
-  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, isPreview]);
+  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl]);
 
   const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
 
@@ -459,42 +473,37 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
             ) : <div className="text-center text-slate-500">Aucun média disponible.</div>;
         case 'quiz': return <div className="text-center bg-white p-8 rounded-lg shadow-md"><h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances !</h3><button onClick={onStartQuiz} className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700"><CheckCircleIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz</button></div>;
         case 'kahoot': return caseStudy.kahootUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Jeu Kahoot!</h4><iframe src={caseStudy.kahootUrl} title="Kahoot! Game" frameBorder="0" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div> : <div className="text-center text-slate-600">Aucun lien Kahoot! disponible.</div>;
-        case 'supplementary':
-            return (
-                <div className="space-y-6">
-                    {caseStudy.youtubeExplainerUrl && (
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <h4 className="font-bold text-slate-800 mb-4">Vidéo Explicative</h4>
-                            <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
-                                <iframe
-                                    src={getYoutubeEmbedUrl(caseStudy.youtubeExplainerUrl)!}
-                                    title="Vidéo Explicative"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="absolute top-0 left-0 w-full h-full rounded-md"
-                                ></iframe>
-                            </div>
-                        </div>
-                    )}
-                    {caseStudy.infographicImageUrl && (
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <h4 className="font-bold text-slate-800 mb-4">Infographie</h4>
-                            <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto rounded-md" />
-                        </div>
-                    )}
-                    {caseStudy.pdfSlideshowUrl && (
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <h4 className="font-bold text-slate-800 mb-4">Diaporama PDF</h4>
-                            {/* Placeholder for PDF Slideshow Component */}
-                            <div className="text-center text-slate-500">PDF Slideshow will be rendered here.</div>
-                        </div>
-                    )}
-                    {!caseStudy.youtubeExplainerUrl && !caseStudy.infographicImageUrl && !caseStudy.pdfSlideshowUrl && (
-                        <div className="text-center text-slate-500">Aucun contenu supplémentaire disponible.</div>
-                    )}
+        case 'video-explainer':
+            const explainerEmbedUrl = getYoutubeEmbedUrl(caseStudy.youtubeExplainerUrl);
+            return explainerEmbedUrl ? (
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h4 className="font-bold text-slate-800 mb-4">Vidéo Explicative</h4>
+                    <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
+                        <iframe
+                            src={explainerEmbedUrl}
+                            title="Vidéo Explicative"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="absolute top-0 left-0 w-full h-full rounded-md"
+                        ></iframe>
+                    </div>
                 </div>
-            );
+            ) : <div className="text-center text-slate-500">Aucune vidéo explicative disponible.</div>;
+        case 'infographie':
+            return caseStudy.infographicImageUrl ? (
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h4 className="font-bold text-slate-800 mb-4">Infographie</h4>
+                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto rounded-md" />
+                </div>
+            ) : <div className="text-center text-slate-500">Aucune infographie disponible.</div>;
+        case 'diaporama':
+            return caseStudy.pdfSlideshowUrl ? (
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                    <h4 className="font-bold text-slate-800 mb-4">Diaporama PDF</h4>
+                    <PdfSlideshow pdfUrl={caseStudy.pdfSlideshowUrl} />
+                </div>
+            ) : <div className="text-center text-slate-500">Aucun diaporama PDF disponible.</div>;
     }
   };
 

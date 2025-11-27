@@ -3,9 +3,11 @@ import { QRCodeSVG } from 'qrcode.react';
 import { CaseStudy, QuizQuestion, Flashcard, GlossaryTerm, MemoFicheSection, MemoFicheSectionContent, MemoFicheStatus, UserRole } from '../types';
 import { ensureArray } from '../utils/array';
 import getAbsoluteImageUrl from '../utils/image';
-import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon, ImageIcon } from './Icons';
+import { TrashIcon, PlusCircleIcon, ChevronUpIcon, ChevronDownIcon, ShareIcon, ImageIcon, SparklesIcon, Spinner } from './Icons';
 import { useAuth } from '../hooks/useAuth';
 import ImageUploadModal from './ImageUploadModal';
+import { buildAIPrompt } from '../utils/aiPromptBuilder'; // Import AI prompt builder
+import { generateCaseStudyDraft, generateLearningTools } from '../services/geminiService'; // Import AI services
 
 import { TOPIC_CATEGORIES } from '../constants';
 
@@ -265,55 +267,73 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
   const [isImageModalOpen, setImageModalOpen] = useState(false);
   const [imageCallback, setImageCallback] = useState<(url: string) => void>(() => () => {});
 
+  // AI Generation States
+  const [isGenModalOpen, setIsGenModalOpen] = useState(false);
+  const [aiPromptInput, setAiPromptInput] = useState('');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [aiGenerationError, setAiGenerationError] = useState<string | null>(null);
+
   const openImageModal = (callback: (url: string) => void) => {
     setImageCallback(() => callback);
     setImageModalOpen(true);
   };
 
-  const handleGenerateAI = useCallback(async (prompt: string, memoFicheType: CaseStudy['type']) => {
+  const handleGenerateAI = useCallback(async () => {
+    if (!aiPromptInput.trim()) {
+        setAiGenerationError('Veuillez entrer un sujet pour la génération IA.');
+        return;
+    }
     setIsGeneratingAI(true);
+    setAiGenerationError(null);
+
     try {
-        const currentTheme = caseStudy.theme || TOPIC_CATEGORIES[0].topics[0]; // Assuming TOPIC_CATEGORIES is accessible
-        const currentSystem = caseStudy.system || TOPIC_CATEGORIES[1].topics[0]; // Assuming TOPIC_CATEGORIES is accessible
+        const memoFicheType = caseStudy.type || 'maladie'; // Use current type
+        const currentTheme = caseStudy.theme || TOPIC_CATEGORIES[0].topics[0];
+        const currentSystem = caseStudy.system || TOPIC_CATEGORIES[1].topics[0];
         
         const aiPrompt = buildAIPrompt(
             memoFicheType,
-            prompt,
-            currentTheme,
-            currentSystem,
-            currentTheme, // Re-using for pharmaTheme if needed
-            currentSystem  // Re-using for pharmaPathology if needed
+            aiPromptInput,
+            currentTheme, // selectedTheme
+            currentSystem, // selectedSystem
+            currentTheme, // pharmaTheme (re-using currentTheme for simplicity, adjust if specific pharmaTheme logic is needed)
+            currentSystem  // pharmaPathology (re-using currentSystem for simplicity, adjust if specific pharmaPathology logic is needed)
         );
 
         const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
-        const learningTools = await generateLearningTools(draft); // Generate learning tools after draft
-                  const aiGeneratedCase = createSafeCaseStudy({
+        const learningTools = await generateLearningTools(draft);
+                  
+        setCaseStudy(prevCaseStudy => ({
+            ...prevCaseStudy, // Keep existing manual fields
             ...draft,
-            ...learningTools, // Merge learningTools here
-            _id: caseStudy._id, // Keep existing ID if editing
-            id: caseStudy.id, // Keep existing ID if editing
-            type: memoFicheType, // Use the type selected in the modal
-            status: MemoFicheStatus.DRAFT, // AI generations are always drafts initially
+            ...learningTools,
+            _id: prevCaseStudy._id,
+            id: prevCaseStudy.id,
+            type: memoFicheType,
+            status: MemoFicheStatus.DRAFT,
             theme: draft.theme || currentTheme,
             system: draft.system || currentSystem,
-            coverImageUrl: draft.coverImageUrl || caseStudy.coverImageUrl, // Preserve if AI doesn't provide
-            youtubeLinks: draft.youtubeLinks || caseStudy.youtubeLinks,
-            sourceText: prompt, // Store the user's prompt as source text
-            // ensure arrays are initialized from learningTools results
+            coverImageUrl: draft.coverImageUrl || prevCaseStudy.coverImageUrl,
+            youtubeLinks: draft.youtubeLinks || prevCaseStudy.youtubeLinks,
+            sourceText: aiPromptInput, // Store the AI prompt as source text
             flashcards: learningTools.flashcards || [],
             glossary: learningTools.glossary || [],
             quiz: learningTools.quiz || [],
-        });
+            // Preserve manual fields from the current caseStudy
+            youtubeExplainerUrl: prevCaseStudy.youtubeExplainerUrl,
+            infographicImageUrl: prevCaseStudy.infographicImageUrl,
+            pdfSlideshowUrl: prevCaseStudy.pdfSlideshowUrl,
+        }));
         
-        setCaseStudy(aiGeneratedCase);
-        setIsGenModalOpen(false); // Close modal on success
+        setIsGenModalOpen(false);
+        setAiPromptInput(''); // Clear prompt input
     } catch (error) {
         console.error('Error generating AI memo fiche:', error);
-        alert('Erreur lors de la génération de la mémofiche par l\'IA. Veuillez réessayer.');
+        setAiGenerationError('Erreur lors de la génération de la mémofiche par l\'IA. Veuillez réessayer.');
     } finally {
         setIsGeneratingAI(false);
     }
-  }, [caseStudy]);
+  }, [aiPromptInput, caseStudy]); // Dependencies for useCallback
 
   useEffect(() => {
     setCaseStudy(createSafeCaseStudy(initialCaseStudy));
@@ -628,6 +648,29 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
+        {/* New FormSection for "Le médicament" specific media */}
+        {caseStudy.type === 'le-medicament' && (
+            <FormSection title="Médias Spécifiques 'Le médicament'">
+                <div>
+                    <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
+                    <Input type="text" name="youtubeExplainerUrl" id="youtubeExplainerUrl" value={caseStudy.youtubeExplainerUrl || ''} onChange={handleChange} />
+                </div>
+                <div>
+                    <Label htmlFor="infographicImageUrl">URL ou Télécharger Infographie</Label>
+                    <div className="mt-1 flex items-center gap-2">
+                        <Input type="text" name="infographicImageUrl" id="infographicImageUrl" value={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} onChange={handleChange} className="flex-grow" />
+                        <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, infographicImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                            <ImageIcon className="h-5 w-5 text-slate-600" />
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <Label htmlFor="pdfSlideshowUrl">URL Fichier PDF pour Diaporama</Label>
+                    <Input type="text" name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} />
+                </div>
+            </FormSection>
+        )}
+
         {displayedSections.map((sectionInfo, index) => {
             let content;
 
@@ -843,10 +886,52 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             )}
           </div>
           <div className="flex space-x-4">
+            {caseStudy.type === 'le-medicament' && (
+                <button type="button" onClick={() => setIsGenModalOpen(true)} className="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    <SparklesIcon className="h-5 w-5 mr-2" />
+                    Générer par IA
+                </button>
+            )}
             <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Annuler</button>
             <button type="submit" className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">Enregistrer</button>
           </div>
         </div>
+
+        {/* AI Generation Modal */}
+        {isGenModalOpen && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 animate-fade-in">
+                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">Générer le contenu par IA</h3>
+                    {aiGenerationError && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative mb-4" role="alert">
+                            <strong className="font-bold">Erreur : </strong>
+                            <span className="block sm:inline">{aiGenerationError}</span>
+                        </div>
+                    )}
+                    <textarea
+                        className="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        rows={5}
+                        placeholder="Décrivez ce que l'IA doit générer (ex: 'un résumé détaillé du mécanisme d'action de l'insuline')."
+                        value={aiPromptInput}
+                        onChange={(e) => setAiPromptInput(e.target.value)}
+                        disabled={isGeneratingAI}
+                    ></textarea>
+                    <div className="flex justify-end space-x-4">
+                        <button type="button" onClick={() => { setIsGenModalOpen(false); setAiPromptInput(''); setAiGenerationError(null); }} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" disabled={isGeneratingAI}>Annuler</button>
+                        <button type="button" onClick={handleGenerateAI} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400" disabled={isGeneratingAI}>
+                            {isGeneratingAI ? (
+                                <>
+                                    <Spinner className="-ml-1 mr-2 h-4 w-4 text-white" />
+                                    <span>Génération...</span>
+                                </>
+                            ) : (
+                                <span>Générer</span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
 
         {showQRCode && canGenerateQRCode && (
           <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md border animate-fade-in">

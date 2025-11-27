@@ -7,6 +7,7 @@ import { SparklesIcon, ChevronLeftIcon, Spinner, TrashIcon, PlusCircleIcon, Imag
 import ImageUploadModal from '../components/ImageUploadModal';
 import { DetailedMemoFicheView } from './MemoFicheView';
 import { TOPIC_CATEGORIES } from '../constants';
+import { buildAIPrompt } from '../utils/aiPromptBuilder';
 
 const GeneratorView: React.FC = () => {
   const [sourceText, setSourceText] = useState('');
@@ -48,114 +49,73 @@ const GeneratorView: React.FC = () => {
   };
 
   const handleGenerate = async () => {
+    // Basic validation for other types
     if (memoFicheType === 'maladie' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
     if ((memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') && (!sourceText.trim() || !pharmaTheme.trim() || !pharmaPathology.trim())) return;
     if (memoFicheType === 'dermocosmetique' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
-    if (memoFicheType === 'exhaustive' && !sourceText.trim()) return;
+    if (memoFicheType === 'micronutrition' && (!sourceText.trim() || !selectedTheme || !selectedSystem)) return;
+    if (memoFicheType === 'savoir' && !sourceText.trim()) return;
+    if (memoFicheType === 'ordonnances' && !sourceText.trim()) return;
 
     setIsLoading(true);
     setError(null);
     setGeneratedCase(null);
-    
-    const formattingInstructions = `
 
-Instructions de formatage impératives pour chaque section :
-- Améliorer le style de rédaction pour qu'il soit clair, concis et professionnel.
-- Le contenu de chaque section doit être une liste à puces (commençant par "- ").
-- Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+    // --- Special handling for 'le-medicament' type ---
+    if (memoFicheType === 'le-medicament') {
+        try {
+            if (!sourceText.trim()) {
+                setError("Le sujet détaillé (titre du médicament) est requis pour la création manuelle.");
+                setIsLoading(false);
+                return;
+            }
+            const newMemoFiche: CaseStudy = {
+                _id: '', // MongoDB will generate this
+                id: '', // Will be set by the database
+                title: sourceText.substring(0, 50) + (sourceText.length > 50 ? '...' : ''), // Use first part of sourceText as title
+                shortDescription: sourceText.substring(0, 100) + (sourceText.length > 100 ? '...' : ''),
+                type: memoFicheType,
+                theme: selectedTheme || pharmaTheme || 'Général',
+                system: selectedSystem || pharmaPathology || 'Général',
+                creationDate: new Date().toISOString(),
+                status: MemoFicheStatus.DRAFT, // Always start as draft
+                patientSituation: '', // Manual generation starts empty for main content
+                keyQuestions: [],
+                pathologyOverview: '',
+                redFlags: [],
+                mainTreatment: [],
+                associatedProducts: [],
+                lifestyleAdvice: [],
+                dietaryAdvice: [],
+                references: [],
+                keyPoints: [],
+                glossary: [],
+                flashcards: [],
+                quiz: [],
+                coverImageUrl: coverImageUrl.trim() || undefined,
+                youtubeLinks: youtubeLinks.filter(link => link.url.trim() !== ''),
+                youtubeExplainerUrl: youtubeExplainerUrl.trim() || undefined,
+                infographicImageUrl: infographicImageUrl.trim() || undefined,
+                pdfSlideshowUrl: pdfSlideshowUrl.trim() || undefined,
+                sourceText: sourceText, // Store the original text for potential AI generation later
+                memoSections: [],
+                customSections: [],
+            };
 
-Instructions spécifiques par section :
-- **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
-- **Aperçu pathologie**: Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
-- **Signaux d'alerte**: Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères. Pour chaque traitement, inclure le nom de la molécule ou du produit, sa classe pharmacologique, la posologie usuelle, et les conseils de prise principaux. Le format doit être clair et structuré, par exemple : "**Nom du produit** (Classe) : Posologie - Conseil de prise".
-- **associatedProducts**: Liste des produits associés. Chaque élément doit être une chaîne de caractères. Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
-- **lifestyleAdvice**: Liste des conseils d'hygiène de vie. Chaque élément doit être une chaîne de caractères.
-- **dietaryAdvice**: Liste des conseils alimentaires. Chaque élément doit être une chaîne de caractères.
-`;
-
-    const pharmacologieFormattingInstructions = `
-
-Instructions de formatage impératives :
-- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
-- Vous devez générer UNIQUEMENT les sections personnalisées.
-- Interdiction formelle d'utiliser les sections suivantes, car elles ne sont absolument pas pertinentes pour la pharmacologie ou les dispositifs médicaux : "Aperçu pathologie", "Signaux d'alerte", "Produits associés", "Etat et besoin de la peau", "Conseiller une consultation dermatologique", "Produit principal", "Hygiène de vie", "Conseils alimentaires".
-
-Instructions spécifiques pour les sections personnalisées :
-- Vous devez générer un tableau de sections personnalisées dans le champ "customSections".
-- Chaque section doit avoir un "title" et un "content".
-- Les titres des sections doivent être pertinents pour le sujet de la pharmacologie.
-- Le contenu de chaque section doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-`;
-
-    const dispositifsMedicauxFormattingInstructions = `
-
-Instructions de formatage impératives et strictes pour chaque section :
-- Le style de rédaction doit être clair, concis et professionnel.
-- Le contenu de CHAQUE section doit être une liste de points.
-- CHAQUE point de la liste doit commencer par le caractère "•".
-- CHAQUE point de la liste doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-
-Voici un exemple de formatage pour une section :
-### Intérêt du dispositif
-• **Suivi précis**: Permet un suivi précis de la tension artérielle à domicile.
-• **Prévention**: Aide à prévenir les complications liées à l'hypertension.
-• **Autonomie**: Donne au patient plus d'autonomie dans la gestion de sa santé.
-
-Voici le plan détaillé à suivre OBLIGATOIREMENT :
-1.  **Cas comptoir**:
-    -   Doit être une liste de points.
-2.  **Objectifs de conseil**:
-    -   Doit être une liste de points.
-3.  **Pathologies concernées**:
-    -   Doit être une liste de points.
-    -   Chaque pathologie doit être clairement expliquée.
-    -   Développer davantage cette rubrique.
-4.  **Intérêt du dispositif**:
-    -   Doit être une liste de points.
-5.  **Bénéfices pour la santé**:
-    -   Doit être une liste de points.
-6.  **Dispositifs à conseiller ou à dispenser**:
-    -   Doit être une liste de points.
-7.  **Réponses aux objections des clients**:
-    -   Doit être une liste de points.
-8.  **Pages sponsorisées**:
-    -   Doit être une liste de points.
-`;
-
-    let prompt = '';
-    if (memoFicheType === 'maladie') {
-        prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
-    } else if (memoFicheType === 'pharmacologie') {
-        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
-    } else if (memoFicheType === 'dispositifs-medicaux') {
-        prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
-    } else if (memoFicheType === 'dermocosmetique') {
-        prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
-    } else if (memoFicheType === 'communication') {
-        prompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit être sur une nouvelle ligne (en utilisant '\\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :\n\n${sourceText}`;
-    } else if (memoFicheType === 'ordonnances') {
-        prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".\nTu dois générer un objet JSON avec les clés suivantes : "ordonnance", "analyseOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".\nLe contenu de chaque clé doit être un tableau de chaînes de caractères.\nChaque chaîne de caractères doit correspondre à un point de la section.\n\nVoici le détail de chaque section :\n- **ordonnance**: Ordonnance. Contenant les détails du patient, la pathologie, la prescription et la durée.\n- **analyseOrdonnance**: Analyse de l'ordonnance. Contenant l'analyse de la prescription, la vérification essentielle et le profil du patient.\n- **conseilsTraitement**: Conseils sur le traitement médicamenteux. Pour chaque médicament de la prescription, créer un objet avec les clés "medicament" et "conseils". "medicament" est le nom du médicament. "conseils" est un tableau de chaînes de caractères contenant les conseils d'administration, les effets indésirables éventuels et les précautions d'emploi.\n- **informationsMaladie**: Informations sur la maladie. Ne pas commencer par le mot "Mécanisme". Commencer par le nom de la maladie en gras (par exemple, **Rhinite allergique**).\n- **conseilsHygieneDeVie**: Conseils hygiène de vie. Ne doit contenir que des Conseils hygiène de vie.\n- **conseilsAlimentaires**: Conseils alimentaires. Indiquer les aliments à consommer à privilégier, et les aliments à éviter. Ne pas lister de micronutriments.\n- **ventesAdditionnelles**: Ventes additionnelles. Répartir les produits dans les sous-rubriques suivantes (si pertinentes) : "complementsAlimentaires", "accessoires", "dispositifs", "cosmetiques". Pour chaque produit, inclure les doses, les posologies et les modes d'administration.\n\n${formattingInstructions}\n`;
-    } else if (memoFicheType === 'micronutrition') {
-        prompt = `Créer une mémofiche claire et concise pour initier les pharmaciens d'officine et leurs collaborateurs débutants à la micronutrition et son apport pour les patients souffrant de [maladie]. La mémofiche doit se concentrer sur le déclenchement de la discussion au comptoir et comment créer le besoin, puis explication de la [maladie] , les traitements conventionnels. Puis l'approche micronutritionnelle en expliquant simplement les mécanismes d'action de chaque micronutriment et en proposant des conseils alimentaires et des règles d'hygiène de vie. utiliser un langage accessible et encourageant. Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le sujet détaillé est : "${sourceText}".`;
-    } else if (memoFicheType === 'savoir') {
-        prompt = `En tant qu'expert en santé et pharmacie, analyse le texte brut suivant et génère une mémofiche de type 'Savoir'. L'objectif est de créer un focus sur un sujet de santé avec une approche pharmaceutique.
-
-Le processus est le suivant :
-1.  **Extraire les titres** : Identifie tous les titres présents dans le texte brut.
-2.  **Créer les sections Mémo** : Chaque titre identifié doit devenir le "title" d'une section dans le tableau "memoSections".
-3.  **Réécrire le contenu** : Pour chaque section, reprends le texte qui suit le titre correspondant dans le texte brut et réécris-le dans un style synthétique, professionnel et facile à comprendre pour un professionnel de la pharmacie. Le contenu réécrit doit être placé dans le champ "content" de la section correspondante. Le contenu doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
-4.  **Générer les outils pédagogiques** : À partir du texte brut, génère également les sections "flashcards", "quiz" et "glossary".
-
-Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
-
-Le texte à analyser est :\n\n${sourceText}`;
-    } else if (memoFicheType === 'le-medicament') { // New 'Le médicament' type
-        prompt = `Génère une mémofiche détaillée sur le médicament suivant : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le contenu doit inclure des informations sur sa classification, son mécanisme d'action, ses indications, sa posologie, ses effets secondaires, ses contre-indications et ses interactions médicamenteuses.`;
-    } else {
-        // Fallback for types not explicitly handled (should not happen if type definitions are exhaustive)
-        prompt = `Génère une mémofiche sur le sujet suivant : "${sourceText}".`;
+            const savedCase = await saveCaseStudy(newMemoFiche);
+            alert('Mémofiche créée manuellement avec succès ! Vous pouvez maintenant la modifier et utiliser l\'IA pour générer du contenu.');
+            navigate(`/edit-memofiche/${savedCase._id}`); // Navigate directly to edit page
+        } catch (err: any) {
+            console.error('Error creating manual memo fiche:', err);
+            setError(err.message || "La création de la mémofiche manuelle a échoué.");
+        } finally {
+            setIsLoading(false);
+        }
+        return; // Exit handleGenerate
     }
+
+    // --- AI generation logic for other types (existing code) ---
+    const prompt = buildAIPrompt(memoFicheType, sourceText, selectedTheme, selectedSystem, pharmaTheme, pharmaPathology);
 
     try {
       const draft = await generateCaseStudyDraft(prompt, memoFicheType);
@@ -612,23 +572,36 @@ Le texte à analyser est :\n\n${sourceText}`;
           </div>
 
           <div className="mt-6 text-center">
-            <button
-              onClick={handleGenerate}
-              disabled={isLoading || !sourceText.trim() || (memoFicheType === 'maladie' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'pharmacologie' && (!pharmaTheme.trim() || !pharmaPathology.trim())) || (memoFicheType === 'dermocosmetique' && (!selectedTheme || !selectedSystem)) || (memoFicheType === 'micronutrition' && (!selectedTheme || !selectedSystem))}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
-            >
-              {isLoading ? (
-                <>
-                  <Spinner className="-ml-1 mr-3 h-5 w-5 text-white" />
-                  <span>Génération en cours...</span>
-                </>
-              ) : (
-                <>
-                  <SparklesIcon className="-ml-1 mr-3 h-5 w-5" />
-                  <span>Générer l'ébauche</span>
-                </>
-              )}
-            </button>
+            {/* Determine if the generate button should be disabled */}
+            {(() => {
+                let isDisabled = isLoading || !sourceText.trim();
+                if (memoFicheType === 'maladie' || memoFicheType === 'dermocosmetique' || memoFicheType === 'micronutrition' || memoFicheType === 'savoir' || memoFicheType === 'ordonnances') {
+                    isDisabled = isDisabled || !selectedTheme || !selectedSystem;
+                } else if (memoFicheType === 'pharmacologie' || memoFicheType === 'dispositifs-medicaux') {
+                    isDisabled = isDisabled || !pharmaTheme.trim() || !pharmaPathology.trim();
+                }
+                // For 'le-medicament', only sourceText.trim() is required for initial manual creation
+                // The current isDisabled already includes !sourceText.trim(), so no further conditions needed here.
+                return (
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isDisabled}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
+                    >
+                        {isLoading ? (
+                            <>
+                                <Spinner className="-ml-1 mr-3 h-5 w-5 text-white" />
+                                <span>Génération en cours...</span>
+                            </>
+                        ) : (
+                            <>
+                                <SparklesIcon className="-ml-1 mr-3 h-5 w-5" />
+                                <span>Générer l'ébauche</span>
+                            </>
+                        )}
+                    </button>
+                );
+            })()}
             {!isLoading && !generatedCase && (
                 <button
                     onClick={handleSaveManually}
