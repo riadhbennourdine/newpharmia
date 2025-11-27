@@ -53,7 +53,7 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
 
       <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md max-w-full">
         <Document
-          file={absolutePdfUrl}
+          file={`/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={(error) => console.error('Error while loading document!', error)}
           className="flex justify-center"

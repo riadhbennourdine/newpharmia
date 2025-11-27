@@ -79,6 +79,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sendSingleEmail } from './server/emailService.js';
 import multer from 'multer';
+import fetch from 'node-fetch'; // Add node-fetch import
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -725,6 +726,37 @@ app.post('/api/memofiches/validate-ids', async (req, res) => {
 
 
 // GEMINI ROUTES
+app.get('/api/proxy-pdf', async (req, res) => {
+    try {
+        const { pdfUrl } = req.query;
+
+        if (!pdfUrl || typeof pdfUrl !== 'string') {
+            return res.status(400).json({ message: 'A valid pdfUrl is required.' });
+        }
+
+        // Basic validation to ensure it's a PDF URL, can be more robust
+        if (!pdfUrl.startsWith('http') || !pdfUrl.endsWith('.pdf')) {
+            return res.status(400).json({ message: 'Only HTTP(S) PDF URLs are allowed.' });
+        }
+
+        const response = await fetch(pdfUrl);
+
+        if (!response.ok) {
+            return res.status(response.status).json({ message: `Failed to fetch PDF from external source: ${response.statusText}` });
+        }
+
+        // Set appropriate headers for PDF
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="proxied.pdf"');
+
+        // Stream the PDF back to the client
+        response.body?.pipe(res);
+
+    } catch (error) {
+        console.error('Error proxying PDF:', error);
+        res.status(500).json({ message: 'Internal server error while proxying PDF.' });
+    }
+});
 app.post('/api/gemini/generate-draft', async (req, res) => {
     try {
         const { prompt, memoFicheType } = req.body;
