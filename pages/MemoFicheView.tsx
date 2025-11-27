@@ -403,8 +403,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   }, [caseStudy]);
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
-    const hasMedia = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
-    const isLeMedicamentManual = caseStudy.type === 'le-medicament' && !caseStudy.flashcards?.length && !caseStudy.quiz?.length;
+    const hasYoutubeLinks = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
+    const hasFlashcards = caseStudy.flashcards && caseStudy.flashcards.length > 0;
+    const hasQuiz = caseStudy.quiz && caseStudy.quiz.length > 0;
+    const hasGlossary = caseStudy.glossary && caseStudy.glossary.length > 0;
+    
+    // Check if memoContent actually has content based on caseStudy.memoSections
+    const hasMemoContent = caseStudy.memoSections && caseStudy.memoSections.length > 0 && caseStudy.memoSections.some(section => {
+        return section.content && section.content.length > 0 && section.content.some(item => item.value.trim().length > 0);
+    });
+
+    const isLeMedicamentManual = caseStudy.type === 'le-medicament' && !hasFlashcards && !hasQuiz;
 
     const items: { id: TabName; label: string; icon: React.ReactNode }[] = [];
 
@@ -433,18 +442,28 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
     // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
     if (!isLeMedicamentManual) {
-        items.push(
-            { id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> },
-            { id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> },
-            ...(!isPreview ? [{ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> }] : []),
-            ...(!isPreview && caseStudy.kahootUrl ? [{ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> }] : []),
-            { id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> },
-            ...(hasMedia ? [{ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> }] : []),
-        );
+        if (hasMemoContent) {
+            items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> });
+        }
+        if (hasFlashcards) {
+            items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> });
+        }
+        if (!isPreview && hasQuiz) {
+            items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> });
+        }
+        if (!isPreview && caseStudy.kahootUrl) {
+            items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> });
+        }
+        if (hasGlossary) {
+            items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> });
+        }
+        if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
+            items.push({ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> });
+        }
     }
     
     return items;
-  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, caseStudy.flashcards, caseStudy.quiz]);
+  }, [caseStudy.youtubeLinks, caseStudy.kahootUrl, isPreview, caseStudy.type, caseStudy.youtubeExplainerUrl, caseStudy.infographicImageUrl, caseStudy.pdfSlideshowUrl, caseStudy.flashcards, caseStudy.quiz, memoContent]);
 
   const [activeTab, setActiveTab] = useState<TabName>(menuItems[0].id);
 
