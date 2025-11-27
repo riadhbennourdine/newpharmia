@@ -81,7 +81,7 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
         </div>
       )}
 
-      <div ref={pdfContainerRef} className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-full">
+      <div ref={ref} className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-full">
         {absolutePdfUrl ? ( // Only render Document if absolutePdfUrl is valid
             <Document
                 file={fileToLoad}
