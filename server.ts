@@ -1346,12 +1346,6 @@ try {
 }
 // --- END DEBUG LOGGING ---
 
-// Ensure the upload directory exists at startup
-const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    console.log(`[INFO] Creating upload directory at: ${uploadDir}`);
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
 
 async function migrateWebinars() {
     console.log('Checking if webinar migration is needed...');
