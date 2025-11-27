@@ -13,6 +13,7 @@
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",
     "@google/generative-ai": "^0.24.1",
+    "@heroicons/react": "^2.2.0",
     "@types/react-select": "^5.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "axios": "^1.12.2",
