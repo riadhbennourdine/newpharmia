@@ -216,12 +216,15 @@ const PricingPage: React.FC = () => {
         />
       )}
 
-      {showBankTransferModal && (
+      {showBankTransferModal && selectedPlanDetails && (
         <BankTransferModal
           onClose={() => {
             setShowBankTransferModal(false);
             setSelectedPlanDetails(null);
           }}
+          planName={selectedPlanDetails.planName}
+          basePrice={selectedPlanDetails.basePrice}
+          isAnnual={selectedPlanDetails.isAnnual}
         />
       )}
 
