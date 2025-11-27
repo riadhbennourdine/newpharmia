@@ -31,6 +31,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-dropzone": "^14.3.8",
+    "react-pdf": "^10.2.0",
+    "react-resize-detector": "^12.3.0",
     "react-router-dom": "^7.9.3",
     "react-select": "^5.10.2",
     "url": "^0.11.4",

@@ -3,6 +3,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import getAbsoluteImageUrl from '../utils/image';
+import { useResizeDetector } from 'react-resize-detector'; // Import useResizeDetector
 
 // Configure pdfjs worker source
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf-worker.min.js`;
@@ -15,6 +16,8 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1); // Start with page 1
   const absolutePdfUrl = getAbsoluteImageUrl(pdfUrl);
+
+  const { width, ref } = useResizeDetector(); // Use the hook to detect width
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -51,14 +54,18 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
         </div>
       )}
 
-      <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md max-w-full">
+      <div ref={ref} className="border border-gray-300 rounded-lg overflow-hidden shadow-md max-w-full">
         <Document
           file={`/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={(error) => console.error('Error while loading document!', error)}
           className="flex justify-center"
         >
-          <Page pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false} />
+          {width ? ( // Only render Page if width is available
+            <Page pageNumber={pageNumber} width={width} renderTextLayer={false} renderAnnotationLayer={false} />
+          ) : (
+            <p>Chargement du PDF...</p>
+          )}
         </Document>
       </div>
     </div>
