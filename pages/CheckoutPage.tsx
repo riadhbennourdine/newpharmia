@@ -122,6 +122,11 @@ const CheckoutPage: React.FC = () => {
         return <div className="text-center text-slate-700 py-10">Commande non trouvée.</div>;
     }
 
+    const VAT_RATE = 0.19;
+    const STAMP_DUTY = 1.000;
+    const taxAmount = order.totalAmount * VAT_RATE;
+    const totalAmountWithVATAndStamp = order.totalAmount + taxAmount + STAMP_DUTY;
+
     return (
         <div className="bg-slate-100 min-h-screen py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,8 +135,26 @@ const CheckoutPage: React.FC = () => {
                     <p className="text-slate-500 mb-6">Commande N°: {order._id.toString()}</p>
 
                     <div className="bg-teal-50 border border-teal-200 rounded-lg p-6 mb-6">
-                        <h2 className="text-xl font-bold text-teal-800 mb-2">Montant total à payer</h2>
-                        <p className="text-4xl font-extrabold text-teal-600">{order.totalAmount.toFixed(3)} TND</p>
+                        <h2 className="text-xl font-bold text-teal-800 mb-4">Récapitulatif de la commande</h2>
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-slate-600">Montant HT:</span>
+                                <span className="font-semibold text-slate-800">{order.totalAmount.toFixed(3)} TND</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-600">TVA (19%):</span>
+                                <span className="font-semibold text-slate-800">{taxAmount.toFixed(3)} TND</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-600">Timbre fiscal:</span>
+                                <span className="font-semibold text-slate-800">{STAMP_DUTY.toFixed(3)} TND</span>
+                            </div>
+                            <hr className="border-t border-teal-200 my-2" />
+                            <div className="flex justify-between items-center">
+                                <span className="text-lg font-bold text-teal-800">Montant Total TTC:</span>
+                                <span className="text-3xl font-extrabold text-teal-600">{totalAmountWithVATAndStamp.toFixed(3)} TND</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="mb-6">
