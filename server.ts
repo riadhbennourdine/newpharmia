@@ -753,12 +753,16 @@ app.get('/api/proxy-pdf', async (req, res) => {
             }
         });
 
-        // Ensure Content-Type is application/pdf, as it might be missing or generic
+        // Set appropriate headers for PDF
         res.setHeader('Content-Type', 'application/pdf');
         // Optional: Set a filename if not present in original headers
         if (!res.hasHeader('Content-Disposition')) {
             res.setHeader('Content-Disposition', 'inline; filename="proxied.pdf"');
         }
+
+        // Add caching headers
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // Cache for 1 year
+        res.setHeader('Expires', new Date(Date.now() + 31536000000).toUTCString()); // 1 year from now
 
         // Pipe the response body directly to the client
         response.body?.pipe(res);

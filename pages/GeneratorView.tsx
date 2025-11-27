@@ -341,8 +341,13 @@ const GeneratorView: React.FC = () => {
                 setMemoFicheType(newMemoFicheType);
                 if (newMemoFicheType === 'dispositifs-medicaux') {
                   setPharmaTheme('Dispositifs médicaux');
+                  setSelectedTheme(''); // Clear generic theme
+                } else if (newMemoFicheType === 'le-medicament') {
+                  setSelectedTheme('Pharmacologie'); // Set default theme
+                  setPharmaTheme(''); // Clear pharma theme
                 } else {
-                  setPharmaTheme(''); // Clear if not 'dispositifs-medicaux'
+                  setPharmaTheme(''); // Clear if not 'dispositifs-medicaux' or 'le-medicament'
+                  setSelectedTheme(''); // Clear generic theme
                 }
               }}
               className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
@@ -462,6 +467,24 @@ const GeneratorView: React.FC = () => {
           
           {(memoFicheType === 'le-medicament') && (
             <div className="space-y-6 mb-6 p-4 border border-slate-200 rounded-md bg-slate-50">
+                <h3 className="text-xl font-bold text-slate-800">Options pour "Le médicament"</h3>
+                <div>
+                    <label htmlFor="theme-select-le-medicament" className="block text-lg font-medium text-slate-700 mb-2">
+                    Thème Pédagogique
+                    </label>
+                    <select
+                        id="theme-select-le-medicament"
+                        value={selectedTheme}
+                        onChange={(e) => setSelectedTheme(e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 text-base"
+                        disabled={isLoading}
+                    >
+                        <option value="">Sélectionnez un thème</option>
+                        {TOPIC_CATEGORIES[0].topics.map(topic => (
+                            <option key={topic} value={topic}>{topic}</option>
+                        ))}
+                    </select>
+                </div>
                 <h3 className="text-xl font-bold text-slate-800">Contenu additionnel pour "Le médicament"</h3>
                 <div>
                     <label htmlFor="youtube-explainer-url" className="block text-lg font-medium text-slate-700 mb-2">
