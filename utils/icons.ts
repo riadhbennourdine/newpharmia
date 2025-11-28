@@ -25,9 +25,9 @@ export const ICONS = {
 };
 
 export function getIconUrl(iconName: keyof typeof ICONS): string {
-    const baseUrl = "/photos/site/icone/";
-    const quizBaseUrl = "/photos/site/";
-    const kahootBaseUrl = "/photos/site/";
+    const baseUrl = "https://pharmaconseilbmb.com/photos/site/icone/";
+    const quizBaseUrl = "https://pharmaconseilbmb.com/photos/site/";
+    const kahootBaseUrl = "https://pharmaconseilbmb.com/photos/site/";
 
     if (iconName === 'quiz') {
         return `${quizBaseUrl}${ICONS[iconName]}`;
