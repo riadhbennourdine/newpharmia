@@ -286,7 +286,7 @@ const WebinarsPage: React.FC = () => {
 
             <div className="mb-8">
                 <img 
-                    src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762983569288-457142038.png" 
+                    src="https://pharmaconseilbmb.com/photos/site/cropt/prepenligne.png" 
                     alt="Couverture Webinaires" 
                     className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
                 />
