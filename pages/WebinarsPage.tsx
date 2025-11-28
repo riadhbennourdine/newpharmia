@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import { Webinar, WebinarStatus, UserRole, WebinarResource } from '../types';
-import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
+import Loader from '../components/Loader';
+import { SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
 
 interface WebinarResourceIconProps {
     resource: WebinarResource;
@@ -263,7 +264,7 @@ const WebinarsPage: React.FC = () => {
     }, [user, authLoading]);
 
     if (loading || authLoading) {
-        return <div className="flex justify-center items-center h-screen"><Spinner /></div>;
+        return <Loader />;
     }
 
     if (error) {
