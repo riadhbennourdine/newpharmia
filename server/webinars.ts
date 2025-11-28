@@ -131,27 +131,14 @@ router.get('/my-webinars', authenticateToken, async (req: AuthenticatedRequest, 
 
         const webinars = await webinarsCollection.find({ "attendees.userId": new ObjectId(userId) }).sort({ date: -1 }).toArray();
 
+        const now = new Date();
+
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
             webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
-
-            const attendee = webinar.attendees.find(
-                att => att.userId.toString() === userId.toString()
-            );
-            webinarResponse.isRegistered = !!attendee;
-            webinarResponse.registrationStatus = attendee?.status || null;
-            
-            if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
-                // Keep the googleMeetLink
-            } else {
-                delete webinarResponse.googleMeetLink;
-            }
-            
-            // For privacy, don't send the full attendees list
-            delete webinarResponse.attendees;
-
             return webinarResponse;
-        });
+        }).filter(webinar => webinar.calculatedStatus === WebinarStatus.PAST); // Filter for past webinars only
+
 
         res.json(webinarsWithStatus);
     } catch (error) {
@@ -694,4 +681,50 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
         res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des créneaux horaires.' });
     }
 });
+
+// PUT to manage resources for a webinar (Admin only)
+router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { resources } = req.body; // Expect an array of WebinarResource objects
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid webinar ID.' });
+        }
+
+        if (!Array.isArray(resources)) {
+            return res.status(400).json({ message: 'Resources must be an array.' });
+        }
+
+        // Basic validation for each resource
+        for (const resource of resources) {
+            if (!resource.type || !resource.url) {
+                return res.status(400).json({ message: 'Each resource must have a type and a URL.' });
+            }
+            if (!['pdf', 'link', 'infographic', 'youtube'].includes(resource.type)) {
+                return res.status(400).json({ message: `Invalid resource type: ${resource.type}` });
+            }
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { resources: resources, updatedAt: new Date() } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar not found.' });
+        }
+
+        res.json({ message: 'Webinar resources updated successfully.' });
+
+    } catch (error) {
+        console.error('Error updating webinar resources:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des ressources du webinaire.' });
+    }
+});
+
 export default router;

@@ -238,6 +238,13 @@ export enum WebinarGroup {
     PHARMIA = 'PharmIA',
 }
 
+export interface WebinarResource {
+  type: 'pdf' | 'link' | 'infographic' | 'youtube';
+  url: string;
+  title?: string;
+  description?: string;
+}
+
 export interface Webinar {
   _id: ObjectId | string;
   title: string;
@@ -259,6 +266,7 @@ export interface Webinar {
   group: WebinarGroup;
   registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
   calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
+  resources?: WebinarResource[]; // New field for media resources
 }
 
 export interface Image {
