@@ -1098,14 +1098,15 @@ app.post('/api/newsletter/send', async (req, res) => {
     }
 
     try {
+        const finalSubject = subject.replace(/\[TEST\]\s*/, '');
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection('users');
         let recipients = [];
-        let fetchedWebinar = null; // Declare webinar outside the block
+        let fetchedWebinar = null; 
 
         if (webinarId) {
-            // Webinar-specific logic
             const webinarsCollection = db.collection('webinars');
             fetchedWebinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
 
@@ -1126,7 +1127,6 @@ app.post('/api/newsletter/send', async (req, res) => {
                 .toArray();
 
         } else {
-            // Existing logic for roles, cities, etc.
             const groupsCollection = db.collection('groups');
             let userQuery: any = { subscribed: { $ne: false } };
             const queries = [];
@@ -1175,7 +1175,7 @@ app.post('/api/newsletter/send', async (req, res) => {
                 .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email);
             
             let finalHtmlContent;
-            if (webinarId && fetchedWebinar) { // Use the 'webinar' object fetched earlier
+            if (webinarId && fetchedWebinar) { 
                 finalHtmlContent = finalHtmlContentWithPlaceholders
                     .replace(/{{LIEN_MEETING}}/g, fetchedWebinar.googleMeetLink || '')
                     .replace(/{{WEBINAR_DESCRIPTION}}/g, fetchedWebinar.description || '');
@@ -1185,7 +1185,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
             return {
                 to: [{ email: recipient.email, name: recipient.firstName || '' }],
-                subject: subject,
+                subject: finalSubject,
                 htmlContent: finalHtmlContent,
             };
         });
@@ -1198,6 +1198,7 @@ app.post('/api/newsletter/send', async (req, res) => {
         res.status(500).json({ message: 'An error occurred while sending the newsletter.' });
     }
 });
+
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
