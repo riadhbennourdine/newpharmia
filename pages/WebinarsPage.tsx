@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Webinar, UserRole, WebinarGroup, WebinarStatus, WebinarResource } from '../types';
 import { useAuth } from '../hooks/useAuth';
-import { useCart } from '../context/CartContext';
-import { Webinar, WebinarStatus, UserRole, WebinarResource } from '../types';
-import Loader from '../components/Loader';
-import { SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
+import { useCart } from '../context/CartContext'; // Import useCart
+import ExpandableText from '../components/ExpandableText'; // Import the new component
+import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons'; // Import necessary icons
 
 interface WebinarResourceIconProps {
     resource: WebinarResource;
@@ -221,97 +221,270 @@ const WebinarCard: React.FC<{
     );
 };
 
+
 const WebinarsPage: React.FC = () => {
-    const [webinars, setWebinars] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus })[]>([]);
-    const [myWebinars, setMyWebinars] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus })[]>([]);
-    const [liveWebinar, setLiveWebinar] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus }) | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [webinars, setWebinars] = useState<Webinar[]>([]);
+    const [myWebinars, setMyWebinars] = useState<Webinar[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { user, loading: authLoading } = useAuth();
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
+    const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
+    const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
+    const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
+    const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
+    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
+    const { user, token } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchWebinars = async () => {
-            if (authLoading) return;
-            setLoading(true);
+            setIsLoading(true);
+            setError(null);
             try {
-                const response = await fetch('/api/webinars/list-for-user', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                let url = `/api/webinars?group=${encodeURIComponent(activeTab)}`;
+                if (activeTab === 'MY_WEBINARS') {
+                    url = '/api/webinars/my-webinars';
+                }
+
+                const response = await fetch(url, { headers });
                 if (!response.ok) {
                     throw new Error('Failed to fetch webinars');
                 }
                 const data = await response.json();
-                
-                const now = new Date();
-                const upcoming = data.filter((w: any) => new Date(w.date) > now && w.calculatedStatus !== WebinarStatus.LIVE);
-                const userRegistered = data.filter((w: any) => w.registrationStatus === 'CONFIRMED' && new Date(w.date) > now);
-                const live = data.find((w: any) => w.calculatedStatus === WebinarStatus.LIVE);
 
-                setWebinars(upcoming);
-                setMyWebinars(userRegistered);
-                setLiveWebinar(live || null);
+                if (activeTab === 'MY_WEBINARS') {
+                    setMyWebinars(data);
+                } else {
+                    const now = new Date();
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
 
+                    const liveWebinars = data.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
+                    const upcomingWebinars = data
+                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+                        .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    const pastWebinars = data
+                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
+                        .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+                    setWebinars(data);
+
+                    const nearest = upcomingWebinars.length > 0 ? upcomingWebinars[0] : null;
+                    setNearestWebinar(nearest);
+
+                    const currentMonthUpcoming = upcomingWebinars.filter(w => {
+                        const d = new Date(w.date);
+                        return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearest ? w._id.toString() !== nearest._id.toString() : true);
+                    });
+                    setCurrentMonthWebinars(currentMonthUpcoming);
+
+                    const futureMonthsUpcoming = upcomingWebinars.filter(w => {
+                        const d = new Date(w.date);
+                        return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
+                    });
+
+                    const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
+                        const date = new Date(webinar.date);
+                        const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+                        const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+                        if (!acc[capitalizedMonthYear]) {
+                            acc[capitalizedMonthYear] = [];
+                        }
+                        acc[capitalizedMonthYear].push(webinar);
+                        return acc;
+                    }, {} as Record<string, Webinar[]>);
+                    setFutureMonthsWebinars(groupedFutureWebinars);
+
+                    setLiveWebinars(liveWebinars);
+                    setPastWebinars(pastWebinars);
+                }
             } catch (err: any) {
                 setError(err.message);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
         fetchWebinars();
-    }, [user, authLoading]);
+    }, [activeTab, token]);
 
-    if (loading || authLoading) {
-        return <Loader />;
-    }
+    const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
-    if (error) {
-        return <div className="text-center text-red-500 mt-10">Erreur: {error}</div>;
-    }
+    const renderTabs = () => (
+        <div className="mb-8 border-b border-slate-200">
+            <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                <button
+                    onClick={() => setActiveTab(WebinarGroup.CROP_TUNIS)}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === WebinarGroup.CROP_TUNIS
+                            ? 'border-teal-500 text-teal-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                >
+                    {WebinarGroup.CROP_TUNIS}
+                </button>
+                <button
+                    onClick={() => setActiveTab(WebinarGroup.PHARMIA)}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === WebinarGroup.PHARMIA
+                            ? 'border-teal-500 text-teal-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                >
+                    {WebinarGroup.PHARMIA}
+                </button>
+                {user && (
+                    <button
+                        onClick={() => setActiveTab('MY_WEBINARS')}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === 'MY_WEBINARS'
+                                ? 'border-teal-500 text-teal-600'
+                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        }`}
+                    >
+                        Mes wébinaires
+                    </button>
+                )}
+                {isAdmin && (
+                    <button
+                        onClick={() => navigate('/admin/webinars')}
+                        className="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    >
+                        Gérer les webinaires
+                    </button>
+                )}
+            </nav>
+        </div>
+    );
 
     return (
-        <div className="bg-slate-50 min-h-screen">
-            <div className="container mx-auto px-4 py-8">
-                {/* En-tête */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-teal-600 mb-2">Nos Webinaires</h1>
-                    <p className="text-lg text-slate-600">Formations en direct, conçues pour vous par des experts.</p>
-                </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {renderTabs()}
 
-                {/* Webinaire en direct */}
-                {liveWebinar && (
-                    <div className="mb-12">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-6 flex items-center">
-                            <span className="text-red-500 mr-4">●</span> En Direct
-                        </h2>
-                        <WebinarCard webinar={liveWebinar} isLiveCard={true} />
-                    </div>
-                )}
-                
-                {/* Mes Webinaires */}
-                {user && myWebinars.length > 0 && (
-                    <div className="mb-12">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-6">Mes Prochains Webinaires</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {myWebinars.map(webinar => <WebinarCard key={webinar._id} webinar={webinar} isMyWebinarCard={true} />)}
+            {activeTab !== 'MY_WEBINARS' && (
+                <div className="mb-8">
+                    <img 
+                        src="https://pharmaconseilbmb.com/photos/site/cropt/prepenligne.png" 
+                        alt="Couverture Webinaires" 
+                        className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
+                    />
+                    <ExpandableText
+                        text={`<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.`}
+                        maxLength={250}
+                        className="mt-4 text-sm text-slate-600 font-light max-w-4xl"
+                        youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share"
+                    />
+                    <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
+                        Pass journée: 80,000 DT
+                    </p>
+                </div>
+            )}
+
+            {isLoading ? (
+                <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>
+            ) : error ? (
+                <div className="text-center py-12 bg-red-50 text-red-700 rounded-lg shadow-sm">
+                    <h3 className="text-xl font-semibold">Erreur de chargement</h3>
+                    <p className="mt-2">{error}</p>
+                </div>
+            ) : activeTab === 'MY_WEBINARS' ? (
+                myWebinars.length > 0 ? (
+                    <div className="space-y-12">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes Webinaire</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {myWebinars.map(webinar => (
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} />
+                            ))}
                         </div>
                     </div>
-                )}
-                
-                {/* Prochains Webinaires */}
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-800 mb-6">Tous les Prochains Webinaires</h2>
-                    {webinars.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {webinars.map(webinar => <WebinarCard key={webinar._id} webinar={webinar} />)}
+                ) : (
+                    <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                        <h3 className="text-xl font-semibold text-slate-700">Vous n'êtes inscrit à aucun webinaire pour le moment</h3>
+                        <p className="text-slate-500 mt-2">Découvrez nos prochaines sessions et inscrivez-vous !</p>
+                    </div>
+                )
+            ) : webinars.length > 0 || liveWebinars.length > 0 || pastWebinars.length > 0 ? (
+                <div className="space-y-12">
+                    {liveWebinars.length > 0 && (
+                        <div className="mb-12">
+                            <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
+                                Webinaire en Direct
+                            </h2>
+                            <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
+                                <div className="grid grid-cols-1 gap-6">
+                                    {liveWebinars.map(webinar => (
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    ) : (
-                        <p className="text-center text-slate-500">Aucun webinaire à venir pour le moment.</p>
+                    )}
+
+                    {nearestWebinar && liveWebinars.length === 0 && (
+                        <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">
+                                Prochain Webinaire
+                            </h2>
+                            <WebinarCard webinar={nearestWebinar} />
+                        </div>
+                    )}
+
+                    {currentMonthWebinars.length > 0 && (
+                         <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Autres webinaires ce mois-ci
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {currentMonthWebinars.map(webinar => (
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {Object.entries(futureMonthsWebinars).length > 0 && (
+                        <div>
+                             <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
+                                Prochains Mois
+                            </h2>
+                            {Object.entries(futureMonthsWebinars).map(([monthYear, monthWebinars]) => (
+                                <div key={monthYear} className="mb-12">
+                                    <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {monthWebinars.map(webinar => (
+                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {pastWebinars.length > 0 && (
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">
+                                Webinaires Passés
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {pastWebinars.map(webinar => (
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
-            </div>
+            ) : (
+                <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                    <h3 className="text-xl font-semibold text-slate-700">Aucun webinaire pour le moment</h3>
+                    <p className="text-slate-500 mt-2">Revenez bientôt pour découvrir nos prochaines sessions.</p>
+                </div>
+            )}
         </div>
     );
 };
