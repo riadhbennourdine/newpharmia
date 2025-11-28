@@ -1,4 +1,9 @@
-import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons'; // Import necessary icons
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../context/CartContext';
+import { Webinar, WebinarStatus, UserRole, WebinarResource } from '../types';
+import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
 
 interface WebinarResourceIconProps {
     resource: WebinarResource;
@@ -52,6 +57,9 @@ const WebinarCard: React.FC<{
     const { user } = useAuth();
     const { findItem } = useCart();
     const isInCart = !!findItem(webinar._id as string);
+
+    const isAdmin = user?.role === UserRole.ADMIN;
+    const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
 
     const renderButtons = () => {
         if (webinar.calculatedStatus === WebinarStatus.PAST) {
@@ -178,16 +186,133 @@ const WebinarCard: React.FC<{
                 </p>
                 {renderButtons()}
             </div>
-            {isMyWebinarCard && webinar.resources && webinar.resources.length > 0 && (
+            {isMyWebinarCard && (webinar.resources && webinar.resources.length > 0) && (
                 <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-around items-center">
                     {webinar.resources.map((resource, index) => (
                         <WebinarResourceIcon key={index} resource={resource} />
                     ))}
                 </div>
             )}
+            {isMyWebinarCard && (isAdmin || isWebinarAdmin) && (
+                <div className="p-4 border-t border-slate-100 bg-slate-50">
+                    <h4 className="text-sm font-bold text-slate-700 mb-2">Documents et Médias</h4>
+                    {webinar.resources && webinar.resources.length > 0 ? (
+                        <ul className="space-y-2">
+                            {webinar.resources.map((resource, index) => (
+                                <li key={index} className="flex items-center justify-between text-sm text-slate-600">
+                                    <a href={resource.url} target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">
+                                        {resource.title || resource.url} ({resource.type})
+                                    </a>
+                                    <div className="flex space-x-2">
+                                        <button className="text-blue-500 hover:text-blue-700">Modifier</button>
+                                        <button className="text-red-500 hover:text-red-700">Supprimer</button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-sm text-slate-500">Aucun média ajouté pour ce webinaire.</p>
+                    )}
+                    <button className="mt-3 bg-teal-600 text-white text-sm px-3 py-1 rounded hover:bg-teal-700">Ajouter un média</button>
+                </div>
+            )}
         </div>
     );
 };
 
+const WebinarsPage: React.FC = () => {
+    const [webinars, setWebinars] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus })[]>([]);
+    const [myWebinars, setMyWebinars] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus })[]>([]);
+    const [liveWebinar, setLiveWebinar] = useState<(Webinar & { registrationStatus?: string | null, googleMeetLink?: string | null, calculatedStatus?: WebinarStatus }) | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const { user, loading: authLoading } = useAuth();
+
+    useEffect(() => {
+        const fetchWebinars = async () => {
+            if (authLoading) return;
+            setLoading(true);
+            try {
+                const response = await fetch('/api/webinars/list-for-user', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch webinars');
+                }
+                const data = await response.json();
+                
+                const now = new Date();
+                const upcoming = data.filter((w: any) => new Date(w.date) > now && w.calculatedStatus !== WebinarStatus.LIVE);
+                const userRegistered = data.filter((w: any) => w.registrationStatus === 'CONFIRMED' && new Date(w.date) > now);
+                const live = data.find((w: any) => w.calculatedStatus === WebinarStatus.LIVE);
+
+                setWebinars(upcoming);
+                setMyWebinars(userRegistered);
+                setLiveWebinar(live || null);
+
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchWebinars();
+    }, [user, authLoading]);
+
+    if (loading || authLoading) {
+        return <div className="flex justify-center items-center h-screen"><Spinner /></div>;
+    }
+
+    if (error) {
+        return <div className="text-center text-red-500 mt-10">Erreur: {error}</div>;
+    }
+
+    return (
+        <div className="bg-slate-50 min-h-screen">
+            <div className="container mx-auto px-4 py-8">
+                {/* En-tête */}
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl font-bold text-teal-600 mb-2">Nos Webinaires</h1>
+                    <p className="text-lg text-slate-600">Formations en direct, conçues pour vous par des experts.</p>
+                </div>
+
+                {/* Webinaire en direct */}
+                {liveWebinar && (
+                    <div className="mb-12">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 flex items-center">
+                            <span className="text-red-500 mr-4">●</span> En Direct
+                        </h2>
+                        <WebinarCard webinar={liveWebinar} isLiveCard={true} />
+                    </div>
+                )}
+                
+                {/* Mes Webinaires */}
+                {user && myWebinars.length > 0 && (
+                    <div className="mb-12">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6">Mes Prochains Webinaires</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {myWebinars.map(webinar => <WebinarCard key={webinar._id} webinar={webinar} isMyWebinarCard={true} />)}
+                        </div>
+                    </div>
+                )}
+                
+                {/* Prochains Webinaires */}
+                <div>
+                    <h2 className="text-3xl font-bold text-slate-800 mb-6">Tous les Prochains Webinaires</h2>
+                    {webinars.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {webinars.map(webinar => <WebinarCard key={webinar._id} webinar={webinar} />)}
+                        </div>
+                    ) : (
+                        <p className="text-center text-slate-500">Aucun webinaire à venir pour le moment.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default WebinarsPage;
