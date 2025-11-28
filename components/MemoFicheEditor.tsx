@@ -28,6 +28,10 @@ const convertToSection = (field: string | MemoFicheSection | undefined, title: s
 };
 
 const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
+  // Determine the type, defaulting to 'maladie'
+  const caseStudyType = caseStudy?.type || 'maladie';
+
+  // Process custom sections
   const safeCustomSections = ensureArray(caseStudy?.customSections).map(section => {
     if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
       const content = ensureArray(section.content).map(item => {
@@ -47,25 +51,76 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     return { id: (section as any)?.id || `custom-${Date.now()}`, title: (section as any)?.title || '', content: [] };
   });
 
-  const initialSections: any[] = [];
-  if (caseStudy?.type === 'maladie') {
-    initialSections.push({ id: 'patientSituation', title: 'Cas comptoir' });
-    initialSections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
-    initialSections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
-    initialSections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
-  }
-  if (caseStudy?.type !== 'dispositifs-medicaux' && caseStudy?.type !== 'dermocosmetique' && caseStudy?.type !== 'ordonnances') {
-    initialSections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
-    initialSections.push({ id: 'associatedProducts', title: 'Produits Associés' });
-    initialSections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
-    initialSections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
-    initialSections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
+  // Build a list of default dynamic section IDs based on the caseStudy type
+  const defaultDynamicSectionIds: string[] = [];
+  if (caseStudyType === 'maladie') {
+    defaultDynamicSectionIds.push('patientSituation', 'keyQuestions', 'pathologyOverview', 'redFlags');
+  } else if (caseStudyType === 'dispositifs-medicaux') {
+    defaultDynamicSectionIds.push('casComptoir', 'objectifsConseil', 'pathologiesConcernees', 'interetDispositif', 'beneficesSante', 'dispositifsAConseiller', 'reponsesObjections', 'pagesSponsorisees', 'referencesBibliographiquesDM');
+  } else if (caseStudyType === 'ordonnances') {
+    defaultDynamicSectionIds.push('ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles');
   }
 
+  // Add common dynamic sections if not already covered by specific types
+  // This ensures 'mainTreatment', 'associatedProducts', etc., are only added if the type isn't too specific
+  const excludedTypesForCommonDynamicSections = ['dispositifs-medicaux', 'dermocosmetique', 'ordonnances', 'savoir', 'maladie', 'communication', 'le-medicament']; 
+  if (!excludedTypesForCommonDynamicSections.includes(caseStudyType)) {
+    defaultDynamicSectionIds.push('mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'keyPoints');
+  }
+  defaultDynamicSectionIds.push('references'); // Always add references
+
+  // Logic for memoSections (creates a default if needed for 'maladie' type, otherwise just ensures array format)
+  let finalMemoSections = ensureArray(caseStudy?.memoSections).map((section, index) => {
+    if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
+      const content = ensureArray(section.content).map(item => {
+        if (typeof item === 'object' && item !== null && 'type' in item && 'value' in item) {
+          return { type: item.type, value: item.value };
+        }
+        if (typeof item === 'string') {
+          return { type: 'text', value: item };
+        }
+        return { type: 'text', value: '' };
+      });
+      return { id: section.id || `memo-${index}`, title: section.title, content };
+    }
+    if (typeof section === 'string') {
+        return { id: `memo-${index}`, title: 'Section', content: [{ type: 'text', value: section }] };
+    }
+    return { id: (section as any)?.id || `memo-${index}`, title: (section as any)?.title || '', content: [] };
+  });
+
+  // Ensure default memo section for 'maladie' if missing
+  if (caseStudyType === 'maladie' && finalMemoSections.length === 0) {
+      const newMemoSectionId = `memo-${Date.now()}`;
+      finalMemoSections.push({ id: newMemoSectionId, title: 'Mémo', content: [{ type: 'text', value: '' }] });
+  }
+
+  // Now, build the final sectionOrder
+  let finalSectionOrder: string[] = ensureArray(caseStudy?.sectionOrder);
+
+  // Get IDs of all automatically included sections (dynamic non-memo sections + memo sections)
+  let autoIncludedSectionIds = [...defaultDynamicSectionIds]; // Create mutable copy
+  if (caseStudyType === 'maladie' || caseStudyType === 'pharmacologie' || caseStudyType === 'savoir') {
+    autoIncludedSectionIds.push(...finalMemoSections.map(s => s.id));
+  }
+  const customSectionIds = safeCustomSections.map(s => s.id);
+
+  // If sectionOrder is empty, populate it with a default set of IDs
+  if (finalSectionOrder.length === 0) {
+    finalSectionOrder = [...autoIncludedSectionIds, ...customSectionIds];
+  } else {
+    // Ensure all auto-included and custom sections are present in an existing sectionOrder
+    const allExpectedIds = [...autoIncludedSectionIds, ...customSectionIds];
+    const missingIds = allExpectedIds.filter(id => !finalSectionOrder.includes(id));
+    finalSectionOrder = [...finalSectionOrder, ...missingIds];
+  }
+
+  // Construct the final CaseStudy object
   return {
+    // Explicitly define all properties for clarity and type safety
     _id: caseStudy?._id || '',
     id: caseStudy?.id || '',
-    type: caseStudy?.type || 'maladie',
+    type: caseStudyType,
     title: caseStudy?.title || '',
     shortDescription: caseStudy?.shortDescription || '',
     theme: caseStudy?.theme || '',
@@ -73,11 +128,14 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     level: caseStudy?.level || 'Facile',
     isFree: caseStudy?.isFree || false,
     coverImageUrl: caseStudy?.coverImageUrl || '',
+    coverImagePosition: caseStudy?.coverImagePosition || 'middle', // Added default position
     youtubeLinks: ensureArray(caseStudy?.youtubeLinks),
     kahootUrl: caseStudy?.kahootUrl || '',
+    status: caseStudy?.status || MemoFicheStatus.DRAFT,
+
     patientSituation: convertToSection(caseStudy?.patientSituation, 'Cas comptoir'),
-    keyQuestions: ensureArray(caseStudy?.keyQuestions),
     pathologyOverview: convertToSection(caseStudy?.pathologyOverview, 'Aperçu pathologie'),
+    keyQuestions: ensureArray(caseStudy?.keyQuestions),
     redFlags: ensureArray(caseStudy?.redFlags),
     mainTreatment: ensureArray(caseStudy?.mainTreatment),
     associatedProducts: ensureArray(caseStudy?.associatedProducts),
@@ -88,28 +146,8 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     flashcards: ensureArray(caseStudy?.flashcards),
     glossary: ensureArray(caseStudy?.glossary),
     quiz: ensureArray(caseStudy?.quiz),
-    memoSections: ensureArray(caseStudy?.memoSections).map((section, index) => {
-      if (typeof section === 'object' && section !== null && 'title' in section && 'content' in section) {
-        const content = ensureArray(section.content).map(item => {
-          if (typeof item === 'object' && item !== null && 'type' in item && 'value' in item) {
-            return { type: item.type, value: item.value };
-          }
-          if (typeof item === 'string') {
-            return { type: 'text', value: item };
-          }
-          return { type: 'text', value: '' };
-        });
-        return { id: section.id || `memo-${index}`, title: section.title, content };
-      }
-      if (typeof section === 'string') {
-          return { id: `memo-${index}`, title: 'Section', content: [{ type: 'text', value: section }] };
-      }
-      return { id: (section as any)?.id || `memo-${index}`, title: (section as any)?.title || '', content: [] };
-    }),
-    customSections: safeCustomSections,
-    status: caseStudy?.status || MemoFicheStatus.DRAFT, // Initialize status
 
-    // Dispositifs médicaux
+    // Dispositifs médicaux specific fields
     casComptoir: convertToSection(caseStudy?.casComptoir, 'Cas comptoir'),
     objectifsConseil: convertToSection(caseStudy?.objectifsConseil, 'Objectifs de conseil'),
     pathologiesConcernees: convertToSection(caseStudy?.pathologiesConcernees, 'Pathologies concernées'),
@@ -120,36 +158,60 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     pagesSponsorisees: convertToSection(caseStudy?.pagesSponsorisees, 'Pages sponsorisées'),
     referencesBibliographiquesDM: ensureArray(caseStudy?.referencesBibliographiquesDM),
 
-    // Ordonnances
+    // Ordonnances specific fields
     ordonnance: ensureArray(caseStudy?.ordonnance),
     analyseOrdonnance: ensureArray(caseStudy?.analyseOrdonnance),
-    conseilsTraitement: caseStudy?.conseilsTraitement || [],
+    conseilsTraitement: caseStudy?.conseilsTraitement || [], // Array of objects
     informationsMaladie: ensureArray(caseStudy?.informationsMaladie),
     conseilsHygieneDeVie: ensureArray(caseStudy?.conseilsHygieneDeVie),
     conseilsAlimentaires: ensureArray(caseStudy?.conseilsAlimentaires),
-    ventesAdditionnelles: caseStudy?.ventesAdditionnelles || {},
-    sectionOrder: caseStudy?.sectionOrder && caseStudy.sectionOrder.length > 0 ? ensureArray(caseStudy.sectionOrder) : initialSections.map(s => s.id),
+    ventesAdditionnelles: caseStudy?.ventesAdditionnelles || {}, // Object
+
+    // "Le medicament" specific fields
+    youtubeExplainerUrl: caseStudy?.youtubeExplainerUrl || '',
+    infographicImageUrl: caseStudy?.infographicImageUrl || '',
+    pdfSlideshowUrl: caseStudy?.pdfSlideshowUrl || '',
+
+    // Processed collections
+    memoSections: finalMemoSections,
+    customSections: safeCustomSections,
+    sectionOrder: finalSectionOrder,
+
+    // Any other properties from the original caseStudy that are not explicitly listed above
+    // This spread must be last but should not overwrite explicitly set values
+    // Using Object.fromEntries(Object.entries(caseStudy || {}).filter(...)) is a robust way to ensure
+    // properties explicitly handled above take precedence over anything from the spread
+    ...Object.fromEntries(
+        Object.entries(caseStudy || {}).filter(([key]) => ![
+            '_id', 'id', 'type', 'title', 'shortDescription', 'theme', 'system', 'level', 'isFree', 'coverImageUrl', 'coverImagePosition', 'youtubeLinks', 'kahootUrl', 'status',
+            'patientSituation', 'pathologyOverview', 'keyQuestions', 'redFlags', 'mainTreatment', 'associatedProducts', 'lifestyleAdvice', 'dietaryAdvice', 'keyPoints', 'references', 'flashcards', 'glossary', 'quiz',
+            'casComptoir', 'objectifsConseil', 'pathologiesConcernees', 'interetDispositif', 'beneficesSante', 'dispositifsAConseiller', 'reponsesObjections', 'pagesSponsorisees', 'referencesBibliographiquesDM',
+            'ordonnance', 'analyseOrdonnance', 'conseilsTraitement', 'informationsMaladie', 'conseilsHygieneDeVie', 'conseilsAlimentaires', 'ventesAdditionnelles',
+            'youtubeExplainerUrl', 'infographicImageUrl', 'pdfSlideshowUrl',
+            'memoSections', 'customSections', 'sectionOrder'
+        ].includes(key))
+    ),
   };
 };
 
 type ListName = 'quiz' | 'flashcards' | 'glossary';
 
-const FormSection: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
+const FormSection: React.FC <{title: string, children: React.ReactNode}> = ({ title, children }) => (
     <div className="border p-4 rounded-lg bg-white shadow-sm">
       <h3 className="text-xl font-semibold text-slate-800 mb-4">{title}</h3>
       <div className="space-y-4">{children}</div>
     </div>
 );
 
-const Label: React.FC<{htmlFor: string, children: React.ReactNode}> = ({ htmlFor, children }) => (
+const Label: React.FC <{htmlFor: string, children: React.ReactNode}> = ({ htmlFor, children }) => (
   <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">{children}</label>
 );
 
-const Input: React.FC<any> = (props) => (
+const Input: React.FC <any> = (props) => (
   <input {...props} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
 );
 
-const Textarea: React.FC<any> = (props) => (
+const Textarea: React.FC <any> = (props) => (
   <textarea {...props} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
 );
 
@@ -343,65 +405,86 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     const buildSections = () => {
         let allSections: any[] = [];
 
-        if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
-            allSections = (caseStudy.memoSections || []).map(section => ({
+        // Correctly include memoSections for applicable types
+        if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie' || caseStudy.type === 'maladie') {
+            allSections.push(...(caseStudy.memoSections || []).map(section => ({
                 id: section.id,
                 title: section.title,
-                isMemoSection: true
-            }));
-        } else {
-            const sections: any[] = [];
-            if (caseStudy.type === 'maladie') {
-                sections.push({ id: 'patientSituation', title: 'Cas comptoir' });
-                sections.push({ id: 'keyQuestions', title: 'Questions clés à poser' });
-                sections.push({ id: 'pathologyOverview', title: 'Aperçu pathologie' });
-                sections.push({ id: 'redFlags', title: 'Signaux d\'alerte' });
-            } else if (caseStudy.type === 'dispositifs-medicaux') {
-                sections.push({ id: 'casComptoir', title: 'Cas comptoir' });
-                sections.push({ id: 'objectifsConseil', title: 'Objectifs de conseil' });
-                sections.push({ id: 'pathologiesConcernees', title: 'Pathologies concernées' });
-                sections.push({ id: 'interetDispositif', title: 'Intérêt du dispositif' });
-                sections.push({ id: 'beneficesSante', title: 'Bénéfices pour la santé' });
-                sections.push({ id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser' });
-                sections.push({ id: 'reponsesObjections', title: 'Réponses aux objections des clients' });
-                sections.push({ id: 'pagesSponsorisees', title: 'Pages sponsorisées' });
-                sections.push({ id: 'referencesBibliographiquesDM', title: 'Références bibliographiques' });
-            } else if (caseStudy.type === 'ordonnances') {
-                sections.push({ id: 'ordonnance', title: 'Ordonnance' });
-                sections.push({ id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance' });
-                sections.push({ id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux' });
-                sections.push({ id: 'informationsMaladie', title: 'Informations sur la maladie' });
-                sections.push({ id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie' });
-                sections.push({ id: 'conseilsAlimentaires', title: 'Conseils alimentaires' });
-                sections.push({ id: 'ventesAdditionnelles', title: 'Ventes additionnelles' });
-            }
-
-            if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && caseStudy.type !== 'savoir') {
-                sections.push({ id: 'mainTreatment', title: 'Traitement Principal' });
-                sections.push({ id: 'associatedProducts', title: 'Produits Associés' });
-                sections.push({ id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie' });
-                sections.push({ id: 'dietaryAdvice', title: 'Conseils alimentaires' });
-                sections.push({ id: 'keyPoints', title: 'Points Clés & Références' });
-            }
-            allSections = sections;
+                isMemoSection: true,
+                rawContent: section // Store raw content for editor
+            })));
+        } 
+        
+        // Add dynamic sections based on type
+        // Note: The logic for pushing to 'sections' vs 'allSections' needs to be unified
+        // For simplicity, let's assume 'allSections' is the primary list for display order
+        
+        // Fallback or specific sections based on type if not memo-type
+        if (caseStudy.type === 'maladie') {
+            allSections.push(
+                { id: 'patientSituation', title: 'Cas comptoir', rawContent: caseStudy.patientSituation },
+                { id: 'keyQuestions', title: 'Questions clés à poser', rawContent: caseStudy.keyQuestions },
+                { id: 'pathologyOverview', title: 'Aperçu pathologie', rawContent: caseStudy.pathologyOverview },
+                { id: 'redFlags', title: 'Signaux d\'alerte', rawContent: caseStudy.redFlags }
+            );
+        } else if (caseStudy.type === 'dispositifs-medicaux') {
+            allSections.push(
+                { id: 'casComptoir', title: 'Cas comptoir', rawContent: caseStudy.casComptoir },
+                { id: 'objectifsConseil', title: 'Objectifs de conseil', rawContent: caseStudy.objectifsConseil },
+                { id: 'pathologiesConcernees', title: 'Pathologies concernées', rawContent: caseStudy.pathologiesConcernees },
+                { id: 'interetDispositif', title: 'Intérêt du dispositif', rawContent: caseStudy.interetDispositif },
+                { id: 'beneficesSante', title: 'Bénéfices pour la santé', rawContent: caseStudy.beneficesSante },
+                { id: 'dispositifsAConseiller', title: 'Dispositifs à conseiller ou à dispenser', rawContent: caseStudy.dispositifsAConseiller },
+                { id: 'reponsesObjections', title: 'Réponses aux objections des clients', rawContent: caseStudy.reponsesObjections },
+                { id: 'pagesSponsorisees', title: 'Pages sponsorisées', rawContent: caseStudy.pagesSponsorisees },
+                { id: 'referencesBibliographiquesDM', title: 'Références bibliographiques', rawContent: caseStudy.referencesBibliographiquesDM }
+            );
+        } else if (caseStudy.type === 'ordonnances') {
+            allSections.push(
+                { id: 'ordonnance', title: 'Ordonnance', rawContent: caseStudy.ordonnance },
+                { id: 'analyseOrdonnance', title: 'Analyse de l\'ordonnance', rawContent: caseStudy.analyseOrdonnance },
+                { id: 'conseilsTraitement', title: 'Conseils sur le traitement médicamenteux', rawContent: caseStudy.conseilsTraitement },
+                { id: 'informationsMaladie', title: 'Informations sur la maladie', rawContent: caseStudy.informationsMaladie },
+                { id: 'conseilsHygieneDeVie', title: 'Conseils hygiène de vie', rawContent: caseStudy.conseilsHygieneDeVie },
+                { id: 'conseilsAlimentaires', title: 'Conseils alimentaires', rawContent: caseStudy.conseilsAlimentaires },
+                { id: 'ventesAdditionnelles', title: 'Ventes additionnelles', rawContent: caseStudy.ventesAdditionnelles }
+            );
         }
 
-        const customSections = caseStudy.customSections?.map((section) => ({ id: section.id, title: section.title, isCustom: true })) || [];
-        allSections = [...allSections, ...customSections];
+        // Common sections that apply if not dermocosmetique/dispositifs-medicaux/ordonnances/savoir
+        if (caseStudy.type !== 'dispositifs-medicaux' && caseStudy.type !== 'dermocosmetique' && caseStudy.type !== 'ordonnances' && caseStudy.type !== 'savoir' && caseStudy.type !== 'communication') {
+            allSections.push(
+                { id: 'mainTreatment', title: 'Traitement Principal', rawContent: caseStudy.mainTreatment },
+                { id: 'associatedProducts', title: 'Produits Associés', rawContent: caseStudy.associatedProducts },
+                { id: 'lifestyleAdvice', title: 'Conseils Hygiène de vie', rawContent: caseStudy.lifestyleAdvice },
+                { id: 'dietaryAdvice', title: 'Conseils alimentaires', rawContent: caseStudy.dietaryAdvice },
+                { id: 'keyPoints', title: 'Points Clés & Références', rawContent: caseStudy.keyPoints }
+            );
+        }
         
-        allSections.push({ id: 'references', title: 'Références bibliographiques' });
+        // Add custom sections
+        const customSections = (caseStudy.customSections || []).map((section) => ({ id: section.id, title: section.title, isCustom: true, rawContent: section })) || [];
+        allSections.push(...customSections);
         
-        const orderedSections = caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0
-            ? caseStudy.sectionOrder.map(id => allSections.find(s => s.id === id)).filter(Boolean)
-            : allSections;
+        // Ensure references are always present, but avoid duplicates if already added by dynamicSections
+        if (!allSections.some(s => s.id === 'references')) {
+          allSections.push({ id: 'references', title: 'Références bibliographiques', rawContent: caseStudy.references });
+        }
         
-        const newSections = allSections.filter(s => !orderedSections.find(os => os.id === s.id));
+        // Order sections based on sectionOrder
+        const orderedSections = (caseStudy.sectionOrder || [])
+            .map(id => allSections.find(s => s.id === id))
+            .filter(Boolean); // Filter out any undefined if ID not found
+
+        // Add any sections not in sectionOrder at the end
+        const newSections = allSections.filter(s => !orderedSections.some(os => os.id === s.id));
         
         setDisplayedSections([...orderedSections, ...newSections]);
     };
 
     buildSections();
-  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder, caseStudy.memoSections]);
+  }, [caseStudy.type, caseStudy.customSections, caseStudy.sectionOrder, caseStudy.memoSections, caseStudy.patientSituation, caseStudy.keyQuestions, caseStudy.pathologyOverview, caseStudy.redFlags, caseStudy.mainTreatment, caseStudy.associatedProducts, caseStudy.lifestyleAdvice, caseStudy.dietaryAdvice, caseStudy.keyPoints, caseStudy.references, caseStudy.casComptoir, caseStudy.objectifsConseil, caseStudy.pathologiesConcernees, caseStudy.interetDispositif, caseStudy.beneficesSante, caseStudy.dispositifsAConseiller, caseStudy.reponsesObjections, caseStudy.pagesSponsorisees, caseStudy.referencesBibliographiquesDM, caseStudy.ordonnance, caseStudy.analyseOrdonnance, caseStudy.conseilsTraitement, caseStudy.informationsMaladie, caseStudy.conseilsHygieneDeVie, caseStudy.conseilsAlimentaires, caseStudy.ventesAdditionnelles]);
+
 
   const moveSection = (index: number, direction: 'up' | 'down') => {
     const newSections = [...displayedSections];
@@ -482,15 +565,14 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     });
   };
 
-  const removeCustomSection = (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette section personnalisée ?")) {
-      setCaseStudy(prev => {
-        const newCustomSections = prev.customSections?.filter(section => section.id !== id) || [];
-        const newSectionOrder = prev.sectionOrder?.filter(sectionId => sectionId !== id) || [];
-        return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
-      });
-    }
-  };
+    const addMemoSection = () => {
+        setCaseStudy(prev => {
+            const newId = `memo-${Date.now()}`;
+            const newMemoSections = [...(prev.memoSections || []), { id: newId, title: 'Nouvelle Section Mémo', content: [] }];
+            const newSectionOrder = [...(prev.sectionOrder || []), newId];
+            return { ...prev, memoSections: newMemoSections, sectionOrder: newSectionOrder };
+        });
+    };
 
   const removeMainSection = (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette section ?")) {
@@ -624,8 +706,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
               <select name="coverImagePosition" id="coverImagePosition" value={caseStudy.coverImagePosition || 'middle'} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <option value="top">Haut</option>
                 <option value="middle">Milieu</option>
-                <option value="bottom">Bas</option>
-              </select>
+                    <option value="bottom">Bas</option>
+                </select>
             </div>
           )}
           <div>
@@ -648,7 +730,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </FormSection>
 
-        {/* New FormSection for "Le médicament" specific media */}
+        {/* New FormSection for "Le médicament" specific media */} 
         {caseStudy.type === 'le-medicament' && (
             <FormSection title="Médias Spécifiques 'Le médicament'">
                 <div>
@@ -809,7 +891,14 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             );
         })}
 
-        <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200">
+        {(caseStudy.type === 'maladie' || caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') && (
+            <button type="button" onClick={addMemoSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200">
+                <PlusCircleIcon className="h-5 w-5 mr-2" />
+                Ajouter une section Mémo
+            </button>
+        )}
+
+        <button type="button" onClick={addCustomSection} className="flex items-center px-3 py-2 bg-slate-100 text-slate-800 text-sm font-semibold rounded-md hover:bg-slate-200 mt-2">
             <PlusCircleIcon className="h-5 w-5 mr-2" />
             Ajouter une section personnalisée
         </button>
@@ -897,7 +986,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </div>
 
-        {/* AI Generation Modal */}
+        {/* AI Generation Modal */} 
         {isGenModalOpen && (
             <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 animate-fade-in">
                 <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -911,7 +1000,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     <textarea
                         className="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
                         rows={5}
-                        placeholder="Décrivez ce que l'IA doit générer (ex: 'un résumé détaillé du mécanisme d'action de l'insuline')."
+                        placeholder="Décrivez ce que l\'IA doit générer (ex: 'un résumé détaillé du mécanisme d\'action de l\'insuline')."
                         value={aiPromptInput}
                         onChange={(e) => setAiPromptInput(e.target.value)}
                         disabled={isGeneratingAI}

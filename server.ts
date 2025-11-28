@@ -24,7 +24,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')));
 
 // import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
 

@@ -368,6 +368,15 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/21.png")} className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: caseStudy.dietaryAdvice || caseStudy.recommendations?.dietaryAdvice, isAlert: false },
     ];
 
+    const memoSectionsForDisplay = (caseStudy.memoSections || []).map((section, index) => ({
+        id: section.id || `memoSection-${index}`,
+        title: section.title,
+        icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+        data: section.content, // Use section.content for MemoFicheSection
+        isMemoSection: true,
+        isAlert: false,
+    }));
+
     const customSections = (caseStudy.customSections || []).map((section, index) => ({
       id: section.id || `customSection-${index}`,
       title: section.title,
@@ -376,7 +385,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
       isAlert: false,
     }));
 
-    const allSections = [...mainSections, ...customSections];
+    const allSections = [...mainSections, ...memoSectionsForDisplay, ...customSections];
 
     const orderedSections = (caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0 ? caseStudy.sectionOrder : allSections.map(s => s.id))
       .map(id => allSections.find(s => s.id === id))
@@ -409,9 +418,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     const hasGlossary = caseStudy.glossary && caseStudy.glossary.length > 0;
     
     // Check if memoContent actually has content based on caseStudy.memoSections
-    const hasMemoContent = caseStudy.memoSections && caseStudy.memoSections.length > 0 && caseStudy.memoSections.some(section => {
-        return section.content && section.content.length > 0 && section.content.some(item => item.value.trim().length > 0);
-    });
+    const hasMemoContent = caseStudy.memoSections && caseStudy.memoSections.length > 0;
 
     const isLeMedicamentManual = caseStudy.type === 'le-medicament' && !hasFlashcards && !hasQuiz;
 
