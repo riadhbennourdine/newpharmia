@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../hooks/useAuth';
 import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
+import { ensureArray } from '../utils/array'; // Added import for ensureArray
 import getAbsoluteImageUrl from '../utils/image';
 import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon } from '../components/Icons';
 import CustomChatBot from '../components/CustomChatBot';
@@ -387,7 +388,14 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
     const allSections = [...mainSections, ...memoSectionsForDisplay, ...customSections];
 
-    const orderedSections = (caseStudy.sectionOrder && caseStudy.sectionOrder.length > 0 ? caseStudy.sectionOrder : allSections.map(s => s.id))
+    let effectiveSectionOrder = ensureArray(caseStudy.sectionOrder);
+    const allAvailableSectionIds = allSections.map(s => s.id);
+
+    // Add any sections that are in allSections but not in the original sectionOrder
+    const missingDefaultSectionIds = allAvailableSectionIds.filter(id => !effectiveSectionOrder.includes(id));
+    effectiveSectionOrder = [...effectiveSectionOrder, ...missingDefaultSectionIds];
+
+    const orderedSections = effectiveSectionOrder
       .map(id => allSections.find(s => s.id === id))
       .filter(Boolean);
 
@@ -450,22 +458,22 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
     if (!isLeMedicamentManual) {
         if (hasMemoContent) {
-            items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/9.png" className="h-8 w-8" alt="Mémo" /> });
+            items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/9.png")} className="h-8 w-8" alt="Mémo" /> });
         }
         if (hasFlashcards) {
-            items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/10.png" className="h-8 w-8" alt="Flashcards" /> });
+            items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/10.png")} className="h-8 w-8" alt="Flashcards" /> });
         }
         if (!isPreview && hasQuiz) {
-            items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://pharmaconseilbmb.com/photos/site/quiz-2.png" className="h-8 w-8" alt="Quiz" /> });
+            items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/quiz-2.png")} className="h-8 w-8" alt="Quiz" /> });
         }
         if (!isPreview && caseStudy.kahootUrl) {
-            items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src="https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png" className="h-8 w-8" alt="Kahoot" /> });
+            items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icons8-kahoot-48.png")} className="h-8 w-8" alt="Kahoot" /> });
         }
         if (hasGlossary) {
-            items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/12.png" className="h-8 w-8" alt="Glossaire" /> });
+            items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/12.png")} className="h-8 w-8" alt="Glossaire" /> });
         }
         if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
-            items.push({ id: 'media' as TabName, label: 'Média', icon: <img src="https://pharmaconseilbmb.com/photos/site/icone/13.png" className="h-8 w-8" alt="Média" /> });
+            items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/13.png")} className="h-8 w-8" alt="Média" /> });
         }
     }
     
