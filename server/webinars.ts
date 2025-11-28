@@ -124,21 +124,42 @@ router.get('/my-webinars', authenticateToken, async (req: AuthenticatedRequest, 
             return res.status(401).json({ message: 'Authentication required' });
         }
         const userId = req.user._id;
+        const userRole = req.user.role;
 
         const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
-        const webinars = await webinarsCollection.find({ "attendees.userId": new ObjectId(userId) }).sort({ date: -1 }).toArray();
-
-        const now = new Date();
+        let webinars;
+        if (userRole === UserRole.ADMIN || userRole === UserRole.ADMIN_WEBINAR) {
+            webinars = await webinarsCollection.find({}).sort({ date: -1 }).toArray();
+        } else {
+            webinars = await webinarsCollection.find({ "attendees.userId": new ObjectId(userId) }).sort({ date: -1 }).toArray();
+        }
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
             webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
-            return webinarResponse;
-        }).filter(webinar => webinar.calculatedStatus === WebinarStatus.PAST); // Filter for past webinars only
 
+            const attendee = webinar.attendees.find(
+                att => att.userId.toString() === userId.toString()
+            );
+            webinarResponse.isRegistered = !!attendee;
+            webinarResponse.registrationStatus = attendee?.status || null;
+            
+            if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                // Keep the googleMeetLink
+            } else {
+                delete webinarResponse.googleMeetLink;
+            }
+            
+            // For non-admins, don't send the full attendees list for privacy
+            if (userRole !== UserRole.ADMIN && userRole !== UserRole.ADMIN_WEBINAR) {
+                delete webinarResponse.attendees;
+            }
+
+            return webinarResponse;
+        });
 
         res.json(webinarsWithStatus);
     } catch (error) {
