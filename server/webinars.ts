@@ -117,6 +117,49 @@ router.get('/', softAuthenticateToken, async (req, res) => {
     }
 });
 
+// GET the webinars the current user is registered for
+router.get('/my-webinars', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        const userId = req.user._id;
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const webinars = await webinarsCollection.find({ "attendees.userId": new ObjectId(userId) }).sort({ date: -1 }).toArray();
+
+        const webinarsWithStatus = webinars.map(webinar => {
+            const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
+            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
+
+            const attendee = webinar.attendees.find(
+                att => att.userId.toString() === userId.toString()
+            );
+            webinarResponse.isRegistered = !!attendee;
+            webinarResponse.registrationStatus = attendee?.status || null;
+            
+            if (attendee?.status === 'CONFIRMED' && (webinarResponse.calculatedStatus === WebinarStatus.LIVE || webinarResponse.calculatedStatus === WebinarStatus.UPCOMING)) {
+                // Keep the googleMeetLink
+            } else {
+                delete webinarResponse.googleMeetLink;
+            }
+            
+            // For privacy, don't send the full attendees list
+            delete webinarResponse.attendees;
+
+            return webinarResponse;
+        });
+
+        res.json(webinarsWithStatus);
+    } catch (error) {
+        console.error('Error fetching my-webinars:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de vos webinaires.' });
+    }
+});
+
 // GET a single webinar by ID
 router.get('/:id', softAuthenticateToken, async (req, res) => {
     try {
@@ -499,7 +542,7 @@ router.post('/:id/public-register', async (req, res) => {
             { expiresIn: '24h' } // Guest token is valid for 24 hours
         );
 
-        res.status(200).json({ 
+        res.status(200).json({
             message: 'Successfully registered for the webinar. Please submit payment to confirm.',
             guestToken,
         });
@@ -555,7 +598,7 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
                 const webinarsCollection = db.collection<Webinar>('webinars');
         
                 const result = await webinarsCollection.updateOne(
-                    { 
+                    {
                         _id: new ObjectId(webinarId), 
                         attendees: { 
                             $elemMatch: { 
@@ -651,5 +694,4 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
         res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des créneaux horaires.' });
     }
 });
-
 export default router;

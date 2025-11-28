@@ -159,9 +159,10 @@ const WebinarCard: React.FC<{
 
 const WebinarsPage: React.FC = () => {
     const [webinars, setWebinars] = useState<Webinar[]>([]);
+    const [myWebinars, setMyWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<WebinarGroup>(WebinarGroup.CROP_TUNIS);
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
@@ -179,60 +180,65 @@ const WebinarsPage: React.FC = () => {
                 if (token) {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
-                const response = await fetch(`/api/webinars?group=${encodeURIComponent(activeTab)}`, { headers });
+
+                let url = `/api/webinars?group=${encodeURIComponent(activeTab)}`;
+                if (activeTab === 'MY_WEBINARS') {
+                    url = '/api/webinars/my-webinars';
+                }
+
+                const response = await fetch(url, { headers });
                 if (!response.ok) {
                     throw new Error('Failed to fetch webinars');
                 }
                 const data = await response.json();
 
-                const now = new Date();
-                const currentMonth = now.getMonth();
-                const currentYear = now.getFullYear();
+                if (activeTab === 'MY_WEBINARS') {
+                    setMyWebinars(data);
+                } else {
+                    const now = new Date();
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
 
-                const liveWebinars = data.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
-                const upcomingWebinars = data
-                    .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
-                    .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                const pastWebinars = data
-                    .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
-                    .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Tri décroissant pour les passés
+                    const liveWebinars = data.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
+                    const upcomingWebinars = data
+                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+                        .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    const pastWebinars = data
+                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
+                        .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-                setWebinars(data); // Garder tous les webinaires pour le rendu
+                    setWebinars(data);
 
-                // Trouver le webinaire le plus proche parmi les prochains
-                const nearest = upcomingWebinars.length > 0 ? upcomingWebinars[0] : null;
-                setNearestWebinar(nearest);
+                    const nearest = upcomingWebinars.length > 0 ? upcomingWebinars[0] : null;
+                    setNearestWebinar(nearest);
 
-                // Séparer les webinaires du mois en cours et des mois futurs pour les prochains webinaires
-                const currentMonthUpcoming = upcomingWebinars.filter(w => {
-                    const d = new Date(w.date);
-                    // Exclure le nearestWebinar de cette liste
-                    return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearest ? w._id.toString() !== nearest._id.toString() : true);
-                });
-                setCurrentMonthWebinars(currentMonthUpcoming);
+                    const currentMonthUpcoming = upcomingWebinars.filter(w => {
+                        const d = new Date(w.date);
+                        return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearest ? w._id.toString() !== nearest._id.toString() : true);
+                    });
+                    setCurrentMonthWebinars(currentMonthUpcoming);
 
-                const futureMonthsUpcoming = upcomingWebinars.filter(w => {
-                    const d = new Date(w.date);
-                    return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
-                });
+                    const futureMonthsUpcoming = upcomingWebinars.filter(w => {
+                        const d = new Date(w.date);
+                        return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
+                    });
 
-                const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
-                    const date = new Date(webinar.date);
-                    const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-                    const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+                    const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
+                        const date = new Date(webinar.date);
+                        const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+                        const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
 
-                    if (!acc[capitalizedMonthYear]) {
-                        acc[capitalizedMonthYear] = [];
-                    }
-                    acc[capitalizedMonthYear].push(webinar);
-                    return acc;
-                }, {} as Record<string, Webinar[]>);
-                setFutureMonthsWebinars(groupedFutureWebinars);
+                        if (!acc[capitalizedMonthYear]) {
+                            acc[capitalizedMonthYear] = [];
+                        }
+                        acc[capitalizedMonthYear].push(webinar);
+                        return acc;
+                    }, {} as Record<string, Webinar[]>);
+                    setFutureMonthsWebinars(groupedFutureWebinars);
 
-                // Stocker les webinaires live et passés séparément pour le rendu
-                setLiveWebinars(liveWebinars);
-                setPastWebinars(pastWebinars);
-
+                    setLiveWebinars(liveWebinars);
+                    setPastWebinars(pastWebinars);
+                }
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -268,6 +274,18 @@ const WebinarsPage: React.FC = () => {
                 >
                     {WebinarGroup.PHARMIA}
                 </button>
+                {user && (
+                    <button
+                        onClick={() => setActiveTab('MY_WEBINARS')}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === 'MY_WEBINARS'
+                                ? 'border-teal-500 text-teal-600'
+                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        }`}
+                    >
+                        Mes wébinaires
+                    </button>
+                )}
                 {isAdmin && (
                     <button
                         onClick={() => navigate('/admin/webinars')}
@@ -284,22 +302,24 @@ const WebinarsPage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {renderTabs()}
 
-            <div className="mb-8">
-                <img 
-                    src="https://pharmaconseilbmb.com/photos/site/cropt/prepenligne.png" 
-                    alt="Couverture Webinaires" 
-                    className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
-                />
-                <ExpandableText
-                    text={`<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.`}
-                    maxLength={250} // Truncate after 250 characters
-                    className="mt-4 text-sm text-slate-600 font-light max-w-4xl"
-                    youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share" // Pass the YouTube Short URL
-                />
-                <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
-                    Pass journée: 80,000 DT
-                </p>
-            </div>
+            {activeTab !== 'MY_WEBINARS' && (
+                <div className="mb-8">
+                    <img 
+                        src="https://pharmaconseilbmb.com/photos/site/cropt/prepenligne.png" 
+                        alt="Couverture Webinaires" 
+                        className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
+                    />
+                    <ExpandableText
+                        text={`<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.`}
+                        maxLength={250}
+                        className="mt-4 text-sm text-slate-600 font-light max-w-4xl"
+                        youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share"
+                    />
+                    <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
+                        Pass journée: 80,000 DT
+                    </p>
+                </div>
+            )}
 
             {isLoading ? (
                 <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>
@@ -308,25 +328,39 @@ const WebinarsPage: React.FC = () => {
                     <h3 className="text-xl font-semibold">Erreur de chargement</h3>
                     <p className="mt-2">{error}</p>
                 </div>
+            ) : activeTab === 'MY_WEBINARS' ? (
+                myWebinars.length > 0 ? (
+                    <div className="space-y-12">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes Webinaire</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {myWebinars.map(webinar => (
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} />
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                        <h3 className="text-xl font-semibold text-slate-700">Vous n'êtes inscrit à aucun webinaire pour le moment</h3>
+                        <p className="text-slate-500 mt-2">Découvrez nos prochaines sessions et inscrivez-vous !</p>
+                    </div>
+                )
             ) : webinars.length > 0 || liveWebinars.length > 0 || pastWebinars.length > 0 ? (
                 <div className="space-y-12">
-                                        {/* Live Webinars */}
-                                        {liveWebinars.length > 0 && (
-                                            <div className="mb-12">
-                                                <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
-                                                    Webinaire en Direct
-                                                </h2>
-                                                <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
-                                                    <div className="grid grid-cols-1 gap-6">
-                                                        {liveWebinars.map(webinar => (
-                                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                    {liveWebinars.length > 0 && (
+                        <div className="mb-12">
+                            <h2 className="text-3xl font-bold text-slate-800 mb-4 flex items-center">
+                                Webinaire en Direct
+                            </h2>
+                            <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
+                                <div className="grid grid-cols-1 gap-6">
+                                    {liveWebinars.map(webinar => (
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Next Upcoming Webinar (if not live) */}
                     {nearestWebinar && liveWebinars.length === 0 && (
                         <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">
@@ -336,7 +370,6 @@ const WebinarsPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Upcoming Webinars (Current Month) */}
                     {currentMonthWebinars.length > 0 && (
                          <div>
                             <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
@@ -350,7 +383,6 @@ const WebinarsPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Upcoming Webinars (Future Months) */}
                     {Object.entries(futureMonthsWebinars).length > 0 && (
                         <div>
                              <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">
@@ -369,7 +401,6 @@ const WebinarsPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Past Webinars */}
                     {pastWebinars.length > 0 && (
                         <div>
                             <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">
@@ -392,5 +423,6 @@ const WebinarsPage: React.FC = () => {
         </div>
     );
 };
+
 
 export default WebinarsPage;
