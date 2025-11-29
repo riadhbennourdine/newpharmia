@@ -141,7 +141,6 @@ const WebinarCard: React.FC<{
                     <div className="flex justify-between items-center">
                         <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
                             <Link to={`/webinars/${webinar._id}`} className="flex items-center">
-                                <SparklesIcon className="h-5 w-5 text-teal-500 mr-2" />
                                 {webinar.title}
                             </Link>
                         </h3>
@@ -173,7 +172,6 @@ const WebinarCard: React.FC<{
             <div className="p-4 flex-grow flex flex-col">
                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
                     <Link to={`/webinars/${webinar._id}`} className="flex items-center">
-                        <SparklesIcon className="h-5 w-5 text-teal-500 mr-2" />
                         {webinar.title}
                     </Link>
                 </h3>
