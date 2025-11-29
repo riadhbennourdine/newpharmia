@@ -9,10 +9,42 @@ interface MediaViewerModalProps {
 }
 
 const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }) => {
+
+    const getYouTubeVideoId = (url: string): string | null => {
+        if (!url) return null;
+        // Standard watch URL: https://www.youtube.com/watch?v=VIDEO_ID
+        let videoId = url.split('v=')[1];
+        if (videoId) {
+            const ampersandPosition = videoId.indexOf('&');
+            if (ampersandPosition !== -1) {
+                videoId = videoId.substring(0, ampersandPosition);
+            }
+            return videoId;
+        }
+
+        // Shortened URL: https://youtu.be/VIDEO_ID
+        if (url.includes('youtu.be')) {
+            const parts = url.split('/');
+            return parts[parts.length - 1];
+        }
+
+        // Embed URL: https://www.youtube.com/embed/VIDEO_ID
+        if (url.includes('/embed/')) {
+            const parts = url.split('/');
+            return parts[parts.length - 1];
+        }
+
+        return null;
+    };
+
+
     const renderContent = () => {
         switch (resource.type) {
             case 'youtube':
-                const videoId = resource.url.split('v=')[1];
+                const videoId = getYouTubeVideoId(resource.url);
+                if (!videoId) {
+                    return <p>Invalid YouTube URL</p>;
+                }
                 const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                 return (
                     <iframe
@@ -27,9 +59,11 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }
                 );
             case 'pdf':
                 return <PdfSlideshow pdfUrl={resource.url} />;
-            case 'infographic':
+            case 'Infographie':
                 return <img src={resource.url} alt={resource.title} className="w-full h-full object-contain" />;
             case 'link':
+            case 'Replay':
+            case 'Diaporama':
                 return <iframe src={resource.url} title={resource.title} className="w-full h-full" />;
             default:
                 return <p>Unsupported media type</p>;
