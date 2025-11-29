@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus, WebinarResource } from '../types';
 import { useAuth } from '../hooks/useAuth';
-import { useCart } from '../context/CartContext'; // Import useCart
-import ExpandableText from '../components/ExpandableText'; // Import the new component
-import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons'; // Import necessary icons
+import { useCart } from '../context/CartContext';
+import ExpandableText from '../components/ExpandableText';
+import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
+import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 
 interface WebinarResourceIconProps {
     resource: WebinarResource;
@@ -13,41 +14,25 @@ interface WebinarResourceIconProps {
 
 const WebinarResourceIcon: React.FC<WebinarResourceIconProps> = ({ resource }) => {
     let IconComponent: React.ElementType;
-    let label: string;
 
     switch (resource.type) {
         case 'youtube':
             IconComponent = PlayIcon;
-            label = resource.title || 'Replay Vidéo';
             break;
         case 'infographic':
             IconComponent = PhotoIcon;
-            label = resource.title || 'Infographie';
             break;
         case 'pdf':
             IconComponent = DocumentTextIcon;
-            label = resource.title || 'Diaporama';
             break;
         case 'link':
-            IconComponent = BookOpenIcon; // Using BookOpen for general link or MemoFiche
-            label = resource.title || 'Lien';
+            IconComponent = BookOpenIcon;
             break;
         default:
             return null;
     }
 
-    return (
-        <a 
-            href={resource.url} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="flex flex-col items-center p-2 text-slate-600 hover:text-teal-600 transition-colors"
-            title={label}
-        >
-            <IconComponent className="h-6 w-6" />
-            <span className="text-xs mt-1 truncate w-full text-center">{label}</span>
-        </a>
-    );
+    return <IconComponent className="h-6 w-6" />;
 };
 
 const WebinarCard: React.FC<{ 
@@ -55,7 +40,8 @@ const WebinarCard: React.FC<{
     isLiveCard?: boolean,
     isMyWebinarCard?: boolean,
     onResourceClick: (resource: WebinarResource) => void;
-}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick }) => {
+    onManageResources: (webinar: Webinar) => void;
+}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick, onManageResources }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { findItem } = useCart();
@@ -187,19 +173,31 @@ const WebinarCard: React.FC<{
                 </p>
                 {renderButtons()}
             </div>
-            {isMyWebinarCard && (webinar.resources && webinar.resources.length > 0) && (
+            {isMyWebinarCard && (
                 <div className="p-4 border-t border-slate-100 bg-slate-50">
                     <h4 className="text-sm font-bold text-slate-700 mb-2">Documents et Médias</h4>
-                    <ul className="space-y-2">
-                        {webinar.resources.map((resource, index) => (
-                            <li key={index} className="flex items-center">
-                                <button onClick={() => onResourceClick(resource)} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
-                                    <WebinarResourceIcon resource={resource} />
-                                    <span className="ml-2">{resource.title || resource.type}</span>
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    {webinar.resources && webinar.resources.length > 0 ? (
+                        <ul className="space-y-2">
+                            {webinar.resources.map((resource, index) => (
+                                <li key={index} className="flex items-center justify-between text-sm text-slate-600">
+                                    <button onClick={() => onResourceClick(resource)} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
+                                        <WebinarResourceIcon resource={resource} />
+                                        <span className="ml-2">{resource.title || resource.type}</span>
+                                    </button>
+                                    {(isAdmin || isWebinarAdmin) && (
+                                        <button onClick={() => onManageResources(webinar)} className="text-blue-500 hover:text-blue-700">
+                                            Modifier
+                                        </button>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-sm text-slate-500">Aucun média ajouté pour ce webinaire.</p>
+                    )}
+                    {(isAdmin || isWebinarAdmin) && (
+                        <button onClick={() => onManageResources(webinar)} className="mt-3 bg-teal-600 text-white text-sm px-3 py-1 rounded hover:bg-teal-700">Ajouter un média</button>
+                    )}
                 </div>
             )}
         </div>
@@ -223,6 +221,8 @@ const WebinarsPage: React.FC = () => {
 
     const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
     const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
+    const [isResourcesModalOpen, setIsResourcesModalOpen] = useState(false);
+    const [selectedWebinarForResources, setSelectedWebinarForResources] = useState<Webinar | null>(null);
 
     const handleResourceClick = (resource: WebinarResource) => {
         setSelectedResource(resource);
@@ -232,6 +232,39 @@ const WebinarsPage: React.FC = () => {
     const handleCloseMediaViewer = () => {
         setSelectedResource(null);
         setIsMediaViewerOpen(false);
+    };
+
+    const handleOpenResourcesModal = (webinar: Webinar) => {
+        setSelectedWebinarForResources(webinar);
+        setIsResourcesModalOpen(true);
+    };
+
+    const handleCloseResourcesModal = () => {
+        setSelectedWebinarForResources(null);
+        setIsResourcesModalOpen(false);
+    };
+
+    const handleSaveResources = async (webinarId: string, resources: WebinarResource[]) => {
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/resources`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ resources })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save resources');
+            }
+            
+            setMyWebinars(prev => prev.map(w => w._id === webinarId ? { ...w, resources } : w));
+            
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message);
+        }
     };
 
     useEffect(() => {
@@ -397,7 +430,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes Webinaire</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {myWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                             ))}
                         </div>
                     </div>
@@ -417,7 +450,7 @@ const WebinarsPage: React.FC = () => {
                             <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
                                 <div className="grid grid-cols-1 gap-6">
                                     {liveWebinars.map(webinar => (
-                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} />
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                                     ))}
                                 </div>
                             </div>
@@ -429,7 +462,7 @@ const WebinarsPage: React.FC = () => {
                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">
                                 Prochain Webinaire
                             </h2>
-                            <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} />
+                            <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                         </div>
                     )}
 
@@ -440,7 +473,7 @@ const WebinarsPage: React.FC = () => {
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {currentMonthWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} />
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                                 ))}
                             </div>
                         </div>
@@ -456,7 +489,7 @@ const WebinarsPage: React.FC = () => {
                                     <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                         {monthWebinars.map(webinar => (
-                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} />
+                                            <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                                         ))}
                                     </div>
                                 </div>
@@ -471,7 +504,7 @@ const WebinarsPage: React.FC = () => {
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {pastWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} />
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
                                 ))}
                             </div>
                         </div>
@@ -488,6 +521,14 @@ const WebinarsPage: React.FC = () => {
                 <MediaViewerModal 
                     resource={selectedResource}
                     onClose={handleCloseMediaViewer}
+                />
+            )}
+            {isResourcesModalOpen && selectedWebinarForResources && (
+                <ManageWebinarResourcesModal 
+                    webinarId={selectedWebinarForResources._id as string}
+                    resources={selectedWebinarForResources.resources || []}
+                    onClose={handleCloseResourcesModal}
+                    onSave={handleSaveResources}
                 />
             )}
         </div>
