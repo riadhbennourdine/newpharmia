@@ -4,7 +4,7 @@ import { Webinar, UserRole, WebinarGroup, WebinarStatus, WebinarResource } from 
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import ExpandableText from '../components/ExpandableText';
-import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon } from '../components/Icons';
+import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon, VideoCameraIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 
@@ -18,12 +18,12 @@ const WebinarResourceIcon: React.FC<WebinarResourceIconProps> = ({ resource }) =
     switch (resource.type) {
         case 'Replay':
         case 'youtube':
-            IconComponent = PlayIcon;
+            IconComponent = VideoCameraIcon;
             break;
         case 'Infographie':
+        case 'Diaporama':
             IconComponent = PhotoIcon;
             break;
-        case 'Diaporama':
         case 'pdf':
             IconComponent = DocumentTextIcon;
             break;
