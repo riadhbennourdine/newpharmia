@@ -149,7 +149,7 @@ const CheckoutPage: React.FC = () => {
     }
 
     const VAT_RATE = applyVat ? 0.19 : 0;
-    const STAMP_DUTY = 1.000;
+    const STAMP_DUTY = applyVat ? 1.000 : 0; // Conditional Timbre Fiscal
     const taxAmount = order.totalAmount * VAT_RATE;
     const totalAmountWithVATAndStamp = order.totalAmount + taxAmount + STAMP_DUTY;
 
