@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Order } from '../types';
+import { Order, Webinar, WebinarGroup } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
 import { BANK_DETAILS } from '../constants';
 
@@ -12,6 +12,8 @@ const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
 
     const [order, setOrder] = useState<Order | null>(null);
+    const [webinarsInOrder, setWebinarsInOrder] = useState<Webinar[]>([]);
+    const [applyVat, setApplyVat] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -26,19 +28,43 @@ const CheckoutPage: React.FC = () => {
             }
 
             try {
-                const response = await fetch(`/api/orders/${orderId}`, {
+                const orderResponse = await fetch(`/api/orders/${orderId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
+                if (!orderResponse.ok) {
+                    const errorData = await orderResponse.json();
                     throw new Error(errorData.message || 'Failed to fetch order details.');
                 }
 
-                const data: Order = await response.json();
-                setOrder(data);
+                const orderData: Order = await orderResponse.json();
+                setOrder(orderData);
+
+                // Fetch webinar details for all items in the order
+                const webinarIds = orderData.items.map(item => item.webinarId);
+                const webinarsResponse = await fetch('/api/webinars/by-ids', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ids: webinarIds }),
+                });
+
+                if (!webinarsResponse.ok) {
+                    throw new Error('Failed to fetch webinar details.');
+                }
+
+                const fetchedWebinars: Webinar[] = await webinarsResponse.json();
+                setWebinarsInOrder(fetchedWebinars);
+
+                // Determine if VAT should be applied (only if ALL webinars are CROPT)
+                const allCroptWebinars = fetchedWebinars.every(
+                    (webinar: Webinar) => webinar.group === WebinarGroup.CROP_TUNIS
+                );
+                setApplyVat(!allCroptWebinars);
+
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -122,7 +148,7 @@ const CheckoutPage: React.FC = () => {
         return <div className="text-center text-slate-700 py-10">Commande non trouvée.</div>;
     }
 
-    const VAT_RATE = 0.19;
+    const VAT_RATE = applyVat ? 0.19 : 0;
     const STAMP_DUTY = 1.000;
     const taxAmount = order.totalAmount * VAT_RATE;
     const totalAmountWithVATAndStamp = order.totalAmount + taxAmount + STAMP_DUTY;
