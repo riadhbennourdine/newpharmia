@@ -12,7 +12,7 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
     const [localResources, setLocalResources] = useState<WebinarResource[]>(resources);
 
     const handleAddResource = () => {
-        setLocalResources([...localResources, { type: 'Replay', url: '' }]);
+        setLocalResources([...localResources, { type: 'Replay', url: '', title: '' }]);
     };
 
     const handleResourceChange = (index: number, field: keyof WebinarResource, value: string) => {
@@ -51,9 +51,20 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
                                         <option value="Diaporama">Diaporama</option>
                                         <option value="Infographie">Infographie</option>
                                         <option value="pdf">PDF</option>
+                                        <option value="link">Lien</option>
+                                        <option value="youtube">YouTube</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-2">
+                                <div className="md:col-span-1">
+                                    <label className="block text-sm font-medium text-gray-700">Titre</label>
+                                    <input
+                                        type="text"
+                                        value={resource.title || ''}
+                                        onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
+                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    />
+                                </div>
+                                <div className="md:col-span-1">
                                     <label className="block text-sm font-medium text-gray-700">URL</label>
                                     <input
                                         type="text"

@@ -719,8 +719,11 @@ router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserR
 
         // Basic validation for each resource
         for (const resource of resources) {
-            if (!resource.type || !resource.url) {
-                return res.status(400).json({ message: 'Each resource must have a type and a URL.' });
+            if (!resource.type) {
+                return res.status(400).json({ message: 'Each resource must have a type.' });
+            }
+            if (typeof resource.url !== 'string') {
+                return res.status(400).json({ message: 'Resource URL must be a string.' });
             }
             if (!['Replay', 'Diaporama', 'Infographie', 'pdf', 'link', 'youtube'].includes(resource.type)) {
                 return res.status(400).json({ message: `Invalid resource type: ${resource.type}` });

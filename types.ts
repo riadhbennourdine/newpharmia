@@ -239,8 +239,9 @@ export enum WebinarGroup {
 }
 
 export interface WebinarResource {
-  type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf';
+  type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube';
   url: string;
+  title?: string;
 }
 
 export interface Webinar {
