@@ -52,12 +52,8 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
         return res.status(401).json({ message: 'Access Token is required' });
     }
 
-    console.log('Received token:', token); // Ajout du log
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_default_secret') as { id: string };
-        console.log('Decoded user from token:', decoded); // Ajout du log
-
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
