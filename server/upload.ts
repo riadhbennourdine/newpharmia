@@ -1,45 +1,37 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises'; // Use fs/promises for async file operations
 import clientPromise from './mongo.js';
 import { Image } from '../types.js';
+import { connectAndReturnFtpClient } from './ftp.js'; // Import the FTP connection function
 
 const router = express.Router();
 
-// Configure multer for file storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const destPath = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
-        // Ensure the directory exists
-        if (!fs.existsSync(destPath)) {
-            fs.mkdirSync(destPath, { recursive: true });
-        }
-        cb(null, destPath);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
+// Configure multer for file storage in memory
+const upload = multer({ storage: multer.memoryStorage() });
 
 // The upload endpoint
 router.post('/image', upload.single('imageFile'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
+
+    const { originalname, buffer } = req.file;
     const { name, theme } = req.body;
+
     if (!name || !theme) {
-        // Clean up the uploaded file if metadata is missing
-        fs.unlinkSync(req.file.path);
         return res.status(400).json({ message: 'Name and theme are required.' });
     }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
-
+    let ftpClient;
     try {
+        ftpClient = await connectAndReturnFtpClient();
+        const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
+        await ftpClient.uploadFrom(buffer, ftpFileName);
+
+        const imageUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const imagesCollection = db.collection<Image>('images');
@@ -56,20 +48,34 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
         res.status(201).json({ imageUrl });
 
     } catch (error) {
-        console.error('Error saving image metadata:', error);
-        // Clean up the uploaded file if db insertion fails
-        fs.unlinkSync(req.file.path);
-        res.status(500).json({ message: 'Error saving image metadata.' });
+        console.error('Error uploading image to FTP or saving metadata:', error);
+        res.status(500).json({ message: 'Error uploading image or saving metadata.' });
+    } finally {
+        if (ftpClient) ftpClient.close();
     }
 });
 
 // Generic file upload endpoint
-router.post('/file', upload.single('file'), (req, res) => {
+router.post('/file', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
-    const fileUrl = `/uploads/${req.file.filename}`;
-    res.status(201).json({ fileUrl });
+
+    const { originalname, buffer } = req.file;
+    let ftpClient;
+    try {
+        ftpClient = await connectAndReturnFtpClient();
+        const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
+        await ftpClient.uploadFrom(buffer, ftpFileName);
+
+        const fileUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
+        res.status(201).json({ fileUrl });
+    } catch (err) {
+        console.error('Error uploading file to FTP:', err);
+        res.status(500).json({ message: 'Failed to upload file to FTP.' });
+    } finally {
+        if (ftpClient) ftpClient.close();
+    }
 });
 
 // Endpoint to get all uploaded images

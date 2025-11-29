@@ -1,62 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner } from '../../components/Icons';
-import { TOPIC_CATEGORIES } from '../../constants';
-import { Image, ImageTheme } from '../../types';
-import getAbsoluteImageUrl from '../../utils/image';
+import path from 'path-browserify'; // Using path-browserify for cross-platform path manipulation
+
+interface FtpItem {
+    name: string;
+    type: 'file' | 'directory';
+    size: number;
+    modifyTime: string; // From rawModifiedAt
+}
 
 const ImageManager: React.FC = () => {
-    const [images, setImages] = useState<Image[]>([]);
+    const [ftpItems, setFtpItems] = useState<FtpItem[]>([]); 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const { token } = useAuth();
 
-    // State for the new image metadata
-    const [newImageName, setNewImageName] = useState('');
-    const [newImageTheme, setNewImageTheme] = useState(TOPIC_CATEGORIES[0].topics[0]);
+    const [currentPath, setCurrentPath] = useState<string>('/'); // Current FTP path
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [newFolderName, setNewFolderName] = useState<string>('');
 
-    // State for theme management
-    const [imageThemes, setImageThemes] = useState<ImageTheme[]>([]);
-    const [newThemeName, setNewThemeName] = useState('');
-    const [newThemeCategory, setNewThemeCategory] = useState<'Thèmes Pédagogiques' | 'Systèmes et Organes'>('Thèmes Pédagogiques');
-    const [isThemeLoading, setIsThemeLoading] = useState(false);
-
-    const fetchImages = async () => {
+    const fetchFtpItems = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
-            const response = await fetch('/api/upload/images');
+            const response = await fetch(`/api/ftp/list?path=${encodeURIComponent(currentPath)}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch images');
+                throw new Error('Failed to fetch FTP items');
             }
-            const data = await response.json();
-            setImages(data);
+            const data: FtpItem[] = await response.json();
+            // Sort directories first, then files, alphabetically
+            data.sort((a, b) => {
+                if (a.type === 'directory' && b.type === 'file') return -1;
+                if (a.type === 'file' && b.type === 'directory') return 1;
+                return a.name.localeCompare(b.name);
+            });
+            setFtpItems(data);
         } catch (err: any) {
             setError(err.message);
-        }
-    };
-
-    const fetchImageThemes = async () => {
-        try {
-            const response = await fetch('/api/image-themes');
-            if (!response.ok) {
-                throw new Error('Failed to fetch image themes');
-            }
-            const data = await response.json();
-            setImageThemes(data);
-        } catch (err: any) {
-            setError(err.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        const fetchAllData = async () => {
-            setIsLoading(true);
-            await Promise.all([fetchImages(), fetchImageThemes()]);
-            setIsLoading(false);
-        };
-        fetchAllData();
-    }, []);
+        fetchFtpItems();
+    }, [currentPath]); // Re-fetch when currentPath changes
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -65,21 +55,20 @@ const ImageManager: React.FC = () => {
     };
     
     const handleUpload = async () => {
-        if (!selectedFile || !newImageName || !newImageTheme) {
-            setError('Le nom, le thème et le fichier sont requis.');
+        if (!selectedFile) {
+            setError('Veuillez sélectionner un fichier.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('imageFile', selectedFile);
-        formData.append('name', newImageName);
-        formData.append('theme', newImageTheme);
+        formData.append('file', selectedFile);
+        formData.append('destinationPath', currentPath); // Send current path
 
         setIsUploading(true);
         setError(null);
 
         try {
-            const response = await fetch('/api/upload/image', {
+            const response = await fetch('/api/ftp/upload', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -88,15 +77,15 @@ const ImageManager: React.FC = () => {
             });
 
             if (!response.ok) {
-                throw new Error('File upload failed');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'File upload failed to FTP');
             }
 
-            // Reset form and refresh list
-            setNewImageName('');
             setSelectedFile(null);
-            const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
+            const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
             if(fileInput) fileInput.value = "";
-            await fetchImages();
+            await fetchFtpItems(); // Refresh the list
+            alert('Fichier téléversé avec succès !');
 
         } catch (err: any) {
             setError(err.message);
@@ -105,225 +94,206 @@ const ImageManager: React.FC = () => {
         }
     };
 
-    const handleAddTheme = async () => {
-        if (!newThemeName || !newThemeCategory) {
-            setError('Le nom et la catégorie du thème sont requis.');
+    const handleDelete = async (itemName: string, itemType: 'file' | 'directory') => {
+        if (!window.confirm(`Êtes-vous sûr de vouloir supprimer "${itemName}" (${itemType}) ?`)) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        const itemPath = path.posix.join(currentPath, itemName);
+
+        try {
+            const response = await fetch('/api/ftp/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ path: itemPath }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Failed to delete ${itemType} from FTP.`);
+            }
+
+            await fetchFtpItems(); // Refresh the list
+            alert(`${itemType === 'file' ? 'Fichier' : 'Dossier'} supprimé avec succès !`);
+
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCreateFolder = async () => {
+        if (!newFolderName.trim()) {
+            setError('Le nom du dossier ne peut pas être vide.');
             return;
         }
 
-        setIsThemeLoading(true);
+        setIsLoading(true); // Temporarily use isLoading for folder creation
         setError(null);
 
+        const fullPath = path.posix.join(currentPath, newFolderName);
+
         try {
-            const response = await fetch('/api/image-themes', {
+            const response = await fetch('/api/ftp/mkdir', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ name: newThemeName, category: newThemeCategory }),
+                body: JSON.stringify({ path: fullPath }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add theme');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create folder on FTP.');
             }
 
-            setNewThemeName('');
-            await fetchImageThemes();
+            setNewFolderName('');
+            await fetchFtpItems(); // Refresh the list
+            alert(`Dossier '${newFolderName}' créé avec succès !`);
+
         } catch (err: any) {
             setError(err.message);
         } finally {
-            setIsThemeLoading(false);
+            setIsLoading(false);
         }
     };
 
-    const handleDeleteTheme = async (id: string) => {
-        if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce thème ?')) return;
-
-        setIsThemeLoading(true);
-        setError(null);
-
-        try {
-            const response = await fetch(`/api/image-themes/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete theme');
-            }
-
-            await fetchImageThemes();
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsThemeLoading(false);
+    const handleNavigate = (itemName: string, itemType: 'file' | 'directory') => {
+        if (itemType === 'directory') {
+            setCurrentPath(path.posix.join(currentPath, itemName));
         }
+        // If it's a file, we could potentially preview it or copy its URL.
+        // For now, we only navigate into directories.
     };
 
-    const handleCopyUrl = (url: string) => {
-        navigator.clipboard.writeText(window.location.origin + url);
+    const handleGoUp = () => {
+        if (currentPath === '/') return;
+        setCurrentPath(path.posix.dirname(currentPath));
+    };
+
+    const handleCopyUrl = (fileName: string) => {
+        const url = `${window.location.origin}/api/ftp/view/${path.posix.join(currentPath, fileName)}`;
+        navigator.clipboard.writeText(url);
         alert('URL copiée dans le presse-papiers !');
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-slate-800 mb-6">Gestionnaire d'images</h1>
+            <h1 className="text-3xl font-bold text-slate-800 mb-6">Gestionnaire de Fichiers FTP</h1>
 
             {error && <p className="text-red-500 mb-4">Erreur : {error}</p>}
 
-            {/* Theme Management Section */}
+            {/* Current Path and Navigation */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 className="text-xl font-semibold text-slate-700 mb-4">Gérer les Thèmes d'images</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
-                    <div className="md:col-span-1">
-                        <label htmlFor="newThemeName" className="block text-sm font-medium text-slate-600">Nom du nouveau thème</label>
-                        <input
-                            type="text"
-                            id="newThemeName"
-                            value={newThemeName}
-                            onChange={(e) => setNewThemeName(e.target.value)}
-                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
-                            disabled={isThemeLoading}
-                        />
-                    </div>
-                    <div className="md:col-span-1">
-                        <label htmlFor="newThemeCategory" className="block text-sm font-medium text-slate-600">Catégorie</label>
-                        <select
-                            id="newThemeCategory"
-                            value={newThemeCategory}
-                            onChange={(e) => setNewThemeCategory(e.target.value as 'Thèmes Pédagogiques' | 'Systèmes et Organes')}
-                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
-                            disabled={isThemeLoading}
-                        >
-                            {TOPIC_CATEGORIES.map(cat => (
-                                <option key={cat.category} value={cat.category}>{cat.category}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="md:col-span-1">
-                        <button
-                            onClick={handleAddTheme}
-                            className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
-                            disabled={isThemeLoading || !newThemeName}
-                        >
-                            {isThemeLoading ? 'Ajout...' : 'Ajouter le thème'}
-                        </button>
-                    </div>
+                <h2 className="text-xl font-semibold text-slate-700 mb-4">Chemin actuel: {currentPath}</h2>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={handleGoUp}
+                        disabled={currentPath === '/'}
+                        className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-slate-300 disabled:bg-gray-300"
+                    >
+                        Remonter
+                    </button>
                 </div>
 
-                {imageThemes.length > 0 && (
-                    <div className="mt-6">
-                        <h3 className="text-lg font-semibold text-slate-700 mb-2">Thèmes personnalisés existants</h3>
-                        <ul className="flex flex-wrap gap-2">
-                            {imageThemes.map(theme => (
-                                <li key={theme._id} className="flex items-center bg-slate-100 rounded-full px-3 py-1 text-sm text-slate-700">
-                                    {theme.name} ({theme.category})
-                                    <button
-                                        onClick={() => handleDeleteTheme(theme._id.toString())}
-                                        className="ml-2 text-red-500 hover:text-red-700"
-                                        disabled={isThemeLoading}
-                                    >
-                                        &times;
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                {/* Create Folder Section */}
+                <div className="mb-4 flex items-center space-x-2">
+                    <input
+                        type="text"
+                        value={newFolderName}
+                        onChange={(e) => setNewFolderName(e.target.value)}
+                        placeholder="Nom du nouveau dossier"
+                        className="flex-grow rounded-md border-slate-300 shadow-sm"
+                    />
+                    <button
+                        onClick={handleCreateFolder}
+                        disabled={!newFolderName.trim()}
+                        className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
+                    >
+                        Créer un dossier
+                    </button>
+                </div>
             </div>
 
-            {/* Image Upload Section */}
+            {/* File Upload Section */}
             <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 className="text-xl font-semibold text-slate-700 mb-4">Téléverser une nouvelle image</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div className="md:col-span-1">
-                        <label htmlFor="imageName" className="block text-sm font-medium text-slate-600">Nom de l'image</label>
-                        <input
-                            type="text"
-                            id="imageName"
-                            value={newImageName}
-                            onChange={(e) => setNewImageName(e.target.value)}
-                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
-                        />
-                    </div>
-                    <div className="md:col-span-1">
-                        <label htmlFor="imageTheme" className="block text-sm font-medium text-slate-600">Thème</label>
-                        <select
-                            id="imageTheme"
-                            value={newImageTheme}
-                            onChange={(e) => setNewImageTheme(e.target.value)}
-                            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
-                        >
-                            {/* Combine TOPIC_CATEGORIES and custom image themes */}
-                            {TOPIC_CATEGORIES.map(cat => (
-                                <optgroup key={cat.category} label={cat.category}>
-                                    {cat.topics.map(topic => (
-                                        <option key={topic} value={topic}>{topic}</option>
-                                    ))}
-                                </optgroup>
-                            ))}
-                            {imageThemes.length > 0 && (
-                                <optgroup label="Thèmes personnalisés">
-                                    {imageThemes.map(theme => (
-                                        <option key={theme._id.toString()} value={theme.name}>{theme.name}</option>
-                                    ))}
-                                </optgroup>
-                            )}
-                        </select>
-                    </div>
+                <h2 className="text-xl font-semibold text-slate-700 mb-4">Téléverser un fichier</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <div className="md:col-span-1">
                          <input
                             type="file"
-                            id="imageUpload"
+                            id="fileUpload"
                             onChange={handleFileSelect}
                             className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                             disabled={isUploading}
                         />
                     </div>
+                    <div className="md:col-span-1">
+                         <button
+                            onClick={handleUpload}
+                            className="w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400"
+                            disabled={isUploading || !selectedFile}
+                        >
+                            {isUploading ? 'Téléversement...' : 'Téléverser'}
+                        </button>
+                    </div>
                 </div>
-                 <button
-                    onClick={handleUpload}
-                    className="mt-4 w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-gray-400"
-                    disabled={isUploading || !selectedFile || !newImageName || !newImageTheme}
-                >
-                    {isUploading ? 'Téléversement...' : 'Téléverser et Enregistrer'}
-                </button>
             </div>
 
-            {/* Existing Images Section */}
+            {/* FTP Items Section */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-slate-700 mb-4">Images existantes</h2>
+                <h2 className="text-xl font-semibold text-slate-700 mb-4">Contenu du dossier actuel</h2>
                 {isLoading ? (
                     <div className="flex justify-center items-center h-48"><Spinner className="h-12 w-12 text-teal-600" /></div>
-                ) : images.length > 0 ? (
+                ) : ftpItems.length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {images.map(image => (
-                            <div key={image._id.toString()} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                                <img
-                                    src={getAbsoluteImageUrl(image.url)}
-                                    alt={image.name}
-                                    className="w-full h-32 object-cover"
-                                />
+                        {ftpItems.map(item => (
+                            <div key={item.name} className="group bg-slate-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                                {item.type === 'directory' ? (
+                                    <button onClick={() => handleNavigate(item.name, item.type)} className="w-full h-32 flex items-center justify-center bg-blue-100 text-blue-600 text-5xl hover:bg-blue-200">
+                                        📁
+                                    </button>
+                                ) : (
+                                    <img
+                                        src={`/api/ftp/view/${path.posix.join(currentPath, item.name)}`}
+                                        alt={item.name}
+                                        className="w-full h-32 object-cover"
+                                    />
+                                )}
                                 <div className="p-3 flex-grow">
-                                    <p className="font-bold text-sm text-slate-800 truncate">{image.name}</p>
-                                    <p className="text-xs text-teal-600 bg-teal-50 rounded-full px-2 py-1 inline-block mt-1">{image.theme}</p>
+                                    <p className="font-bold text-sm text-slate-800 truncate">{item.name}</p>
+                                    <p className="text-xs text-slate-500">
+                                        {item.type === 'file' ? `Taille: ${(item.size / 1024).toFixed(2)} KB` : 'Dossier'}
+                                    </p>
+                                    <p className="text-xs text-slate-500">Modifié: {new Date(item.modifyTime).toLocaleDateString()}</p>
                                 </div>
-                                <div className="p-2 text-center border-t">
+                                <div className="p-2 flex justify-between items-center border-t">
+                                    {item.type === 'file' && (
+                                        <button
+                                            onClick={() => handleCopyUrl(item.name)}
+                                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                        >
+                                            Copier l'URL
+                                        </button>
+                                    )}
                                     <button
-                                        onClick={() => handleCopyUrl(image.url)}
-                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                        onClick={() => handleDelete(item.name, item.type)}
+                                        className="text-sm text-red-600 hover:text-red-800 font-medium ml-2"
                                     >
-                                        Copier l'URL
+                                        Supprimer
                                     </button>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p className="text-center text-slate-500">Aucune image téléversée pour le moment.</p>
+                    <p className="text-center text-slate-500">Ce dossier est vide.</p>
                 )}
             </div>
         </div>

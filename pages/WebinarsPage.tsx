@@ -118,7 +118,7 @@ const WebinarCard: React.FC<{
                 <Link to={`/webinars/${webinar._id}`} className="block relative">
                     <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-24 w-full object-cover" />
                     {webinar.calculatedStatus === WebinarStatus.LIVE && (
-                        <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
+                        <img src="/api/ftp/view/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
                     )}
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
                         {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -153,7 +153,7 @@ const WebinarCard: React.FC<{
             <Link to={`/webinars/${webinar._id}`} className="block relative">
                 <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
                 {webinar.calculatedStatus === WebinarStatus.LIVE && (
-                    <img src="https://newpharmia-production.up.railway.app/uploads/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
+                    <img src="/api/ftp/view/imageFile-1762858268856-857165789.gif" alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
                 )}
             </Link>
             <div className="p-4 flex-grow flex flex-col">

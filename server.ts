@@ -24,7 +24,7 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')));
+// app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')));
 
 // import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
 
@@ -298,6 +298,7 @@ import webinarsRouter from './server/webinars.js';
 import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
+import ftpRouter from './server/ftp.js'; // Import the new FTP router
 
 // ===============================================
 // API ROUTES
@@ -310,6 +311,7 @@ app.use('/api/webinars', webinarsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
+app.use('/api/ftp', ftpRouter); // Register the new FTP routes
 
 // ===============================================
 // ADMIN FILE SEARCH API
@@ -1331,20 +1333,6 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-// --- DEBUG LOGGING FOR STATIC PATHS ---
-const staticPath = path.join(process.cwd(), 'uploads');
-console.log('[DEBUG] Current working directory:', process.cwd());
-console.log('[DEBUG] Resolved static path for /uploads:', staticPath);
-try {
-    const staticPathExists = fs.existsSync(staticPath);
-    console.log('[DEBUG] Does the static path exist at startup?', staticPathExists);
-    if (staticPathExists) {
-        const contents = fs.readdirSync(staticPath);
-        console.log(`[DEBUG] Contents of ${staticPath}:`, contents.length > 0 ? contents : '(empty)');
-    }
-} catch (e) {
-    console.error('[DEBUG] Error checking static path:', e);
-}
 // --- END DEBUG LOGGING ---
 
 
