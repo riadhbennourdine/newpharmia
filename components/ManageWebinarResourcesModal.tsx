@@ -12,7 +12,7 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
     const [localResources, setLocalResources] = useState<WebinarResource[]>(resources);
 
     const handleAddResource = () => {
-        setLocalResources([...localResources, { type: 'link', url: '', title: '', description: '' }]);
+        setLocalResources([...localResources, { type: 'Replay', url: '' }]);
     };
 
     const handleResourceChange = (index: number, field: keyof WebinarResource, value: string) => {
@@ -33,49 +33,32 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
                 <h3 className="text-xl font-bold mb-4">Gérer les Médias</h3>
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                     {localResources.map((resource, index) => (
                         <div key={index} className="border p-4 rounded-md">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="md:col-span-1">
                                     <label className="block text-sm font-medium text-gray-700">Type</label>
                                     <select
                                         value={resource.type}
                                         onChange={(e) => handleResourceChange(index, 'type', e.target.value)}
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                     >
-                                        <option value="youtube">YouTube</option>
-                                        <option value="infographic">Infographie</option>
+                                        <option value="Replay">Replay</option>
+                                        <option value="Diaporama">Diaporama</option>
+                                        <option value="Infographie">Infographie</option>
                                         <option value="pdf">PDF</option>
-                                        <option value="link">Lien</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Titre</label>
-                                    <input
-                                        type="text"
-                                        value={resource.title}
-                                        onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                </div>
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">URL</label>
                                     <input
                                         type="text"
                                         value={resource.url}
                                         onChange={(e) => handleResourceChange(index, 'url', e.target.value)}
-                                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                                    <textarea
-                                        value={resource.description}
-                                        onChange={(e) => handleResourceChange(index, 'description', e.target.value)}
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                     />
                                 </div>

@@ -16,20 +16,19 @@ const WebinarResourceIcon: React.FC<WebinarResourceIconProps> = ({ resource }) =
     let IconComponent: React.ElementType;
 
     switch (resource.type) {
-        case 'youtube':
+        case 'Replay':
             IconComponent = PlayIcon;
             break;
-        case 'infographic':
+        case 'Infographie':
             IconComponent = PhotoIcon;
             break;
+        case 'Diaporama':
         case 'pdf':
             IconComponent = DocumentTextIcon;
             break;
-        case 'link':
+        default:
             IconComponent = BookOpenIcon;
             break;
-        default:
-            return null;
     }
 
     return <IconComponent className="h-6 w-6" />;
@@ -182,7 +181,7 @@ const WebinarCard: React.FC<{
                                 <li key={index} className="flex items-center justify-between text-sm text-slate-600">
                                     <button onClick={() => onResourceClick(resource)} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
                                         <WebinarResourceIcon resource={resource} />
-                                        <span className="ml-2">{resource.title || resource.type}</span>
+                                        <span className="ml-2">{resource.type}</span>
                                     </button>
                                 </li>
                             ))}
