@@ -58,12 +58,12 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }
                     ></iframe>
                 );
             case 'pdf':
+            case 'Diaporama':
                 return <PdfSlideshow pdfUrl={resource.url} />;
             case 'Infographie':
                 return <img src={resource.url} alt={resource.title} className="w-full h-full object-contain" />;
             case 'link':
             case 'Replay':
-            case 'Diaporama':
                 return <iframe src={resource.url} title={resource.title} className="w-full h-full" />;
             default:
                 return <p>Unsupported media type</p>;
