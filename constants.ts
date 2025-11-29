@@ -65,5 +65,5 @@ export const BANK_DETAILS = {
     rib: '07309007510558138471',
     bank: 'AMEN BANK',
     branch: 'Alain Savary',
-    imageUrl: 'https://newpharmia-production.up.railway.app/uploads/imageFile-1762760235176-829953438.jpg'
+    imageUrl: 'https://pharmaconseilbmb.com/photos/rib-cropt.jpg'
 };
