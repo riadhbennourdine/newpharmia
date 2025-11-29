@@ -184,11 +184,6 @@ const WebinarCard: React.FC<{
                                         <WebinarResourceIcon resource={resource} />
                                         <span className="ml-2">{resource.title || resource.type}</span>
                                     </button>
-                                    {(isAdmin || isWebinarAdmin) && (
-                                        <button onClick={() => onManageResources(webinar)} className="text-blue-500 hover:text-blue-700">
-                                            Modifier
-                                        </button>
-                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -196,7 +191,9 @@ const WebinarCard: React.FC<{
                         <p className="text-sm text-slate-500">Aucun média ajouté pour ce webinaire.</p>
                     )}
                     {(isAdmin || isWebinarAdmin) && (
-                        <button onClick={() => onManageResources(webinar)} className="mt-3 bg-teal-600 text-white text-sm px-3 py-1 rounded hover:bg-teal-700">Ajouter un média</button>
+                        <button onClick={() => onManageResources(webinar)} className="mt-3 bg-teal-600 text-white text-sm px-3 py-1 rounded hover:bg-teal-700">
+                            Gérer les médias
+                        </button>
                     )}
                 </div>
             )}
