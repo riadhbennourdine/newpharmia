@@ -722,7 +722,7 @@ router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserR
             if (!resource.type || !resource.url) {
                 return res.status(400).json({ message: 'Each resource must have a type and a URL.' });
             }
-            if (!['pdf', 'link', 'infographic', 'youtube'].includes(resource.type)) {
+            if (!['Replay', 'Diaporama', 'Infographie', 'pdf', 'link', 'youtube'].includes(resource.type)) {
                 return res.status(400).json({ message: `Invalid resource type: ${resource.type}` });
             }
         }
