@@ -38,21 +38,22 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
-    console.log("Contenu de req.file après Multer:", req.file); // Ajout d'un log pour diagnostic
 
-    const { originalname, buffer } = req.file; // multer.memoryStorage() stores file in buffer
+    const { originalname, path: tempFilePath } = req.file;
     const { destinationPath = '/' } = req.body; // Default to root
 
     let ftpClient;
     try {
         ftpClient = await connectAndReturnFtpClient();
         const remotePath = path.posix.join(destinationPath, originalname);
-        await ftpClient.uploadFrom(Readable.from(buffer), remotePath);
+        await ftpClient.uploadFrom(tempFilePath, remotePath); // Utilisation du chemin du fichier temporaire
         res.status(201).json({ message: 'File uploaded successfully.', filename: originalname, remotePath: remotePath });
     } catch (err) {
         console.error('FTP upload error:', err);
         res.status(500).json({ message: 'Failed to upload file to FTP.' });
     } finally {
+        // Supprimer le fichier temporaire créé par Multer
+        await fs.unlink(tempFilePath);
         if (ftpClient) ftpClient.close();
     }
 });
