@@ -71,7 +71,19 @@ router.get('/list', async (req, res) => {
         const { path: ftpPath = '/' } = req.query;
 
         const list = await ftpClient.list(ftpPath as string);
-        res.json(list.map(item => ({
+        const filteredList = list.filter(item => {
+            // Exclure les fichiers cachés/système (commençant par .)
+            if (item.name.startsWith('.')) {
+                return false;
+            }
+            // Exclure les répertoires temporaires ou autres éléments non pertinents
+            // if (item.name === 'uploads_temp' && item.type === 2) { // type 2 pour directory
+            //     return false;
+            // }
+            return true;
+        });
+
+        res.json(filteredList.map(item => ({
             name: item.name,
             type: item.type === 1 ? 'file' : 'directory',
             size: item.size,
