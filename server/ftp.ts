@@ -144,7 +144,7 @@ router.post('/mkdir', async (req, res) => {
     let ftpClient;
     try {
         ftpClient = await connectAndReturnFtpClient();
-        await ftpClient.mkdir(newDirPath, true); // `true` for recursive
+        await ftpClient.ensureDir(newDirPath); // Utilise ensureDir pour créer récursivement les répertoires
         res.status(201).json({ message: `Directory '${newDirPath}' created successfully.` });
     } catch (err) {
         console.error('FTP mkdir error:', err);
