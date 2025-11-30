@@ -125,21 +125,33 @@ router.get('/view/:filename', async (req, res) => {
     const tempFilePath = path.join(tempDir, filename);
 
     try {
+        console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
         ftpClient = await connectAndReturnFtpClient();
         await fs.mkdir(tempDir, { recursive: true });
         await ftpClient.downloadTo(tempFilePath, fullPath);
+        console.log(`[FTP View Debug] Fichier ${fullPath} téléchargé avec succès vers ${tempFilePath}`);
 
         // Stream the file back to the client
         res.sendFile(tempFilePath, {}, async (err) => {
             if (err) {
-                console.error('Error sending file to client:', err);
+                console.error('[FTP View Debug] Erreur lors de l\'envoi du fichier au client:', err);
+                // Si le fichier temporaire existe, le supprimer même en cas d'erreur d'envoi
+                if (await fs.stat(tempFilePath).catch(() => false)) {
+                    await fs.unlink(tempFilePath);
+                }
                 res.status(500).json({ message: 'Failed to send file.' });
+            } else {
+                console.log(`[FTP View Debug] Fichier ${tempFilePath} envoyé avec succès.`);
+                // Clean up temporary file after sending
+                await fs.unlink(tempFilePath);
             }
-            // Clean up temporary file after sending
-            await fs.unlink(tempFilePath);
         });
     } catch (err) {
         console.error('FTP download/view error:', err);
+        // Assurez-vous que le fichier temporaire est supprimé même si le téléchargement FTP échoue
+        if (await fs.stat(tempFilePath).catch(() => false)) {
+            await fs.unlink(tempFilePath);
+        }
         res.status(500).json({ message: 'Failed to retrieve file from FTP.' });
     } finally {
         if (ftpClient) ftpClient.close(); // Close connection
