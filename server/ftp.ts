@@ -1,12 +1,17 @@
 import express from 'express';
 import { Client } from 'basic-ftp';
 import multer from 'multer';
-import path from 'path';
+import path, { dirname } from 'path';
 import fs from 'fs/promises'; // Use fs/promises for async file operations
 import { Readable } from 'stream'; // Import Readable for converting buffer to stream
+import { fileURLToPath } from 'url'; // Import fileURLToPath for __dirname equivalent
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads_temp/' }); // Temporary storage for multer
+
+// Définir __filename et __dirname pour le contexte du module ES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const getFtpConfig = () => {
     return {
@@ -116,7 +121,7 @@ router.get('/view/:filename', async (req, res) => {
     const fullPath = path.posix.join(ftpPath as string, filename); // Use path.posix for FTP paths
 
     // Create a temporary local file to download to
-    const tempDir = 'downloads_temp';
+    const tempDir = path.join(__dirname, 'downloads_temp'); // Utilisation d'un chemin absolu
     const tempFilePath = path.join(tempDir, filename);
 
     try {
