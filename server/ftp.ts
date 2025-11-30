@@ -38,6 +38,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded.' });
     }
+    console.log("Contenu de req.file après Multer:", req.file); // Ajout d'un log pour diagnostic
 
     const { originalname, buffer } = req.file; // multer.memoryStorage() stores file in buffer
     const { destinationPath = '/' } = req.body; // Default to root
