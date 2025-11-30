@@ -10,6 +10,18 @@ interface FtpItem {
     modifyTime: string; // From rawModifiedAt
 }
 
+// Fonction utilitaire pour construire le chemin de l'URL de visualisation FTP
+const getFtpViewPath = (currentPath: string, itemName: string) => {
+    let fullPath = path.posix.join(currentPath, itemName);
+    // S'assurer qu'il n'y a pas de slash initial si currentPath n'est pas la racine
+    // et que le chemin complet n'est pas juste '/'
+    if (fullPath.startsWith('/') && fullPath.length > 1) {
+        fullPath = fullPath.substring(1);
+    }
+    return fullPath;
+};
+
+
 const ImageManager: React.FC = () => {
     const [ftpItems, setFtpItems] = useState<FtpItem[]>([]); 
     const [isLoading, setIsLoading] = useState(true);
@@ -178,7 +190,7 @@ const ImageManager: React.FC = () => {
     };
 
     const handleCopyUrl = (fileName: string) => {
-        const url = `${window.location.origin}/api/ftp/view/${path.posix.join(currentPath, fileName)}`;
+        const url = `${window.location.origin}/api/ftp/view/${getFtpViewPath(currentPath, fileName)}`;
         navigator.clipboard.writeText(url);
         alert('URL copiée dans le presse-papiers !');
     };
@@ -261,7 +273,7 @@ const ImageManager: React.FC = () => {
                                     </button>
                                 ) : (
                                     <img
-                                        src={`/api/ftp/view/${path.posix.join(currentPath, item.name)}`}
+                                        src={`/api/ftp/view/${getFtpViewPath(currentPath, item.name)}`}
                                         alt={item.name}
                                         className="w-full h-32 object-cover"
                                     />
