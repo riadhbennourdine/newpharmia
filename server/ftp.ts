@@ -3,6 +3,7 @@ import { Client } from 'basic-ftp';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises'; // Use fs/promises for async file operations
+import { Readable } from 'stream'; // Import Readable for converting buffer to stream
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads_temp/' }); // Temporary storage for multer
@@ -45,7 +46,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     try {
         ftpClient = await connectAndReturnFtpClient();
         const remotePath = path.posix.join(destinationPath, originalname);
-        await ftpClient.uploadFrom(buffer, remotePath);
+        await ftpClient.uploadFrom(Readable.from(buffer), remotePath);
         res.status(201).json({ message: 'File uploaded successfully.', filename: originalname, remotePath: remotePath });
     } catch (err) {
         console.error('FTP upload error:', err);
@@ -79,20 +80,26 @@ router.get('/list', async (req, res) => {
 
 // DELETE /api/ftp/delete
 router.delete('/delete', async (req, res) => {
-    const { path: filePath } = req.body;
+    const { path: filePath, itemType } = req.body;
 
-    if (!filePath) {
-        return res.status(400).json({ message: 'File path is required.' });
+    if (!filePath || !itemType) {
+        return res.status(400).json({ message: 'File path and item type are required.' });
     }
 
     let ftpClient;
     try {
         ftpClient = await connectAndReturnFtpClient();
-        await ftpClient.remove(filePath);
-        res.status(200).json({ message: 'File deleted successfully.' });
+        if (itemType === 'file') {
+            await ftpClient.remove(filePath);
+        } else if (itemType === 'directory') {
+            await ftpClient.removeDir(filePath, true); // Supprime le dossier et son contenu récursivement
+        } else {
+            return res.status(400).json({ message: 'Invalid item type.' });
+        }
+        res.status(200).json({ message: 'Item deleted successfully.' });
     } catch (err) {
         console.error('FTP delete error:', err);
-        res.status(500).json({ message: 'Failed to delete file from FTP.' });
+        res.status(500).json({ message: `Failed to delete ${itemType} from FTP.` });
     } finally {
         if (ftpClient) ftpClient.close();
     }

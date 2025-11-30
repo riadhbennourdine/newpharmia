@@ -109,7 +109,7 @@ const ImageManager: React.FC = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ path: itemPath }),
+                body: JSON.stringify({ path: itemPath, itemType }), // Envoyer itemType
             });
 
             if (!response.ok) {
