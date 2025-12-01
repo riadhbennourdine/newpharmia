@@ -7,7 +7,7 @@ import ExpandableText from '../components/ExpandableText';
 import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon, VideoCameraIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
-import { getFtpViewUrl } from '../../utils/ftp';
+import { getFtpViewUrl } from '../utils/ftp';
 
 const formatUrl = (url: string): string => {
     if (!url) return '';
