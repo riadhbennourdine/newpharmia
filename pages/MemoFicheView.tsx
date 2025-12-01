@@ -437,24 +437,23 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
     // Prioritize "Le médicament" specific media tabs if present
     if (caseStudy.youtubeExplainerUrl) {
-        items.push({
-            id: 'video-explainer' as TabName,
-            label: 'Vidéo',
-            icon: <VideoCameraIcon className="h-8 w-8 text-slate-600" />
-        });
-    }
+                    items.push({
+                        id: 'video-explainer' as TabName,
+                        label: 'Vidéo',
+                        icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/media.png" className="h-8 w-8" alt="Vidéo" />
+                    });    }
     if (caseStudy.infographicImageUrl) {
         items.push({
             id: 'infographie' as TabName,
             label: 'Infographie',
-            icon: <BookOpenIcon className="h-8 w-8 text-slate-600" />
+            icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/infographie.png" className="h-8 w-8" alt="Infographie" />
         });
     }
     if (caseStudy.pdfSlideshowUrl) {
         items.push({
             id: 'diaporama' as TabName,
             label: 'Diaporama',
-            icon: <ImageIcon className="h-8 w-8 text-slate-600" /> // Using ImageIcon as a generic document/visual icon
+            icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/diaporama.png" className="h-8 w-8" alt="Diaporama" />
         });
     }
 
@@ -476,7 +475,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
                 items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src={getAbsoluteImageUrl(getIconUrl('glossary'))} className="h-8 w-8" alt="Glossaire" /> });
             }
             if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
-                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getAbsoluteImageUrl(getIconUrl('media'))} className="h-8 w-8" alt="Média" /> });
+                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/media.png" className="h-8 w-8" alt="Média" /> });
             }
         }    
     return items;
