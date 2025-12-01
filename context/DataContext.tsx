@@ -83,6 +83,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
   const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
+    console.log("getCaseStudyById: Déclenchement de l'appel API pour l'ID:", id); // <-- AJOUT DU LOG
     try {
       const headers: HeadersInit = {};
       if (user) {
@@ -92,9 +93,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Toujours récupérer depuis l'API pour s'assurer d'avoir la version la plus à jour
       const response = await fetch(`/api/memofiches/${id}`, { headers });
       if (!response.ok) throw new Error('Mémofiche non trouvée.');
+      console.log("getCaseStudyById: API a répondu pour l'ID:", id); // <-- AJOUT DU LOG
       return await response.json();
     } catch (err: any) {
-      console.error(err);
+      console.error("getCaseStudyById: Erreur lors de la récupération de l'ID:", id, err); // <-- MODIF DU LOG D'ERREUR
       navigate('/dashboard', { replace: true });
       return undefined;
     }
