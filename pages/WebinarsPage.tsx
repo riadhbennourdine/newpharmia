@@ -8,6 +8,15 @@ import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, Doc
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 
+const formatUrl = (url: string): string => {
+    if (!url) return '';
+    const trimmedUrl = url.trim();
+    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+        return trimmedUrl;
+    }
+    return `https://${trimmedUrl}`;
+};
+
 interface WebinarResourceIconProps {
     resource: WebinarResource;
 }
@@ -70,7 +79,7 @@ const WebinarCard: React.FC<{
         if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim()) {
             return (
                 <a
-                    href={webinar.googleMeetLink.trim()}
+                    href={formatUrl(webinar.googleMeetLink)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
@@ -133,7 +142,7 @@ const WebinarCard: React.FC<{
                         </h3>
                         {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim() && (
                             <a
-                                href={webinar.googleMeetLink.trim()}
+                                href={formatUrl(webinar.googleMeetLink)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"

@@ -6,6 +6,15 @@ import { useCart, CartItem } from '../context/CartContext';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 import { BANK_DETAILS } from '../constants';
 
+const formatUrl = (url: string): string => {
+    if (!url) return '';
+    const trimmedUrl = url.trim();
+    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+        return trimmedUrl;
+    }
+    return `https://${trimmedUrl}`;
+};
+
 const getUserDisplayName = (user: Partial<User>): string => {
     if (typeof user !== 'object' || user === null) return 'ID Inconnu';
     if (user.firstName && user.lastName) {
@@ -327,7 +336,7 @@ const WebinarDetailPage: React.FC = () => {
                                                                                         )}
                                                                                         {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim() && (
                                                                                             <a
-                                                                                                href={webinar.googleMeetLink.trim()}
+                                                                                                href={formatUrl(webinar.googleMeetLink)}
                                                                                                 target="_blank"
                                                                                                 rel="noopener noreferrer"
                                                                                                 className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
