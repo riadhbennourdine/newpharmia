@@ -84,16 +84,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
     try {
-      // First, check if the fiche is already in the current list
-      const existingFiche = fiches.find(f => f._id === id);
-      if (existingFiche) return existingFiche;
-      
       const headers: HeadersInit = {};
       if (user) {
         headers['x-user-id'] = user._id;
       }
 
-      // If not, fetch it from the API
+      // Toujours récupérer depuis l'API pour s'assurer d'avoir la version la plus à jour
       const response = await fetch(`/api/memofiches/${id}`, { headers });
       if (!response.ok) throw new Error('Mémofiche non trouvée.');
       return await response.json();
@@ -102,7 +98,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       navigate('/dashboard', { replace: true });
       return undefined;
     }
-  }, [user, fiches, navigate]);
+  }, [user, navigate]);
 
   const saveCaseStudy = async (caseStudy: CaseStudy): Promise<CaseStudy> => {
     const isNew = !caseStudy._id;
