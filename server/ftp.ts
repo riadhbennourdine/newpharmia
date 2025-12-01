@@ -164,21 +164,13 @@ router.delete('/delete', async (req, res) => {
     }
 });
 
-// GET /api/ftp/view/:filename
-router.get('/view/:filename', async (req, res) => {
+// GET /api/ftp/view
+router.get('/view', async (req, res) => {
     let ftpClient;
-    const filename = req.params.filename;
-    const ftpPath = req.query.path as string;
-
-    let fullPath;
-    if (ftpPath) {
-        fullPath = path.posix.join(ftpPath, filename);
-    } else {
-        fullPath = `/${filename}`;
-    }
+    const fullPath = req.query.filePath as string;
 
     if (!fullPath) {
-        return res.status(400).json({ message: 'File path is required.' });
+        return res.status(400).json({ message: 'filePath query parameter is required.' });
     }
 
     // Create a temporary local file to download to

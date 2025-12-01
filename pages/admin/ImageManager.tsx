@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner } from '../../components/Icons';
 import path from 'path-browserify'; // Using path-browserify for cross-platform path manipulation
+import { getFtpViewUrl } from '../../utils/ftp';
 
 interface FtpItem {
     name: string;
@@ -179,7 +180,8 @@ const ImageManager: React.FC = () => {
     };
 
     const handleCopyUrl = (fileName: string) => {
-        const url = `${window.location.origin}/api/ftp/view/${encodeURIComponent(fileName)}?path=${encodeURIComponent(currentPath)}`;
+        const fullPath = path.posix.join(currentPath, fileName);
+        const url = getFtpViewUrl(fullPath);
         navigator.clipboard.writeText(url);
         alert('URL copiée dans le presse-papiers !');
     };
@@ -262,7 +264,7 @@ const ImageManager: React.FC = () => {
                                     </button>
                                 ) : (
                                     <img
-                                        src={`/api/ftp/view/${encodeURIComponent(item.name)}?path=${encodeURIComponent(currentPath)}`}
+                                        src={getFtpViewUrl(path.posix.join(currentPath, item.name))}
                                         alt={item.name}
                                         className="w-full h-32 object-cover"
                                     />

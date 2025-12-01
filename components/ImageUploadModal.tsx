@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Spinner, UploadIcon } from './Icons';
 import { useDropzone } from 'react-dropzone';
+import { getFtpViewUrl } from '../utils/ftp';
 
 interface FtpFile {
     name: string;
@@ -51,7 +52,7 @@ const ImageUploader: React.FC<{ onUploadSuccess: (url: string) => void }> = ({ o
 
             const result = await response.json();
             // Construct the URL to be used by the parent modal
-            const imageUrl = `/api/ftp/view/${result.filename}`;
+            const imageUrl = getFtpViewUrl(result.filename);
             onUploadSuccess(imageUrl);
         } catch (err: any) {
             setError(err.message);
@@ -123,9 +124,9 @@ const ImageGallery: React.FC<{ onSelectImage: (url: string) => void }> = ({ onSe
                 ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                         {images.map(image => (
-                            <div key={image.name} className="cursor-pointer group" onClick={() => onSelectImage(`/api/ftp/view/${image.name}`)}>
+                            <div key={image.name} className="cursor-pointer group" onClick={() => onSelectImage(getFtpViewUrl(image.name))}>
                                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-slate-100 relative">
-                                    <img src={`/api/ftp/view/${image.name}`} alt={image.name} className="w-full h-full object-cover object-center" />
+                                    <img src={getFtpViewUrl(image.name)} alt={image.name} className="w-full h-full object-cover object-center" />
                                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
                                         <p className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold text-center p-2">Sélectionner</p>
                                     </div>

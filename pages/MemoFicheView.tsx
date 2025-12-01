@@ -11,6 +11,7 @@ import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinn
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import PdfSlideshow from '../components/PdfSlideshow';
+import { getFtpViewUrl } from '../../utils/ftp';
 
 const AccordionSection: React.FC<{
     title: string;
@@ -450,33 +451,33 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                     items.push({
                         id: 'video-explainer' as TabName,
                         label: 'Vidéo',
-                        icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/media.png" className="h-8 w-8" alt="Vidéo" />
+                        icon: <img src={getFtpViewUrl("media.png")} className="h-8 w-8" alt="Vidéo" />
                     });    }
     if (caseStudy.infographicImageUrl) {
         items.push({
             id: 'infographie' as TabName,
             label: 'Infographie',
-            icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/infographie.png" className="h-8 w-8" alt="Infographie" />
+            icon: <img src={getFtpViewUrl("infographie.png")} className="h-8 w-8" alt="Infographie" />
         });
     }
     if (caseStudy.pdfSlideshowUrl) {
         items.push({
             id: 'diaporama' as TabName,
             label: 'Diaporama',
-            icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/diaporama.png" className="h-8 w-8" alt="Diaporama" />
+            icon: <img src={getFtpViewUrl("diaporama.png")} className="h-8 w-8" alt="Diaporama" />
         });
     }
 
     // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
         if (!isLeMedicamentManual) {
             if (hasMemoContent) {
-                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/memo.png" className="h-8 w-8" alt="Mémo" /> });
+                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src={getFtpViewUrl("memo.png")} className="h-8 w-8" alt="Mémo" /> });
             }
             if (hasFlashcards) {
-                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/flashcards.png" className="h-8 w-8" alt="Flashcards" /> });
+                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src={getFtpViewUrl("flashcards.png")} className="h-8 w-8" alt="Flashcards" /> });
             }
             if (!isPreview && hasQuiz) {
-                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/quiz.png" className="h-8 w-8" alt="Quiz" /> });
+                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src={getFtpViewUrl("quiz.png")} className="h-8 w-8" alt="Quiz" /> });
             }
             if (!isPreview && caseStudy.kahootUrl) {
                 items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src={getAbsoluteImageUrl(getIconUrl('kahoot'))} className="h-8 w-8" alt="Kahoot" /> });
@@ -485,7 +486,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                 items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src={getAbsoluteImageUrl(getIconUrl('glossary'))} className="h-8 w-8" alt="Glossaire" /> });
             }
             if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
-                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/media.png" className="h-8 w-8" alt="Média" /> });
+                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getFtpViewUrl("media.png")} className="h-8 w-8" alt="Média" /> });
             }
         }    
     return items;

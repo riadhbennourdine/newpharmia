@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Spinner } from './Icons';
+import { getFtpViewUrl } from '../utils/ftp';
 
 interface FtpFile {
     name: string;
@@ -45,7 +46,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
     const filteredImages = images;
 
     const handleImageSelect = (fileName: string) => {
-        const url = `/api/ftp/view/${fileName}`; // Construct the FTP view URL
+        const url = getFtpViewUrl(fileName); // Construct the FTP view URL
         onSelectImage(url);
         onClose();
     };
@@ -68,7 +69,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
                             {filteredImages.map(image => (
                                 <div key={image.name} className="cursor-pointer group" onClick={() => handleImageSelect(image.name)}>
                                     <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-slate-100 relative">
-                                        <img src={`/api/ftp/view/${image.name}`} alt={image.name} className="w-full h-full object-cover object-center" />
+                                        <img src={getFtpViewUrl(image.name)} alt={image.name} className="w-full h-full object-cover object-center" />
                                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
                                             <p className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold text-center p-2">Sélectionner</p>
                                         </div>

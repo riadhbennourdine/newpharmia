@@ -5,6 +5,7 @@ import fs from 'fs/promises'; // Use fs/promises for async file operations
 import clientPromise from './mongo.js';
 import { Image } from '../types.js';
 import { getFtpClient, releaseFtpClient } from './ftp.js'; // Import the FTP connection pool functions
+import { getFtpViewUrl } from '../utils/ftp.js'; // Import the new URL builder
 import { Readable } from 'stream';
 
 const router = express.Router();
@@ -36,7 +37,7 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
 
         await ftpClient.uploadFrom(readableStream, ftpFileName);
 
-        const imageUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
+        const imageUrl = getFtpViewUrl(ftpFileName);
 
         const client = await clientPromise;
         const db = client.db('pharmia');
@@ -79,7 +80,7 @@ router.post('/file', upload.single('file'), async (req, res) => {
 
         await ftpClient.uploadFrom(readableStream, ftpFileName);
 
-        const fileUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
+        const fileUrl = getFtpViewUrl(ftpFileName);
         res.status(201).json({ fileUrl });
     } catch (err) {
         console.error('Error uploading file to FTP:', err);
