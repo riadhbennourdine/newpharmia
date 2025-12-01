@@ -164,17 +164,17 @@ router.delete('/delete', async (req, res) => {
     }
 });
 
-// GET /api/ftp/view/*
-router.get(/\/view\/(.*)/, async (req, res) => {
+// GET /api/ftp/view/:filename
+router.get('/view/:filename', async (req, res) => {
     let ftpClient;
-    const filePart = req.params[0];
-    const pathPart = req.query.path as string;
+    const filename = req.params.filename;
+    const ftpPath = req.query.path as string;
 
     let fullPath;
-    if (pathPart) {
-        fullPath = path.posix.join(pathPart, filePart);
+    if (ftpPath) {
+        fullPath = path.posix.join(ftpPath, filename);
     } else {
-        fullPath = `/${filePart}`;
+        fullPath = `/${filename}`;
     }
 
     if (!fullPath) {
