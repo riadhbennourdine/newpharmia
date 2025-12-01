@@ -648,6 +648,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
 const MemoFichePage = () => {
     const { id } = useParams<{ id: string }>();
+    console.log("MemoFichePage: id from URL params:", id); // <-- AJOUT DU LOG
     const navigate = useNavigate();
     const { getCaseStudyById, startQuiz, editCaseStudy, deleteCaseStudy } = useData();
     const { markFicheAsRead } = useAuth(); // Get the new function
@@ -655,8 +656,10 @@ const MemoFichePage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        console.log("MemoFichePage useEffect: id =", id); // <-- AJOUT DU LOG
         if (id) {
             setLoading(true);
+            console.log("MemoFichePage useEffect: Appelle getCaseStudyById pour id:", id); // <-- AJOUT DU LOG
             getCaseStudyById(id).then(data => {
                 if (data) {
                     setCaseStudy(data);
