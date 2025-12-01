@@ -165,9 +165,9 @@ router.delete('/delete', async (req, res) => {
 });
 
 // GET /api/ftp/view/*
-router.get('/view/:path(*)', async (req, res) => {
+router.get(/\/view\/(.*)/, async (req, res) => {
     let ftpClient;
-    const filePath = req.params.path;
+    const filePath = req.params[0];
     if (!filePath) {
         return res.status(400).json({ message: 'File path is required.' });
     }
