@@ -9,6 +9,7 @@
     "build": "npm run build:server && vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "db:add-memo-sections": "tsx scripts/add-memo-sections.ts",
+    "db:ensure-memo-sections": "tsx scripts/ensure-memo-sections.ts",
     "preview": "vite preview"
   },
   "dependencies": {

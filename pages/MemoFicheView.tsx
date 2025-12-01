@@ -429,7 +429,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     const hasGlossary = caseStudy.glossary && caseStudy.glossary.length > 0;
     
     // Check if memoContent actually has content based on caseStudy.memoSections
-    const hasMemoContent = caseStudy.memoSections && caseStudy.memoSections.length > 0;
+    const hasMemoContent = caseStudy.memoSections != null;
 
     const isLeMedicamentManual = caseStudy.type === 'le-medicament' && !hasFlashcards && !hasQuiz;
 
