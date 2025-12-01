@@ -731,27 +731,25 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         </FormSection>
 
         {/* New FormSection for "Le médicament" specific media */} 
-        {caseStudy.type === 'le-medicament' && (
-            <FormSection title="Médias Spécifiques 'Le médicament'">
-                <div>
-                    <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
-                    <Input type="text" name="youtubeExplainerUrl" id="youtubeExplainerUrl" value={caseStudy.youtubeExplainerUrl || ''} onChange={handleChange} />
+        <FormSection title="Médias">
+            <div>
+                <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
+                <Input type="text" name="youtubeExplainerUrl" id="youtubeExplainerUrl" value={caseStudy.youtubeExplainerUrl || ''} onChange={handleChange} />
+            </div>
+            <div>
+                <Label htmlFor="infographicImageUrl">URL ou Télécharger Infographie</Label>
+                <div className="mt-1 flex items-center gap-2">
+                    <Input type="text" name="infographicImageUrl" id="infographicImageUrl" value={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} onChange={handleChange} className="flex-grow" />
+                    <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, infographicImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                        <ImageIcon className="h-5 w-5 text-slate-600" />
+                    </button>
                 </div>
-                <div>
-                    <Label htmlFor="infographicImageUrl">URL ou Télécharger Infographie</Label>
-                    <div className="mt-1 flex items-center gap-2">
-                        <Input type="text" name="infographicImageUrl" id="infographicImageUrl" value={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} onChange={handleChange} className="flex-grow" />
-                        <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, infographicImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
-                            <ImageIcon className="h-5 w-5 text-slate-600" />
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <Label htmlFor="pdfSlideshowUrl">URL Fichier PDF pour Diaporama</Label>
-                    <Input type="text" name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} />
-                </div>
-            </FormSection>
-        )}
+            </div>
+            <div>
+                <Label htmlFor="pdfSlideshowUrl">URL Fichier PDF pour Diaporama</Label>
+                <Input type="text" name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} />
+            </div>
+        </FormSection>
 
         {displayedSections.map((sectionInfo, index) => {
             let content;
