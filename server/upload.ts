@@ -3,8 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises'; // Use fs/promises for async file operations
 import clientPromise from './mongo.js';
-import { Image } from '../types.js';
-import { connectAndReturnFtpClient } from './ftp.js'; // Import the FTP connection function
+import { getFtpClient, releaseFtpClient } from './ftp.js'; // Import the FTP connection pool functions
 import { Readable } from 'stream';
 
 const router = express.Router();
@@ -27,7 +26,7 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
 
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
         
         const readableStream = new Readable();
@@ -57,7 +56,7 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
         console.error('Error uploading image to FTP or saving metadata:', error);
         res.status(500).json({ message: 'Error uploading image or saving metadata.' });
     } finally {
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
@@ -70,7 +69,7 @@ router.post('/file', upload.single('file'), async (req, res) => {
     const { originalname, buffer } = req.file;
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
         
         const readableStream = new Readable();
@@ -85,7 +84,7 @@ router.post('/file', upload.single('file'), async (req, res) => {
         console.error('Error uploading file to FTP:', err);
         res.status(500).json({ message: 'Failed to upload file to FTP.' });
     } finally {
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
