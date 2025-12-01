@@ -167,23 +167,32 @@ router.delete('/delete', async (req, res) => {
 // GET /api/ftp/view/*
 router.get(/\/view\/(.*)/, async (req, res) => {
     let ftpClient;
-    const filePath = req.params[0];
-    if (!filePath) {
+    const filePart = req.params[0];
+    const pathPart = req.query.path as string;
+
+    let fullPath;
+    if (pathPart) {
+        fullPath = path.posix.join(pathPart, filePart);
+    } else {
+        fullPath = `/${filePart}`;
+    }
+
+    if (!fullPath) {
         return res.status(400).json({ message: 'File path is required.' });
     }
 
     // Create a temporary local file to download to
     const tempDir = path.join(__dirname, 'downloads_temp');
     // Ensure the filename is safe to use in a path
-    const safeFilename = path.basename(filePath);
+    const safeFilename = path.basename(fullPath);
     const tempFilePath = path.join(tempDir, safeFilename);
 
     try {
         ftpClient = await getFtpClient();
-        console.log(`[FTP View Debug] Téléchargement du fichier FTP: /${filePath} vers ${tempFilePath}`);
+        console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
         await fs.mkdir(tempDir, { recursive: true });
-        await ftpClient.downloadTo(tempFilePath, `/${filePath}`);
-        console.log(`[FTP View Debug] Fichier /${filePath} téléchargé avec succès vers ${tempFilePath}`);
+        await ftpClient.downloadTo(tempFilePath, fullPath);
+        console.log(`[FTP View Debug] Fichier ${fullPath} téléchargé avec succès vers ${tempFilePath}`);
 
         // Stream the file back to the client
         res.sendFile(tempFilePath, {}, async (err) => {
