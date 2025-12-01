@@ -165,7 +165,7 @@ router.delete('/delete', async (req, res) => {
 });
 
 // GET /api/ftp/view/*
-router.get('/view/*', async (req, res) => {
+router.get('/view/(.*)', async (req, res) => {
     let ftpClient;
     const filePath = req.params[0];
     if (!filePath) {
