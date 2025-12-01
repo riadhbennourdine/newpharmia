@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises'; // Use fs/promises for async file operations
 import clientPromise from './mongo.js';
+import { Image } from '../types.js';
 import { getFtpClient, releaseFtpClient } from './ftp.js'; // Import the FTP connection pool functions
 import { Readable } from 'stream';
 
