@@ -47,7 +47,10 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
     }
   };
 
-  const fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`;
+  let fileToLoad = absolutePdfUrl;
+  if (absolutePdfUrl.startsWith('http')) {
+      fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`;
+  }
   console.log('File prop for Document:', fileToLoad);
 
   return (
