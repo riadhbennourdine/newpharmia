@@ -332,11 +332,19 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     return html;
   }
 
-
+// Helper to check if a MemoFicheSection is empty
+const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[]): boolean => {
+    if (!sectionContent || sectionContent.length === 0) {
+        return true;
+    }
+    return sectionContent.every(item => !item.value || item.value.trim() === '');
+};
   
       const memoContent = useMemo(() => {
       if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
-        const content = (caseStudy.memoSections || []).map((section, index) => ({
+        const content = (caseStudy.memoSections || [])
+            .filter(section => !isMemoFicheSectionContentEmpty(section.content)) // Filter out empty memo sections
+            .map((section, index) => ({
           id: section.id || `memoSection-${index}`,
           title: section.title,
           icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
@@ -372,14 +380,16 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src={getAbsoluteImageUrl(getIconUrl('dietaryAdvice'))} className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: (caseStudy.dietaryAdvice && caseStudy.dietaryAdvice.length > 0) ? caseStudy.dietaryAdvice : caseStudy.recommendations?.dietaryAdvice, isAlert: false },
       ];
   
-    const memoSectionsForDisplay = (caseStudy.memoSections || []).map((section, index) => ({
-        id: section.id || `memoSection-${index}`,
-        title: section.title,
-        icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
-        data: section.content, // Use section.content for MemoFicheSection
-        isMemoSection: true,
-        isAlert: false,
-    }));
+    const memoSectionsForDisplay = (caseStudy.memoSections || [])
+        .filter(section => !isMemoFicheSectionContentEmpty(section.content)) // Filter out empty memo sections
+        .map((section, index) => ({
+            id: section.id || `memoSection-${index}`,
+            title: section.title,
+            icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+            data: section.content, // Use section.content for MemoFicheSection
+            isMemoSection: true,
+            isAlert: false,
+        }));
 
     const customSections = (caseStudy.customSections || []).map((section, index) => ({
       id: section.id || `customSection-${index}`,
