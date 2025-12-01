@@ -105,7 +105,9 @@ const CheckoutPage: React.FC = () => {
             });
 
             if (!uploadResponse.ok) {
-                throw new Error('Échec du téléversement du fichier.');
+                const errorBody = await uploadResponse.text();
+                console.error('Upload failed:', uploadResponse.status, errorBody);
+                throw new Error(`Échec du téléversement du fichier. Le serveur a répondu avec le statut : ${uploadResponse.status}`);
             }
 
             const uploadResult = await uploadResponse.json();
@@ -122,6 +124,8 @@ const CheckoutPage: React.FC = () => {
             });
 
             if (!submitResponse.ok) {
+                const errorBody = await submitResponse.text();
+                console.error('Payment submission failed:', submitResponse.status, errorBody);
                 throw new Error('Échec de la soumission de la preuve de paiement.');
             }
 
