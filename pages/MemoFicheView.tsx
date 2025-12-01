@@ -460,13 +460,13 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
         if (!isLeMedicamentManual) {
             if (hasMemoContent) {
-                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src={getAbsoluteImageUrl(getIconUrl('memo'))} className="h-8 w-8" alt="Mémo" /> });
+                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/memo.png" className="h-8 w-8" alt="Mémo" /> });
             }
             if (hasFlashcards) {
-                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src={getAbsoluteImageUrl(getIconUrl('flashcards'))} className="h-8 w-8" alt="Flashcards" /> });
+                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/flashcards.png" className="h-8 w-8" alt="Flashcards" /> });
             }
             if (!isPreview && hasQuiz) {
-                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src={getAbsoluteImageUrl(getIconUrl('quiz'))} className="h-8 w-8" alt="Quiz" /> });
+                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src="https://newpharmia-production.up.railway.app/api/ftp/view/quiz.png" className="h-8 w-8" alt="Quiz" /> });
             }
             if (!isPreview && caseStudy.kahootUrl) {
                 items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src={getAbsoluteImageUrl(getIconUrl('kahoot'))} className="h-8 w-8" alt="Kahoot" /> });
