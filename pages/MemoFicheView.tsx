@@ -11,7 +11,7 @@ import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinn
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import PdfSlideshow from '../components/PdfSlideshow';
-import { getFtpViewUrl } from '../../utils/ftp';
+import { getFtpViewUrl } from '../utils/ftp';
 
 const AccordionSection: React.FC<{
     title: string;
