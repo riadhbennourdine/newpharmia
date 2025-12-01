@@ -67,10 +67,10 @@ const WebinarCard: React.FC<{
                 </button>
             );
         }
-        if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink) {
+        if (webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim()) {
             return (
                 <a
-                    href={webinar.googleMeetLink}
+                    href={webinar.googleMeetLink.trim()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"
@@ -131,9 +131,9 @@ const WebinarCard: React.FC<{
                                 {webinar.title}
                             </Link>
                         </h3>
-                        {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && (
+                        {webinar.registrationStatus === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim() && (
                             <a
-                                href={webinar.googleMeetLink}
+                                href={webinar.googleMeetLink.trim()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors"

@@ -308,7 +308,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WE
             presenter,
             registrationLink: registrationLink || '',
             imageUrl: imageUrl || '',
-            googleMeetLink: googleMeetLink || '',
+            googleMeetLink: (googleMeetLink || '').trim(),
             group: group || WebinarGroup.PHARMIA,
             attendees: [],
             createdAt: new Date(),
@@ -345,6 +345,10 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_
         updates.updatedAt = new Date();
         if(updates.date) {
             updates.date = new Date(updates.date);
+        }
+
+        if (updates.googleMeetLink) {
+            updates.googleMeetLink = updates.googleMeetLink.trim();
         }
 
 

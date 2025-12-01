@@ -325,9 +325,9 @@ const WebinarDetailPage: React.FC = () => {
                                                                                                 />
                                                                                             </>
                                                                                         )}
-                                                                                        {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (
+                                                                                        {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && webinar.googleMeetLink.trim() && (
                                                                                             <a
-                                                                                                href={webinar.googleMeetLink}
+                                                                                                href={webinar.googleMeetLink.trim()}
                                                                                                 target="_blank"
                                                                                                 rel="noopener noreferrer"
                                                                                                 className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
