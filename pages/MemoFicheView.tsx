@@ -335,7 +335,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   
       const memoContent = useMemo(() => {
-      if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
+      if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie' || caseStudy.type === 'maladie') {
         const content = (caseStudy.memoSections || []).map((section, index) => ({
           id: section.id || `memoSection-${index}`,
           title: section.title,

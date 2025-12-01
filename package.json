@@ -8,6 +8,7 @@
     "dev": "npm run build:server && concurrently \"vite\" \"tsc --watch -p tsconfig.server.json\" \"nodemon --watch dist-server dist-server/server.js\"",
     "build": "npm run build:server && vite build",
     "build:server": "tsc -p tsconfig.server.json",
+    "db:add-memo-sections": "tsx scripts/add-memo-sections.ts",
     "preview": "vite preview"
   },
   "dependencies": {

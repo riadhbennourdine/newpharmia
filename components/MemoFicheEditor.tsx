@@ -89,8 +89,9 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     return { id: (section as any)?.id || `memo-${index}`, title: (section as any)?.title || '', content: [] };
   });
 
-  // Ensure default memo section for 'maladie' if missing
-  if (caseStudyType === 'maladie' && finalMemoSections.length === 0) {
+  // Ensure default memo section if missing for applicable types
+  const memoApplicableTypes = ['maladie', 'pharmacologie', 'savoir'];
+  if (memoApplicableTypes.includes(caseStudyType) && finalMemoSections.length === 0) {
       const newMemoSectionId = `memo-${Date.now()}`;
       finalMemoSections.push({ id: newMemoSectionId, title: 'Mémo', content: [{ type: 'text', value: '' }] });
   }

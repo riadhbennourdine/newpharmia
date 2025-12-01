@@ -31,7 +31,5 @@ server.js
 server/*.js
 types.js
 
-# Custom scripts
-scripts/
 /public/uploads/
 uploads_temp/
