@@ -5,6 +5,7 @@ import fs from 'fs/promises'; // Use fs/promises for async file operations
 import clientPromise from './mongo.js';
 import { Image } from '../types.js';
 import { connectAndReturnFtpClient } from './ftp.js'; // Import the FTP connection function
+import { Readable } from 'stream';
 
 const router = express.Router();
 
@@ -28,7 +29,12 @@ router.post('/image', upload.single('imageFile'), async (req, res) => {
     try {
         ftpClient = await connectAndReturnFtpClient();
         const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
-        await ftpClient.uploadFrom(buffer, ftpFileName);
+        
+        const readableStream = new Readable();
+        readableStream.push(buffer);
+        readableStream.push(null);
+
+        await ftpClient.uploadFrom(readableStream, ftpFileName);
 
         const imageUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
 
@@ -66,7 +72,12 @@ router.post('/file', upload.single('file'), async (req, res) => {
     try {
         ftpClient = await connectAndReturnFtpClient();
         const ftpFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(originalname)}`;
-        await ftpClient.uploadFrom(buffer, ftpFileName);
+        
+        const readableStream = new Readable();
+        readableStream.push(buffer);
+        readableStream.push(null);
+
+        await ftpClient.uploadFrom(readableStream, ftpFileName);
 
         const fileUrl = `/api/ftp/view/${ftpFileName}`; // URL to serve from our FTP proxy endpoint
         res.status(201).json({ fileUrl });
