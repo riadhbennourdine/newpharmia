@@ -5,14 +5,14 @@ export const TOPIC_CATEGORIES = [
     {
         category: "Thèmes Pédagogiques",
         topics: [
-            "Dermocosmétique",
-            "Dispositifs Médicaux",
-            "Ordonnances",
             "Maladies courantes",
+            "Ordonnances",
+            "Micronutrition",
+            "Dermocosmétique",
+            "Dispositifs médicaux",
+            "Pharmacie vétérinaire",
             "Pharmacologie",
             "Communication",
-            "Savoir-faire",
-            "Gestion",
         ]
     },
     {
