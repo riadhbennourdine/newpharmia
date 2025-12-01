@@ -20,23 +20,63 @@ const getFtpConfig = () => {
         user: process.env.FTP_USER || 'anonymous',
         password: process.env.FTP_PASSWORD || '',
         secure: process.env.FTP_SECURE === 'true',
-        // Add other necessary FTP options
     };
 };
 
-export const connectAndReturnFtpClient = async () => {
+const MAX_CONNECTIONS = 5;
+const pool: Client[] = [];
+const queue: ((client: Client) => void)[] = [];
+let activeConnections = 0;
+
+async function createClient(): Promise<Client> {
     const client = new Client();
-    client.ftp.verbose = false; // Set to true for debugging FTP commands
-    const config = getFtpConfig();
+    client.ftp.verbose = false;
     try {
-        await client.access(config);
-        console.log('FTP connected successfully.');
+        await client.access(getFtpConfig());
+        activeConnections++;
+        console.log(`FTP connected. Active connections: ${activeConnections}`);
         return client;
     } catch (err) {
         console.error('FTP connection error:', err);
         throw err;
     }
-};
+}
+
+export async function getFtpClient(): Promise<Client> {
+    if (pool.length > 0) {
+        const client = pool.pop()!;
+        try {
+            // A simple NOOP command to check if the connection is still alive.
+            await client.send('NOOP');
+            return client;
+        } catch (err) {
+            console.warn('Stale FTP connection found, creating a new one.');
+            activeConnections--;
+            return createClient();
+        }
+    }
+
+    if (activeConnections < MAX_CONNECTIONS) {
+        return createClient();
+    }
+
+    // Wait for a client to be released.
+    return new Promise(resolve => {
+        queue.push(resolve);
+    });
+}
+
+export function releaseFtpClient(client: Client) {
+    if (queue.length > 0) {
+        const resolve = queue.shift();
+        if (resolve) {
+            resolve(client);
+        }
+    } else {
+        pool.push(client);
+    }
+}
+
 
 // POST /api/ftp/upload
 router.post('/upload', upload.single('file'), async (req, res) => {
@@ -49,7 +89,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         const remotePath = path.posix.join(destinationPath, originalname);
         await ftpClient.uploadFrom(tempFilePath, remotePath); // Utilisation du chemin du fichier temporaire
         res.status(201).json({ message: 'File uploaded successfully.', filename: originalname, remotePath: remotePath });
@@ -59,7 +99,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     } finally {
         // Supprimer le fichier temporaire créé par Multer
         await fs.unlink(tempFilePath);
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
@@ -67,7 +107,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 router.get('/list', async (req, res) => {
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         const { path: ftpPath = '/' } = req.query;
 
         const list = await ftpClient.list(ftpPath as string);
@@ -93,7 +133,7 @@ router.get('/list', async (req, res) => {
         console.error('FTP list error:', err);
         res.status(500).json({ message: 'Failed to list files from FTP.' });
     } finally {
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
@@ -107,7 +147,7 @@ router.delete('/delete', async (req, res) => {
 
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         if (itemType === 'file') {
             await ftpClient.remove(filePath);
         } else if (itemType === 'directory') {
@@ -120,53 +160,63 @@ router.delete('/delete', async (req, res) => {
         console.error('FTP delete error:', err);
         res.status(500).json({ message: `Failed to delete ${itemType} from FTP.` });
     } finally {
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
-// GET /api/ftp/view/:filename
-router.get('/view/:filename', async (req, res) => {
+// GET /api/ftp/view/*
+router.get('/view/*', async (req, res) => {
     let ftpClient;
-    const { filename } = req.params;
-    const { path: ftpPath = '/' } = req.query; // Allow specifying a sub-path if needed
-
-    const fullPath = path.posix.join(ftpPath as string, filename); // Use path.posix for FTP paths
+    const filePath = req.params[0];
+    if (!filePath) {
+        return res.status(400).json({ message: 'File path is required.' });
+    }
 
     // Create a temporary local file to download to
-    const tempDir = path.join(__dirname, 'downloads_temp'); // Utilisation d'un chemin absolu
-    const tempFilePath = path.join(tempDir, filename);
+    const tempDir = path.join(__dirname, 'downloads_temp');
+    // Ensure the filename is safe to use in a path
+    const safeFilename = path.basename(filePath);
+    const tempFilePath = path.join(tempDir, safeFilename);
 
     try {
-        console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
+        console.log(`[FTP View Debug] Téléchargement du fichier FTP: /${filePath} vers ${tempFilePath}`);
         await fs.mkdir(tempDir, { recursive: true });
-        await ftpClient.downloadTo(tempFilePath, fullPath);
-        console.log(`[FTP View Debug] Fichier ${fullPath} téléchargé avec succès vers ${tempFilePath}`);
+        await ftpClient.downloadTo(tempFilePath, `/${filePath}`);
+        console.log(`[FTP View Debug] Fichier /${filePath} téléchargé avec succès vers ${tempFilePath}`);
 
         // Stream the file back to the client
         res.sendFile(tempFilePath, {}, async (err) => {
             if (err) {
                 console.error('[FTP View Debug] Erreur lors de l\'envoi du fichier au client:', err);
-                // Si le fichier temporaire existe, le supprimer même en cas d'erreur d'envoi
-                if (await fs.stat(tempFilePath).catch(() => false)) {
-                    await fs.unlink(tempFilePath);
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Failed to send file.' });
                 }
-                res.status(500).json({ message: 'Failed to send file.' });
             } else {
                 console.log(`[FTP View Debug] Fichier ${tempFilePath} envoyé avec succès.`);
-                // Clean up temporary file after sending
+            }
+            // Clean up temporary file after sending or on error
+            try {
                 await fs.unlink(tempFilePath);
+            } catch (cleanupErr) {
+                // Silently ignore cleanup errors
             }
         });
     } catch (err) {
         console.error('FTP download/view error:', err);
-        // Assurez-vous que le fichier temporaire est supprimé même si le téléchargement FTP échoue
-        if (await fs.stat(tempFilePath).catch(() => false)) {
-            await fs.unlink(tempFilePath);
+        if (!res.headersSent) {
+            res.status(500).json({ message: 'Failed to retrieve file from FTP.' });
         }
-        res.status(500).json({ message: 'Failed to retrieve file from FTP.' });
+        // Ensure temp file is deleted even if download fails
+        try {
+            await fs.unlink(tempFilePath);
+        } catch (cleanupErr) {
+             // Silently ignore cleanup errors
+        }
     } finally {
-        if (ftpClient) ftpClient.close(); // Close connection
+        if (ftpClient) {
+            releaseFtpClient(ftpClient);
+        }
     }
 });
 
@@ -181,14 +231,14 @@ router.post('/mkdir', async (req, res) => {
 
     let ftpClient;
     try {
-        ftpClient = await connectAndReturnFtpClient();
+        ftpClient = await getFtpClient();
         await ftpClient.ensureDir(newDirPath); // Utilise ensureDir pour créer récursivement les répertoires
         res.status(201).json({ message: `Directory '${newDirPath}' created successfully.` });
     } catch (err) {
         console.error('FTP mkdir error:', err);
         res.status(500).json({ message: 'Failed to create directory on FTP.' });
     } finally {
-        if (ftpClient) ftpClient.close();
+        if (ftpClient) releaseFtpClient(ftpClient);
     }
 });
 
