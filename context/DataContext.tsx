@@ -97,7 +97,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return await response.json();
     } catch (err: any) {
       console.error("getCaseStudyById: Erreur lors de la récupération de l'ID:", id, err); // <-- MODIF DU LOG D'ERREUR
-      navigate('/dashboard', { replace: true });
+
       return undefined;
     }
   }, [user, navigate]);

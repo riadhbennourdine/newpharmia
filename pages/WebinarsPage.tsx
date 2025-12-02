@@ -212,7 +212,7 @@ const WebinarsPage: React.FC = () => {
     const [myWebinars, setMyWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<string>('ALL');
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
@@ -310,18 +310,46 @@ const WebinarsPage: React.FC = () => {
     }, [token]);
 
     useEffect(() => {
-        if (activeTab === 'MY_WEBINARS' || allWebinars.length === 0) {
-            // This view is handled separately or there's nothing to process
-            setLiveWebinars([]);
-            setPastWebinars([]);
-            setCurrentMonthWebinars([]);
-            setFutureMonthsWebinars({});
-            setWebinars([]);
-            return;
-        };
+        if (activeTab === 'MY_WEBINARS') { // This case fetches its own data
+            const fetchMyWebinars = async () => {
+                setIsLoading(true);
+                setError(null);
+                try {
+                    const headers: HeadersInit = {};
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+                    const response = await fetch('/api/webinars/my-webinars', { headers });
+                    if (!response.ok) throw new Error('Failed to fetch my webinars');
+                    const data = await response.json();
+                    setMyWebinars(data);
+                } catch (err: any) {
+                    setError(err.message);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchMyWebinars();
+            return; // Exit this useEffect for MY_WEBINARS
+        }
 
-        // Process the already-fetched allWebinars list based on the active tab
-        const tabData = allWebinars.filter((w: Webinar) => w.group === activeTab);
+        // For CROP Tunis and PharmIA tabs, process from already fetched allWebinars
+        // Only process if allWebinars has loaded and it's not still loading
+        if (allWebinars.length === 0 && !isLoading) {
+             setLiveWebinars([]);
+             setPastWebinars([]);
+             setCurrentMonthWebinars([]);
+             setFutureMonthsWebinars({});
+             setWebinars([]);
+             return;
+        }
+        
+        // If allWebinars is still loading, wait for it
+        if (isLoading && allWebinars.length === 0) {
+            return;
+        }
+
+        const tabData = allWebinars.filter((webinar) => webinar.group === activeTab);
         
         const now = new Date();
         const currentMonth = now.getMonth();
@@ -363,7 +391,7 @@ const WebinarsPage: React.FC = () => {
         }, {} as Record<string, Webinar[]>);
         setFutureMonthsWebinars(groupedFutureWebinars);
 
-    }, [activeTab, allWebinars, nearestWebinar, token]);
+    }, [activeTab, allWebinars, nearestWebinar, token, isLoading]);
 
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
