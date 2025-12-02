@@ -363,7 +363,7 @@ const WebinarDetailPage: React.FC = () => {
                                                     {getUserDisplayName(attendee.userId as User)} - <span className={`font-semibold ${attendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>{attendee.status}</span>
                                                     {attendee.proofUrl && <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 ml-2">(Voir justificatif)</a>}
                                                 </span>
-                                                {user?.role === UserRole.ADMIN && (
+                                                {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                                                     <button
                                                         onClick={() => handleDeleteAttendee((attendee.userId as User)._id.toString())}
                                                         className="ml-4 text-red-500 hover:text-red-700 text-sm"
