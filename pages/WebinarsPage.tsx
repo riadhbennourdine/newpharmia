@@ -127,10 +127,7 @@ const WebinarCard: React.FC<{
             <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
                 <Link to={`/webinars/${webinar._id}`} className="block relative">
                     <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-24 w-full object-cover" />
-                    {webinar.calculatedStatus === WebinarStatus.LIVE && (
-                        <img src={getFtpViewUrl("imageFile-1762858268856-857165789.gif")} alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
-                    )}
-                    <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
+                                        <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm font-bold px-2 py-1 rounded">
                         {new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                 </Link>
@@ -162,10 +159,7 @@ const WebinarCard: React.FC<{
         <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block relative">
                 <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
-                {webinar.calculatedStatus === WebinarStatus.LIVE && (
-                    <img src={getFtpViewUrl("imageFile-1762858268856-857165789.gif")} alt="Live Icon" className="absolute top-2 left-2 h-12 w-12" />
-                )}
-            </Link>
+                            </Link>
             <div className="p-4 flex-grow flex flex-col">
                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
                     <Link to={`/webinars/${webinar._id}`} className="flex items-center">
