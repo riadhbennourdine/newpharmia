@@ -477,7 +477,7 @@ const WebinarsPage: React.FC = () => {
                         </div>
                     )}
 
-                    {nearestWebinar && liveWebinars.length === 0 && (
+                    {nearestWebinar && (
                         <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
                             <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">
                                 Prochain Webinaire
