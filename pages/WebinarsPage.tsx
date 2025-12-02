@@ -212,7 +212,7 @@ const WebinarsPage: React.FC = () => {
     const [myWebinars, setMyWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
+    const [activeTab, setActiveTab] = useState<string>('ALL');
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
@@ -269,8 +269,10 @@ const WebinarsPage: React.FC = () => {
         }
     };
 
+    const [allWebinars, setAllWebinars] = useState<Webinar[]>([]);
+
     useEffect(() => {
-        const fetchWebinars = async () => {
+        const fetchAllData = async () => {
             setIsLoading(true);
             setError(null);
             try {
@@ -279,63 +281,24 @@ const WebinarsPage: React.FC = () => {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                let url = `/api/webinars?group=${encodeURIComponent(activeTab)}`;
-                if (activeTab === 'MY_WEBINARS') {
-                    url = '/api/webinars/my-webinars';
-                }
+                // Fetch all public webinars
+                const allWebinarsResponse = await fetch('/api/webinars', { headers });
+                if (!allWebinarsResponse.ok) throw new Error('Failed to fetch webinars');
+                const allWebinarsData = await allWebinarsResponse.json();
+                setAllWebinars(allWebinarsData);
 
-                const response = await fetch(url, { headers });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch webinars');
-                }
-                const data = await response.json();
-
-                if (activeTab === 'MY_WEBINARS') {
-                    setMyWebinars(data);
-                } else {
-                    const now = new Date();
-                    const currentMonth = now.getMonth();
-                    const currentYear = now.getFullYear();
-
-                    const liveWebinars = data.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
-                    const upcomingWebinars = data
-                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
-                        .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                    const pastWebinars = data
-                        .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
-                        .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-                    setWebinars(data);
-
-                    const nearest = upcomingWebinars.length > 0 ? upcomingWebinars[0] : null;
-                    setNearestWebinar(nearest);
-
-                    const currentMonthUpcoming = upcomingWebinars.filter(w => {
-                        const d = new Date(w.date);
-                        return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearest ? w._id.toString() !== nearest._id.toString() : true);
-                    });
-                    setCurrentMonthWebinars(currentMonthUpcoming);
-
-                    const futureMonthsUpcoming = upcomingWebinars.filter(w => {
-                        const d = new Date(w.date);
-                        return d.getMonth() !== currentMonth || d.getFullYear() !== currentYear;
-                    });
-
-                    const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
-                        const date = new Date(webinar.date);
-                        const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-                        const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
-
-                        if (!acc[capitalizedMonthYear]) {
-                            acc[capitalizedMonthYear] = [];
-                        }
-                        acc[capitalizedMonthYear].push(webinar);
-                        return acc;
-                    }, {} as Record<string, Webinar[]>);
-                    setFutureMonthsWebinars(groupedFutureWebinars);
-
-                    setLiveWebinars(liveWebinars);
-                    setPastWebinars(pastWebinars);
+                // Find and set the single nearest webinar from the complete list
+                const allUpcoming = allWebinarsData
+                    .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+                    .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                setNearestWebinar(allUpcoming.length > 0 ? allUpcoming[0] : null);
+                
+                // Fetch user-specific webinars if logged in
+                if (token) {
+                    const myW_Response = await fetch('/api/webinars/my-webinars', { headers });
+                    if (!myW_Response.ok) throw new Error('Failed to fetch my webinars');
+                    const mywebinarsData = await myW_Response.json();
+                    setMyWebinars(mywebinarsData);
                 }
             } catch (err: any) {
                 setError(err.message);
@@ -343,9 +306,64 @@ const WebinarsPage: React.FC = () => {
                 setIsLoading(false);
             }
         };
+        fetchAllData();
+    }, [token]);
 
-        fetchWebinars();
-    }, [activeTab, token]);
+    useEffect(() => {
+        if (activeTab === 'MY_WEBINARS' || allWebinars.length === 0) {
+            // This view is handled separately or there's nothing to process
+            setLiveWebinars([]);
+            setPastWebinars([]);
+            setCurrentMonthWebinars([]);
+            setFutureMonthsWebinars({});
+            setWebinars([]);
+            return;
+        };
+
+        // Process the already-fetched allWebinars list based on the active tab
+        const tabData = allWebinars.filter((w: Webinar) => w.group === activeTab);
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const live = tabData.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
+        const upcoming = tabData
+            .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+            .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        const past = tabData
+            .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
+            .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        setWebinars(tabData); // The full list for the tab
+        setLiveWebinars(live);
+        setPastWebinars(past);
+
+        const currentMonthUpcoming = upcoming.filter(w => {
+            const d = new Date(w.date);
+            return (d.getMonth() === currentMonth && d.getFullYear() === currentYear) && (nearestWebinar ? w._id.toString() !== nearestWebinar._id.toString() : true);
+        });
+        setCurrentMonthWebinars(currentMonthUpcoming);
+
+        const futureMonthsUpcoming = upcoming.filter(w => {
+            const d = new Date(w.date);
+            return (d.getMonth() !== currentMonth || d.getFullYear() !== currentYear) && (nearestWebinar ? w._id.toString() !== nearestWebinar._id.toString() : true);
+        });
+
+        const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
+            const date = new Date(webinar.date);
+            const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+            if (!acc[capitalizedMonthYear]) {
+                acc[capitalizedMonthYear] = [];
+            }
+            acc[capitalizedMonthYear].push(webinar);
+            return acc;
+        }, {} as Record<string, Webinar[]>);
+        setFutureMonthsWebinars(groupedFutureWebinars);
+
+    }, [activeTab, allWebinars, nearestWebinar, token]);
 
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
