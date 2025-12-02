@@ -212,7 +212,7 @@ const WebinarsPage: React.FC = () => {
     const [myWebinars, setMyWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.PHARMIA);
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
     const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
