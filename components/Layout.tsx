@@ -4,7 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext'; // Import useCart
 import { UserRole } from '../types';
 import Footer from './Footer';
-import { ShoppingCartIcon } from './Icons'; // Import ShoppingCartIcon
+import { ShoppingCartIcon, XCircleIcon, BrainCircuitIcon } from './Icons'; // Import ShoppingCartIcon, XCircleIcon, BrainCircuitIcon
+import CustomChatBot from './CustomChatBot';
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -240,9 +241,6 @@ const Header: React.FC = () => {
   );
 };
 
-import CustomChatBot from './CustomChatBot';
-import { BrainCircuitIcon, XCircleIcon } from './Icons';
-
 const AppLayout: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -261,7 +259,7 @@ const AppLayout: React.FC = () => {
           className="bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
           aria-label="Ouvrir l'assistant IA"
         >
-          {isChatOpen ? <XCircleIcon className="h-8 w-8" /> : <BrainCircuitIcon className="h-8 w-8" />}
+          {isChatOpen ? <XCircleIcon className="h-8 w-8" /> : <img src="https://pharmaconseilbmb.com/photos/site/bot.gif" alt="Assistant PharmIA" className="h-8 w-8" />}
         </button>
       </div>
 
