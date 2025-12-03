@@ -659,29 +659,38 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
 
 const MemoFichePage = () => {
     const { id } = useParams<{ id: string }>();
-    console.log("MemoFichePage: id from URL params:", id); // <-- AJOUT DU LOG
     const navigate = useNavigate();
     const { getCaseStudyById, startQuiz, editCaseStudy, deleteCaseStudy } = useData();
-    const { markFicheAsRead } = useAuth(); // Get the new function
+    const { markFicheAsRead, logout } = useAuth(); // Get logout function
     const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
     const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null); // New state for error messages
 
     useEffect(() => {
-        console.log("MemoFichePage useEffect: id =", id); // <-- AJOUT DU LOG
         if (id) {
             setLoading(true);
-            console.log("MemoFichePage useEffect: Appelle getCaseStudyById pour id:", id); // <-- AJOUT DU LOG
+            setErrorMessage(null); // Clear previous errors
             getCaseStudyById(id).then(data => {
                 if (data) {
                     setCaseStudy(data);
+                } else {
+                    setErrorMessage('Mémofiche non trouvée.');
                 }
                 setLoading(false);
             }).catch(err => {
-                console.error(err);
+                console.error("Error fetching case study:", err);
+                if (err.message === 'Unauthorized') {
+                    logout(); // Log out the user
+                    navigate('/login', { replace: true }); // Redirect to login
+                } else if (err.message === 'Mémofiche non trouvée.') {
+                    setErrorMessage('La mémofiche demandée n\'existe pas.');
+                } else {
+                    setErrorMessage('Une erreur est survenue lors du chargement de la mémofiche.');
+                }
                 setLoading(false);
             });
         }
-    }, [id, getCaseStudyById]);
+    }, [id, getCaseStudyById, logout, navigate]);
 
     // Effect to mark the fiche as read
     useEffect(() => {
@@ -698,8 +707,20 @@ const MemoFichePage = () => {
         }
     }
 
-    if (loading) return <div className="flex justify-center items-center h-screen"><Spinner className="h-12 w-12 text-teal-600" /></div>;
-    if (!caseStudy) return <Navigate to="/dashboard" replace />;
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen"><Spinner className="h-12 w-12 text-teal-600" /></div>;
+    }
+    if (errorMessage) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen text-red-600 text-lg font-semibold">
+                <p>{errorMessage}</p>
+                <button onClick={() => navigate('/dashboard')} className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md">Retour au tableau de bord</button>
+            </div>
+        );
+    }
+    if (!caseStudy) { // Fallback, should ideally be caught by errorMessage now
+        return <Navigate to="/dashboard" replace />;
+    }
     
     return <DetailedMemoFicheView 
         caseStudy={caseStudy}

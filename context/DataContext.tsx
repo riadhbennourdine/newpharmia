@@ -34,7 +34,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // Moved useAuth() call here
 
   const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string }) => {
     setIsLoading(true);
@@ -83,20 +83,29 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
   const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
-    console.log("getCaseStudyById: Déclenchement de l'appel API pour l'ID:", id); // <-- AJOUT DU LOG
-    try {
+
       const headers: HeadersInit = {};
       if (user) {
         headers['x-user-id'] = user._id;
       }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      // Toujours récupérer depuis l'API pour s'assurer d'avoir la version la plus à jour
+      // Always retrieve from API to ensure the most up-to-date version
       const response = await fetch(`/api/memofiches/${id}`, { headers });
-      if (!response.ok) throw new Error('Mémofiche non trouvée.');
-      console.log("getCaseStudyById: API a répondu pour l'ID:", id); // <-- AJOUT DU LOG
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        } else if (response.status === 404) {
+          throw new Error('Mémofiche non trouvée.');
+        } else {
+          throw new Error('Échec de la récupération de la mémofiche.');
+        }
+      }
       return await response.json();
     } catch (err: any) {
-      console.error("getCaseStudyById: Erreur lors de la récupération de l'ID:", id, err); // <-- MODIF DU LOG D'ERREUR
+      console.error("getCaseStudyById: Erreur lors de la récupération de l'ID:", id, err);
 
       return undefined;
     }
