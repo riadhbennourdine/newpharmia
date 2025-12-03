@@ -87,16 +87,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (data.user.profileIncomplete) {
         navigate('/complete-profile');
       } else {
-        const userRole = data.user.role;
-        const userGroupId = data.user.groupId;
-
-        const rolesToCheck = [UserRole.PHARMACIEN, UserRole.ADMIN, UserRole.ADMIN_WEBINAR, UserRole.PREPARATEUR];
-
-        if (rolesToCheck.includes(userRole) && !userGroupId) {
-          navigate('/memofiches');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       }
     } catch (err: any) {
       setAuthError(err.message);
