@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import AlgoliaSearch from '../components/AlgoliaSearch';
-import { BookOpenIcon, VideoCameraIcon, UserGroupIcon, AcademicCapIcon } from '../components/Icons';
+import { BookOpenIcon, VideoCameraIcon, UserGroupIcon, BrainCircuitIcon } from '../components/Icons';
 import { UserRole } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
                     to="/my-dashboard"
                     className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-40 h-32 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
                 >
-                    <AcademicCapIcon className="h-10 w-10" />
+                    <BrainCircuitIcon className="h-10 w-10" />
                     <span className="mt-2 font-bold text-md text-center">Gestion d'apprentissage</span>
                 </Link>
 
