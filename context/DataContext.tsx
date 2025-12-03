@@ -34,7 +34,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user, token } = useAuth(); // Moved useAuth() call here
+  const { user, token, isAuthenticated } = useAuth(); // Moved useAuth() call here
 
   const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string }) => {
     setIsLoading(true);
