@@ -33,3 +33,4 @@ types.js
 
 /public/uploads/
 uploads_temp/.gemini/
+.gemini/

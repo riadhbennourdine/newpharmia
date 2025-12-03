@@ -18,6 +18,32 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [primaryMemoFicheId, setPrimaryMemoFicheId] = useState<string | undefined>(group?.primaryMemoFicheId);
   const [instructionFiches, setInstructionFiches] = useState<string[]>(group?.instructionFiches || []);
   
+  const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
+  const [allPreparators, setAllPreparators] = useState<User[]>([]);
+  const [allManagers, setAllManagers] = useState<User[]>([]);
+  const [allMemofiches, setAllMemofiches] = useState<CaseStudy[]>([]);
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
+
+  // Format date to YYYY-MM-DD for input[type=date]
+  const formatDateForInput = (date: Date | undefined | null): string => {
+    if (!date) return '';
+    return new Date(date).toISOString().split('T')[0];
+  };
+
+  useEffect(() => {
+    fetchPharmacists();
+    fetchPreparators();
+    fetchManagers();
+    fetchAllMemofiches();
+
+    // Initialize memo fiche states from group prop
+    if (group) {
+        setPrimaryMemoFicheId(group.primaryMemoFicheId);
+        setInstructionFiches(group.instructionFiches || []);
+    }
+  }, [group]);
 
 
   const fetchAllMemofiches = async () => {
