@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Providers
@@ -10,52 +10,46 @@ import { CartProvider } from './context/CartContext';
 import AppLayout from './components/Layout';
 import { LoggedInRoute, FormateurOrAdminRoute, AdminOnlyRoute } from './components/ProtectedRoute';
 
-// Public Pages
-import LandingPage from './pages/LandingPage';
-import PricingPage from './pages/PricingPage';
-import MemoFichePreview from './pages/MemoFichePreview';
-import LoginView from './pages/LoginView';
-import RegisterView from './pages/RegisterView';
-import ForgotPasswordView from './pages/ForgotPasswordView';
-import ResetPasswordView from './pages/ResetPasswordView';
-import UnsubscribePage from './pages/UnsubscribePage';
-import ActivateAccountView from './pages/auth/ActivateAccountView';
-import ContactFormView from './pages/auth/ContactFormView';
-import ProfileCompletionView from './pages/auth/ProfileCompletionView';
-
-// Authenticated Pages
-import Dashboard from './pages/Dashboard';
-import MemoFichesPage from './pages/MemoFichesPage';
-import MemoFichePage from './pages/MemoFicheView';
-import QuizPage from './pages/QuizView';
-import ReadFichesPage from './pages/ReadFichesPage';
-import QuizHistoryPage from './pages/QuizHistoryPage';
-import LegacyDashboard from './pages/LegacyDashboard';
-
-// Admin & Formateur Pages
-import GeneratorView from './pages/GeneratorView';
-import MemoFicheEditorPage from './pages/MemoFicheEditor';
-import AdminPanel from './pages/AdminPanel';
-import SubscriptionManagement from './pages/admin/SubscriptionManagement';
-import NewsletterManager from './pages/admin/NewsletterManager';
-import CRMDashboard from './pages/admin/crm/CRMDashboard';
-import ClientDetailPage from './pages/admin/crm/ClientDetailPage';
-import ClientList from './pages/admin/crm/ClientList';
-import ProspectList from './pages/admin/crm/ProspectList';
-import AppointmentList from './pages/admin/crm/AppointmentList';
-
-// Webinar Pages
-import WebinarsPage from './pages/WebinarsPage';
-import WebinarDetailPage from './pages/WebinarDetailPage';
-import WebinarManagement from './pages/admin/WebinarManagement';
-import ImageManager from './pages/admin/ImageManager';
-import WebinarAdminManager from './pages/admin/WebinarAdminManager';
-
-import CartPage from './pages/CartPage'; // Import CartPage
-import CheckoutPage from './pages/CheckoutPage'; // Import CheckoutPage
+// Lazy-loaded Pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const MemoFichePreview = lazy(() => import('./pages/MemoFichePreview'));
+const LoginView = lazy(() => import('./pages/LoginView'));
+const RegisterView = lazy(() => import('./pages/RegisterView'));
+const ForgotPasswordView = lazy(() => import('./pages/ForgotPasswordView'));
+const ResetPasswordView = lazy(() => import('./pages/ResetPasswordView'));
+const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'));
+const ActivateAccountView = lazy(() => import('./pages/auth/ActivateAccountView'));
+const ContactFormView = lazy(() => import('./pages/auth/ContactFormView'));
+const ProfileCompletionView = lazy(() => import('./pages/auth/ProfileCompletionView'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const MemoFichesPage = lazy(() => import('./pages/MemoFichesPage'));
+const MemoFichePage = lazy(() => import('./pages/MemoFicheView'));
+const QuizPage = lazy(() => import('./pages/QuizView'));
+const ReadFichesPage = lazy(() => import('./pages/ReadFichesPage'));
+const QuizHistoryPage = lazy(() => import('./pages/QuizHistoryPage'));
+const LegacyDashboard = lazy(() => import('./pages/LegacyDashboard'));
+const GeneratorView = lazy(() => import('./pages/GeneratorView'));
+const MemoFicheEditorPage = lazy(() => import('./pages/MemoFicheEditor'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const SubscriptionManagement = lazy(() => import('./pages/admin/SubscriptionManagement'));
+const NewsletterManager = lazy(() => import('./pages/admin/NewsletterManager'));
+const CRMDashboard = lazy(() => import('./pages/admin/crm/CRMDashboard'));
+const ClientDetailPage = lazy(() => import('./pages/admin/crm/ClientDetailPage'));
+const ClientList = lazy(() => import('./pages/admin/crm/ClientList'));
+const ProspectList = lazy(() => import('./pages/admin/crm/ProspectList'));
+const AppointmentList = lazy(() => import('./pages/admin/crm/AppointmentList'));
+const WebinarsPage = lazy(() => import('./pages/WebinarsPage'));
+const WebinarDetailPage = lazy(() => import('./pages/WebinarDetailPage'));
+const WebinarManagement = lazy(() => import('./pages/admin/WebinarManagement'));
+const ImageManager = lazy(() => import('./pages/admin/ImageManager'));
+const WebinarAdminManager = lazy(() => import('./pages/admin/WebinarAdminManager'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
+import { Spinner } from './components/Icons';
 
 
 const App: React.FC = () => (
@@ -63,72 +57,74 @@ const App: React.FC = () => (
         <AuthProvider>
             <DataProvider>
                 <CartProvider>
-                    <Routes>
-                        {/* Public Routes */}
-                        <Route element={<AppLayout />}>
-                            <Route path="/" element={<LandingPage />} />
-                            <Route path="/tarifs" element={<PricingPage />} />
-                            <Route path="/contact" element={<ContactFormView />} />
-                            <Route path="/apercu-memofiche" element={<MemoFichePreview />} />
-                            <Route path="/webinars" element={<WebinarsPage />} />
-                            <Route path="/webinars/:id" element={<WebinarDetailPage />} />
-                            <Route path="/cart" element={<CartPage />} />
-                        </Route>
-                        <Route path="/login" element={<LoginView />} />
-                        <Route path="/register" element={<RegisterView />} />
-                        <Route path="/forgot-password" element={<ForgotPasswordView />} />
-                        <Route path="/reset-password" element={<ResetPasswordView />} />
-                        <Route path="/activate-account" element={<ActivateAccountView />} />
-                        <Route path="/unsubscribe" element={<UnsubscribePage />} />
-                        
-                        {/* Authenticated Routes */}
-                        <Route element={<LoggedInRoute />}>
-                            <Route path="/checkout/:orderId" element={<CheckoutPage />} />
-                            {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/memofiches" element={<MemoFichesPage />} />
-                            <Route path="/memofiche/:id" element={<MemoFichePage />} />
-                            <Route path="/quiz/:id" element={<QuizPage />} />
-                            <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
-                            <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
-                            <Route path="/complete-profile" element={<ProfileCompletionView />} />
-                            <Route path="/my-dashboard" element={<LegacyDashboard />} />
-
-                            {/* Routes for Formateurs & Admins */}
-                            <Route element={<FormateurOrAdminRoute />}>
-                                <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
-                                <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                    <Suspense fallback={<div className="flex justify-center items-center h-screen"><Spinner className="h-12 w-12 text-teal-600" /></div>}>
+                        <Routes>
+                            {/* Public Routes */}
+                            <Route element={<AppLayout />}>
+                                <Route path="/" element={<LandingPage />} />
+                                <Route path="/tarifs" element={<PricingPage />} />
+                                <Route path="/contact" element={<ContactFormView />} />
+                                <Route path="/apercu-memofiche" element={<MemoFichePreview />} />
+                                <Route path="/webinars" element={<WebinarsPage />} />
+                                <Route path="/webinars/:id" element={<WebinarDetailPage />} />
+                                <Route path="/cart" element={<CartPage />} />
                             </Route>
+                            <Route path="/login" element={<LoginView />} />
+                            <Route path="/register" element={<RegisterView />} />
+                            <Route path="/forgot-password" element={<ForgotPasswordView />} />
+                            <Route path="/reset-password" element={<ResetPasswordView />} />
+                            <Route path="/activate-account" element={<ActivateAccountView />} />
+                            <Route path="/unsubscribe" element={<UnsubscribePage />} />
+                            
+                            {/* Authenticated Routes */}
+                            <Route element={<LoggedInRoute />}>
+                                <Route path="/checkout/:orderId" element={<CheckoutPage />} />
+                                {/* Routes for ALL authenticated users (Apprenant, Formateur, Admin) */}
+                                <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/memofiches" element={<MemoFichesPage />} />
+                                <Route path="/memofiche/:id" element={<MemoFichePage />} />
+                                <Route path="/quiz/:id" element={<QuizPage />} />
+                                <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
+                                <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
+                                <Route path="/complete-profile" element={<ProfileCompletionView />} />
+                                <Route path="/my-dashboard" element={<LegacyDashboard />} />
 
-                            {/* Routes for Formateurs & Admins */}
-                            <Route element={<FormateurOrAdminRoute />}>
-                                <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
-                                <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
-                                {/* CRM Routes for Formateurs & Admins */}
-                                <Route path="/admin/crm" element={<CRMDashboard />}>
-                                    <Route index element={<Navigate to="appointments" replace />} />
-                                    <Route path="clients" element={<ClientList />} />
-                                    <Route path="prospects" element={<ProspectList />} />
-                                    <Route path="appointments" element={<AppointmentList />} />
+                                {/* Routes for Formateurs & Admins */}
+                                <Route element={<FormateurOrAdminRoute />}>
+                                    <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
+                                    <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
                                 </Route>
-                                <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
-                            </Route>
 
-                            {/* Routes for Admins ONLY */}
-                            <Route element={<AdminOnlyRoute />}>
-                                <Route path="/generateur" element={<GeneratorView />} />
-                                <Route path="/admin" element={<AdminPanel />} />
-                                <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
-                                <Route path="/admin/newsletter" element={<NewsletterManager />} />
-                                <Route path="/admin/webinars" element={<WebinarManagement />} />
-                                <Route path="/admin/image-manager" element={<ImageManager />} />
-                                <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
+                                {/* Routes for Formateurs & Admins */}
+                                <Route element={<FormateurOrAdminRoute />}>
+                                    <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
+                                    <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                                    {/* CRM Routes for Formateurs & Admins */}
+                                    <Route path="/admin/crm" element={<CRMDashboard />}>
+                                        <Route index element={<Navigate to="appointments" replace />} />
+                                        <Route path="clients" element={<ClientList />} />
+                                        <Route path="prospects" element={<ProspectList />} />
+                                        <Route path="appointments" element={<AppointmentList />} />
+                                    </Route>
+                                    <Route path="/admin/crm/clients/:id" element={<ClientDetailPage />} />
+                                </Route>
+
+                                {/* Routes for Admins ONLY */}
+                                <Route element={<AdminOnlyRoute />}>
+                                    <Route path="/generateur" element={<GeneratorView />} />
+                                    <Route path="/admin" element={<AdminPanel />} />
+                                    <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
+                                    <Route path="/admin/newsletter" element={<NewsletterManager />} />
+                                    <Route path="/admin/webinars" element={<WebinarManagement />} />
+                                    <Route path="/admin/image-manager" element={<ImageManager />} />
+                                    <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
+                                </Route>
                             </Route>
-                        </Route>
-                        
-                        {/* Not Found Route */}
-                        <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
+                            
+                            {/* Not Found Route */}
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </Suspense>
                 </CartProvider>
             </DataProvider>
         </AuthProvider>
