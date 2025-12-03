@@ -18,51 +18,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [primaryMemoFicheId, setPrimaryMemoFicheId] = useState<string | undefined>(group?.primaryMemoFicheId);
   const [instructionFiches, setInstructionFiches] = useState<string[]>(group?.instructionFiches || []);
   
-  // State for the subscription date input
-  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string>('');
 
-  const [allPharmacists, setAllPharmacists] = useState<User[]>([]);
-  const [allPreparators, setAllPreparators] = useState<User[]>([]);
-  const [allManagers, setAllManagers] = useState<User[]>([]);
-  const [allMemofiches, setAllMemofiches] = useState<CaseStudy[]>([]);
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
-
-  // Format date to YYYY-MM-DD for input[type=date]
-  const formatDateForInput = (date: Date | undefined | null): string => {
-    if (!date) return '';
-    return new Date(date).toISOString().split('T')[0];
-  };
-
-  useEffect(() => {
-    fetchPharmacists();
-    fetchPreparators();
-    fetchManagers();
-    fetchAllMemofiches();
-
-    // Initialize subscription date from group prop
-    if (group?.subscriptionEndDate) {
-      setSubscriptionEndDate(formatDateForInput(group.subscriptionEndDate));
-    }
-    // Initialize memo fiche states from group prop
-    if (group) {
-        setPrimaryMemoFicheId(group.primaryMemoFicheId);
-        setInstructionFiches(group.instructionFiches || []);
-    }
-  }, [group]);
-
-  // Effect to update date when manager changes
-  useEffect(() => {
-    if (managedBy) {
-      const selectedManager = allManagers.find(m => m._id.toString() === managedBy);
-      if (selectedManager?.subscriptionEndDate) {
-        setSubscriptionEndDate(formatDateForInput(selectedManager.subscriptionEndDate));
-      } else {
-        setSubscriptionEndDate(''); // Reset if new manager has no date
-      }
-    }
-  }, [managedBy, allManagers]);
 
   const fetchAllMemofiches = async () => {
     try {
@@ -118,15 +74,13 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const groupData = { 
-      name, 
-      pharmacistIds, 
-      preparatorIds, 
-      subscriptionAmount,
-      managedBy,
-      subscriptionEndDate: subscriptionEndDate || null, // Send null if empty
-      primaryMemoFicheId: primaryMemoFicheId || null,
-      instructionFiches: instructionFiches,
-    };
+            name,
+            pharmacistIds,
+            preparatorIds,
+            subscriptionAmount,
+            managedBy,
+            primaryMemoFicheId: primaryMemoFicheId || null,
+            instructionFiches: instructionFiches,    };
 
     try {
       const url = group ? `/api/admin/groups/${group._id}` : '/api/admin/groups';

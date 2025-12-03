@@ -162,19 +162,27 @@ adminRouter.get('/', async (req, res) => {
         .filter(name => name) as string[];
 
       let managerName = 'Non assigné';
-      let subscriptionEndDate: Date | undefined = undefined;
+      let groupSubscriptionEndDate: Date | undefined = undefined;
+
+      // Find the earliest subscriptionEndDate among all pharmacists in the group
+      if (group.pharmacistIds && group.pharmacistIds.length > 0) {
+        const pharmacistSubscriptionDates: Date[] = [];
+        for (const pharmacistId of group.pharmacistIds) {
+          const pharmacist = pharmacists.find(p => (p._id as ObjectId).toString() === pharmacistId.toString());
+          if (pharmacist && pharmacist.subscriptionEndDate) {
+            pharmacistSubscriptionDates.push(pharmacist.subscriptionEndDate);
+          }
+        }
+        if (pharmacistSubscriptionDates.length > 0) {
+          groupSubscriptionEndDate = new Date(Math.min(...pharmacistSubscriptionDates.map(date => date.getTime())));
+        }
+      }
 
       if (group.managedBy && ObjectId.isValid(group.managedBy.toString())) {
         const managerId = group.managedBy.toString();
         // Use the combined map for name lookup for simplicity, or create a combined one
         const tempManagerName = allPotentialManagers.find(m => (m._id as ObjectId).toString() === managerId);
         managerName = tempManagerName ? `${tempManagerName.firstName} ${tempManagerName.lastName}` : 'Non assigné';
-        
-        // Find the manager user object from the combined list
-        const managerUser = allPotentialManagers.find(m => (m._id as ObjectId).toString() === managerId);
-        if (managerUser) {
-          subscriptionEndDate = managerUser.subscriptionEndDate;
-        }
       }
 
       return {
@@ -182,7 +190,7 @@ adminRouter.get('/', async (req, res) => {
         pharmacistNames: pharmacistNames,
         managedByName: managerName,
         preparatorIds: group.preparatorIds || [],
-        subscriptionEndDate: subscriptionEndDate,
+        subscriptionEndDate: groupSubscriptionEndDate,
       };
     });
 
@@ -213,22 +221,7 @@ adminRouter.put('/:id', async (req, res) => {
     const { groupsCollection, usersCollection } = await getCollections();
     const groupId = new ObjectId(req.params.id);
 
-    // Update subscription date for the manager if provided
-    if (managedBy && subscriptionEndDate) {
-      const managerId = new ObjectId(managedBy);
-      const newSubscriptionEndDate = new Date(subscriptionEndDate);
-      const hasActiveSubscription = newSubscriptionEndDate > new Date();
-      
-      await usersCollection.updateOne(
-        { _id: managerId },
-        { 
-          $set: { 
-            subscriptionEndDate: newSubscriptionEndDate,
-            hasActiveSubscription: hasActiveSubscription 
-          } 
-        }
-      );
-    }
+
 
     const updateFields: any = {};
     if (name) updateFields.name = name;
