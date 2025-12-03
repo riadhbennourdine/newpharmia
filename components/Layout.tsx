@@ -259,7 +259,7 @@ const AppLayout: React.FC = () => {
           className="bg-transparent text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
           aria-label="Ouvrir l'assistant IA"
         >
-          {isChatOpen ? <XCircleIcon className="h-8 w-8" /> : <img src="https://pharmaconseilbmb.com/photos/site/bot.gif" alt="Assistant PharmIA" className="h-8 w-8" />}
+          {isChatOpen ? <XCircleIcon className="h-12 w-12" /> : <img src="https://pharmaconseilbmb.com/photos/site/bot.gif" alt="Assistant PharmIA" className="h-12 w-12" />}
         </button>
       </div>
 
