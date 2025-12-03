@@ -59,3 +59,20 @@ export const clearIndex = async () => {
     throw error;
   }
 };
+
+/**
+ * Searches the memofiches index in Algolia.
+ * @param query - The search query string.
+ * @returns A promise that resolves with the search results.
+ */
+export const searchMemoFiches = async (query: string) => {
+  try {
+    const results = await index.search(query, {
+      hitsPerPage: 5, // Limit to the top 5 results to build the context
+    });
+    return results.hits;
+  } catch (error) {
+    console.error('Error searching Algolia index:', error);
+    throw error;
+  }
+};

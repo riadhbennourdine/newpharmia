@@ -9,7 +9,7 @@ import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchServ
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
-import { indexMemoFiches, removeMemoFicheFromIndex } from './server/algoliaService.js';
+import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches } from './server/algoliaService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -836,6 +836,42 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
 
     } catch (error: any) {
         console.error('Error in chat endpoint:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/rag/chat', authenticateToken, async (req, res) => {
+    try {
+        const { query } = req.body;
+
+        if (!query) {
+            return res.status(400).json({ message: 'Query is required.' });
+        }
+
+        // 1. Retrieve: Search for relevant documents in Algolia
+        const searchResults = await searchMemoFiches(query);
+
+        // 2. Augment: Create a context from the search results
+        const context = searchResults.map((hit: any) => {
+            return `Titre: ${hit.title}\nPoints Clés: ${hit.keyPoints?.join(', ')}\nSituation: ${hit.patientSituation}\n`;
+        }).join('\n---\n');
+
+        const augmentedQuery = `En te basant STRICTEMENT sur le contexte suivant, réponds à la question de l'utilisateur. Le contexte provient de fiches validées. Ne fournis aucune information qui ne soit pas dans ce contexte. Si la réponse n'est pas dans le contexte, dis simplement "Je ne trouve pas l'information dans les fiches disponibles."
+
+Contexte:
+---
+${context}
+---
+
+Question de l'utilisateur: ${query}`;
+
+        // 3. Generate: Call the Gemini model with the augmented prompt
+        const text = await getChatResponse([], augmentedQuery, query, 'mémofiches'); 
+        
+        res.json({ message: text, sources: searchResults }); // Also return the sources for display
+
+    } catch (error: any) {
+        console.error('Error in RAG chat endpoint:', error);
         res.status(500).json({ message: error.message });
     }
 });

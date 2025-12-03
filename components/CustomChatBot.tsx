@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { sendChatMessage } from '../services/geminiService';
+import { sendRAGChatMessage } from '../services/geminiService';
+import { Link } from 'react-router-dom';
 import { BrainCircuitIcon, Spinner, MicIcon, MicOffIcon, SpeakerIcon, XCircleIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
     text: string;
+    sources?: any[];
 }
 
 const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, title }) => {
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'model',
-            text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :\n\n**${title}**\n\nComment puis-je vous aider aujourd\'hui ?`
+            text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :\n\n**${title}**\n\nComment puis-je vous aider aujourd'hui ?`
         }
     ]);
     const [inputValue, setInputValue] = useState('');
@@ -24,18 +26,16 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     const transcriptRef = useRef('');
 
     const stripMarkdown = (text: string) => {
-        // This will remove ** for bold, and * for italic
         return text.replace(/\*{1,2}(.*?)\*{1,2}/g, '$1');
     };
 
     const speakText = (text: string, index: number, lang = 'fr-FR') => {
         if (!window.speechSynthesis) return;
-
         const cleanText = stripMarkdown(text);
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = lang;
-        utterance.rate = 1.15; // A bit faster
-        utterance.pitch = 1.1; // A bit lower pitch for fluency
+        utterance.rate = 1.15;
+        utterance.pitch = 1.1;
 
         const voices = window.speechSynthesis.getVoices();
         const frenchVoice = voices.find(voice => voice.lang === lang && voice.name.includes('Google'));
@@ -43,17 +43,9 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
             utterance.voice = frenchVoice;
         }
 
-        utterance.onstart = () => {
-            setSpeakingMessageIndex(index);
-        };
-
-        utterance.onend = () => {
-            setSpeakingMessageIndex(null);
-        };
-
-        utterance.onerror = () => {
-            setSpeakingMessageIndex(null);
-        };
+        utterance.onstart = () => setSpeakingMessageIndex(index);
+        utterance.onend = () => setSpeakingMessageIndex(null);
+        utterance.onerror = () => setSpeakingMessageIndex(null);
 
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
@@ -77,14 +69,10 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                 transcriptRef.current = transcript.trim();
                 setInputValue(transcript.trim());
             };
-
             recognitionRef.current.onerror = (event: any) => {
                 console.error("Speech recognition error", event.error);
-                if (isRecording) {
-                    recognitionRef.current.stop();
-                }
+                if (isRecording) recognitionRef.current.stop();
             };
-
             recognitionRef.current.onend = () => {
                 setIsRecording(false);
                 if (transcriptRef.current) {
@@ -93,23 +81,17 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                 }
             };
         } else {
-            console.warn("Speech recognition not supported in this browser.");
+            console.warn("Speech recognition not supported.");
         }
-
-        // Load voices initially
         window.speechSynthesis?.getVoices();
-
         return () => {
-            if (recognitionRef.current) {
-                recognitionRef.current.stop();
-            }
+            if (recognitionRef.current) recognitionRef.current.stop();
             window.speechSynthesis?.cancel();
         };
     }, []);
 
     const toggleRecording = () => {
         if (!recognitionRef.current) return;
-
         if (isRecording) {
             recognitionRef.current.stop();
         } else {
@@ -119,8 +101,7 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     };
 
     const renderChatMessage = (text: string) => {
-        const html = text.replace(/\*\*(.*?)\*\*/g, `<strong class="font-semibold text-teal-600">$1</strong>`);
-        return html;
+        return text.replace(/\*\*(.*?)\*\*/g, `<strong class="font-semibold text-teal-600">$1</strong>`);
     };
 
     useEffect(() => {
@@ -134,21 +115,21 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         if (!trimmedInput || isLoading) return;
 
         const newUserMessage: Message = { role: 'user', text: trimmedInput };
-        const newMessages = [...messages, newUserMessage];
-        setMessages(newMessages);
+        setMessages(prev => [...prev, newUserMessage]);
         setInputValue('');
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await sendChatMessage(newMessages, context);
-            const modelMessage: Message = { role: 'model', text: response.message };
-            setMessages(prevMessages => [...prevMessages, modelMessage]);
-            speakText(response.message, newMessages.length); // Index of the new message
+            // Use the new RAG-based chat function
+            const response = await sendRAGChatMessage(trimmedInput);
+            const modelMessage: Message = { role: 'model', text: response.message, sources: response.sources };
+            setMessages(prev => [...prev, modelMessage]);
+            speakText(response.message, messages.length + 1);
         } catch (err: any) {
             const errorMessage: Message = { role: 'model', text: `Désolé, une erreur est survenue: ${err.message}` };
-            setMessages(prevMessages => [...prevMessages, errorMessage]);
-            speakText(errorMessage.text, newMessages.length); // Index of the new message
+            setMessages(prev => [...prev, errorMessage]);
+            speakText(errorMessage.text, messages.length + 1);
         } finally {
             setIsLoading(false);
         }
@@ -181,6 +162,22 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                                 className="text-sm whitespace-pre-wrap"
                                 dangerouslySetInnerHTML={{ __html: renderChatMessage(msg.text) }}
                             />
+                            {msg.sources && msg.sources.length > 0 && (
+                                <div className="mt-3 pt-3 border-t border-slate-300">
+                                    <h5 className="text-xs font-bold text-slate-500 mb-1">Sources:</h5>
+                                    <div className="flex flex-wrap gap-2">
+                                        {msg.sources.map((source: any) => (
+                                            <Link 
+                                                to={`/memofiche/${source.objectID}`} 
+                                                key={source.objectID}
+                                                className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md hover:bg-teal-100 hover:text-teal-700 transition-colors"
+                                            >
+                                                {source.title}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                              {msg.role === 'model' && (
                                 <button
                                     onClick={() => speakingMessageIndex === index ? stopSpeaking() : speakText(msg.text, index)}
