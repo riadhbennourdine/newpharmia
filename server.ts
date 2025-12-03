@@ -9,6 +9,7 @@ import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchServ
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
+import { indexMemoFiches, removeMemoFicheFromIndex } from './server/algoliaService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -629,7 +630,11 @@ app.post('/api/memofiches', async (req, res) => {
         } as CaseStudy);
 
         if (result.acknowledged) {
-            const insertedFiche = { _id: result.insertedId, ...ficheData, creationDate: new Date().toISOString() };
+            const insertedFiche = { _id: result.insertedId, ...ficheData, creationDate: new Date().toISOString() } as CaseStudy;
+            // Index the new fiche in Algolia, but don't block the response
+            indexMemoFiches([insertedFiche]).catch(err => {
+                console.error('Failed to index new memofiche in Algolia:', err);
+            });
             res.status(201).json(insertedFiche);
         } else {
             res.status(500).json({ message: 'Échec de l\'insertion de la mémofiche.' });
@@ -663,6 +668,12 @@ app.put('/api/memofiches/:id', async (req, res) => {
             res.status(200).json({ message: 'Mémofiche trouvée mais aucune modification effectuée.' });
         } else {
             const updatedFiche = await memofichesCollection.findOne({ _id: new ObjectId(id) });
+            // Re-index the updated fiche in Algolia
+            if (updatedFiche) {
+                indexMemoFiches([updatedFiche]).catch(err => {
+                    console.error(`Failed to re-index memofiche ${id} in Algolia:`, err);
+                });
+            }
             res.json(updatedFiche);
         }
     } catch (error) {
@@ -682,6 +693,11 @@ app.delete('/api/memofiches/:id', async (req, res) => {
         const result = await memofichesCollection.deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount > 0) {
+            // Also remove from Algolia index
+            removeMemoFicheFromIndex(id).catch(err => {
+                console.error(`Failed to remove memofiche ${id} from Algolia index:`, err);
+            });
+
             // Also remove this ficheId from all users' readFiches array
             const usersCollection = db.collection<User>('users');
             await usersCollection.updateMany(
