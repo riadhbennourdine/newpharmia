@@ -531,7 +531,6 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
 
         // This logic was added to fix an issue where free fiches were not accessible
         if (fiche.isFree) {
-            console.log(`[DEBUG] Granting free access to memofiche ${id}`);
             return res.json({
                 ...fiche,
                 isLocked: false,
