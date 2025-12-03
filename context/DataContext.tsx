@@ -83,7 +83,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
   const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
-
+    try {
       const headers: HeadersInit = {};
       if (user) {
         headers['x-user-id'] = user._id;
