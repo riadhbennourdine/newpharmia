@@ -47,7 +47,7 @@ const AccordionSection: React.FC<{
             </button>
             <div
                 className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
-                <div className={`p-4 pt-0 pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
+                <div className={`p-4 pt-0 pl-4 sm:pl-12 space-y-2 ${isAlert ? 'text-red-600' : 'text-slate-700'} ${contentClassName}`}>
                     {typeof children === 'string' ? (
                         <div dangerouslySetInnerHTML={{ __html: children }} />
                     ) : (
@@ -592,7 +592,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
               <img src={getAbsoluteImageUrl(caseStudy.coverImageUrl)} alt={caseStudy.title} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: caseStudy.coverImagePosition || 'center' }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10"></div>
               <div className="relative z-20">
-                  <h2 className="text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">{caseStudy.title}</h2>
                   <div className="mt-2 text-sm font-medium opacity-90">
                       <span>{caseStudy.theme}</span><span className="mx-2">&bull;</span><span>{caseStudy.system}</span><span className="mx-2">&bull;</span><span>{`Créé le ${formattedDate}`}</span><span className="mx-2">&bull;</span><span>Statut: {caseStudy.status}</span>
                   </div>
@@ -618,16 +618,16 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-              <div className="mb-6 border-b border-slate-200 flex space-x-0.5 sm:space-x-1 overflow-x-auto pb-px">
+              <div className="mb-6 border-b border-slate-200 flex space-x-1 sm:space-x-2 overflow-x-auto pb-px">
                  {menuItems.map(item => {
                     const isActive = activeTab === item.id;
-                    const baseTabClass = 'flex flex-col items-center px-2 sm:px-3 py-2 text-sm sm:text-base font-medium rounded-t-md transition-all duration-300 border-b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500';
+                    const baseTabClass = 'flex flex-col items-center px-3 py-3 text-sm sm:text-base font-medium rounded-t-md transition-all duration-300 border-b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500';
                     const activeTabClass = 'bg-white text-teal-600 border-teal-600 shadow-sm';
                     const inactiveTabClass = 'border-transparent text-slate-500 hover:text-teal-500 hover:bg-slate-50';
                     return (
                         <button key={item.id} onClick={() => setActiveTab(item.id)} className={`${baseTabClass} ${isActive ? activeTabClass : inactiveTabClass}`}>
                             {item.icon}
-                            <span className="text-xs mt-1 text-center">{item.label}</span>
+                            <span className="text-sm mt-1 text-center">{item.label}</span>
                         </button>
                     );
                  })}
