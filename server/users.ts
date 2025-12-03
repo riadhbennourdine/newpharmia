@@ -98,6 +98,66 @@ router.get('/by-email/:email', async (req, res) => {
   }
 });
 
+// New endpoint to get user by name
+router.get('/by-name', async (req, res) => {
+    try {
+        const { firstName, lastName } = req.query;
+
+        if (!firstName || !lastName) {
+            return res.status(400).json({ message: 'First name and last name are required.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        // Perform a case-insensitive search
+        const user = await usersCollection.findOne({
+            firstName: { $regex: new RegExp(firstName as string, 'i') },
+            lastName: { $regex: new RegExp(lastName as string, 'i') }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Exclude sensitive information like passwordHash
+        const { passwordHash, ...userWithoutHash } = user;
+        res.json(userWithoutHash);
+
+    } catch (error) {
+        console.error('Error fetching user by name:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+router.get('/:userId/quiz-history', async (req, res) => {
+    console.log('Attempting to reach /api/users/:userId/quiz-history. Params:', req.params);
+    try {
+        const { userId } = req.params;
+        console.log('Inside /api/users/:userId/quiz-history. userId:', userId);
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            console.log('Invalid ObjectId for quiz-history. userId:', userId);
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        if (!user) {
+            console.log('User not found for quiz-history. userId:', userId);
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({ quizHistory: user.quizHistory || [] });
+
+    } catch (error) {
+        console.error('Error fetching quiz history:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 router.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
