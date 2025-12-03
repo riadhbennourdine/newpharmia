@@ -92,7 +92,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Always retrieve from API to ensure the most up-to-date version
       const response = await fetch(`/api/memofiches/${id}`, { headers });
       if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           throw new Error('Unauthorized');
         } else if (response.status === 404) {
           throw new Error('Mémofiche non trouvée.');
