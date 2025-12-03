@@ -848,14 +848,29 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Query is required.' });
         }
 
-        // 1. Retrieve: Search for relevant documents in Algolia
-        const searchResults = await searchMemoFiches(query);
+        // 1. Retrieve: Search for relevant documents in Algolia (truncated content)
+        const algoliaResults = await searchMemoFiches(query);
 
-        // 2. Augment: Create a context from the search results
-        const context = searchResults.map((hit: any) => {
-            return `Titre: ${hit.title}\nPoints Clés: ${hit.keyPoints?.join(', ')}\nSituation: ${hit.patientSituation}\n`;
+        // Extract objectIDs from Algolia results
+        const ficheObjectIDs = algoliaResults.map((hit: any) => new ObjectId(hit.objectID));
+
+        let fullFiches: CaseStudy[] = [];
+        if (ficheObjectIDs.length > 0) {
+            const client = await clientPromise;
+            const db = client.db('pharmia');
+            const memofichesCollection = db.collection<CaseStudy>('memofiches');
+            
+            // 2. Fetch full documents from MongoDB based on Algolia results
+            fullFiches = await memofichesCollection.find({ _id: { $in: ficheObjectIDs } }).toArray();
+        }
+
+        // 3. Augment: Create a context from the full MongoDB documents
+        // Using the extractTextFromMemoFiche helper from algoliaService for consistency
+        const context = fullFiches.map(fiche => {
+            const { extractTextFromMemoFiche } = await import('./server/algoliaService.js');
+            return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
         }).join('\n---\n');
-
+        
         const augmentedQuery = `En te basant STRICTEMENT sur le contexte suivant, réponds à la question de l'utilisateur. Le contexte provient de fiches validées. Ne fournis aucune information qui ne soit pas dans ce contexte. Si la réponse n'est pas dans le contexte, dis simplement "Je ne trouve pas l'information dans les fiches disponibles."
 
 Contexte:
@@ -865,10 +880,16 @@ ${context}
 
 Question de l'utilisateur: ${query}`;
 
-        // 3. Generate: Call the Gemini model with the augmented prompt
+        // 4. Generate: Call the Gemini model with the augmented prompt
         const text = await getChatResponse([], augmentedQuery, query, 'mémofiches'); 
         
-        res.json({ message: text, sources: searchResults }); // Also return the sources for display
+        // Return the sources as titles and IDs from the fullFiches
+        const sources = fullFiches.map(fiche => ({
+            objectID: fiche._id.toString(),
+            title: fiche.title
+        }));
+
+        res.json({ message: text, sources });
 
     } catch (error: any) {
         console.error('Error in RAG chat endpoint:', error);
