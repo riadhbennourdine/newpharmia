@@ -1,5 +1,7 @@
-import algoliasearch from 'algoliasearch';
-import { MemoFiche } from '../types';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const algoliasearch = require('algoliasearch');
+import { MemoFiche } from '../types.js';
 
 if (!process.env.ALGOLIA_APP_ID || !process.env.ALGOLIA_WRITE_KEY) {
   throw new Error('Algolia App ID and Write API Key are required.');
