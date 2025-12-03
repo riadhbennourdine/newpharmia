@@ -508,10 +508,10 @@ app.get('/api/memofiches/all', async (req, res) => {
         res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération de toutes les mémofiches.' });
     }
 });
-app.get('/api/memofiches/:id', async (req, res) => {
+app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
-        const userId = req.headers['x-user-id'] as string; // THIS IS A TEMPORARY, INSECURE SOLUTION
+        const user = req.user!; // req.user is guaranteed to exist by authenticateToken
 
         const client = await clientPromise;
         const db = client.db('pharmia');
@@ -519,35 +519,14 @@ app.get('/api/memofiches/:id', async (req, res) => {
         const usersCollection = db.collection<User>('users');
         const groupsCollection = db.collection<Group>('groups');
 
-        const { ObjectId } = await import('mongodb');
+        const { ObjectId } = await import('mongodb'); // Explicit local import for safety
         if (!ObjectId.isValid(id)) {
             return res.status(404).json({ message: 'ID de mémofiche invalide.' });
         }
-        const fiche = await memofichesCollection.findOne({ _id: new ObjectId(id) });
+        let fiche = await memofichesCollection.findOne({ _id: new ObjectId(id) }); // Declared here
 
         if (!fiche) {
             return res.status(404).json({ message: 'Mémofiche non trouvée' });
-        }
-
-        if (fiche.isFree) {
-            return res.json({
-                ...fiche,
-                isLocked: false,
-                mainTreatment: fiche.mainTreatment || [],
-                associatedProducts: fiche.associatedProducts || [],
-                lifestyleAdvice: fiche.lifestyleAdvice || [],
-                dietaryAdvice: fiche.dietaryAdvice || [],
-            });
-        }
-
-        if (!userId || !ObjectId.isValid(userId)) {
-            return res.status(403).json({ message: 'Accès refusé: Utilisateur non authentifié.' });
-        }
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-        if (!user) {
-            return res.status(403).json({ message: 'Accès refusé: Utilisateur introuvable.' });
         }
 
         let group: Group | null = null;
@@ -655,8 +634,6 @@ app.put('/api/memofiches/:id', async (req, res) => {
 
         // FIX: Remove immutable _id field from update payload
         delete updatedFicheData._id;
-
-        const { ObjectId } = await import('mongodb');
         const result = await memofichesCollection.updateOne(
             { _id: new ObjectId(id) },
             { $set: updatedFicheData }
