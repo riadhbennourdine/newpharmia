@@ -309,43 +309,14 @@ const WebinarsPage: React.FC = () => {
         fetchAllData();
     }, [token]);
 
+    // This separate effect handles the filtering for the tabbed display
     useEffect(() => {
-        if (activeTab === 'MY_WEBINARS') { // This case fetches its own data
-            const fetchMyWebinars = async () => {
-                setIsLoading(true);
-                setError(null);
-                try {
-                    const headers: HeadersInit = {};
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
-                    const response = await fetch('/api/webinars/my-webinars', { headers });
-                    if (!response.ok) throw new Error('Failed to fetch my webinars');
-                    const data = await response.json();
-                    setMyWebinars(data);
-                } catch (err: any) {
-                    setError(err.message);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-            fetchMyWebinars();
-            return; // Exit this useEffect for MY_WEBINARS
-        }
-
-        // For CROP Tunis and PharmIA tabs, process from already fetched allWebinars
-        // Only process if allWebinars has loaded and it's not still loading
-        if (allWebinars.length === 0 && !isLoading) {
-             setLiveWebinars([]);
-             setPastWebinars([]);
-             setCurrentMonthWebinars([]);
-             setFutureMonthsWebinars({});
-             setWebinars([]);
-             return;
-        }
-        
-        // If allWebinars is still loading, wait for it
-        if (isLoading && allWebinars.length === 0) {
+        if (activeTab === 'MY_WEBINARS' || allWebinars.length === 0) {
+            setLiveWebinars([]);
+            setPastWebinars([]);
+            setCurrentMonthWebinars([]);
+            setFutureMonthsWebinars({});
+            setWebinars([]);
             return;
         }
 
@@ -363,7 +334,7 @@ const WebinarsPage: React.FC = () => {
             .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
             .sort((a: Webinar, b: Webinar) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-        setWebinars(tabData); // The full list for the tab
+        setWebinars(tabData);
         setLiveWebinars(live);
         setPastWebinars(past);
 
@@ -380,7 +351,7 @@ const WebinarsPage: React.FC = () => {
 
         const groupedFutureWebinars = futureMonthsUpcoming.reduce((acc, webinar) => {
             const date = new Date(webinar.date);
-            const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            const monthYear = date.toLocaleDateString('fr-FR', { month: 'long', 'year': 'numeric' });
             const capitalizedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
 
             if (!acc[capitalizedMonthYear]) {
@@ -391,7 +362,7 @@ const WebinarsPage: React.FC = () => {
         }, {} as Record<string, Webinar[]>);
         setFutureMonthsWebinars(groupedFutureWebinars);
 
-    }, [activeTab, allWebinars, nearestWebinar, token, isLoading]);
+    }, [activeTab, allWebinars, nearestWebinar]);
 
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
