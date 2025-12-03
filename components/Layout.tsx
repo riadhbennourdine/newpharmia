@@ -240,7 +240,12 @@ const Header: React.FC = () => {
   );
 };
 
+import CustomChatBot from './CustomChatBot';
+import { BrainCircuitIcon, XCircleIcon } from './Icons';
+
 const AppLayout: React.FC = () => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-100">
       <Header />
@@ -248,6 +253,24 @@ const AppLayout: React.FC = () => {
         <Outlet />
       </main>
       <Footer />
+
+      {/* Floating Action Button for Chatbot */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+          aria-label="Ouvrir l'assistant IA"
+        >
+          {isChatOpen ? <XCircleIcon className="h-8 w-8" /> : <BrainCircuitIcon className="h-8 w-8" />}
+        </button>
+      </div>
+
+      {/* Chatbot Window */}
+      {isChatOpen && (
+        <div className="fixed bottom-24 right-6 z-50 w-full max-w-sm animate-fade-in-up">
+           <CustomChatBot context="" title="Assistant Général PharmIA" />
+        </div>
+      )}
     </div>
   );
 };

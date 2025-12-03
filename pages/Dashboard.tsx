@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import AlgoliaSearch from '../components/AlgoliaSearch';
-import CustomChatBot from '../components/CustomChatBot';
+
 import { BookOpenIcon, VideoCameraIcon, UserGroupIcon, AcademicCapIcon } from '../components/Icons';
 
 import { UserRole } from '../types';
@@ -24,9 +24,7 @@ const Dashboard: React.FC = () => {
                 
                 <AlgoliaSearch />
 
-                <div className="mt-8 w-full max-w-2xl">
-                    <CustomChatBot context="" title="Informations générales PharmIA" />
-                </div>
+
 
             </main>
 
