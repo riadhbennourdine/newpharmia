@@ -17,7 +17,7 @@ const index = searchClient.initIndex(ALGOLIA_INDEX_NAME);
 // This component defines how each search result (hit) is displayed.
 const Hit = ({ hit }: { hit: any }) => {
   return (
-    <Link to={`/memofiches/${hit.objectID}`} className="block p-4 border-b border-slate-200 hover:bg-slate-50">
+    <Link to={`/memofiche/${hit.objectID}`} className="block p-4 border-b border-slate-200 hover:bg-slate-50">
       <h4 className="font-bold text-teal-700">{hit.title}</h4>
       <p className="text-sm text-slate-600 mt-1">{hit.theme} - {hit.system}</p>
       {hit.keyPoints && (
