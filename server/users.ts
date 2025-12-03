@@ -271,9 +271,39 @@ router.get('/:userId/quiz-history', async (req, res) => {
     }
 });
 
-router.post('/:userId/read-fiches', async (req, res) => {
-    console.log('Attempting to reach /api/users/:userId/read-fiches (POST). Params:', req.params);
+// New endpoint to get user by name
+router.get('/by-name', async (req, res) => {
     try {
+        const { firstName, lastName } = req.query;
+
+        if (!firstName || !lastName) {
+            return res.status(400).json({ message: 'First name and last name are required.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        // Perform a case-insensitive search
+        const user = await usersCollection.findOne({
+            firstName: { $regex: new RegExp(firstName as string, 'i') },
+            lastName: { $regex: new RegExp(lastName as string, 'i') }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Exclude sensitive information like passwordHash
+        const { passwordHash, ...userWithoutHash } = user;
+        res.json(userWithoutHash);
+
+    } catch (error) {
+        console.error('Error fetching user by name:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+router.post('/:userId/read-fiches', async (req, res) => {
+    console.log('Attempting to reach /api/users/:userId/read-fiches (POST). Params:', req.params);    try {
         const { userId } = req.params;
         const { ficheId } = req.body;
 
