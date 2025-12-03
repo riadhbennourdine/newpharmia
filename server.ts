@@ -851,6 +851,11 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
         // 1. Retrieve: Search for relevant documents in Algolia
         const algoliaResults = await searchMemoFiches(query);
 
+        if (!algoliaResults || algoliaResults.length === 0) {
+            const text = await getChatResponse([], "", query, 'mémofiches');
+            return res.json({ message: text, sources: [] });
+        }
+
         const ficheObjectIDs = algoliaResults.map((hit: any) => new ObjectId(hit.objectID));
 
         let fullFiches: CaseStudy[] = [];
@@ -861,22 +866,13 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             fullFiches = await memofichesCollection.find({ _id: { $in: ficheObjectIDs } }).toArray();
         }
 
-        // 2. Augment: Create a context from the full MongoDB documents
+        // 2. Augment: Create a raw context string from the full MongoDB documents
         const context = fullFiches.map(fiche => {
             return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
         }).join('\n---\n');
         
-        const augmentedQuery = `Tu es un assistant expert pour les professionnels de la pharmacie. En te basant unqiuement sur les informations extraites des mémofiches fournies dans le CONTEXTE ci-dessous, rédige une réponse synthétique et bien structurée à la QUESTION de l'utilisateur. Utilise des listes à puces et mets les termes importants en gras. Ne mentionne jamais que tu te bases sur un contexte. Agis comme si tu connaissais déjà cette information. Si la réponse n'est pas dans le contexte, dis simplement "Je ne trouve pas l'information dans les fiches disponibles."
-
-Contexte:
----
-${context}
----
-
-Question: ${query}`;
-
-        // 3. Generate: Call the Gemini model with the augmented prompt
-        const text = await getChatResponse([], augmentedQuery, query, 'mémofiches'); 
+        // 3. Generate: Call the chat service with the raw context and question
+        const text = await getChatResponse([], context, query, 'mémofiches'); 
         
         const sources = fullFiches.map(fiche => ({
             objectID: fiche._id.toString(),

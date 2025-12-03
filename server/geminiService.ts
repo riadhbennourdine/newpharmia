@@ -244,59 +244,40 @@ Le contenu de la mémofiche est : "${context}".`;
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
-    console.log('--- getChatResponse ---');
-    console.log('chatHistory:', JSON.stringify(chatHistory, null, 2));
-    console.log('context:', context);
-    console.log('question:', question);
-    console.log('title:', title);
-
     const genAI = new GoogleGenerativeAI(getApiKey());
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const system_prompt = `Tu es PharmIA, un assistant IA expert pour les professionnels de la pharmacie.
-Ton rôle est de répondre aux questions UNIQUEMENT sur la base du contexte de la mémofiche fournie.
-Ne réponds pas aux questions qui sortent de ce contexte. Sois concis et précis.
+    const finalPrompt = `Tu es PharmIA, un assistant expert pour les professionnels de la pharmacie. Ta mission est de répondre de manière claire, concise et structurée à la QUESTION de l'utilisateur.
 
-Dans tes réponses, mets en évidence les mots-clés les plus importants en les entourant de doubles astérisques (par exemple, **mot-clé**). Cela les affichera en gras et en couleur.
+INSTRUCTIONS STRICTES :
+1. Base ta réponse **uniquement** sur les informations fournies dans le CONTEXTE ci-dessous.
+2. Ne mentionne **jamais** l'existence du contexte ou des mémofiches. Agis comme un expert qui sait déjà tout.
+3. Structure ta réponse avec des titres (en gras) et des listes à puces pour une lisibilité maximale.
+4. Si les informations ne sont pas dans le contexte, réponds **uniquement** : "Je ne trouve pas d'information pertinente dans les fiches disponibles pour répondre à votre question."
 
-Si l'utilisateur te dit simplement "Bonjour" ou une salutation similaire, réponds EXACTEMENT :
-"Bonjour! Je suis PharmIA, votre Assistant, Expert pour un conseil de Qualité à l'officine. Ici je peux vous conseiller sur **${title}**."
-Ne rajoute rien d'autre à cette réponse de salutation.
+CONTEXTE:
+---
+${context || "Aucune information fournie."}
+---
 
-Pour toutes les autres questions, base tes réponses sur le contexte de la mémofiche.
-`;
+QUESTION: ${question}`;
 
     const history: Content[] = chatHistory.map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
     }));
-
-    // Ensure history starts with a user message if it's not empty
-    if (history.length > 0 && history[0].role !== 'user') {
-        // Find the first user message and start from there
-        const firstUserIndex = history.findIndex(h => h.role === 'user');
-        if (firstUserIndex > -1) {
-            history.splice(0, firstUserIndex);
-        } else {
-            // If no user message, the history is invalid for starting a chat
-            history.length = 0;
-        }
-    }
     
     const chat = model.startChat({
         history: history,
         generationConfig: {
-          maxOutputTokens: 1000,
+          maxOutputTokens: 1500,
         },
       });
 
-        const result = await chat.sendMessage(`${system_prompt}\n\nCONTEXTE DE LA MEMOFICHE: ${context}\n\nQUESTION: ${question}`);
-
-        const response = result.response;
-
-        return response.text().trim();
-
-    };
+    const result = await chat.sendMessage(finalPrompt);
+    const response = result.response;
+    return response.text().trim();
+};
 
     interface ListModelsResponse {
   models: any[];
