@@ -866,14 +866,14 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
         }).join('\n---\n');
         
-        const augmentedQuery = `En te basant STRICTEMENT sur le contexte suivant, réponds à la question de l'utilisateur. Le contexte provient de fiches validées. Ne fournis aucune information qui ne soit pas dans ce contexte. Si la réponse n'est pas dans le contexte, dis simplement "Je ne trouve pas l'information dans les fiches disponibles."
+        const augmentedQuery = `Tu es un assistant expert pour les professionnels de la pharmacie. En te basant unqiuement sur les informations extraites des mémofiches fournies dans le CONTEXTE ci-dessous, rédige une réponse synthétique et bien structurée à la QUESTION de l'utilisateur. Utilise des listes à puces et mets les termes importants en gras. Ne mentionne jamais que tu te bases sur un contexte. Agis comme si tu connaissais déjà cette information. Si la réponse n'est pas dans le contexte, dis simplement "Je ne trouve pas l'information dans les fiches disponibles."
 
 Contexte:
 ---
 ${context}
 ---
 
-Question de l'utilisateur: ${query}`;
+Question: ${query}`;
 
         // 3. Generate: Call the Gemini model with the augmented prompt
         const text = await getChatResponse([], augmentedQuery, query, 'mémofiches'); 
