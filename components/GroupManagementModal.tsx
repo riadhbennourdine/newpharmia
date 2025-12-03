@@ -3,7 +3,7 @@ import { Group, User, UserRole, CaseStudy } from '../../types';
 import { useAuth } from '../hooks/useAuth';
 
 interface GroupManagementModalProps {
-  group?: Group & { subscriptionEndDate?: Date }; // Ensure group type includes optional subscription date
+  group?: Group & { subscriptionEndDate?: Date }; // Keep this interface, but the modal itself won't use subscriptionEndDate directly
   onClose: () => void;
   fetchGroups: () => void;
 }
@@ -26,11 +26,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   const [searchTerm, setSearchTerm] = useState('');
   const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
 
-  // Format date to YYYY-MM-DD for input[type=date]
-  const formatDateForInput = (date: Date | undefined | null): string => {
-    if (!date) return '';
-    return new Date(date).toISOString().split('T')[0];
-  };
+  // No formatDateForInput, subscriptionEndDate state, or useEffects related to subscriptionEndDate input
 
   useEffect(() => {
     fetchPharmacists();
@@ -175,17 +171,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
             </select>
           </div>
 
-          <div>
-            <label htmlFor="subscriptionEndDate" className="block text-sm font-medium text-slate-700">Date d'expiration de l'abonnement</label>
-            <input
-              type="date"
-              id="subscriptionEndDate"
-              value={subscriptionEndDate}
-              onChange={(e) => setSubscriptionEndDate(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-              disabled={!managedBy} // Disable if no manager is selected
-            />
-          </div>
+          {/* Removed subscriptionEndDate input field and related logic */}
 
           <div>
             <label className="block text-sm font-medium text-slate-700">Pharmaciens Responsables</label>
