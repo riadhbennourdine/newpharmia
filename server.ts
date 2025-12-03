@@ -565,7 +565,7 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
         }
 
         // Apprenant and Preparateur need an active subscription or group access
-        if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN) {
+        if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN || user.role === UserRole.ADMIN_WEBINAR) {
             // Check for active subscription
             if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
                 return res.json({
