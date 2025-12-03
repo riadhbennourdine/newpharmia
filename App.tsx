@@ -30,6 +30,7 @@ import MemoFichePage from './pages/MemoFicheView';
 import QuizPage from './pages/QuizView';
 import ReadFichesPage from './pages/ReadFichesPage';
 import QuizHistoryPage from './pages/QuizHistoryPage';
+import LegacyDashboard from './pages/LegacyDashboard';
 
 // Admin & Formateur Pages
 import GeneratorView from './pages/GeneratorView';
@@ -91,6 +92,7 @@ const App: React.FC = () => (
                             <Route path="/read-fiches/:userId" element={<ReadFichesPage />} />
                             <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
                             <Route path="/complete-profile" element={<ProfileCompletionView />} />
+                            <Route path="/my-dashboard" element={<LegacyDashboard />} />
 
                             {/* Routes for Formateurs & Admins */}
                             <Route element={<FormateurOrAdminRoute />}>
