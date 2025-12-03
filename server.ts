@@ -9,7 +9,7 @@ import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchServ
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
-import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches } from './server/algoliaService.js';
+import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -848,10 +848,9 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Query is required.' });
         }
 
-        // 1. Retrieve: Search for relevant documents in Algolia (truncated content)
+        // 1. Retrieve: Search for relevant documents in Algolia
         const algoliaResults = await searchMemoFiches(query);
 
-        // Extract objectIDs from Algolia results
         const ficheObjectIDs = algoliaResults.map((hit: any) => new ObjectId(hit.objectID));
 
         let fullFiches: CaseStudy[] = [];
@@ -859,15 +858,11 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             const client = await clientPromise;
             const db = client.db('pharmia');
             const memofichesCollection = db.collection<CaseStudy>('memofiches');
-            
-            // 2. Fetch full documents from MongoDB based on Algolia results
             fullFiches = await memofichesCollection.find({ _id: { $in: ficheObjectIDs } }).toArray();
         }
 
-        // 3. Augment: Create a context from the full MongoDB documents
-        // Using the extractTextFromMemoFiche helper from algoliaService for consistency
+        // 2. Augment: Create a context from the full MongoDB documents
         const context = fullFiches.map(fiche => {
-            const { extractTextFromMemoFiche } = await import('./server/algoliaService.js');
             return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
         }).join('\n---\n');
         
@@ -880,10 +875,9 @@ ${context}
 
 Question de l'utilisateur: ${query}`;
 
-        // 4. Generate: Call the Gemini model with the augmented prompt
+        // 3. Generate: Call the Gemini model with the augmented prompt
         const text = await getChatResponse([], augmentedQuery, query, 'mémofiches'); 
         
-        // Return the sources as titles and IDs from the fullFiches
         const sources = fullFiches.map(fiche => ({
             objectID: fiche._id.toString(),
             title: fiche.title

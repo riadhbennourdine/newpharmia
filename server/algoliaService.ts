@@ -14,21 +14,25 @@ const client = algoliasearch(
 
 const index = client.initIndex('memofiches');
 
-function extractTextFromMemoFiche(fiche: MemoFiche): string {
+export function extractTextFromMemoFiche(fiche: MemoFiche): string {
   let fullText = '';
 
-  // Helper to extract text from a string or MemoFicheSectionContent array
-  const appendContent = (content: string | string[] | Array<{ type: string; value: string }> | undefined) => {
+  const appendContent = (content: any) => {
+    if (!content) return;
     if (typeof content === 'string') {
       fullText += ` ${content}`;
     } else if (Array.isArray(content)) {
-      content.forEach(item => {
-        if (typeof item === 'string') {
-          fullText += ` ${item}`;
-        } else if (item && typeof item.value === 'string') {
-          fullText += ` ${item.value}`;
-        }
-      });
+      content.forEach(item => appendContent(item));
+    } else if (typeof content === 'object' && content !== null) {
+      if (content.value && typeof content.value === 'string') {
+        fullText += ` ${content.value}`;
+      }
+      if (content.content && (Array.isArray(content.content) || typeof content.content === 'string')) {
+        appendContent(content.content);
+      }
+      if (content.conseils && Array.isArray(content.conseils)) {
+        appendContent(content.conseils);
+      }
     }
   };
 
@@ -37,83 +41,40 @@ function extractTextFromMemoFiche(fiche: MemoFiche): string {
   fullText += ` ${fiche.theme || ''}`;
   fullText += ` ${fiche.system || ''}`;
 
-  if (fiche.keyPoints) {
-    appendContent(fiche.keyPoints);
-  }
-  if (fiche.patientSituation) {
-    appendContent(fiche.patientSituation.content || fiche.patientSituation); // Handle both string and object
-  }
-  if (fiche.pathologyOverview) {
-    appendContent(fiche.pathologyOverview.content || fiche.pathologyOverview); // Handle both string and object
-  }
-  if (fiche.redFlags) {
-    appendContent(fiche.redFlags);
-  }
-  if (fiche.mainTreatment) {
-    appendContent(fiche.mainTreatment);
-  }
-  if (fiche.associatedProducts) {
-    appendContent(fiche.associatedProducts);
-  }
-  if (fiche.lifestyleAdvice) {
-    appendContent(fiche.lifestyleAdvice);
-  }
-  if (fiche.dietaryAdvice) {
-    appendContent(fiche.dietaryAdvice);
-  }
-  if (fiche.references) {
-    appendContent(fiche.references);
+  appendContent(fiche.keyPoints);
+  appendContent(fiche.patientSituation);
+  appendContent(fiche.pathologyOverview);
+  appendContent(fiche.redFlags);
+  appendContent(fiche.mainTreatment);
+  appendContent(fiche.associatedProducts);
+  appendContent(fiche.lifestyleAdvice);
+  appendContent(fiche.dietaryAdvice);
+  appendContent(fiche.references);
+
+  fiche.memoSections?.forEach(section => {
+    fullText += ` ${section.title || ''}`;
+    appendContent(section.content);
+  });
+  fiche.customSections?.forEach(section => {
+    fullText += ` ${section.title || ''}`;
+    appendContent(section.content);
+  });
+  
+  appendContent(fiche.ordonnance);
+  appendContent(fiche.analyseOrdonnance);
+  appendContent(fiche.conseilsTraitement);
+  appendContent(fiche.informationsMaladie);
+  appendContent(fiche.conseilsHygieneDeVie);
+  appendContent(fiche.conseilsAlimentaires);
+  
+  if (fiche.ventesAdditionnelles && typeof fiche.ventesAdditionnelles === 'object') {
+      appendContent((fiche.ventesAdditionnelles as any).complementsAlimentaires);
+      appendContent((fiche.ventesAdditionnelles as any).accessoires);
+      appendContent((fiche.ventesAdditionnelles as any).dispositifs);
+      appendContent((fiche.ventesAdditionnelles as any).cosmetiques);
   }
 
-  // Handle memoSections and customSections
-  if (fiche.memoSections) {
-    fiche.memoSections.forEach(section => {
-      fullText += ` ${section.title || ''}`;
-      appendContent(section.content);
-    });
-  }
-  if (fiche.customSections) {
-    fiche.customSections.forEach(section => {
-      fullText += ` ${section.title || ''}`;
-      appendContent(section.content);
-    });
-  }
-
-  // Handle ordonnances specific fields
-  if (fiche.ordonnance) {
-    appendContent(fiche.ordonnance);
-  }
-  if (fiche.analyseOrdonnance) {
-    appendContent(fiche.analyseOrdonnance);
-  }
-  if (fiche.conseilsTraitement) {
-    if (Array.isArray(fiche.conseilsTraitement)) {
-      fiche.conseilsTraitement.forEach(ct => appendContent(ct.conseils));
-    } else {
-      appendContent(fiche.conseilsTraitement);
-    }
-  }
-  if (fiche.informationsMaladie) {
-    appendContent(fiche.informationsMaladie);
-  }
-  if (fiche.conseilsHygieneDeVie) {
-    appendContent(fiche.conseilsHygieneDeVie);
-  }
-  if (fiche.conseilsAlimentaires) {
-    appendContent(fiche.conseilsAlimentaires);
-  }
-  if (fiche.ventesAdditionnelles) {
-    if (typeof fiche.ventesAdditionnelles === 'string') { // Should not be string in theory
-      fullText += ` ${fiche.ventesAdditionnelles}`;
-    } else if (typeof fiche.ventesAdditionnelles === 'object') {
-      appendContent(fiche.ventesAdditionnelles.complementsAlimentaires);
-      appendContent(fiche.ventesAdditionnelles.accessoires);
-      appendContent(fiche.ventesAdditionnelles.dispositifs);
-      appendContent(fiche.ventesAdditionnelles.cosmetiques);
-    }
-  }
-
-  return fullText.replace(/\s+/g, ' ').trim(); // Replace multiple spaces with single space and trim
+  return fullText.replace(/\s+/g, ' ').trim();
 }
 
 export const indexMemoFiches = async (fiches: MemoFiche[]) => {
