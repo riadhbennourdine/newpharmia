@@ -376,7 +376,7 @@ app.post('/api/admin/filesearch/search', authenticateToken, async (req: Authenti
 // ===============================================
 // MEMOFICHES API
 // ===============================================
-app.get('/api/memofiches', authenticateToken, async (req: AuthenticatedRequest, res) => {
+app.get('/api/memofiches', async (req, res) => {
     try {
         const {
             page = '1',
@@ -399,14 +399,17 @@ app.get('/api/memofiches', authenticateToken, async (req: AuthenticatedRequest, 
         const usersCollection = db.collection<User>('users');
         const groupsCollection = db.collection<Group>('groups');
 
-        const authenticatedUser = req.user!; // Guaranteed to exist by authenticateToken middleware
+        let user: User | null = null;
         let group: Group | null = null;
         let pharmacist: User | null = null;
 
-        if (authenticatedUser.groupId) {
-            group = await groupsCollection.findOne({ _id: new ObjectId(authenticatedUser.groupId) });
-            if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
-                pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
+        if (userId && ObjectId.isValid(userId)) {
+            user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (user && user.groupId) {
+                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
+                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
+                }
             }
         }
 
@@ -427,7 +430,7 @@ app.get('/api/memofiches', authenticateToken, async (req: AuthenticatedRequest, 
         }
 
         // Add status filtering based on user role and selectedStatus query param
-        if (authenticatedUser.role === UserRole.ADMIN || authenticatedUser.role === UserRole.FORMATEUR) {
+        if (user && (user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR)) {
             if (selectedStatus !== 'all') {
                 query.status = selectedStatus;
             }
@@ -455,20 +458,21 @@ app.get('/api/memofiches', authenticateToken, async (req: AuthenticatedRequest, 
 
         const fichesWithAccess = fiches.map(fiche => {
             let hasAccess = false;
-            // authenticatedUser is guaranteed to exist by middleware
-            if(authenticatedUser.role === UserRole.ADMIN || authenticatedUser.role === UserRole.FORMATEUR) {
-                hasAccess = true;
-            } else {
-            const createdAt = new Date(authenticatedUser.createdAt);
-            const trialExpiresAt = authenticatedUser.trialExpiresAt ? new Date(authenticatedUser.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
-
-            const subscriber = authenticatedUser.role === UserRole.PHARMACIEN ? authenticatedUser : pharmacist;
-
-            if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
-                hasAccess = true;
-            }
-                if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
+            if (user) {
+                if(user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
                     hasAccess = true;
+                } else {
+                const createdAt = new Date(user.createdAt);
+                const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+
+                const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
+
+                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
+                    hasAccess = true;
+                }
+                    if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
+                        hasAccess = true;
+                    }
                 }
             }
 
@@ -523,6 +527,18 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
 
         if (!fiche) {
             return res.status(404).json({ message: 'Mémofiche non trouvée' });
+        }
+
+        // This logic was added to fix an issue where free fiches were not accessible
+        if (fiche.isFree) {
+            return res.json({
+                ...fiche,
+                isLocked: false,
+                mainTreatment: fiche.mainTreatment || [],
+                associatedProducts: fiche.associatedProducts || [],
+                lifestyleAdvice: fiche.lifestyleAdvice || [],
+                dietaryAdvice: fiche.dietaryAdvice || [],
+            });
         }
 
         let group: Group | null = null;
