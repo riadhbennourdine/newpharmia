@@ -186,6 +186,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const canGenerateQRCode = user?.role === UserRole.ADMIN && !isPreview;
 
   const [showQRCode, setShowQRCode] = useState(false);
+  const [isInfographicModalOpen, setInfographicModalOpen] = useState(false);
   
   const handleDelete = () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette mémofiche ? Cette action est irréversible.")) {
@@ -453,13 +454,6 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                         label: 'Vidéo',
                         icon: <img src={getFtpViewUrl("media.png")} className="h-8 w-8" alt="Vidéo" />
                     });    }
-    if (caseStudy.infographicImageUrl) {
-        items.push({
-            id: 'infographie' as TabName,
-            label: 'Infographie',
-            icon: <img src={getFtpViewUrl("infographie.png")} className="h-8 w-8" alt="Infographie" />
-        });
-    }
     if (caseStudy.pdfSlideshowUrl) {
         items.push({
             id: 'diaporama' as TabName,
@@ -559,13 +553,6 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                     </div>
                 </div>
             ) : <div className="text-center text-slate-500">Aucune vidéo explicative disponible.</div>;
-        case 'infographie':
-            return caseStudy.infographicImageUrl ? (
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                    <h4 className="font-bold text-slate-800 mb-4">Infographie</h4>
-                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto rounded-md" />
-                </div>
-            ) : <div className="text-center text-slate-500">Aucune infographie disponible.</div>;
         case 'diaporama':
             return caseStudy.pdfSlideshowUrl ? (
                 <div className="bg-white p-4 rounded-lg shadow-md">
@@ -651,8 +638,36 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                 </div>
               )}
           </div>
-          <aside className="lg:col-span-1 z-10"><div className="sticky top-24"><CustomChatBot title={caseStudy.title} context={JSON.stringify(chatContext)} /></div></aside>
+          {caseStudy.infographicImageUrl && (
+            <aside className="lg:col-span-1 z-10">
+                <div className="sticky top-24">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
+                    <div 
+                        className="cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
+                        onClick={() => setInfographicModalOpen(true)}
+                    >
+                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto" />
+                    </div>
+                </div>
+            </aside>
+          )}
       </div>
+
+      {isInfographicModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={() => setInfographicModalOpen(false)}>
+            <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
+                <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie en plein écran" className="max-w-full max-h-[90vh] object-contain" />
+                <button 
+                    onClick={() => setInfographicModalOpen(false)}
+                    className="absolute top-2 right-2 bg-white rounded-full p-2 text-slate-800 hover:bg-slate-200"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+      )}
     </div>
   );
 };

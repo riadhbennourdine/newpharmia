@@ -19,85 +19,10 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [isRecording, setIsRecording] = useState(false);
-    const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
-    const recognitionRef = useRef<any>(null);
-    const transcriptRef = useRef('');
 
     const stripMarkdown = (text: string) => {
         return text.replace(/\*{1,2}(.*?)\*{1,2}/g, '$1');
-    };
-
-    const speakText = (text: string, index: number, lang = 'fr-FR') => {
-        if (!window.speechSynthesis) return;
-        const cleanText = stripMarkdown(text);
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = lang;
-        utterance.rate = 1.15;
-        utterance.pitch = 1.1;
-
-        const voices = window.speechSynthesis.getVoices();
-        const frenchVoice = voices.find(voice => voice.lang === lang && voice.name.includes('Google'));
-        if (frenchVoice) {
-            utterance.voice = frenchVoice;
-        }
-
-        utterance.onstart = () => setSpeakingMessageIndex(index);
-        utterance.onend = () => setSpeakingMessageIndex(null);
-        utterance.onerror = () => setSpeakingMessageIndex(null);
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-    };
-
-    const stopSpeaking = () => {
-        window.speechSynthesis.cancel();
-        setSpeakingMessageIndex(null);
-    };
-
-    useEffect(() => {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = true;
-            recognitionRef.current.lang = 'fr-FR';
-            recognitionRef.current.interimResults = false;
-
-            recognitionRef.current.onresult = (event: any) => {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                transcriptRef.current = transcript.trim();
-                setInputValue(transcript.trim());
-            };
-            recognitionRef.current.onerror = (event: any) => {
-                console.error("Speech recognition error", event.error);
-                if (isRecording) recognitionRef.current.stop();
-            };
-            recognitionRef.current.onend = () => {
-                setIsRecording(false);
-                if (transcriptRef.current) {
-                    sendMessage(transcriptRef.current);
-                    transcriptRef.current = '';
-                }
-            };
-        } else {
-            console.warn("Speech recognition not supported.");
-        }
-        window.speechSynthesis?.getVoices();
-        return () => {
-            if (recognitionRef.current) recognitionRef.current.stop();
-            window.speechSynthesis?.cancel();
-        };
-    }, []);
-
-    const toggleRecording = () => {
-        if (!recognitionRef.current) return;
-        if (isRecording) {
-            recognitionRef.current.stop();
-        } else {
-            recognitionRef.current.start();
-        }
-        setIsRecording(!isRecording);
     };
 
     const renderChatMessage = (text: string) => {
@@ -125,11 +50,9 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
             const response = await sendRAGChatMessage(trimmedInput);
             const modelMessage: Message = { role: 'model', text: response.message, sources: response.sources };
             setMessages(prev => [...prev, modelMessage]);
-            speakText(response.message, messages.length + 1);
         } catch (err: any) {
             const errorMessage: Message = { role: 'model', text: `Désolé, une erreur est survenue: ${err.message}` };
             setMessages(prev => [...prev, errorMessage]);
-            speakText(errorMessage.text, messages.length + 1);
         } finally {
             setIsLoading(false);
         }
@@ -178,19 +101,6 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
                                     </div>
                                 </div>
                             )}
-                             {msg.role === 'model' && (
-                                <button
-                                    onClick={() => speakingMessageIndex === index ? stopSpeaking() : speakText(msg.text, index)}
-                                    className="absolute -bottom-2 -right-2 p-1 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-teal-500"
-                                    aria-label={speakingMessageIndex === index ? "Arrêter la lecture" : "Écouter le message"}
-                                >
-                                    {speakingMessageIndex === index ? (
-                                        <XCircleIcon className="h-5 w-5 text-red-500" />
-                                    ) : (
-                                        <SpeakerIcon className="h-4 w-4" />
-                                    )}
-                                </button>
-                            )}
                         </div>
                     </div>
                 ))}
@@ -207,20 +117,12 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
             <form onSubmit={handleFormSubmit} className="p-4 border-t border-slate-200/80 bg-slate-50 rounded-b-lg">
                 <div className="flex items-center space-x-2">
                     <div className="relative flex-grow">
-                        <button
-                            type="button"
-                            onClick={toggleRecording}
-                            className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 hover:text-teal-600 focus:outline-none"
-                            aria-label={isRecording ? 'Arrêter l\'enregistrement' : 'Démarrer l\'enregistrement'}
-                        >
-                            {isRecording ? <SpeakerIcon className="h-5 w-5 text-red-500" /> : <SpeakerIcon className="h-5 w-5" />}
-                        </button>
                         <input
                             type="text"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder="Posez votre question ici..."
-                            className="w-full pl-12 pr-4 py-2 border border-slate-300 rounded-full focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            className="w-full pr-4 py-2 border border-slate-300 rounded-full focus:ring-2 focus:ring-teal-500 focus:outline-none"
                             disabled={isLoading}
                             aria-label="Votre question"
                         />
