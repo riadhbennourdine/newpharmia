@@ -19,7 +19,7 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const absolutePdfUrl = getAbsoluteImageUrl(pdfUrl);
 
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const pdfContainerRef = useRef<HTMLDivLement>(null);
   const { width } = useResizeDetector({ targetRef: pdfContainerRef });
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {

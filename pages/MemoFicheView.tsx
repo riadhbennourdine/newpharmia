@@ -8,6 +8,7 @@ import { ensureArray } from '../utils/array';
 import getAbsoluteImageUrl from '../utils/image';
 import { getIconUrl } from '../utils/icons';
 import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon, ImageIcon, BookOpenIcon } from '../components/Icons'; // Added ImageIcon, BookOpenIcon
+import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import PdfSlideshow from '../components/PdfSlideshow';
@@ -620,19 +621,6 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                  })}
               </div>
               <div key={activeTab} className="min-h-[300px] animate-fade-in">{renderContent()}</div>
-
-              {caseStudy.infographicImageUrl && (
-                <div className="mt-8">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
-                    <div 
-                        className="cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
-                        onClick={() => setInfographicModalOpen(true)}
-                    >
-                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto" />
-                    </div>
-                </div>
-              )}
-
                <div className="mt-8 flex items-center justify-center space-x-4"> 
                   {onBack && <button onClick={onBack} className="px-6 py-3 text-base font-bold text-slate-700 bg-slate-200 rounded-lg hover:bg-slate-300">Retour</button>}
                   {canEdit && onEdit && <button onClick={onEdit} className="px-6 py-3 text-base font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 flex items-center"><PencilIcon className="h-5 w-5 mr-2" /> Modifier</button>}
@@ -651,6 +639,20 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                 </div>
               )}
           </div>
+          {caseStudy.infographicImageUrl && (
+            <div className="lg:col-span-1 z-10">
+                <h3 className="text-lg font-bold text-slate-800 mb-4 mt-8">Infographie</h3>
+                <div 
+                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
+                    onClick={() => setInfographicModalOpen(true)}
+                >
+                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto max-h-[500px] object-cover" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
+                        <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                </div>
+            </div>
+          )}
       </div>
 
       {isInfographicModalOpen && (
