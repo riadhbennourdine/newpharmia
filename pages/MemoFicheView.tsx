@@ -643,10 +643,10 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
             <div className="lg:col-span-1 z-10 mt-16">
                 <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
                 <div 
-                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100"
+                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 h-96"
                     onClick={() => setInfographicModalOpen(true)}
                 >
-                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto max-h-[500px] object-contain" />
+                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                         <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
@@ -656,7 +656,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
       </div>
 
       {isInfographicModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={() => setInfographicModalOpen(false)}>
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setInfographicModalOpen(false)}>
             <img 
                 src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} 
                 alt="Infographie en plein écran" 
