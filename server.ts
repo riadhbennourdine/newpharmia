@@ -1469,10 +1469,10 @@ async function migrateWebinarGroup() {
 
 
 app.listen(port, async () => {
-    await migrateWebinars();
-    await migrateWebinarGroup();
+    // await migrateWebinars();
+    // await migrateWebinarGroup();
     console.log(`Server is running on http://localhost:${port}`);
-    await ensureAdminUserExists();
+    // await ensureAdminUserExists();
 });
 
 async function ensureAdminUserExists() {
