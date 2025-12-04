@@ -620,6 +620,19 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                  })}
               </div>
               <div key={activeTab} className="min-h-[300px] animate-fade-in">{renderContent()}</div>
+
+              {caseStudy.infographicImageUrl && (
+                <div className="mt-8">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
+                    <div 
+                        className="cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
+                        onClick={() => setInfographicModalOpen(true)}
+                    >
+                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto" />
+                    </div>
+                </div>
+              )}
+
                <div className="mt-8 flex items-center justify-center space-x-4"> 
                   {onBack && <button onClick={onBack} className="px-6 py-3 text-base font-bold text-slate-700 bg-slate-200 rounded-lg hover:bg-slate-300">Retour</button>}
                   {canEdit && onEdit && <button onClick={onEdit} className="px-6 py-3 text-base font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-700 flex items-center"><PencilIcon className="h-5 w-5 mr-2" /> Modifier</button>}
@@ -638,19 +651,6 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
                 </div>
               )}
           </div>
-          {caseStudy.infographicImageUrl && (
-            <aside className="lg:col-span-1 z-10">
-                <div className="sticky top-24">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
-                    <div 
-                        className="cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
-                        onClick={() => setInfographicModalOpen(true)}
-                    >
-                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-auto" />
-                    </div>
-                </div>
-            </aside>
-          )}
       </div>
 
       {isInfographicModalOpen && (
