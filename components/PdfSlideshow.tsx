@@ -4,7 +4,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import getAbsoluteImageUrl from '../utils/image';
 import { useResizeDetector } from 'react-resize-detector';
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline';
+import { ArrowsPointingOutIcon, ArrowsPointingInIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
 
 // Configure pdfjs worker source
@@ -87,6 +87,15 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
 
           {/* Controls Overlay */}
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white text-sm rounded-full px-4 py-1 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <a
+              href={absolutePdfUrl}
+              download
+              title="Télécharger le PDF"
+              onClick={(e) => e.stopPropagation()}
+              className="p-1 hover:text-slate-200"
+            >
+              <DocumentArrowDownIcon className="h-5 w-5" />
+            </a>
             <span>
               Page {pageNumber} / {numPages}
             </span>
