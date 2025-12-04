@@ -1219,11 +1219,23 @@ app.post('/api/newsletter/send', async (req, res) => {
             return res.status(404).json({ message: 'No recipients found for the selected criteria.' });
         }
 
-        console.log(`Sending newsletter to ${recipients.length} recipients.`);
+        const validRecipients = recipients.filter(r => {
+            if (!r.email || !/\S+@\S+\.\S+/.test(r.email)) {
+                console.warn(`Skipping recipient with invalid email: ${r.email || 'N/A'}, ID: ${r._id}`);
+                return false;
+            }
+            return true;
+        });
+
+        if (validRecipients.length === 0) {
+            return res.status(404).json({ message: 'No recipients with valid email addresses found for the selected criteria.' });
+        }
+
+        console.log(`Sending newsletter to ${validRecipients.length} valid recipients (skipped ${recipients.length - validRecipients.length} invalid).`);
 
         const { sendBulkEmails } = await import('./server/emailService.js');
         
-        const emailMessages = recipients.map(recipient => {
+        const emailMessages = validRecipients.map(recipient => {
             const finalHtmlContentWithPlaceholders = htmlContent
                 .replace(/{{NOM_DESTINATAIRE}}/g, recipient.firstName || 'cher utilisateur')
                 .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email);
@@ -1246,7 +1258,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
         await sendBulkEmails(emailMessages);
 
-        res.status(200).json({ message: `Newsletter successfully sent to ${recipients.length} recipients.` });
+        res.status(200).json({ message: `Newsletter successfully sent to ${validRecipients.length} recipients.` });
     } catch (error) {
         console.error('Error sending newsletter:', error);
         res.status(500).json({ message: 'An error occurred while sending the newsletter.' });
