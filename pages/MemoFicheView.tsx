@@ -640,8 +640,8 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
               )}
           </div>
           {caseStudy.infographicImageUrl && (
-            <div className="lg:col-span-1 z-10">
-                <h3 className="text-lg font-bold text-slate-800 mb-4 mt-8">Infographie</h3>
+            <div className="lg:col-span-1 z-10 mt-16">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
                 <div 
                     className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200"
                     onClick={() => setInfographicModalOpen(true)}
@@ -657,17 +657,21 @@ const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[
 
       {isInfographicModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={() => setInfographicModalOpen(false)}>
-            <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
-                <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie en plein écran" className="max-w-full max-h-[90vh] object-contain" />
-                <button 
-                    onClick={() => setInfographicModalOpen(false)}
-                    className="absolute top-2 right-2 bg-white rounded-full p-2 text-slate-800 hover:bg-slate-200"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+            <img 
+                src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} 
+                alt="Infographie en plein écran" 
+                className="max-w-[95vw] max-h-[95vh] object-contain" 
+                onClick={(e) => e.stopPropagation()} 
+            />
+            <button 
+                onClick={() => setInfographicModalOpen(false)}
+                className="absolute top-4 right-4 bg-white rounded-full p-2 text-slate-800 hover:bg-slate-200"
+                aria-label="Fermer"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
       )}
     </div>
