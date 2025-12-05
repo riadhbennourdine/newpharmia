@@ -17,14 +17,19 @@ interface PdfSlideshowProps {
 const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
+  const [pageAspectRatio, setPageAspectRatio] = useState(1);
   const absolutePdfUrl = getAbsoluteImageUrl(pdfUrl);
 
-  const pdfContainerRef = useRef<HTMLDivLement>(null);
-  const { width } = useResizeDetector({ targetRef: pdfContainerRef });
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const { width, height } = useResizeDetector({ targetRef: pdfContainerRef });
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
     setPageNumber(1);
+  };
+
+  const onItemLoadSuccess = (page: any) => {
+    setPageAspectRatio(page.width / page.height);
   };
 
   const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
@@ -47,6 +52,18 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   if (absolutePdfUrl && absolutePdfUrl.startsWith('http')) {
       fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`;
   }
+  
+  let responsiveWidth = width;
+  if (width && height && pageAspectRatio) {
+    const containerRatio = width / height;
+    if (containerRatio < pageAspectRatio) {
+        // Width is the limiting factor
+        responsiveWidth = width;
+    } else {
+        // Height is the limiting factor
+        responsiveWidth = height * pageAspectRatio;
+    }
+  }
 
   return (
     <div ref={pdfContainerRef} className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md">
@@ -57,7 +74,13 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
           onLoadError={(error) => console.error('Error while loading document:', error)}
           className="flex justify-center"
         >
-          <Page pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false} />
+          <Page 
+            pageNumber={pageNumber} 
+            width={responsiveWidth} 
+            onLoadSuccess={onItemLoadSuccess}
+            renderTextLayer={false} 
+            renderAnnotationLayer={false} 
+          />
         </Document>
       ) : (
         <p className="text-red-500 text-center p-4">URL PDF invalide ou manquante.</p>
