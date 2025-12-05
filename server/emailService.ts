@@ -33,7 +33,14 @@ export const sendSingleEmail = async ({ to, subject, htmlContent, attachment }: 
 
   try {
     const response = await fetch(url, { method: 'POST', headers, body });
-    const data = await response.json();
+    let data;
+    try {
+        data = await response.json();
+    } catch (jsonError) {
+        const textResponse = await response.text();
+        console.error("Failed to parse Brevo API response as JSON. Raw response:", textResponse);
+        throw new Error(`Brevo API returned non-JSON response. Status: ${response.status}`);
+    }
 
     if (!response.ok) {
       console.error("Brevo API error:", response.status, data);
