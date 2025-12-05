@@ -707,8 +707,8 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
     }
 });
 
-// PUT to manage resources for a webinar (Admin only)
-router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+// PUT to manage resources for a webinar (Admin only for past, Admin & Webinar Admin for others)
+router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
         const { resources } = req.body; // Expect an array of WebinarResource objects
@@ -717,6 +717,31 @@ router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserR
             return res.status(400).json({ message: 'Invalid webinar ID.' });
         }
 
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinar not found.' });
+        }
+
+        // Authorization Logic
+        const userRole = req.user?.role;
+        const webinarStatus = getWebinarCalculatedStatus(webinar.date);
+
+        if (userRole !== UserRole.ADMIN) {
+            if (userRole === UserRole.ADMIN_WEBINAR) {
+                if (webinarStatus === WebinarStatus.PAST) {
+                    return res.status(403).json({ message: 'Webinar admins cannot edit resources for past webinars.' });
+                }
+            } else {
+                return res.status(403).json({ message: 'You do not have permission to perform this action.' });
+            }
+        }
+
+        // The rest of the logic remains the same
         if (!Array.isArray(resources)) {
             return res.status(400).json({ message: 'Resources must be an array.' });
         }
@@ -734,16 +759,13 @@ router.put('/:id/resources', authenticateToken, checkRole([UserRole.ADMIN, UserR
             }
         }
 
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const webinarsCollection = db.collection<Webinar>('webinars');
-
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
             { $set: { resources: resources, updatedAt: new Date() } }
         );
 
         if (result.matchedCount === 0) {
+            // This case should theoretically not be hit due to the check above, but it's good practice
             return res.status(404).json({ message: 'Webinar not found.' });
         }
 

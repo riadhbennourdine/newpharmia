@@ -57,7 +57,7 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
           onLoadError={(error) => console.error('Error while loading document:', error)}
           className="flex justify-center"
         >
-          <Page pageNumber={pageNumber} width={width} renderTextLayer={false} renderAnnotationLayer={false} />
+          <Page pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false} />
         </Document>
       ) : (
         <p className="text-red-500 text-center p-4">URL PDF invalide ou manquante.</p>
