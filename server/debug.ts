@@ -62,6 +62,7 @@ router.get('/broken-links', authenticateToken, async (req: AuthenticatedRequest,
         });
         
         // 3. Scan Memofiches for coverImageUrl, infographicImageUrl, and content images
+        /*
         const memofichesCollection = db.collection('memofiches');
         const brokenFiches = await memofichesCollection.find({
             $or: [
@@ -91,6 +92,7 @@ router.get('/broken-links', authenticateToken, async (req: AuthenticatedRequest,
             findBrokenContent(f.memoSections, 'memoSections');
             findBrokenContent(f.customSections, 'customSections');
         });
+        */
 
         res.json(brokenLinks);
 
