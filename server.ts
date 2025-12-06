@@ -310,6 +310,7 @@ import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
 import ftpRouter from './server/ftp.js'; // Import the new FTP router
+import debugRouter from './server/debug.js'; // Import the debug router
 
 // ===============================================
 // API ROUTES
@@ -334,6 +335,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
 app.use('/api/ftp', ftpRouter); // Register the new FTP routes
+app.use('/api/debug', debugRouter); // Register the debug routes
 
 // ===============================================
 // ADMIN FILE SEARCH API
