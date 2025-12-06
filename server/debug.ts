@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { authenticateToken, AuthenticatedRequest } from './authMiddleware.js';
 import { UserRole } from '../types.js';
+import clientPromise from './mongo.js';
 
 const router = express.Router();
 
