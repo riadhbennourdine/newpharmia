@@ -2,6 +2,7 @@ import './server/env.js';
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 // FIX: Added imports for ES module scope __dirname
 import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
@@ -313,6 +314,17 @@ import ftpRouter from './server/ftp.js'; // Import the new FTP router
 // ===============================================
 // API ROUTES
 // ===============================================
+
+// Apply a rate limiter to all API routes
+const apiLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 1000, // Limit each IP to 1000 requests per windowMs
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+app.use('/api', apiLimiter);
+
 app.use('/api/admin/crm', crmRoutes);
 app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
