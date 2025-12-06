@@ -633,6 +633,44 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
     }
 });
 
+// PUT for an admin to update a payment proof for a specific attendee
+router.put('/:webinarId/attendees/:userId/payment-proof', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+    try {
+        const { webinarId, userId } = req.params;
+        const { proofUrl } = req.body;
+
+        if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid webinar or user ID.' });
+        }
+        if (!proofUrl || typeof proofUrl !== 'string') {
+            return res.status(400).json({ message: 'proofUrl is required and must be a string.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const result = await webinarsCollection.updateOne(
+            { 
+                _id: new ObjectId(webinarId), 
+                "attendees.userId": new ObjectId(userId) 
+            },
+            { $set: { "attendees.$.proofUrl": proofUrl } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Webinar or attendee registration not found.' });
+        }
+
+        res.json({ message: 'Payment proof URL updated successfully.' });
+
+    } catch (error) {
+        console.error('Error updating payment proof:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+
 // DELETE an attendee from a webinar (Admin only)
 router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {

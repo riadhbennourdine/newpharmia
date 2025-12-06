@@ -1,7 +1,8 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, User, WebinarStatus } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
-import { Spinner, TrashIcon, PencilIcon } from '../../components/Icons';
+import { Spinner, TrashIcon, PencilIcon, LinkIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
 
 const getUserDisplayName = (user: Partial<User>): string => {
@@ -12,39 +13,541 @@ const getUserDisplayName = (user: Partial<User>): string => {
     return user.username || user.email || 'Utilisateur inconnu';
 };
 
-const transformImageUrl = (url: string | undefined): string => {
-    if (!url) return '';
-
-    // If it's already a correct local URL, do nothing.
-    if (url.startsWith('/uploads/')) {
-        return url;
-    }
-
-    // Handle old FTP proxy URLs
-    if (url.includes('/api/ftp/view?filePath=')) {
-        try {
-            const urlParams = new URLSearchParams(url.split('?')[1]);
-            const filePath = urlParams.get('filePath');
-            if (filePath) {
-                // Prepend with /uploads and ensure no double slashes
-                return `/uploads/${filePath.replace(/^\//, '')}`;
-            }
-        } catch (e) {
-            // Ignore parsing errors
+const AttendeesList: React.FC<{ 
+    attendees: Webinar['attendees'], 
+    webinarId: string, 
+    presenter: string, 
+    onConfirmPayment: (webinarId: string, userId: string) => void, 
+    isConfirmingPayment: boolean,
+    onMatchProof: (attendee: any, webinarId: string) => void
+}> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment, onMatchProof }) => {
+    const getTranslatedStatus = (status: string | undefined): string => {
+        switch (status) {
+            case 'CONFIRMED': return 'CONFIRMÉ';
+            case 'PENDING': return 'EN ATTENTE DE PAIEMENT';
+            case 'PAYMENT_SUBMITTED': return 'EN ATTENTE DE VALIDATION';
+            default: return status || 'Inconnu';
         }
-    }
-    
-    // Handle old external URLs
-    if (url.startsWith('https://pharmaconseilbmb.com/photos/site/')) {
-        const path = url.substring('https://pharmaconseilbmb.com/photos/site/'.length);
-        return `/uploads/pharmia/${path}`;
-    }
+    };
 
-    // Return the original URL if no transformation was applied
-    return url;
+    const participants = attendees.filter(att => getUserDisplayName(att.userId as User) !== presenter);
+    const participantCount = participants.length;
+
+    const groupedByTimeSlot = attendees.reduce((acc, attendee) => {
+        const slots = attendee.timeSlots && attendee.timeSlots.length > 0 ? attendee.timeSlots : ['Non spécifié'];
+        slots.forEach(slot => {
+            if (!acc[slot]) acc[slot] = [];
+            acc[slot].push(attendee);
+        });
+        return acc;
+    }, {} as Record<string, Webinar['attendees']>);
+
+    return (
+        <div className="mt-4 p-3 bg-slate-50 rounded-md">
+            <h3 className="text-md font-semibold text-slate-700 mb-2">Participants ({participantCount})</h3>
+            {Object.entries(groupedByTimeSlot).map(([timeSlot, groupAttendees]) => {
+                const slotParticipantCount = groupAttendees.filter(att => getUserDisplayName(att.userId as User) !== presenter).length;
+                return (
+                    <div key={timeSlot} className="mt-3">
+                        <p className="text-sm font-bold text-slate-600 border-b pb-1 mb-2">{timeSlot} ({slotParticipantCount})</p>
+                        <ul className="space-y-2">
+                            {groupAttendees.map(attendee => (
+                                <li key={(attendee.userId as User)._id.toString()} className="flex items-center justify-between text-sm text-slate-600">
+                                    <div className="flex items-center">
+                                        <span>
+                                            {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
+                                        </span>
+                                        {attendee.proofUrl && (
+                                            <a href={attendee.proofUrl.startsWith('http') ? attendee.proofUrl : `/uploads/${attendee.proofUrl.replace(/^\/?uploads\/?/, '')}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">(Voir)</a>
+                                        )}
+                                        <button onClick={() => onMatchProof(attendee, webinarId)} className="ml-2 text-gray-400 hover:text-teal-600" title="Associer une nouvelle preuve de paiement">
+                                            <LinkIcon className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                    {attendee.status === 'PAYMENT_SUBMITTED' && (
+                                        <button
+                                            onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
+                                            disabled={isConfirmingPayment}
+                                            className="ml-4 px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-400"
+                                        >
+                                            {isConfirmingPayment ? 'Confirmation...' : 'Confirmer'}
+                                        </button>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                );
+            })}
+        </div>
+    );
 };
 
-const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, presenter: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment }) => {
+
+const WebinarManagement: React.FC = () => {
+    const { user, token } = useAuth();
+    const [soonestWebinar, setSoonestWebinar] = useState<Webinar | null>(null);
+    const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
+    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // State for Modals
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+    const [isMatcherOpen, setIsMatcherOpen] = useState(false);
+    
+    // State for editing
+    const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
+    const [currentAttendee, setCurrentAttendee] = useState<any | null>(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
+
+    // State for File Matcher
+    const [volumeFiles, setVolumeFiles] = useState<string[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
+
+
+    const fetchWebinars = useCallback(async () => {
+        if (!token) return;
+        try {
+            setIsLoading(true);
+            const response = await fetch('/api/webinars', { 
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Failed to fetch webinars');
+            const data: Webinar[] = await response.json();
+
+            const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            const liveWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.LIVE);
+            const upcomingWebinars = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.UPCOMING);
+            const past = allWebinars.filter(w => w.calculatedStatus === WebinarStatus.PAST);
+
+            setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+
+            const relevantWebinars = [...liveWebinars, ...upcomingWebinars].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            if (relevantWebinars.length > 0) {
+                setSoonestWebinar(relevantWebinars[0]);
+                setOtherWebinars(relevantWebinars.slice(1));
+            } else {
+                setSoonestWebinar(null);
+                setOtherWebinars([]);
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token]);
+
+    const fetchVolumeFiles = useCallback(async () => {
+        if (!token) return;
+         try {
+            const res = await fetch('/api/debug/list-volume', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) throw new Error('Failed to fetch volume files.');
+            const data = await res.json();
+            setVolumeFiles(data.files || []);
+        } catch (err) {
+            console.error("Could not fetch volume files for matcher.", err);
+        }
+    }, [token]);
+
+    useEffect(() => {
+        fetchWebinars();
+        fetchVolumeFiles();
+    }, [token, fetchWebinars, fetchVolumeFiles]);
+
+    const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
+        setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setCurrentWebinar(null);
+    };
+
+    const handleOpenMatcher = (attendee: any, webinarId: string) => {
+        setCurrentAttendee({ ...attendee, webinarId });
+        setIsMatcherOpen(true);
+        setSearchTerm('');
+    };
+
+    const handleConfirmMatch = async (selectedFile: string) => {
+        if (!currentAttendee) return;
+        setIsUpdating(true);
+
+        const newUrl = `/uploads/${selectedFile.replace(/^uploads\/?/, '')}`;
+        
+        try {
+            const res = await fetch(`/api/webinars/${currentAttendee.webinarId}/attendees/${(currentAttendee.userId as User)._id}/payment-proof`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ proofUrl: newUrl })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || 'Update failed');
+            }
+            await fetchWebinars(); // Refresh all webinar data
+        } catch (err: any) {
+            setError(err.message);
+            alert(`Error updating proof: ${err.message}`);
+        } finally {
+            setIsUpdating(false);
+            setIsMatcherOpen(false);
+            setCurrentAttendee(null);
+        }
+    };
+
+
+    const handleSaveWebinar = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!currentWebinar) return;
+
+        const method = currentWebinar._id ? 'PUT' : 'POST';
+        const url = currentWebinar._id ? `/api/webinars/${currentWebinar._id}` : '/api/webinars';
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(currentWebinar),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to save webinar');
+            }
+
+            await fetchWebinars();
+            handleCloseModal();
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
+    const handleDeleteWebinar = async (id: string) => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce webinaire ?')) {
+            try {
+                const response = await fetch(`/api/webinars/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete webinar');
+                }
+
+                await fetchWebinars();
+            } catch (err: any) {
+                setError(err.message);
+            }
+        }
+    };
+
+    const handleConfirmPayment = async (webinarId: string, userId: string) => {
+        if (!window.confirm('Êtes-vous sûr de vouloir confirmer le paiement pour cet utilisateur ?')) return;
+
+        setIsConfirmingPayment(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/attendees/${userId}/confirm`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error((await response.json()).message || 'Failed to confirm payment');
+            await fetchWebinars();
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsConfirmingPayment(false);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        if (!currentWebinar) return;
+        setCurrentWebinar({ ...currentWebinar, [e.target.name]: e.target.value });
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!currentWebinar) return;
+        setCurrentWebinar({ ...currentWebinar, date: new Date(e.target.value) });
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const formData = new FormData();
+            formData.append('imageFile', file);
+            formData.append('name', currentWebinar?.title || 'Image de wébinaire');
+            formData.append('theme', 'Wébinaire');
+
+            setUploadingImage(true);
+            setError(null);
+
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData,
+                });
+                if (!response.ok) throw new Error('Image upload failed');
+                const data = await response.json();
+                setCurrentWebinar(prev => prev ? { ...prev, imageUrl: data.imageUrl } : null);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setUploadingImage(false);
+            }
+        }
+    };
+    
+    const filteredVolumeFiles = useMemo(() => {
+        if (!searchTerm) return volumeFiles;
+        return volumeFiles.filter(file =>
+            file.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [searchTerm, volumeFiles]);
+
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
+                {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
+                    <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
+                        + Créer un Webinaire
+                    </button>
+                )}
+            </div>
+
+            {isLoading && <Spinner />}
+            {error && <p className="text-red-500">{error}</p>}
+
+            {soonestWebinar && (
+                <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-teal-500 pb-2">Prochain Webinaire</h2>
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="md:flex">
+                            <div className="md:flex-shrink-0">
+                                <img className="h-48 w-full object-cover md:w-48" src={soonestWebinar.imageUrl || 'https://via.placeholder.com/150'} alt={soonestWebinar.title} />
+                            </div>
+                            <div className="p-4 flex-grow">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-bold text-xl text-slate-800">{soonestWebinar.title}</p>
+                                        <p className="text-md text-slate-600">{new Date(soonestWebinar.date).toLocaleString('fr-FR')} - {soonestWebinar.presenter}</p>
+                                    </div>
+                                    {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
+                                        <div className="flex gap-2 flex-shrink-0 ml-4">
+                                            <button onClick={() => handleOpenModal(soonestWebinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
+                                            <button onClick={() => handleDeleteWebinar(soonestWebinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
+                                        </div>
+                                    )}
+                                </div>
+                                {soonestWebinar.attendees && soonestWebinar.attendees.length > 0 && (
+                                    <AttendeesList 
+                                        attendees={soonestWebinar.attendees} 
+                                        webinarId={soonestWebinar._id.toString()}
+                                        presenter={soonestWebinar.presenter}
+                                        onConfirmPayment={handleConfirmPayment}
+                                        isConfirmingPayment={isConfirmingPayment}
+                                        onMatchProof={handleOpenMatcher}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {otherWebinars.length > 0 && (
+                <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">Autres webinaires à venir</h2>
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                        <ul className="divide-y divide-slate-200">
+                            {otherWebinars.map(webinar => (
+                                <li key={webinar._id.toString()} className="p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div>
+                                            <p className="font-semibold text-slate-800">{webinar.title}</p>
+                                            <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleString('fr-FR')} - {webinar.presenter}</p>
+                                        </div>
+                                        {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
+                                            <div className="flex gap-2">
+                                                <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
+                                                <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {webinar.attendees && webinar.attendees.length > 0 && (
+                                        <AttendeesList 
+                                            attendees={webinar.attendees} 
+                                            webinarId={webinar._id.toString()}
+                                            presenter={webinar.presenter}
+                                            onConfirmPayment={handleConfirmPayment}
+                                            isConfirmingPayment={isConfirmingPayment}
+                                            onMatchProof={handleOpenMatcher}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
+            
+            {pastWebinars.length > 0 && (
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">Webinaires Passés</h2>
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                        <ul className="divide-y divide-slate-200">
+                            {pastWebinars.map(webinar => (
+                                <li key={webinar._id.toString()} className="p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div>
+                                            <p className="font-semibold text-slate-800">{webinar.title}</p>
+                                            <p className="text-sm text-slate-500">{new Date(webinar.date).toLocaleString('fr-FR')} - {webinar.presenter}</p>
+                                        </div>
+                                        {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
+                                            <div className="flex gap-2">
+                                                <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600" title="Modifier le wébinaire"><PencilIcon className="h-5 w-5" /></button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {webinar.attendees && webinar.attendees.length > 0 && (
+                                        <AttendeesList 
+                                            attendees={webinar.attendees} 
+                                            webinarId={webinar._id.toString()}
+                                            presenter={webinar.presenter}
+                                            onConfirmPayment={handleConfirmPayment}
+                                            isConfirmingPayment={isConfirmingPayment}
+                                            onMatchProof={handleOpenMatcher}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            )}
+
+            {isModalOpen && currentWebinar && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
+                        <div className="p-4 sm:p-6">
+                            <h2 className="text-2xl font-bold mb-6">{currentWebinar._id ? 'Modifier' : 'Créer'} un Webinaire</h2>
+                            <form onSubmit={handleSaveWebinar}>
+                                <div className="mb-4">
+                                    <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
+                                    <input type="text" name="title" id="title" value={currentWebinar.title} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="presenter" className="block text-sm font-medium text-slate-700">Présentateur</label>
+                                    <input type="text" name="presenter" id="presenter" value={currentWebinar.presenter} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="group" className="block text-sm font-medium text-slate-700">Groupe</label>
+                                    <select
+                                        name="group"
+                                        id="group"
+                                        value={currentWebinar.group}
+                                        onChange={handleInputChange}
+                                        className="mt-1 block w-full rounded-md border-slate-300 shadow-sm"
+                                        required
+                                    >
+                                        <option value={WebinarGroup.PHARMIA}>{WebinarGroup.PHARMIA}</option>
+                                        <option value={WebinarGroup.CROP_TUNIS}>{WebinarGroup.CROP_TUNIS}</option>
+                                    </select>
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date</label>
+                                    <input type="datetime-local" name="date" id="date" value={currentWebinar.date ? new Date(currentWebinar.date).toISOString().substring(0, 16) : ''} onChange={handleDateChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
+                                    <textarea name="description" id="description" value={currentWebinar.description} onChange={handleInputChange} rows={6} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
+                                    <div className="mt-1 flex rounded-md shadow-sm">
+                                        <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="flex-1 block w-full min-w-0 rounded-none rounded-l-md border-slate-300" placeholder="https://..." />
+                                        <label htmlFor="imageUpload" className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100">
+                                            <span>{uploadingImage ? 'Chargement...' : 'Téléverser'}</span>
+                                            <input id="imageUpload" name="imageUpload" type="file" className="sr-only" onChange={handleImageUpload} disabled={uploadingImage} />
+                                        </label>
+                                        <button type="button" onClick={() => setIsGalleryOpen(true)} className="relative inline-flex items-center px-3 py-2 border border-l-0 border-slate-300 bg-slate-50 text-sm font-medium text-slate-700 rounded-r-md hover:bg-slate-100">
+                                            Galerie
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
+                                    <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm" />
+                                </div>
+                                <div className="flex justify-end gap-4 mt-8">
+                                    <button type="button" onClick={handleCloseModal} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-lg hover:bg-slate-300">Annuler</button>
+                                    <button type="submit" className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700">Enregistrer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isMatcherOpen && currentAttendee && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col">
+                        <h3 className="text-xl font-bold mb-4">Associer une Preuve pour "{getUserDisplayName(currentAttendee.userId)}"</h3>
+                        <input
+                            type="text"
+                            placeholder="Rechercher un fichier dans le volume..."
+                            className="w-full p-2 border rounded-md mb-4"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                        <div className="overflow-y-auto flex-grow border rounded-md">
+                            <ul className="divide-y">
+                                {filteredVolumeFiles.map(file => (
+                                <li key={file} className="p-2 hover:bg-teal-50 flex justify-between items-center">
+                                    <span className="text-sm">{file}</span>
+                                    <button 
+                                        onClick={() => handleConfirmMatch(file)}
+                                        disabled={isUpdating}
+                                        className="bg-blue-500 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-600 disabled:bg-gray-400"
+                                    >
+                                    {isUpdating ? '...' : 'Associer'}
+                                    </button>
+                                </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <button onClick={() => setIsMatcherOpen(false)} className="mt-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <ImageGalleryModal
+                isOpen={isGalleryOpen}
+                onClose={() => setIsGalleryOpen(false)}
+                onSelectImage={(url) => {
+                    setCurrentWebinar(prev => prev ? { ...prev, imageUrl: url } : null);
+                    setIsGalleryOpen(false);
+                }}
+            />
+        </div>
+    );
+};
+
+export default WebinarManagement;
+
     const getTranslatedStatus = (status: string | undefined): string => {
         switch (status) {
             case 'CONFIRMED':
