@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "cp -r /temp_uploads/. /app/public/uploads/ && mkdir -p uploads && NODE_ENV=production node dist-server/server.js",
+    "start": "mkdir -p uploads && NODE_ENV=production node dist-server/server.js",
     "dev": "npm run build:server && concurrently \"vite\" \"tsc --watch -p tsconfig.server.json\" \"nodemon --watch dist-server dist-server/server.js\"",
     "build": "npm run build:server && vite build",
     "build:server": "tsc -p tsconfig.server.json",
-    "migrate:ftp": "tsx scripts/migrate-ftp-to-local.ts",
     "db:add-memo-sections": "tsx scripts/add-memo-sections.ts",
     "db:ensure-memo-sections": "tsx scripts/ensure-memo-sections.ts",
     "index:algolia": "tsx --require dotenv/config scripts/index-memofiches-to-algolia.ts",

@@ -14,7 +14,6 @@ RUN npm install
 COPY . .
 
 # Exécuter le script de build (qui doit compiler le frontend et le backend)
-# Assurez-vous que votre package.json a un script "build" qui génère les répertoires 'dist' et 'dist-server'
 RUN npm run build
 
 
@@ -33,9 +32,6 @@ RUN npm prune --production
 # Copier les artefacts de build de l'étape précédente
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/dist-server ./dist-server
-
-# Copy the migrated FTP files into a temporary location for the start script to move to the volume
-COPY public/uploads_migration /temp_uploads
 
 # La commande pour démarrer le serveur de production.
 # Railway utilise par défaut la commande "start" de votre package.json.
