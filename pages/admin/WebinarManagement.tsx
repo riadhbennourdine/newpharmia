@@ -12,6 +12,38 @@ const getUserDisplayName = (user: Partial<User>): string => {
     return user.username || user.email || 'Utilisateur inconnu';
 };
 
+const transformImageUrl = (url: string | undefined): string => {
+    if (!url) return '';
+
+    // If it's already a correct local URL, do nothing.
+    if (url.startsWith('/uploads/')) {
+        return url;
+    }
+
+    // Handle old FTP proxy URLs
+    if (url.includes('/api/ftp/view?filePath=')) {
+        try {
+            const urlParams = new URLSearchParams(url.split('?')[1]);
+            const filePath = urlParams.get('filePath');
+            if (filePath) {
+                // Prepend with /uploads and ensure no double slashes
+                return `/uploads/${filePath.replace(/^\//, '')}`;
+            }
+        } catch (e) {
+            // Ignore parsing errors
+        }
+    }
+    
+    // Handle old external URLs
+    if (url.startsWith('https://pharmaconseilbmb.com/photos/site/')) {
+        const path = url.substring('https://pharmaconseilbmb.com/photos/site/'.length);
+        return `/uploads/pharmia/${path}`;
+    }
+
+    // Return the original URL if no transformation was applied
+    return url;
+};
+
 const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: string, presenter: string, onConfirmPayment: (webinarId: string, userId: string) => void, isConfirmingPayment: boolean }> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment }) => {
     const getTranslatedStatus = (status: string | undefined): string => {
         switch (status) {
@@ -55,7 +87,7 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                                         {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
                                         {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
                                         {attendee.proofUrl && (
-                                            <a href={attendee.proofUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
+                                            <a href={transformImageUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
                                                 (Voir justificatif)
                                             </a>
                                         )}
