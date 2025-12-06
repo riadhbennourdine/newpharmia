@@ -22,40 +22,40 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
 
-    const fetchGroup = useCallback(async () => {
-        if (initialGroup) { // If group is already provided, no need to fetch
-            setGroup(initialGroup);
-            setIsLoadingGroup(false);
-            return;
-        }
-        if (!user || isLoadingUser) { // Wait for user to be loaded
-            setIsLoadingGroup(false);
-            return;
-        }
-
-        setIsLoadingGroup(true);
-        setGroupError(null);
-        try {
-            const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
-            if (response.ok) {
-                const data = await response.json();
-                setGroup(data);
-            } else if (response.status === 404) {
-                setGroup(null); // User might not be part of a group
-            } else {
-                throw new Error('Failed to fetch group');
-            }
-        } catch (error: any) {
-            console.error('Error fetching group:', error);
-            setGroupError(error.message || 'Erreur lors du chargement du groupe.');
-        } finally {
-            setIsLoadingGroup(false);
-        }
-    }, [user, initialGroup, isLoadingUser]);
-
     useEffect(() => {
+        const fetchGroup = async () => {
+            if (initialGroup) {
+                setGroup(initialGroup);
+                setIsLoadingGroup(false);
+                return;
+            }
+            if (!user || isLoadingUser) {
+                setIsLoadingGroup(false);
+                return;
+            }
+
+            setIsLoadingGroup(true);
+            setGroupError(null);
+            try {
+                const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+                if (response.ok) {
+                    const data = await response.json();
+                    setGroup(data);
+                } else if (response.status === 404) {
+                    setGroup(null); // User might not be part of a group
+                } else {
+                    throw new Error('Failed to fetch group');
+                }
+            } catch (error: any) {
+                console.error('Error fetching group:', error);
+                setGroupError(error.message || 'Erreur lors du chargement du groupe.');
+            } finally {
+                setIsLoadingGroup(false);
+            }
+        };
+
         fetchGroup();
-    }, [fetchGroup]);
+    }, [user, initialGroup, isLoadingUser]);
 
     useEffect(() => {
         const validateReadFiches = async () => {

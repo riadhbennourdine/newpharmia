@@ -19,34 +19,34 @@ const PharmacienDashboard: React.FC = () => {
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
 
-    const fetchGroup = useCallback(async () => {
-        if (!user) {
-            setIsLoadingGroup(false);
-            return;
-        }
-        setIsLoadingGroup(true);
-        setGroupError(null);
-        try {
-            const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
-            if (response.ok) {
-                const data = await response.json();
-                setGroup(data);
-            } else if (response.status === 404) {
-                setGroup(null); // User might not be part of a group
-            } else {
-                throw new Error('Failed to fetch group');
-            }
-        } catch (error: any) {
-            console.error('Error fetching group:', error);
-            setGroupError(error.message || 'Erreur lors du chargement du groupe.');
-        } finally {
-            setIsLoadingGroup(false);
-        }
-    }, [user]);
-
     useEffect(() => {
+        const fetchGroup = async () => {
+            if (!user) {
+                setIsLoadingGroup(false);
+                return;
+            }
+            setIsLoadingGroup(true);
+            setGroupError(null);
+            try {
+                const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+                if (response.ok) {
+                    const data = await response.json();
+                    setGroup(data);
+                } else if (response.status === 404) {
+                    setGroup(null); // User might not be part of a group
+                } else {
+                    throw new Error('Failed to fetch group');
+                }
+            } catch (error: any) {
+                console.error('Error fetching group:', error);
+                setGroupError(error.message || 'Erreur lors du chargement du groupe.');
+            } finally {
+                setIsLoadingGroup(false);
+            }
+        };
+
         fetchGroup();
-    }, [fetchGroup]);
+    }, [user]);
 
     const fetchPreparators = useCallback(async () => {
         if (!group) return;
