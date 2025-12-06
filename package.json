@@ -13,6 +13,7 @@
     "db:add-memo-sections": "tsx scripts/add-memo-sections.ts",
     "db:ensure-memo-sections": "tsx scripts/ensure-memo-sections.ts",
     "migrate:db-urls": "tsx --require dotenv/config scripts/migrate-db-urls.ts",
+    "inspect:urls": "tsx --require dotenv/config scripts/inspect-image-urls.ts",
     "index:algolia": "tsx --require dotenv/config scripts/index-memofiches-to-algolia.ts",
     "preview": "vite preview"
   },
