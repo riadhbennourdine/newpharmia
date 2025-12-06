@@ -12,35 +12,43 @@ const getUserDisplayName = (user: Partial<User>): string => {
     return user.username || user.email || 'Utilisateur inconnu';
 };
 
-const transformImageUrl = (url: string | undefined): string => {
+const transformProofUrl = (url: string | undefined): string => {
     if (!url) return '';
 
-    // If it's already a correct local URL, do nothing.
-    if (url.startsWith('/uploads/')) {
-        return url;
+    // Case 1: Already correct (e.g., a new upload)
+    // We assume if it doesn't match the broken patterns, it's correct.
+
+    // Case 2: URL is /uploads/file-....jpg but file is in /uploads/uploads/file-...
+    if (url.startsWith('/uploads/file-')) {
+        return `/uploads${url}`; // Adds the missing '/uploads' prefix
     }
 
-    // Handle old FTP proxy URLs
+    // Case 3: Handle old FTP proxy URLs
     if (url.includes('/api/ftp/view?filePath=')) {
         try {
             const urlParams = new URLSearchParams(url.split('?')[1]);
             const filePath = urlParams.get('filePath');
             if (filePath) {
+                // If the filePath from the DB is itself in an 'uploads' folder, respect it
+                if (filePath.toLowerCase().includes('uploads/')) {
+                    return `/${filePath.replace(/^\//, '')}`;
+                }
                 // Prepend with /uploads and ensure no double slashes
                 return `/uploads/${filePath.replace(/^\//, '')}`;
             }
         } catch (e) {
-            // Ignore parsing errors
+            return url; // Return original on error
         }
     }
     
-    // Handle old external URLs
-    if (url.startsWith('https://pharmaconseilbmb.com/photos/site/')) {
-        const path = url.substring('https://pharmaconseilbmb.com/photos/site/'.length);
-        return `/uploads/pharmia/${path}`;
+    // Case 4: Handle old external URLs (less likely for proofs, but good to have)
+    if (url.startsWith('https://pharmaconseilbmb.com/')) {
+        // This case is too complex to map reliably, we just return the original 
+        // and it will have to be fixed manually by re-upload.
+        return url;
     }
 
-    // Return the original URL if no transformation was applied
+    // If no transformation was applied, return the original URL
     return url;
 };
 
@@ -87,7 +95,7 @@ const AttendeesList: React.FC<{ attendees: Webinar['attendees'], webinarId: stri
                                         {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
                                         {attendee.timeSlots && attendee.timeSlots.length > 0 && <span className="ml-2 font-semibold text-slate-800">({attendee.timeSlots.join(', ')})</span>}
                                         {attendee.proofUrl && (
-                                            <a href={transformImageUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
+                                            <a href={transformProofUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">
                                                 (Voir justificatif)
                                             </a>
                                         )}
