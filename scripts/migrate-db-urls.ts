@@ -7,12 +7,31 @@ import dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
-// Define the old pattern and new pattern
-const OLD_URL_PREFIX = '/api/ftp/view?filePath=';
-const NEW_URL_PREFIX = '/uploads';
+// Define URL patterns
+const OLD_FTP_PROXY_REGEX = /\/api\/ftp\/view\?filePath=(.*)/;
+const OLD_EXTERNAL_URL_PREFIX = 'https://pharmaconseilbmb.com/photos/site';
+const NEW_URL_PREFIX = '/uploads/pharmia';
 
-// Regex to extract the file path from the old URL
-const FTP_FILE_PATH_REGEX = /\/api\/ftp\/view\?filePath=(.*)/;
+function transformUrl(oldUrl: string): string | null {
+  // Case 1: Handle /api/ftp/view?filePath=...
+  let match = oldUrl.match(OLD_FTP_PROXY_REGEX);
+  if (match && match[1]) {
+    // The captured path might still have a leading /pharmia, remove it if so
+    // to avoid /uploads/pharmia/pharmia/...
+    const decodedPath = decodeURIComponent(match[1]).replace(/^\/pharmia/, '');
+    return `${NEW_URL_PREFIX}${decodedPath}`;
+  }
+
+  // Case 2: Handle https://pharmaconseilbmb.com/photos/site/...
+  if (oldUrl.startsWith(OLD_EXTERNAL_URL_PREFIX)) {
+    const relativePath = oldUrl.substring(OLD_EXTERNAL_URL_PREFIX.length);
+    return `${NEW_URL_PREFIX}${relativePath}`;
+  }
+
+  // Return null if no transformation is needed
+  return null;
+}
+
 
 async function migrateDbUrls() {
   try {
@@ -24,43 +43,40 @@ async function migrateDbUrls() {
 
     const cursor = memofichesCollection.find({});
     let migratedCount = 0;
+    let updatedFiches = new Set<string>();
 
     for await (const fiche of cursor) {
       let updated = false;
-      const newFiche = { ...fiche };
+      const newFiche = JSON.parse(JSON.stringify(fiche)); // Deep copy to avoid mutation issues
 
       // 1. Migrate coverImageUrl
-      if (newFiche.coverImageUrl && newFiche.coverImageUrl.startsWith(OLD_URL_PREFIX)) {
-        const match = newFiche.coverImageUrl.match(FTP_FILE_PATH_REGEX);
-        if (match && match[1]) {
-          newFiche.coverImageUrl = NEW_URL_PREFIX + decodeURIComponent(match[1]);
-          updated = true;
-          console.log(`- Migrated coverImageUrl for fiche ${newFiche._id}: ${fiche.coverImageUrl} -> ${newFiche.coverImageUrl}`);
-        }
+      const newCoverUrl = transformUrl(newFiche.coverImageUrl || '');
+      if (newCoverUrl) {
+        console.log(`- [${newFiche.title}] Migrating coverImageUrl: ${newFiche.coverImageUrl} -> ${newCoverUrl}`);
+        newFiche.coverImageUrl = newCoverUrl;
+        updated = true;
       }
 
-      // 2. Migrate infographicImageUrl (for 'le-medicament' type)
-      if (newFiche.infographicImageUrl && newFiche.infographicImageUrl.startsWith(OLD_URL_PREFIX)) {
-        const match = newFiche.infographicImageUrl.match(FTP_FILE_PATH_REGEX);
-        if (match && match[1]) {
-          newFiche.infographicImageUrl = NEW_URL_PREFIX + decodeURIComponent(match[1]);
-          updated = true;
-          console.log(`- Migrated infographicImageUrl for fiche ${newFiche._id}: ${fiche.infographicImageUrl} -> ${newFiche.infographicImageUrl}`);
-        }
+      // 2. Migrate infographicImageUrl
+      const newInfographicUrl = transformUrl(newFiche.infographicImageUrl || '');
+      if (newInfographicUrl) {
+        console.log(`- [${newFiche.title}] Migrating infographicImageUrl: ${newFiche.infographicImageUrl} -> ${newInfographicUrl}`);
+        newFiche.infographicImageUrl = newInfographicUrl;
+        updated = true;
       }
 
-      // 3. Migrate images within memoSections and customSections (rich content)
+      // 3. Migrate images within rich content sections
       const migrateSectionContent = (sections: MemoFicheSection[] | undefined) => {
         if (!sections) return;
         sections.forEach(section => {
           if (section.content) {
             section.content.forEach((item: MemoFicheSectionContent) => {
-              if (item.type === 'image' && item.value && item.value.startsWith(OLD_URL_PREFIX)) {
-                const match = item.value.match(FTP_FILE_PATH_REGEX);
-                if (match && match[1]) {
-                  item.value = NEW_URL_PREFIX + decodeURIComponent(match[1]);
+              if (item.type === 'image' && item.value) {
+                const newContentUrl = transformUrl(item.value);
+                if (newContentUrl) {
+                  console.log(`- [${newFiche.title}] Migrating image in section "${section.title}": ... -> ${newContentUrl}`);
+                  item.value = newContentUrl;
                   updated = true;
-                  console.log(`- Migrated image in section ${section.id} for fiche ${newFiche._id}: ${OLD_URL_PREFIX}... -> ${item.value}`);
                 }
               }
             });
@@ -70,20 +86,36 @@ async function migrateDbUrls() {
 
       migrateSectionContent(newFiche.memoSections);
       migrateSectionContent(newFiche.customSections);
+      
+      // Also check top-level simple sections that might contain image URLs in rich content format
+      // This is a safeguard based on the complex structure of CaseStudy type
+      const sectionsToCheck = ['patientSituation', 'pathologyOverview', 'casComptoir', 'objectifsConseil', 'pathologiesConcernees', 'interetDispositif', 'beneficesSante', 'dispositifsAConseiller', 'reponsesObjections', 'pagesSponsorisees'];
+      for (const key of sectionsToCheck) {
+        if (newFiche[key]) {
+            migrateSectionContent([newFiche[key]]);
+        }
+      }
+
 
       // 4. Update the document if any changes were made
       if (updated) {
-        await memofichesCollection.updateOne({ _id: newFiche._id }, { $set: newFiche });
-        migratedCount++;
+        await memofichesCollection.replaceOne({ _id: fiche._id }, newFiche);
+        updatedFiches.add(fiche.title);
       }
     }
-
-    console.log(`\n✅ Database URL migration completed. Total fiches updated: ${migratedCount}`);
+    
+    migratedCount = updatedFiches.size;
+    if (migratedCount > 0) {
+        console.log('\nUpdated fiches:');
+        updatedFiches.forEach(title => console.log(`  - ${title}`));
+    }
+    console.log(`\n✅ Database URL migration completed. Total unique fiches updated: ${migratedCount}`);
 
   } catch (error) {
     console.error('❌ An error occurred during database URL migration:', error);
   } finally {
-    // client.close() - clientPromise handles connection pooling, so no need to close here.
+     const client = await clientPromise;
+     await client.close();
   }
 }
 
