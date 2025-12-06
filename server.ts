@@ -25,6 +25,11 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve files from the Railway Volume
+// This maps the public URL path /uploads to the internal volume mount path /data/uploads
+app.use('/uploads', express.static('/data/uploads'));
+
 // app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')));
 
 // import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
