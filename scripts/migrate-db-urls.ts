@@ -34,72 +34,75 @@ function transformUrl(oldUrl: string): string | null {
 
 
 async function migrateDbUrls() {
+  const client = await clientPromise;
+  let db;
   try {
-    const client = await clientPromise;
-    const db = client.db('pharmia');
+    db = client.db('pharmia');
     const memofichesCollection = db.collection<CaseStudy>('memofiches');
 
     console.log('Starting migration of image URLs in MongoDB...');
 
     const cursor = memofichesCollection.find({});
     let migratedCount = 0;
-    let updatedFiches = new Set<string>();
+    const updatedFiches = new Set<string>();
 
     for await (const fiche of cursor) {
-      let updated = false;
-      const newFiche = JSON.parse(JSON.stringify(fiche)); // Deep copy to avoid mutation issues
+      const updateOps: any = {};
+      let hasUpdate = false;
+
+      // Deep copy sections for safe mutation
+      const newMemoSections = fiche.memoSections ? JSON.parse(JSON.stringify(fiche.memoSections)) : undefined;
+      const newCustomSections = fiche.customSections ? JSON.parse(JSON.stringify(fiche.customSections)) : undefined;
 
       // 1. Migrate coverImageUrl
-      const newCoverUrl = transformUrl(newFiche.coverImageUrl || '');
+      const newCoverUrl = transformUrl(fiche.coverImageUrl || '');
       if (newCoverUrl) {
-        console.log(`- [${newFiche.title}] Migrating coverImageUrl: ${newFiche.coverImageUrl} -> ${newCoverUrl}`);
-        newFiche.coverImageUrl = newCoverUrl;
-        updated = true;
+        updateOps.coverImageUrl = newCoverUrl;
+        hasUpdate = true;
+        console.log(`- [${fiche.title}] Migrating coverImageUrl: ${fiche.coverImageUrl} -> ${newCoverUrl}`);
       }
 
       // 2. Migrate infographicImageUrl
-      const newInfographicUrl = transformUrl(newFiche.infographicImageUrl || '');
+      const newInfographicUrl = transformUrl(fiche.infographicImageUrl || '');
       if (newInfographicUrl) {
-        console.log(`- [${newFiche.title}] Migrating infographicImageUrl: ${newFiche.infographicImageUrl} -> ${newInfographicUrl}`);
-        newFiche.infographicImageUrl = newInfographicUrl;
-        updated = true;
+        updateOps.infographicImageUrl = newInfographicUrl;
+        hasUpdate = true;
+        console.log(`- [${fiche.title}] Migrating infographicImageUrl: ${fiche.infographicImageUrl} -> ${newInfographicUrl}`);
       }
-
+      
       // 3. Migrate images within rich content sections
-      const migrateSectionContent = (sections: MemoFicheSection[] | undefined) => {
-        if (!sections) return;
+      const migrateSectionContent = (sections: MemoFicheSection[] | undefined): boolean => {
+        let sectionUpdated = false;
+        if (!sections) return false;
         sections.forEach(section => {
           if (section.content) {
             section.content.forEach((item: MemoFicheSectionContent) => {
               if (item.type === 'image' && item.value) {
                 const newContentUrl = transformUrl(item.value);
                 if (newContentUrl) {
-                  console.log(`- [${newFiche.title}] Migrating image in section "${section.title}": ... -> ${newContentUrl}`);
+                  console.log(`- [${fiche.title}] Migrating image in section "${section.title}": ... -> ${newContentUrl}`);
                   item.value = newContentUrl;
-                  updated = true;
+                  sectionUpdated = true;
                 }
               }
             });
           }
         });
+        return sectionUpdated;
       };
 
-      migrateSectionContent(newFiche.memoSections);
-      migrateSectionContent(newFiche.customSections);
-      
-      // Also check top-level simple sections that might contain image URLs in rich content format
-      // This is a safeguard based on the complex structure of CaseStudy type
-      const sectionsToCheck = ['patientSituation', 'pathologyOverview', 'casComptoir', 'objectifsConseil', 'pathologiesConcernees', 'interetDispositif', 'beneficesSante', 'dispositifsAConseiller', 'reponsesObjections', 'pagesSponsorisees'];
-      for (const key of sectionsToCheck) {
-        if (newFiche[key]) {
-            migrateSectionContent([newFiche[key]]);
-        }
+      if (migrateSectionContent(newMemoSections)) {
+        updateOps.memoSections = newMemoSections;
+        hasUpdate = true;
+      }
+      if (migrateSectionContent(newCustomSections)) {
+        updateOps.customSections = newCustomSections;
+        hasUpdate = true;
       }
 
-
       // 4. Update the document if any changes were made
-      if (updated) {
-        await memofichesCollection.replaceOne({ _id: fiche._id }, newFiche);
+      if (hasUpdate) {
+        await memofichesCollection.updateOne({ _id: fiche._id }, { $set: updateOps });
         updatedFiches.add(fiche.title);
       }
     }
@@ -115,7 +118,9 @@ async function migrateDbUrls() {
     console.error('❌ An error occurred during database URL migration:', error);
   } finally {
      const client = await clientPromise;
-     await client.close();
+     if (client) {
+       await client.close();
+     }
   }
 }
 
