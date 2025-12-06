@@ -34,6 +34,9 @@ RUN npm prune --production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/dist-server ./dist-server
 
+# Copy the migrated FTP files into a temporary location for the start script to move to the volume
+COPY public/uploads_migration /temp_uploads
+
 # La commande pour démarrer le serveur de production.
 # Railway utilise par défaut la commande "start" de votre package.json.
 # Assurez-vous que le script "start" exécute le bon fichier, par exemple : "node dist-server/server.js"
