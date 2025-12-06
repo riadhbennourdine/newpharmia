@@ -26,9 +26,6 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Serve files from the Railway Volume, mounted at /app/public/uploads
-app.use('/uploads', express.static('/app/public/uploads'));
-
 // Serve files from the Railway Volume
 // This maps the public URL path /uploads to the internal volume mount path /data/uploads
 app.use('/uploads', express.static('/data/uploads'));
@@ -308,7 +305,6 @@ import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
 import ftpRouter from './server/ftp.js'; // Import the new FTP router
-import migrationRouter from './server/migration.js'; // Import the migration router
 
 // ===============================================
 // API ROUTES
@@ -322,7 +318,6 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
 app.use('/api/ftp', ftpRouter); // Register the new FTP routes
-app.use('/api/migrate', migrationRouter); // Register the migration routes
 
 // ===============================================
 // ADMIN FILE SEARCH API
