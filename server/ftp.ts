@@ -180,6 +180,7 @@ router.get('/view', async (req, res) => {
     const tempFilePath = path.join(tempDir, safeFilename);
 
     try {
+        console.log(`[FTP VIEW SPY] Request for filePath: "${fullPath}" received from page: "${req.headers.referer}"`);
         ftpClient = await getFtpClient();
         console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
         await fs.mkdir(tempDir, { recursive: true });
