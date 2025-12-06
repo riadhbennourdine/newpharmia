@@ -51,4 +51,41 @@ router.get('/list-volume', authenticateToken, async (req: AuthenticatedRequest, 
   }
 });
 
+// This endpoint allows an admin to download a specific file from the volume.
+// It should be removed after use.
+router.get('/download-file', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    // Ensure only an admin can run this
+    if (req.user?.role !== UserRole.ADMIN) {
+        return res.status(403).json({ message: 'Unauthorized. Only admins can perform this action.' });
+    }
+
+    const { filePath } = req.query;
+
+    if (!filePath || typeof filePath !== 'string') {
+        return res.status(400).send('A "filePath" query parameter is required.');
+    }
+
+    try {
+        const sanitizedPath = path.normalize(filePath).replace(/^(\.\.(\/|\\|$))+/, '');
+        const fullPath = path.join(VOLUME_BASE_PATH, sanitizedPath);
+
+        // Use res.download() which handles headers and prompts the user to save the file.
+        res.download(fullPath, (err) => {
+            if (err) {
+                // Handle errors, such as file not found
+                if (!res.headersSent) {
+                    console.error(`[Debug] Failed to download file: ${fullPath}`, err);
+                    res.status(404).send('File not found.');
+                }
+            }
+        });
+
+    } catch (error: any) {
+        console.error('[Debug] Error preparing file for download:', error);
+        if (!res.headersSent) {
+            res.status(500).send('Internal server error.');
+        }
+    }
+});
+
 export default router;
