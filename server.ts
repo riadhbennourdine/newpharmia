@@ -66,7 +66,11 @@ app.post('/api/learning-assistant/ask', async (req, res) => {
 });
 */
 
-// In production, serve static files from the build directory
+// Serve files from the Railway Volume (priority 1)
+// This maps the public URL path /uploads to the internal volume mount path /app/public/uploads
+app.use('/uploads', express.static('/app/public/uploads'));
+
+// In production, serve static files from the build directory (priority 2)
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '..', 'dist')));
 }
