@@ -575,8 +575,27 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
 
         // Apprenant and Preparateur need an active subscription or group access
         if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN || user.role === UserRole.ADMIN_WEBINAR) {
-            // Check for active subscription
-            if (user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date()) {
+            let effectiveSubscriber: User | null = user; // Start with the user trying to access
+            
+            // If preparator, check if they are linked to a pharmacist with an active subscription
+            if (user.role === UserRole.PREPARATEUR && user.pharmacistId) {
+                const associatedPharmacist = await usersCollection.findOne({ _id: new ObjectId(user.pharmacistId) });
+                if (associatedPharmacist) {
+                    effectiveSubscriber = associatedPharmacist;
+                }
+            } else if (user.role === UserRole.APPRENANT && user.groupId) {
+                // If apprenant and in a group, check the group's pharmacist's subscription
+                const groupDetails = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                if (groupDetails && groupDetails.pharmacistIds && groupDetails.pharmacistIds.length > 0) {
+                    const groupPharmacist = await usersCollection.findOne({ _id: new ObjectId(groupDetails.pharmacistIds[0]) });
+                    if (groupPharmacist) {
+                        effectiveSubscriber = groupPharmacist;
+                    }
+                }
+            }
+            
+            // Check for effective subscriber's active subscription
+            if (effectiveSubscriber && effectiveSubscriber.hasActiveSubscription && effectiveSubscriber.subscriptionEndDate && new Date(effectiveSubscriber.subscriptionEndDate) > new Date()) {
                 return res.json({
                     ...fiche,
                     isLocked: false,
@@ -587,23 +606,25 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
                 });
             }
 
-            // Check for group access
-            if (user.groupId) {
+            // Existing group access check (if fiche is assigned to the preparator's group)
+            // Re-fetch group if not already fetched for apprenant
+            if (!group && user.groupId) { 
                 group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-
-                if (group && group.assignedFiches.some(f => f.ficheId === id)) {
-                    return res.json({
-                        ...fiche,
-                        isLocked: false,
-                        mainTreatment: fiche.mainTreatment || [],
-                        associatedProducts: fiche.associatedProducts || [],
-                        lifestyleAdvice: fiche.lifestyleAdvice || [],
-                        dietaryAdvice: fiche.dietaryAdvice || [],
-                    });
-                }
             }
 
-            return res.status(403).json({ message: 'Accès refusé: Abonnement inactif ou mémofiche non assignée.', isLocked: true });
+            if (group && group.assignedFiches.some(f => f.ficheId === id)) {
+                return res.json({
+                    ...fiche,
+                    isLocked: false,
+                    mainTreatment: fiche.mainTreatment || [],
+                    associatedProducts: fiche.associatedProducts || [],
+                    lifestyleAdvice: fiche.lifestyleAdvice || [],
+                    dietaryAdvice: fiche.dietaryAdvice || [],
+                });
+            }
+
+            // If none of the above, access is denied
+            return res.status(403).json({ message: 'Accès refusé: Abonnement inactif, mémofiche non assignée ou rôle insuffisant.', isLocked: true });
         }
 
         return res.status(403).json({ message: 'Accès refusé: Rôle utilisateur insuffisant.', isLocked: true });
