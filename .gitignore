@@ -35,3 +35,4 @@ types.js
 uploads_temp/.gemini/
 .gemini/
 \n# Temporary migration files\npublic/uploads_migration/
+volume_files_urls.md
