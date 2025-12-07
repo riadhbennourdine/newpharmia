@@ -2,7 +2,7 @@ import React, { useState, useEffect, FormEvent, useMemo, useCallback } from 'rea
 import { Link } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, User, WebinarStatus } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
-import { Spinner, TrashIcon, PencilIcon, LinkIcon } from '../../components/Icons';
+import { Spinner, TrashIcon, PencilIcon, ShareIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
 
 const getUserDisplayName = (user: Partial<User>): string => {
@@ -84,9 +84,8 @@ const AttendeesList: React.FC<{
                                         <a href={transformProofUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">(Voir)</a>
                                     )}
                                     <button onClick={() => onMatchProof(attendee, webinarId)} className="ml-2 text-gray-400 hover:text-teal-600" title="Associer une nouvelle preuve de paiement">
-                                        <LinkIcon className="h-4 w-4" />
-                                    </button>
-                                </div>
+                                                                                <ShareIcon className="h-4 w-4" />
+                                                                            </button>                                </div>
                                 {attendee.status === 'PAYMENT_SUBMITTED' && (
                                     <button
                                         onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
