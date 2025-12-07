@@ -336,11 +336,21 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   }
 
 // Helper to check if a MemoFicheSection is empty
-const isMemoFicheSectionContentEmpty = (sectionContent: MemoFicheSectionContent[]): boolean => {
-    if (!sectionContent || sectionContent.length === 0) {
+const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
+    if (!sectionContent) {
         return true;
     }
-    return sectionContent.every(item => !item.value || item.value.trim() === '');
+    // If it's not an array, it's either legacy string data or invalid.
+    if (!Array.isArray(sectionContent)) {
+        // Treat as empty if it's a blank string, or not a string at all.
+        return typeof sectionContent === 'string' ? sectionContent.trim() === '' : true;
+    }
+    // Now we know it's an array.
+    if (sectionContent.length === 0) {
+        return true;
+    }
+    // Check if all items in the array are essentially empty.
+    return sectionContent.every(item => !item || !item.value || item.value.trim() === '');
 };
   
       const memoContent = useMemo(() => {
