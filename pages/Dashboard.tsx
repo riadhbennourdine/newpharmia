@@ -2,54 +2,38 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import AlgoliaSearch from '../components/AlgoliaSearch';
-
-import { BookOpenIcon, VideoCameraIcon, UserGroupIcon, AcademicCapIcon } from '../components/Icons';
-
-import { UserRole } from '../types';
+import { BookOpenIcon, VideoCameraIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 const Dashboard: React.FC = () => {
     const { user } = useAuth();
 
-
-
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)]"> {/* Adjust height based on header height */}
-            <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
-                <h1 className="text-4xl md:text-5xl font-bold text-slate-800">
-                    Bonjour, <span className="text-teal-600">{user?.firstName || 'cher utilisateur'}</span> !
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 text-white p-4">
+            <main className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center text-center">
+                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
+                    Bonjour, <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">{user?.firstName || 'cher utilisateur'}</span> !
                 </h1>
-                <p className="mt-4 text-lg text-slate-600 max-w-2xl">
+                <p className="mt-4 text-lg text-slate-300 max-w-2xl">
                     Que souhaitez-vous apprendre aujourd'hui ?
                 </p>
-                
+
                 <AlgoliaSearch />
 
-
-
-            </main>
-
-            <footer className="w-full py-8">
-                <div className="flex justify-center items-center flex-wrap gap-4">
-                    <Link 
-                        to="/memofiches"
-                        className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
-                    >
-                        <span className="font-bold text-sm">Mémofiches</span>
+                <div className="mt-8 flex items-center justify-center space-x-6">
+                    <Link to="/memofiches" className="flex items-center text-slate-300 hover:text-white transition-colors duration-300">
+                        <BookOpenIcon className="h-5 w-5 mr-2" />
+                        <span className="font-medium">Mémofiches</span>
                     </Link>
-                    <Link 
-                        to="/webinars"
-                        className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
-                    >
-                        <span className="font-bold text-sm">Wébinaires</span>
+                    <Link to="/webinars" className="flex items-center text-slate-300 hover:text-white transition-colors duration-300">
+                        <VideoCameraIcon className="h-5 w-5 mr-2" />
+                        <span className="font-medium">Wébinaires</span>
                     </Link>
-                    <Link 
-                        to="/my-dashboard"
-                        className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
-                    >
-                        <span className="font-bold text-sm whitespace-nowrap">Gestion Équipe</span>
+                    <Link to="/my-dashboard" className="flex items-center text-slate-300 hover:text-white transition-colors duration-300">
+                        <UserGroupIcon className="h-5 w-5 mr-2" />
+                        <span className="font-medium">Gestion Équipe</span>
                     </Link>
                 </div>
-            </footer>
+            </main>
         </div>
     );
 };
