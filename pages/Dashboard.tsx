@@ -34,21 +34,21 @@ const Dashboard: React.FC = () => {
                         to="/memofiches"
                         className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
                     >
-                        <img src="/assets/icons/memofiche.png" alt="Mémofiches Icon" className="h-8 w-8" />
+                        <img src="/assets/icons/memofiche.png?v=2" alt="Mémofiches Icon" className="h-8 w-8" />
                         <span className="mt-2 font-bold text-sm">Mémofiches</span>
                     </Link>
                     <Link 
                         to="/webinars"
                         className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
                     >
-                        <img src="/assets/icons/webinar.png" alt="Wébinaires Icon" className="h-8 w-8" />
+                        <img src="/assets/icons/webinar.png?v=2" alt="Wébinaires Icon" className="h-8 w-8" />
                         <span className="mt-2 font-bold text-sm">Wébinaires</span>
                     </Link>
                     <Link 
                         to="/my-dashboard"
                         className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-sm w-36 h-28 text-slate-600 hover:text-teal-600 hover:shadow-md transition-all duration-300"
                     >
-                        <img src="/assets/icons/team.png" alt="Gestion Équipe Icon" className="h-8 w-8" />
+                        <img src="/assets/icons/team.png?v=2" alt="Gestion Équipe Icon" className="h-8 w-8" />
                         <span className="mt-2 font-bold text-sm whitespace-nowrap">Gestion Équipe</span>
                     </Link>
                 </div>
