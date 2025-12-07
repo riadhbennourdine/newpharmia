@@ -940,17 +940,28 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 <Label htmlFor={`quiz-q-${qIndex}`}>Question</Label>
                 <Input id={`quiz-q-${qIndex}`} type="text" value={question.question} onChange={(e) => handleItemChange('quiz', qIndex, 'question', e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <Label>Options et bonne réponse</Label>
                 {question.options.map((option, oIndex) => (
-                  <div key={oIndex}>
-                    <Label htmlFor={`quiz-q${qIndex}-o${oIndex}`}>Option {oIndex + 1}</Label>
-                    <Input id={`quiz-q${qIndex}-o${oIndex}`} type="text" value={option} onChange={(e) => handleQuizOptionChange(qIndex, oIndex, e.target.value)} />
+                  <div key={oIndex} className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      id={`quiz-q${qIndex}-o${oIndex}-radio`}
+                      name={`quiz-correct-${qIndex}`}
+                      checked={question.correctAnswerIndex === oIndex}
+                      onChange={() => handleItemChange('quiz', qIndex, 'correctAnswerIndex', oIndex)}
+                      className="h-5 w-5 text-teal-600 border-gray-300 focus:ring-teal-500 cursor-pointer"
+                    />
+                    <Input
+                      id={`quiz-q${qIndex}-o${oIndex}`}
+                      placeholder={`Option ${oIndex + 1}`}
+                      type="text"
+                      value={option}
+                      onChange={(e) => handleQuizOptionChange(qIndex, oIndex, e.target.value)}
+                      className="flex-grow"
+                    />
                   </div>
                 ))}
-              </div>
-              <div>
-                <Label htmlFor={`quiz-a-${qIndex}`}>Index de la bonne réponse (0-3)</Label>
-                <Input id={`quiz-a-${qIndex}`} type="number" min="0" max="3" value={question.correctAnswerIndex} onChange={(e) => handleItemChange('quiz', qIndex, 'correctAnswerIndex', parseInt(e.target.value, 10))} />
               </div>
               <div>
                 <Label htmlFor={`quiz-exp-${qIndex}`}>Explication</Label>
