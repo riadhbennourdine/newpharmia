@@ -1292,16 +1292,19 @@ app.post('/api/newsletter/send', async (req, res) => {
         const emailMessages = validRecipients.map(recipient => {
             const finalHtmlContentWithPlaceholders = htmlContent
                 .replace(/{{NOM_DESTINATAIRE}}/g, recipient.firstName || 'cher utilisateur')
-                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email)
-                .replace(/{{USER_ID}}/g, recipient._id.toString());
+                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email);
+            
+            // Only replace {{USER_ID}} if recipient._id is a valid ObjectId
+            const userIdString = ObjectId.isValid(recipient._id) ? recipient._id.toString() : '';
+            const contentWithUserId = finalHtmlContentWithPlaceholders.replace(/{{USER_ID}}/g, userIdString);
             
             let finalHtmlContent;
             if (webinarId && fetchedWebinar) { 
-                finalHtmlContent = finalHtmlContentWithPlaceholders
+                finalHtmlContent = contentWithUserId
                     .replace(/{{LIEN_MEETING}}/g, fetchedWebinar.googleMeetLink || '')
                     .replace(/{{WEBINAR_DESCRIPTION}}/g, fetchedWebinar.description || '');
             } else {
-                finalHtmlContent = finalHtmlContentWithPlaceholders;
+                finalHtmlContent = contentWithUserId;
             }
 
             return {
@@ -1330,6 +1333,9 @@ app.post('/api/newsletter/send-test', async (req, res) => {
         }
         
         let finalHtmlContent = htmlContent;
+
+        // Replace {{USER_ID}} with an empty string for test emails, as actual user IDs are not available
+        finalHtmlContent = finalHtmlContent.replace(/{{USER_ID}}/g, '');
 
         if (webinarId) {
             const client = await clientPromise;
