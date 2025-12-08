@@ -142,13 +142,14 @@ const WebinarManagement: React.FC = () => {
                 }
             }, [token]);
         
-            useEffect(() => {
-                if (token) {
-                    fetchWebinars();
-                }
-            }, [token]);
-        
-            useEffect(() => {        const fetchVolumeFiles = async () => {
+    useEffect(() => {
+        if (token) {
+            fetchWebinars();
+        }
+    }, [token, fetchWebinars]);
+
+    useEffect(() => {
+        const fetchVolumeFiles = async () => {
             if (!token) return;
             try {
                 const res = await fetch('/api/debug/list-volume', { headers: { 'Authorization': `Bearer ${token}` } });
