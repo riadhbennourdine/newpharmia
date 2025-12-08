@@ -469,7 +469,7 @@ router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), asyn
     }
 });
 
-router.get('/expired-trial', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+router.get('/expired-trial', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const now = new Date();
