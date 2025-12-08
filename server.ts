@@ -1189,7 +1189,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
     }
 });
 app.post('/api/newsletter/send', async (req, res) => {
-    const { subject, htmlContent, roles, cities, statuses, formalGroupIds, webinarId, googleMeetLink } = req.body;
+    const { subject, htmlContent, roles, cities, statuses, formalGroupIds, webinarId, googleMeetLink, sendToExpired } = req.body;
 
     if (!subject || !htmlContent) {
         return res.status(400).json({ message: 'Subject and content are required.' });
@@ -1204,7 +1204,17 @@ app.post('/api/newsletter/send', async (req, res) => {
         let recipients = [];
         let fetchedWebinar = null; 
 
-        if (webinarId) {
+        if (sendToExpired) {
+            const now = new Date();
+            recipients = await usersCollection.find({
+                trialExpiresAt: { $lt: now },
+                $or: [
+                    { hasActiveSubscription: { $exists: false } },
+                    { hasActiveSubscription: false }
+                ]
+            }).project({ email: 1, firstName: 1, lastName: 1 }).toArray();
+        }
+        else if (webinarId) {
             const webinarsCollection = db.collection('webinars');
             fetchedWebinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
 
@@ -1312,7 +1322,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 
 app.post('/api/newsletter/send-test', async (req, res) => {
     try {
-        const { subject, htmlContent, testEmails, webinarId } = req.body;
+        const { subject, htmlContent, testEmails, webinarId, sendToExpired } = req.body;
 
         if (!subject || !htmlContent || !Array.isArray(testEmails) || testEmails.length === 0) {
             return res.status(400).json({ message: 'Le sujet, le contenu HTML et une liste d\'e-mails de test sont requis.' });
@@ -1329,6 +1339,11 @@ app.post('/api/newsletter/send-test', async (req, res) => {
             if (webinar && webinar.googleMeetLink) {
                 finalHtmlContent = htmlContent.replace(/{{LIEN_MEETING}}/g, webinar.googleMeetLink);
             }
+        }
+
+        if (sendToExpired) {
+            // Add a test user for the expired trial scenario
+            testEmails.push('test.expired@pharmia.com');
         }
 
         const sendPromises = testEmails.map(email => {

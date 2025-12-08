@@ -469,4 +469,22 @@ router.put('/:userId/role', authenticateToken, checkRole([UserRole.ADMIN]), asyn
     }
 });
 
+router.get('/expired-trial', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const now = new Date();
+        const users = await usersCollection.find({
+            trialExpiresAt: { $lt: now },
+            $or: [
+                { hasActiveSubscription: { $exists: false } },
+                { hasActiveSubscription: false }
+            ]
+        }).toArray();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users with expired trials:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des utilisateurs.' });
+    }
+});
+
 export default router;

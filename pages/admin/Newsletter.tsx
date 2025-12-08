@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { User } from '../../types';
 import Select from 'react-select';
 import { GroupBase, OptionsOrGroups } from 'react-select/dist/declarations/src/types';
 
@@ -156,6 +157,101 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
     );
 };
 
+const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
+    return (
+        <>
+            <style type="text/css" dangerouslySetInnerHTML={{ __html: `
+              @media only screen and (max-width: 600px) {
+                .email-container { width: 100% !important; }
+                .mobile-title { font-size: 24px !important; line-height: 1.2 !important; }
+                .main-content-text { font-size: 16px !important; line-height: 1.6 !important; }
+                .footer-text p { font-size: 12px !important; }
+                .cta-button { padding: 12px 20px !important; font-size: 16px !important; }
+              }
+            `}} />
+            <table cellPadding="0" cellSpacing="0" border={0} className="email-container" style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
+                <tbody>
+                    <tr>
+                        <td align="center" style={{ padding: '20px' }}>
+                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '600px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', fontFamily: 'Poppins, Arial, sans-serif' }}>
+                                <tbody>
+                                    {/* Header */}
+                                    <tr>
+                                        <td style={{ padding: '24px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>
+                                            <img src="https://pharmaconseilbmb.com/photos/site/logo-pharmia.png" alt="PharmIA Logo" width={150} />
+                                            <p style={{ fontSize: '16px', color: '#6b7280', margin: 0, marginTop: '10px' }}>Votre expert du conseil officinal.</p>
+                                        </td>
+                                    </tr>
+                                    {/* Main Content */}
+                                    <tr>
+                                        <td style={{ padding: '32px', color: '#111827' }}>
+                                            <h2 className="mobile-title" style={{ fontSize: '22px', fontWeight: 'bold', marginTop: 0, marginBottom: '20px' }}>
+                                                Votre essai gratuit PharmIA est terminé. Et maintenant ?
+                                            </h2>
+                                            <p className="main-content-text" style={{ lineHeight: 1.7, color: '#4b5563', margin: 0, fontSize: '16px' }}>
+                                                Bonjour {recipientName},<br /><br />
+                                                Votre période d'essai de 7 jours sur PharmIA est arrivée à son terme. Nous espérons que vous avez pu découvrir la richesse de nos contenus et l'efficacité de notre plateforme pour renforcer votre expertise au comptoir.
+                                                <br /><br />
+                                                Votre avis nous est précieux ! L'application a-t-elle suscité votre intérêt ?
+                                                <br /><br />
+                                                Pour continuer à bénéficier d'un accès illimité à toutes nos mémofiches, quiz interactifs et parcours d'apprentissage, nous vous invitons à choisir la formule d'abonnement qui vous convient.
+                                            </p>
+                                            
+                                            {/* Subscription Highlight */}
+                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: '25px', marginBottom: '25px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px dashed #0d9488' }}>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ padding: '20px', textAlign: 'center' }}>
+                                                            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0d9488', marginTop: 0, marginBottom: '10px' }}>Offre Spéciale Annuelle</h3>
+                                                            <p style={{ fontSize: '15px', color: '#374151', margin: 0 }}>
+                                                                Engagez-vous pour un an et bénéficiez de <strong>3 mois gratuits !</strong> C'est l'occasion idéale pour maîtriser le conseil à l'officine tout au long de l'année.
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            {/* CTA Button */}
+                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%' }}>
+                                                <tbody>
+                                                    <tr>
+                                                        <td align="center">
+                                                            <a href="https://newpharmia-production.up.railway.app/#/pricing" className="cta-button" style={{ 
+                                                                display: 'inline-block',
+                                                                backgroundColor: '#0d9488', 
+                                                                color: '#ffffff', 
+                                                                padding: '14px 28px', 
+                                                                borderRadius: '8px', 
+                                                                textDecoration: 'none', 
+                                                                fontWeight: 'bold',
+                                                                fontSize: '16px'
+                                                            }}>
+                                                                Voir les formules d'abonnement
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    {/* Footer */}
+                                    <tr>
+                                        <td className="footer-text" style={{ backgroundColor: '#f3f4f6', padding: '20px 32px', textAlign: 'center', fontSize: '14px', color: '#6b7280' }}>
+                                            <p style={{ marginTop: 0, marginBottom: 8 }}><a href="https://newpharmia-production.up.railway.app/" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: 'bold' }}>PharmIA</a> | By PharmaConseil BMB</p>
+                                            <p style={{ margin: 0 }}><a href={`/#/unsubscribe?email={{EMAIL_DESTINATAIRE}}`} style={{ color: '#0d9488', textDecoration: 'none' }}>Se désinscrire</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </>
+    );
+};
+
+
 interface FormalGroup {
   _id: string;
   name: string;
@@ -189,6 +285,8 @@ const Newsletter: React.FC = () => {
   const [selectedTestEmails, setSelectedTestEmails] = useState<{ value: string; label: string }[]>([]);
   const [webinars, setWebinars] = useState<{ value: string; label: string; googleMeetLink?: string; description?: string; }[]>([]);
   const [selectedWebinar, setSelectedWebinar] = useState<{ value: string; label: string; googleMeetLink?: string; description?: string; } | null>(null);
+  const [expiredTrialUsers, setExpiredTrialUsers] = useState<User[]>([]);
+  const [sendToExpired, setSendToExpired] = useState(false);
 
 
   useEffect(() => {
@@ -270,6 +368,24 @@ const Newsletter: React.FC = () => {
     );
   };
 
+  const handleExpiredTrialToggle = async (checked: boolean) => {
+    setSendToExpired(checked);
+    if (checked) {
+      try {
+        const response = await fetch('/api/users/expired-trial');
+        if (!response.ok) {
+          throw new Error('Failed to fetch expired trial users');
+        }
+        const users: User[] = await response.json();
+        setExpiredTrialUsers(users);
+      } catch (err: any) {
+        console.error(err);
+      }
+    } else {
+      setExpiredTrialUsers([]);
+    }
+  };
+
   const handleSendTest = async () => {
     if (!previewRef.current) {
       setSendStatus('Erreur: Impossible de récupérer le contenu de la prévisualisation.');
@@ -294,6 +410,7 @@ const Newsletter: React.FC = () => {
           htmlContent: htmlContentToSend, 
           testEmails,
           webinarId: selectedWebinar ? selectedWebinar.value : null,
+          sendToExpired,
         }),
       });
 
@@ -348,6 +465,7 @@ const Newsletter: React.FC = () => {
           formalGroupIds: selectedFormalGroupIds,
           webinarId: selectedWebinar ? selectedWebinar.value : null,
           googleMeetLink: selectedWebinar ? selectedWebinar.googleMeetLink : null,
+          sendToExpired,
         }),
       });
 
@@ -372,9 +490,30 @@ const Newsletter: React.FC = () => {
     `;
   };
 
-  const PreviewComponent = SimpleTemplate;
+  const templates: Template[] = [
+      { id: 'simple', name: 'Simple', component: SimpleTemplate },
+      { id: 'expired-trial', name: 'Relance Essai Expiré', component: ExpiredTrialTemplate }
+  ];
+
+  const [selectedTemplate, setSelectedTemplate] = useState<Template>(templates[0]);
+
+  const PreviewComponent = selectedTemplate.component;
 
   return (
+    <div className="mb-4">
+        <label htmlFor="template" className="block text-sm font-medium text-gray-700">Template</label>
+        <Select
+            id="template"
+            options={templates.map(t => ({ value: t.id, label: t.name }))}
+            defaultValue={{ value: templates[0].id, label: templates[0].name }}
+            onChange={(option) => {
+                const template = templates.find(t => t.id === option?.value);
+                if (template) {
+                    setSelectedTemplate(template);
+                }
+            }}
+        />
+    </div>
     <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
       <h3 className="text-xl font-bold text-gray-800 mb-3">Création de Newsletter</h3>
       
@@ -442,6 +581,14 @@ const Newsletter: React.FC = () => {
               placeholder="Sélectionner des groupes..."
               isDisabled={!!selectedWebinar}
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Envoyer aux apprenants à période expirée</label>
+            <div className="mt-2 flex items-center">
+                <input type="checkbox" id="expired-trial-select" checked={sendToExpired} onChange={(e) => handleExpiredTrialToggle(e.target.checked)} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" disabled={!!selectedWebinar} />
+                <label htmlFor="expired-trial-select" className="ml-2 text-sm text-gray-700">Apprenants à période expirée ({expiredTrialUsers.length})</label>
+            </div>
           </div>
 
           <div className="mb-4 p-4 border-t border-b border-gray-200">
