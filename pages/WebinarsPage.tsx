@@ -9,13 +9,9 @@ import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 import { getFtpViewUrl } from '../utils/ftp';
 
-const formatUrl = (url: string): string => {
-    if (!url) return '';
-    const trimmedUrl = url.trim();
-    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
-        return trimmedUrl;
-    }
-    return `https://${trimmedUrl}`;
+const formatUrl = (url: string | undefined): string => {
+    if (!url) return '#';
+    return url;
 };
 
 interface WebinarResourceIconProps {

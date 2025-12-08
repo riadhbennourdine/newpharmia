@@ -6,13 +6,9 @@ import { useCart, CartItem } from '../context/CartContext';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 import { BANK_DETAILS } from '../constants';
 
-const formatUrl = (url: string): string => {
-    if (!url) return '';
-    const trimmedUrl = url.trim();
-    if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
-        return trimmedUrl;
-    }
-    return `https://${trimmedUrl}`;
+const formatUrl = (url: string | undefined): string => {
+    if (!url) return '#';
+    return url;
 };
 
 const getUserDisplayName = (user: Partial<User>): string => {
