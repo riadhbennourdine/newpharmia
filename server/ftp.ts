@@ -1,4 +1,5 @@
 import express from 'express';
+import os from 'os';
 import { Client } from 'basic-ftp';
 import multer from 'multer';
 import path, { dirname } from 'path';
@@ -180,7 +181,7 @@ router.get('/view', async (req, res) => {
     }
 
     // Create a temporary local file to download to
-    const tempDir = path.join(__dirname, 'downloads_temp');
+    const tempDir = path.join(os.tmpdir(), 'pharmia_ftp_downloads');
     // Ensure the filename is safe to use in a path
     const safeFilename = path.basename(fullPath);
     const tempFilePath = path.join(tempDir, safeFilename);
