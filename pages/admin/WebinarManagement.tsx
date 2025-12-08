@@ -435,8 +435,49 @@ const WebinarManagement: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
                         <div className="p-4 sm:p-6">
                             <h2 className="text-2xl font-bold mb-6">{currentWebinar._id ? 'Modifier' : 'Créer'} un Webinaire</h2>
-                            <form onSubmit={handleSaveWebinar}>
-                                {/* Form fields remain the same */}
+                            <form onSubmit={handleSaveWebinar} className="space-y-6">
+                                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
+                                        <input type="text" name="title" id="title" value={currentWebinar.title || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
+                                        <textarea name="description" id="description" value={currentWebinar.description || ''} onChange={handleInputChange} rows={4} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="presenter" className="block text-sm font-medium text-slate-700">Présentateur</label>
+                                        <input type="text" name="presenter" id="presenter" value={currentWebinar.presenter || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date</label>
+                                        <input type="datetime-local" name="date" id="date" value={currentWebinar.date ? new Date(currentWebinar.date).toISOString().slice(0, 16) : ''} onChange={handleDateChange} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL de l'image</label>
+                                        <div className="mt-1 flex rounded-md shadow-sm">
+                                            <input type="text" name="imageUrl" id="imageUrl" value={currentWebinar.imageUrl || ''} onChange={handleInputChange} className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md focus:ring-teal-500 focus:border-teal-500 sm:text-sm border-slate-300" />
+                                            <button type="button" onClick={() => setIsGalleryOpen(true)} className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
+                                                Galerie
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="googleMeetLink" className="block text-sm font-medium text-slate-700">Lien Google Meet</label>
+                                        <input type="text" name="googleMeetLink" id="googleMeetLink" value={currentWebinar.googleMeetLink || ''} onChange={handleInputChange} className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="group" className="block text-sm font-medium text-slate-700">Groupe</label>
+                                        <select name="group" id="group" value={currentWebinar.group || ''} onChange={handleInputChange} className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md">
+                                            <option value={WebinarGroup.CROP_TUNIS}>CROP Tunis</option>
+                                            <option value={WebinarGroup.PHARMIA}>PharmIA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-4 pt-4">
+                                    <button type="button" onClick={handleCloseModal} className="bg-white py-2 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">Annuler</button>
+                                    <button type="submit" className="bg-teal-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">Sauvegarder</button>
+                                </div>
                             </form>
                         </div>
                     </div>
