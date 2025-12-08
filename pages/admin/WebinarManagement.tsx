@@ -19,8 +19,9 @@ const AttendeesList: React.FC<{
     presenter: string, 
     onConfirmPayment: (webinarId: string, userId: string) => void, 
     isConfirmingPayment: boolean,
-    onMatchProof: (attendee: any, webinarId: string) => void
-}> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment, onMatchProof }) => {
+    onMatchProof: (attendee: any, webinarId: string) => void,
+    user: User | null
+}> = ({ attendees, webinarId, presenter, onConfirmPayment, isConfirmingPayment, onMatchProof, user }) => {
     const getTranslatedStatus = (status: string | undefined): string => {
         switch (status) {
             case 'CONFIRMED': return 'CONFIRMÉ';
@@ -63,9 +64,12 @@ const AttendeesList: React.FC<{
                                     {attendee.proofUrl && (
                                         <a href={transformProofUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">(Voir)</a>
                                     )}
-                                    <button onClick={() => onMatchProof(attendee, webinarId)} className="ml-2 text-gray-400 hover:text-teal-600" title="Associer une nouvelle preuve de paiement">
-                                                                                <ShareIcon className="h-4 w-4" />
-                                                                            </button>                                </div>
+                                    {user?.role === UserRole.ADMIN && (
+                                        <button onClick={() => onMatchProof(attendee, webinarId)} className="ml-2 text-gray-400 hover:text-teal-600" title="Associer une nouvelle preuve de paiement">
+                                            <ShareIcon className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                </div>
                                 {attendee.status === 'PAYMENT_SUBMITTED' && (
                                     <button
                                         onClick={() => onConfirmPayment(webinarId, (attendee.userId as User)._id.toString())}
@@ -312,7 +316,7 @@ const WebinarManagement: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
-                {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
+                {(user?.role === UserRole.ADMIN) && (
                     <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
                         + Créer un Webinaire
                     </button>
@@ -351,6 +355,7 @@ const WebinarManagement: React.FC = () => {
                                         onConfirmPayment={handleConfirmPayment}
                                         isConfirmingPayment={isConfirmingPayment}
                                         onMatchProof={handleOpenMatcher}
+                                        user={user}
                                     />
                                 )}
                             </div>
@@ -386,6 +391,7 @@ const WebinarManagement: React.FC = () => {
                                             onConfirmPayment={handleConfirmPayment}
                                             isConfirmingPayment={isConfirmingPayment}
                                             onMatchProof={handleOpenMatcher}
+                                            user={user}
                                         />
                                     )}
                                 </li>
@@ -421,6 +427,7 @@ const WebinarManagement: React.FC = () => {
                                             onConfirmPayment={handleConfirmPayment}
                                             isConfirmingPayment={isConfirmingPayment}
                                             onMatchProof={handleOpenMatcher}
+                                            user={user}
                                         />
                                     )}
                                 </li>
