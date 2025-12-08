@@ -86,6 +86,7 @@ const AttendeesList: React.FC<{
 
 
 const WebinarManagement: React.FC = () => {
+    console.log('WebinarManagement component rendered');
     const { user, token } = useAuth();
     const [soonestWebinar, setSoonestWebinar] = useState<Webinar | null>(null);
     const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
@@ -109,9 +110,6 @@ const WebinarManagement: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
 
-    console.log('soonestWebinar', soonestWebinar);
-    console.log('otherWebinars', otherWebinars);
-    console.log('pastWebinars', pastWebinars);
 
     useEffect(() => {
         const fetchWebinars = async () => {
