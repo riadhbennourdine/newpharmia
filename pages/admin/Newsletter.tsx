@@ -158,6 +158,8 @@ const SimpleTemplate: React.FC<TemplateProps> = ({ recipientName, content, youtu
 };
 
 const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
+    const surveyLink = (score: number) => `https://newpharmia-production.up.railway.app/api/survey/rating?score=${score}&userId={{USER_ID}}`;
+
     return (
         <>
             <style type="text/css" dangerouslySetInnerHTML={{ __html: `
@@ -167,6 +169,7 @@ const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
                 .main-content-text { font-size: 16px !important; line-height: 1.6 !important; }
                 .footer-text p { font-size: 12px !important; }
                 .cta-button { padding: 12px 20px !important; font-size: 16px !important; }
+                .survey-star { font-size: 32px !important; padding: 5px !important; }
               }
             `}} />
             <table cellPadding="0" cellSpacing="0" border={0} className="email-container" style={{ width: '100%', backgroundColor: '#f3f4f6' }}>
@@ -190,11 +193,9 @@ const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
                                             </h2>
                                             <p className="main-content-text" style={{ lineHeight: 1.7, color: '#4b5563', margin: 0, fontSize: '16px' }}>
                                                 Bonjour {recipientName},<br /><br />
-                                                Votre période d\'essai de 7 jours sur PharmIA est arrivée à son terme. Nous espérons que vous avez pu découvrir la richesse de nos contenus et l\'efficacité de notre plateforme pour renforcer votre expertise au comptoir.
+                                                Votre période d'essai de 7 jours sur PharmIA est arrivée à son terme. Nous espérons que vous avez pu découvrir la richesse de nos contenus et l'efficacité de notre plateforme pour renforcer votre expertise au comptoir.
                                                 <br /><br />
-                                                Votre avis nous est précieux ! L\'application a-t-elle suscité votre intérêt ?
-                                                <br /><br />
-                                                Pour continuer à bénéficier d\'un accès illimité à toutes nos mémofiches, quiz interactifs et parcours d\'apprentissage, nous vous invitons à choisir la formule d\'abonnement qui vous convient.
+                                                Pour continuer à bénéficier d'un accès illimité à toutes nos mémofiches, quiz interactifs et parcours d'apprentissage, nous vous invitons à choisir la formule d'abonnement qui vous convient.
                                             </p>
                                             
                                             {/* Subscription Highlight */}
@@ -204,7 +205,7 @@ const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
                                                         <td style={{ padding: '20px', textAlign: 'center' }}>
                                                             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0d9488', marginTop: 0, marginBottom: '10px' }}>Offre Spéciale Annuelle</h3>
                                                             <p style={{ fontSize: '15px', color: '#374151', margin: 0 }}>
-                                                                Engagez-vous pour un an et bénéficiez de <strong>3 mois gratuits !</strong> C\'est l\'occasion idéale pour maîtriser le conseil à l\'officine tout au long de l\'année.
+                                                                Engagez-vous pour un an et bénéficiez de <strong>3 mois gratuits !</strong> C'est l'occasion idéale pour maîtriser le conseil à l'officine tout au long de l'année.
                                                             </p>
                                                         </td>
                                                     </tr>
@@ -212,11 +213,11 @@ const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
                                             </table>
 
                                             {/* CTA Button */}
-                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%' }}>
+                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginBottom: '30px' }}>
                                                 <tbody>
                                                     <tr>
                                                         <td align="center">
-                                                            <a href="https://newpharmia-production.up.railway.app/#/pricing" className="cta-button" style={{ 
+                                                            <a href="https://newpharmia-production.up.railway.app/#/tarifs" className="cta-button" style={{ 
                                                                 display: 'inline-block',
                                                                 backgroundColor: '#0d9488', 
                                                                 color: '#ffffff', 
@@ -226,12 +227,38 @@ const ExpiredTrialTemplate: React.FC<TemplateProps> = ({ recipientName }) => {
                                                                 fontWeight: 'bold',
                                                                 fontSize: '16px'
                                                             }}>
-                                                                Voir les formules d\'abonnement
+                                                                Voir les formules d'abonnement
                                                             </a>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            
+                                            {/* Satisfaction Survey */}
+                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', marginTop: '25px', paddingTop: '25px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ padding: '20px' }}>
+                                                            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', marginTop: 0, marginBottom: '15px' }}>Votre avis nous est précieux !</h3>
+                                                            <p style={{ fontSize: '15px', color: '#374151', margin: 0, marginBottom: '20px' }}>Quelle est la probabilité que vous recommandiez PharmIA à un confrère ?</p>
+                                                            <table cellPadding="0" cellSpacing="0" border={0} style={{ margin: '0 auto' }}>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        {[1, 2, 3, 4, 5].map(star => (
+                                                                            <td key={star} align="center" style={{ padding: '0 5px' }}>
+                                                                                <a href={surveyLink(star)} target="_blank" className="survey-star" style={{ textDecoration: 'none', color: '#ffc107', fontSize: '28px', 'aria-label': `Rate ${star} out of 5` }}>
+                                                                                    &#9733;
+                                                                                </a>
+                                                                            </td>
+                                                                        ))}
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
                                         </td>
                                     </tr>
                                     {/* Footer */}

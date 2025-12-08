@@ -296,3 +296,11 @@ export interface Order {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Rating {
+  _id?: ObjectId;
+  score: number;
+  userId: ObjectId | string;
+  createdAt: Date;
+  newsletterId?: ObjectId | string; // Optional: Link to the newsletter that prompted the survey
+}

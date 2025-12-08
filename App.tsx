@@ -47,6 +47,7 @@ const WebinarAdminManager = lazy(() => import('./pages/admin/WebinarAdminManager
 const CartPage = lazy(() => import('./pages/CartPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const DataFixerPage = lazy(() => import('./pages/admin/DataFixer'));
+const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -69,6 +70,7 @@ const App: React.FC = () => (
                                 <Route path="/webinars" element={<WebinarsPage />} />
                                 <Route path="/webinars/:id" element={<WebinarDetailPage />} />
                                 <Route path="/cart" element={<CartPage />} />
+                                <Route path="/thank-you" element={<ThankYouPage />} />
                             </Route>
                             <Route path="/login" element={<LoginView />} />
                             <Route path="/register" element={<RegisterView />} />

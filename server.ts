@@ -11,7 +11,7 @@ import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
-import { User, UserRole, CaseStudy, Group, MemoFicheStatus } from './types.js';
+import { User, UserRole, CaseStudy, Group, MemoFicheStatus, Rating } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 
@@ -1292,7 +1292,8 @@ app.post('/api/newsletter/send', async (req, res) => {
         const emailMessages = validRecipients.map(recipient => {
             const finalHtmlContentWithPlaceholders = htmlContent
                 .replace(/{{NOM_DESTINATAIRE}}/g, recipient.firstName || 'cher utilisateur')
-                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email);
+                .replace(/{{EMAIL_DESTINATAIRE}}/g, recipient.email)
+                .replace(/{{USER_ID}}/g, recipient._id.toString());
             
             let finalHtmlContent;
             if (webinarId && fetchedWebinar) { 
@@ -1405,6 +1406,44 @@ app.post('/api/contact', upload.single('attachment'), async (req, res) => {
     } catch (error) {
         console.error('Error sending contact message:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de l\'envoi du message.' });
+    }
+});
+
+// SURVEY ROUTES
+app.get('/api/survey/rating', async (req, res) => {
+    const { score, userId } = req.query;
+
+    if (!score || !userId) {
+        return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on error
+    }
+
+    const scoreNum = parseInt(score as string, 10);
+    if (isNaN(scoreNum) || scoreNum < 1 || scoreNum > 5) {
+        return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on invalid score
+    }
+
+    if (!ObjectId.isValid(userId as string)) {
+        return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on invalid userId
+    }
+
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const ratingsCollection = db.collection<Rating>('ratings');
+        
+        const newRating: Rating = {
+            score: scoreNum,
+            userId: new ObjectId(userId as string),
+            createdAt: new Date(),
+        };
+
+        await ratingsCollection.insertOne(newRating);
+        // Redirect to a thank you page
+        res.redirect(`${process.env.CLIENT_URL}#/thank-you`);
+
+    } catch (error) {
+        console.error('Error saving survey rating:', error);
+        res.status(500).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on server error
     }
 });
 
