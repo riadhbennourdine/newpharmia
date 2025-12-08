@@ -48,6 +48,8 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
 
+        console.log('[Webinar Debug] Raw webinars from DB:', JSON.stringify(webinars, null, 2));
+
         const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
         
