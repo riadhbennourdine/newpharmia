@@ -291,7 +291,7 @@ router.post('/by-ids', async (req, res) => {
 });
 
 // POST to create a new webinar (Admin only)
-router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group } = req.body;
 
@@ -332,7 +332,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WE
 });
 
 // PUT to update a webinar (Admin only)
-router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
@@ -375,7 +375,7 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_
 });
 
 // DELETE a webinar (Admin only)
-router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { id } = req.params;
         if (!ObjectId.isValid(id)) {
@@ -636,7 +636,7 @@ router.post('/:webinarId/attendees/:userId/confirm', authenticateToken, checkRol
 });
 
 // PUT for an admin to update a payment proof for a specific attendee
-router.put('/:webinarId/attendees/:userId/payment-proof', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+router.put('/:webinarId/attendees/:userId/payment-proof', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { webinarId, userId } = req.params;
         const { proofUrl } = req.body;
