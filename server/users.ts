@@ -473,13 +473,20 @@ router.get('/expired-trial', authenticateToken, checkRole([UserRole.ADMIN, UserR
     try {
         const { usersCollection } = await getCollections();
         const now = new Date();
-        const users = await usersCollection.find({
+        console.log(`[DEBUG] /expired-trial: Current date (now): ${now.toISOString()}`);
+
+        const query = {
             trialExpiresAt: { $lt: now },
             $or: [
                 { hasActiveSubscription: { $exists: false } },
                 { hasActiveSubscription: false }
             ]
-        }).toArray();
+        };
+        console.log(`[DEBUG] /expired-trial: MongoDB Query: ${JSON.stringify(query)}`);
+
+        const users = await usersCollection.find(query).toArray();
+        console.log(`[DEBUG] /expired-trial: Found ${users.length} users matching criteria.`);
+        
         res.json(users);
     } catch (error) {
         console.error('Error fetching users with expired trials:', error);
