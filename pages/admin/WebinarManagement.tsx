@@ -110,56 +110,56 @@ const WebinarManagement: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
 
 
-    const fetchWebinars = useCallback(async () => {
-        if (!token) return;
-        try {
-            setIsLoading(true);
-            const response = await fetch('/api/webinars', { 
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            if (!response.ok) throw new Error('Failed to fetch webinars');
-            const data: Webinar[] = await response.json();
-
-            const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            const now = new Date();
-            
-            const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
-            const past = allWebinars.filter(w => new Date(w.date) < now);
-
-            setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-            
-            if (upcoming.length > 0) {
-                setSoonestWebinar(upcoming[0]);
-                setOtherWebinars(upcoming.slice(1));
-            } else {
-                setSoonestWebinar(null);
-                setOtherWebinars([]);
-            }
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [token]);
-
-    const fetchVolumeFiles = useCallback(async () => {
-        if (!token) return;
-         try {
-            const res = await fetch('/api/debug/list-volume', { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!res.ok) throw new Error('Failed to fetch volume files.');
-            const data = await res.json();
-            setVolumeFiles(data.files || []);
-        } catch (err) {
-            console.error("Could not fetch volume files for matcher.", err);
-        }
-    }, [token]);
-
     useEffect(() => {
+        const fetchWebinars = async () => {
+            if (!token) return;
+            try {
+                setIsLoading(true);
+                const response = await fetch('/api/webinars', { 
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+                if (!response.ok) throw new Error('Failed to fetch webinars');
+                const data: Webinar[] = await response.json();
+
+                const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                const now = new Date();
+                
+                const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
+                const past = allWebinars.filter(w => new Date(w.date) < now);
+
+                setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+                
+                if (upcoming.length > 0) {
+                    setSoonestWebinar(upcoming[0]);
+                    setOtherWebinars(upcoming.slice(1));
+                } else {
+                    setSoonestWebinar(null);
+                    setOtherWebinars([]);
+                }
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const fetchVolumeFiles = async () => {
+            if (!token) return;
+            try {
+                const res = await fetch('/api/debug/list-volume', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error('Failed to fetch volume files.');
+                const data = await res.json();
+                setVolumeFiles(data.files || []);
+            } catch (err) {
+                console.error("Could not fetch volume files for matcher.", err);
+            }
+        };
+
         if (token) {
             fetchWebinars();
             fetchVolumeFiles();
         }
-    }, [token, fetchWebinars, fetchVolumeFiles]);
+    }, [token]);
 
     const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
         setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });

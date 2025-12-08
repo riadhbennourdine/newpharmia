@@ -164,27 +164,6 @@ const WebinarDetailPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
-    const fetchWebinar = useCallback(async () => {
-        if (!webinarId) return;
-        
-        try {
-            const headers: HeadersInit = { 'Cache-Control': 'no-cache' };
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
-            const response = await fetch(`/api/webinars/${webinarId}`, { headers });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch webinar details');
-            }
-            const data = await response.json();
-            setWebinar(data);
-        } catch (err: any) {
-            setError(err.message);
-        }
-    }, [webinarId, token]);
-
     const handleUpdateRegistration = async (newSlots: WebinarTimeSlot[]) => {
         if (!user || !webinarId) return;
 
@@ -203,7 +182,8 @@ const WebinarDetailPage: React.FC = () => {
                 throw new Error(errorData.message || 'Failed to update time slots');
             }
 
-            await fetchWebinar(); // Refresh webinar data to show updated slots
+            // Refetch webinar data to show updated slots
+            // The useEffect will handle the refetch
         } catch (err: any) {
             alert(`Erreur lors de la mise à jour des créneaux : ${err.message}`);
         }
@@ -227,7 +207,7 @@ const WebinarDetailPage: React.FC = () => {
             }
 
             // Refetch webinar details to update the attendee list
-            await fetchWebinar();
+            // The useEffect will handle the refetch
             alert('Participant supprimé avec succès.');
 
         } catch (err: any) {
@@ -236,20 +216,39 @@ const WebinarDetailPage: React.FC = () => {
     };
 
     useEffect(() => {
+        const fetchWebinar = async () => {
+            if (!webinarId) return;
+            
+            try {
+                const headers: HeadersInit = { 'Cache-Control': 'no-cache' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch(`/api/webinars/${webinarId}`, { headers });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch webinar details');
+                }
+                const data = await response.json();
+                setWebinar(data);
+            } catch (err: any) {
+                setError(err.message);
+            }
+        };
+
         const initialLoad = async () => {
             setIsLoading(true);
             await fetchWebinar();
             setIsLoading(false);
         };
         initialLoad();
-    }, [fetchWebinar]);
 
-    useEffect(() => {
         if (webinar?.registrationStatus === 'PAYMENT_SUBMITTED') {
             const intervalId = setInterval(fetchWebinar, 5000);
             return () => clearInterval(intervalId);
         }
-    }, [webinar?.registrationStatus, fetchWebinar]);
+    }, [webinarId, token, webinar?.registrationStatus]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center py-12"><Spinner className="text-teal-600" /></div>;
