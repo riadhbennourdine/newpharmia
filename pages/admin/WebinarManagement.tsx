@@ -107,52 +107,48 @@ const WebinarManagement: React.FC = () => {
     // State for File Matcher
     const [volumeFiles, setVolumeFiles] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isUpdating, setIsUpdating] = useState(false);
-
-    console.log('soonestWebinar', soonestWebinar);
-    console.log('otherWebinars', otherWebinars);
-    console.log('pastWebinars', pastWebinars);
-
-    useEffect(() => {
-        const fetchWebinars = async () => {
-            if (!token) return;
-            try {
-                setIsLoading(true);
-                const response = await fetch('/api/webinars', { 
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                if (!response.ok) throw new Error('Failed to fetch webinars');
-                const data: Webinar[] = await response.json();
-
-                const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                const now = new Date();
-                
-                const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
-                const past = allWebinars.filter(w => new Date(w.date) < now);
-
-                setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-                
-                if (upcoming.length > 0) {
-                    setSoonestWebinar(upcoming[0]);
-                    setOtherWebinars(upcoming.slice(1));
-                } else {
-                    setSoonestWebinar(null);
-                    setOtherWebinars([]);
+            const [isUpdating, setIsUpdating] = useState(false);
+        
+        
+            const fetchWebinars = useCallback(async () => {
+                if (!token) return;
+                try {
+                    setIsLoading(true);
+                    const response = await fetch('/api/webinars', { 
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch webinars');
+                    const data: Webinar[] = await response.json();
+        
+                    const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    const now = new Date();
+                    
+                    const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
+                    const past = allWebinars.filter(w => new Date(w.date) < now);
+        
+                    setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+                    
+                    if (upcoming.length > 0) {
+                        setSoonestWebinar(upcoming[0]);
+                        setOtherWebinars(upcoming.slice(1));
+                    } else {
+                        setSoonestWebinar(null);
+                        setOtherWebinars([]);
+                    }
+                } catch (err: any) {
+                    setError(err.message);
+                } finally {
+                    setIsLoading(false);
                 }
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (token) {
-            fetchWebinars();
-        }
-    }, [token]);
-
-    useEffect(() => {
-        const fetchVolumeFiles = async () => {
+            }, [token]);
+        
+            useEffect(() => {
+                if (token) {
+                    fetchWebinars();
+                }
+            }, [token]);
+        
+            useEffect(() => {        const fetchVolumeFiles = async () => {
             if (!token) return;
             try {
                 const res = await fetch('/api/debug/list-volume', { headers: { 'Authorization': `Bearer ${token}` } });
