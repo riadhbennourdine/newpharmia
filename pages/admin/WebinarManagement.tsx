@@ -86,6 +86,7 @@ const AttendeesList: React.FC<{
 
 
 const WebinarManagement: React.FC = () => {
+    console.log('WebinarManagement component rendered');
     const { user, token } = useAuth();
     const [soonestWebinar, setSoonestWebinar] = useState<Webinar | null>(null);
     const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
