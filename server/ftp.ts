@@ -173,12 +173,6 @@ router.get('/view', async (req, res) => {
         return res.status(400).json({ message: 'filePath query parameter is required.' });
     }
 
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.svg', '.webp', '.bmp'];
-    const fileExtension = path.extname(fullPath).toLowerCase();
-    if (!allowedExtensions.includes(fileExtension)) {
-        return res.status(403).json({ message: 'File type not allowed.' });
-    }
-
     // Create a temporary local file to download to
     const tempDir = path.join(__dirname, 'downloads_temp');
     // Ensure the filename is safe to use in a path
