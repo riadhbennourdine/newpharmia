@@ -144,6 +144,12 @@ const WebinarManagement: React.FC = () => {
             }
         };
 
+        if (token) {
+            fetchWebinars();
+        }
+    }, [token]);
+
+    useEffect(() => {
         const fetchVolumeFiles = async () => {
             if (!token) return;
             try {
@@ -157,7 +163,6 @@ const WebinarManagement: React.FC = () => {
         };
 
         if (token) {
-            fetchWebinars();
             fetchVolumeFiles();
         }
     }, [token]);
