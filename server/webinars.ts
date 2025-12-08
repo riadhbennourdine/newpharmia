@@ -31,6 +31,43 @@ function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
     }
 }
 
+function standardizeProofUrl(url: string | undefined): string {
+    if (!url) return '';
+
+    // If it's already an external URL, keep it as is
+    if (url.startsWith('https://') || url.startsWith('http://')) {
+        return url;
+    }
+
+    // Handle /api/ftp/view?filePath=/path/from/ftp.jpg
+    if (url.includes('/api/ftp/view?filePath=')) {
+        try {
+            const urlObj = new URL(`http://dummy.com${url}`); // Use a dummy base for URL parsing
+            const filePath = urlObj.searchParams.get('filePath');
+            if (filePath) {
+                // Ensure it's a clean path relative to /uploads
+                return `/uploads/${filePath.replace(/^\/uploads\//, '').replace(/^\//, '')}`;
+            }
+        } catch (e) {
+            console.error('Error parsing filePath from proofUrl:', url, e);
+            return url; // Fallback to original if parsing fails
+        }
+    }
+    
+    // Handle /api/ftp/view/file-name.jpg
+    if (url.startsWith('/api/ftp/view/')) {
+        const path = url.replace('/api/ftp/view/', '');
+        return `/uploads/${path.replace(/^\/uploads\//, '').replace(/^\//, '')}`;
+    }
+
+    // If it starts with /uploads/ and potentially has /uploads/uploads/, clean it
+    if (url.startsWith('/uploads/')) {
+        return url.replace('/uploads/uploads/', '/uploads/');
+    }
+
+    return url; // Default: return as is if no specific pattern matched
+}
+
 // GET all webinars, optionally filtered by group
 router.get('/', softAuthenticateToken, async (req, res) => {
     try {
@@ -47,8 +84,6 @@ router.get('/', softAuthenticateToken, async (req, res) => {
         }
 
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
-
-        console.log('[Webinar Debug] Raw webinars from DB:', JSON.stringify(webinars, null, 2));
 
         const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
@@ -310,7 +345,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WE
             presenter,
             registrationLink: registrationLink || '',
             imageUrl: imageUrl || '',
-            googleMeetLink: (googleMeetLink || '').trim(),
+            googleMeetLink: googleMeetLink ? (googleMeetLink.startsWith('https://') ? googleMeetLink : `https://${googleMeetLink.trim()}`) : '',
             group: group || WebinarGroup.PHARMIA,
             attendees: [],
             createdAt: new Date(),
@@ -349,12 +384,15 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_
             updates.date = new Date(updates.date);
         }
 
-        if (updates.googleMeetLink) {
-            updates.googleMeetLink = updates.googleMeetLink.trim();
-        }
+                if (updates.googleMeetLink !== undefined) {
 
+                    updates.googleMeetLink = updates.googleMeetLink ? (updates.googleMeetLink.startsWith('https://') ? updates.googleMeetLink : `https://${updates.googleMeetLink.trim()}`) : '';
 
-        const client = await clientPromise;
+                }
+
+        
+
+                const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
@@ -586,9 +624,11 @@ router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedR
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
+        const standardizedProofUrl = standardizeProofUrl(proofUrl);
+
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id), "attendees.userId": new ObjectId(userId) },
-            { $set: { "attendees.$.proofUrl": proofUrl, "attendees.$.status": 'PAYMENT_SUBMITTED' as any } }
+            { $set: { "attendees.$.proofUrl": standardizedProofUrl, "attendees.$.status": 'PAYMENT_SUBMITTED' as any } }
         );
 
         if (result.matchedCount === 0) {
@@ -652,12 +692,14 @@ router.put('/:webinarId/attendees/:userId/payment-proof', authenticateToken, che
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
+        const standardizedProofUrl = standardizeProofUrl(proofUrl);
+
         const result = await webinarsCollection.updateOne(
             { 
                 _id: new ObjectId(webinarId), 
                 "attendees.userId": new ObjectId(userId) 
             },
-            { $set: { "attendees.$.proofUrl": proofUrl } }
+            { $set: { "attendees.$.proofUrl": standardizedProofUrl } }
         );
 
         if (result.matchedCount === 0) {
