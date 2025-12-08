@@ -30,28 +30,8 @@ const AttendeesList: React.FC<{
         }
     };
 
-    // A simple client-side URL transformation function
     const transformProofUrl = (url: string | undefined): string => {
         if (!url) return '#';
-        // If it's already a correct-looking local URL, do nothing.
-        if (url.startsWith('/uploads/')) {
-             // This is a special case to handle the nested /uploads/uploads issue
-            if(url.startsWith('/uploads/uploads/')) {
-                return url.replace('/uploads/uploads/', '/uploads/');
-            }
-            return url;
-        }
-      
-        if (url.includes('/api/ftp/view?filePath=')) {
-          try {
-            const filePath = new URLSearchParams(url.split('?')[1]).get('filePath');
-            // This will correctly form /uploads/path/from/ftp.jpg
-            return filePath ? `/uploads/${filePath.replace(/^\//, '')}` : '#';
-          } catch (e) {
-            return url; // Return original on error
-          }
-        }
-        // For other cases (like pharmaconseilbmb), we let the manual matching tool handle it.
         return url;
     };
 
