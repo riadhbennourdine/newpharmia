@@ -6,6 +6,8 @@ import { useCart, CartItem } from '../context/CartContext';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
 import { BANK_DETAILS } from '../constants';
 
+import EmbeddableViewer from '../components/EmbeddableViewer';
+
 const formatUrl = (url: string | undefined): string => {
     if (!url) return '#';
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -313,7 +315,27 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="p-8">
                             <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
 
-                            <div className="bg-slate-50 p-6 rounded-lg">
+                            {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
+                                <div className="mt-8 pt-6 border-t">
+                                    <h3 className="text-2xl font-bold text-slate-800 mb-4">Ressources du Webinaire</h3>
+                                    <div className="space-y-6">
+                                        {webinar.resources.map((resource, index) => (
+                                            <div key={index} className="border rounded-lg p-4">
+                                                <h4 className="text-xl font-semibold mb-2">{resource.title}</h4>
+                                                {resource.type === 'Diaporama' ? (
+                                                    <EmbeddableViewer source={resource.source} />
+                                                ) : (
+                                                    <a href={resource.source} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                        Accéder à la ressource
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="bg-slate-50 p-6 rounded-lg mt-8">
                                 <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
                                 
                                 {registeredAttendee && (registeredAttendee.status === 'PAYMENT_SUBMITTED' || registeredAttendee.status === 'CONFIRMED') ? (

@@ -798,8 +798,8 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
             if (!resource.type) {
                 return res.status(400).json({ message: 'Each resource must have a type.' });
             }
-            if (typeof resource.url !== 'string') {
-                return res.status(400).json({ message: 'Resource URL must be a string.' });
+            if (typeof resource.source !== 'string') {
+                return res.status(400).json({ message: 'Resource source must be a string.' });
             }
             if (!['Replay', 'Diaporama', 'Infographie', 'pdf', 'link', 'youtube'].includes(resource.type)) {
                 return res.status(400).json({ message: `Invalid resource type: ${resource.type}` });

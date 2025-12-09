@@ -241,7 +241,7 @@ export enum WebinarGroup {
 
 export interface WebinarResource {
   type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube';
-  url: string;
+  source: string;
   title?: string;
 }
 

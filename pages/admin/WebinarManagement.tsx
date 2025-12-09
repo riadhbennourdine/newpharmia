@@ -1,9 +1,11 @@
 import React, { useState, useEffect, FormEvent, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Webinar, UserRole, WebinarGroup, User, WebinarStatus } from '../../types';
+import { Webinar, UserRole, WebinarGroup, User, WebinarStatus, WebinarResource } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
-import { Spinner, TrashIcon, PencilIcon, ShareIcon } from '../../components/Icons';
+import { Spinner, TrashIcon, PencilIcon, ShareIcon, MediaIcon } from '../../components/Icons';
 import ImageGalleryModal from '../../components/ImageGalleryModal';
+import ManageWebinarResourcesModal from '../../components/ManageWebinarResourcesModal';
+import EmbeddableViewer from '../../components/EmbeddableViewer';
 
 const getUserDisplayName = (user: Partial<User>): string => {
     if (typeof user !== 'object' || user === null) return 'ID Inconnu';
@@ -101,9 +103,11 @@ const WebinarManagement: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [isMatcherOpen, setIsMatcherOpen] = useState(false);
+    const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
     
     // State for editing
     const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(null);
+    const [currentWebinarForResources, setCurrentWebinarForResources] = useState<Webinar | null>(null);
     const [currentAttendee, setCurrentAttendee] = useState<any | null>(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [isConfirmingPayment, setIsConfirmingPayment] = useState(false);
@@ -173,6 +177,37 @@ const WebinarManagement: React.FC = () => {
     const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
         setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });
         setIsModalOpen(true);
+    };
+
+    const handleOpenResourceModal = (webinar: Webinar) => {
+        setCurrentWebinarForResources(webinar);
+        setIsResourceModalOpen(true);
+    };
+
+    const handleSaveResources = async (webinarId: string, resources: WebinarResource[]) => {
+        if (!token) return;
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/resources`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ resources }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save resources');
+            }
+
+            await fetchWebinars(); // Refresh the list
+            setIsResourceModalOpen(false);
+            setCurrentWebinarForResources(null);
+
+        } catch (err: any) {
+            setError(err.message);
+            // Optionally, provide feedback to the user in the modal
+        }
     };
 
     const handleCloseModal = () => {
@@ -416,6 +451,7 @@ const WebinarManagement: React.FC = () => {
                                         {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && (
                                             <div className="flex gap-2">
                                                 <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600" title="Modifier le wébinaire"><PencilIcon className="h-5 w-5" /></button>
+                                                <button onClick={() => handleOpenResourceModal(webinar)} className="p-2 text-slate-500 hover:text-teal-600" title="Gérer les médias"><MediaIcon className="h-5 w-5" /></button>
                                             </div>
                                         )}
                                     </div>
@@ -429,6 +465,26 @@ const WebinarManagement: React.FC = () => {
                                             onMatchProof={handleOpenMatcher}
                                             user={user}
                                         />
+                                    )}
+                                    {/* Resource Display */}
+                                    {webinar.resources && webinar.resources.length > 0 && (
+                                        <div className="mt-4">
+                                            <h4 className="text-md font-semibold text-slate-700 mb-2">Ressources</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {webinar.resources.map((resource, index) => (
+                                                    <div key={index} className="border p-3 rounded-md">
+                                                        <p className="font-bold">{resource.title}</p>
+                                                        {resource.type === 'Diaporama' ? (
+                                                            <EmbeddableViewer source={resource.source} />
+                                                        ) : (
+                                                            <a href={resource.source} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                                                Voir la ressource
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     )}
                                 </li>
                             ))}
@@ -489,6 +545,15 @@ const WebinarManagement: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {isResourceModalOpen && currentWebinarForResources && (
+                <ManageWebinarResourcesModal
+                    webinarId={currentWebinarForResources._id.toString()}
+                    resources={currentWebinarForResources.resources || []}
+                    onClose={() => setIsResourceModalOpen(false)}
+                    onSave={handleSaveResources}
+                />
             )}
 
             {isMatcherOpen && currentAttendee && (

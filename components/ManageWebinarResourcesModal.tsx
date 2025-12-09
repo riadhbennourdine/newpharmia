@@ -9,10 +9,10 @@ interface ManageWebinarResourcesModalProps {
 }
 
 const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = ({ webinarId, resources, onClose, onSave }) => {
-    const [localResources, setLocalResources] = useState<WebinarResource[]>(resources);
+    const [localResources, setLocalResources] = useState<WebinarResource[]>(resources || []);
 
     const handleAddResource = () => {
-        setLocalResources([...localResources, { type: 'Replay', url: '', title: '' }]);
+        setLocalResources([...localResources, { type: 'Replay', source: '', title: '' }]);
     };
 
     const handleResourceChange = (index: number, field: keyof WebinarResource, value: string) => {
@@ -39,8 +39,8 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
                 <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                     {localResources.map((resource, index) => (
                         <div key={index} className="border p-4 rounded-md">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="md:col-span-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700">Type</label>
                                     <select
                                         value={resource.type}
@@ -55,7 +55,7 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
                                         <option value="youtube">YouTube</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-1">
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700">Titre</label>
                                     <input
                                         type="text"
@@ -64,14 +64,17 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                     />
                                 </div>
-                                <div className="md:col-span-1">
-                                    <label className="block text-sm font-medium text-gray-700">URL</label>
-                                    <input
-                                        type="text"
-                                        value={resource.url}
-                                        onChange={(e) => handleResourceChange(index, 'url', e.target.value)}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">Source (URL ou code d'intégration)</label>
+                                    <textarea
+                                        value={resource.source}
+                                        onChange={(e) => handleResourceChange(index, 'source', e.target.value)}
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                        rows={4}
                                     />
+                                    <p className="mt-1 text-xs text-slate-500">
+                                      Pour le type "Diaporama", collez une URL (PDF, Canva) ou un code d'intégration (iframe). Pour les autres, collez l'URL directe.
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex justify-end mt-4">
