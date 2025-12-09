@@ -8,6 +8,9 @@ import { BANK_DETAILS } from '../constants';
 
 const formatUrl = (url: string | undefined): string => {
     if (!url) return '#';
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return `https://${url}`;
+    }
     return url;
 };
 
