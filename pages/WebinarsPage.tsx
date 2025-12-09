@@ -61,6 +61,11 @@ const WebinarCard: React.FC<{
     const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
 
     const renderButtons = () => {
+        if (webinar.calculatedStatus === WebinarStatus.REGISTRATION_CLOSED) {
+            return (
+                <p className="text-sm text-slate-500 italic">Inscriptions fermées</p>
+            );
+        }
         if (webinar.calculatedStatus === WebinarStatus.PAST) {
             return (
                 <p className="text-sm text-slate-500 italic">Webinaire passé</p>

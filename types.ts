@@ -231,6 +231,7 @@ export enum WebinarStatus {
     LIVE = 'LIVE',
     UPCOMING = 'UPCOMING',
     PAST = 'PAST',
+    REGISTRATION_CLOSED = 'REGISTRATION_CLOSED',
 }
 
 export enum WebinarGroup {

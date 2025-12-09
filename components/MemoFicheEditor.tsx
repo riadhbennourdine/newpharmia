@@ -732,7 +732,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         </FormSection>
 
         {/* New FormSection for "Le médicament" specific media */} 
-        <FormSection title="Médias">
+        <FormSection title="Médias et Présentations">
             <div>
                 <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
                 <Input type="text" name="youtubeExplainerUrl" id="youtubeExplainerUrl" value={caseStudy.youtubeExplainerUrl || ''} onChange={handleChange} />
@@ -747,8 +747,11 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 </div>
             </div>
             <div>
-                <Label htmlFor="pdfSlideshowUrl">URL Fichier PDF pour Diaporama</Label>
-                <Input type="text" name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} />
+                <Label htmlFor="pdfSlideshowUrl">Présentation (URL ou code d'intégration)</Label>
+                <Textarea name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} rows={3} />
+                <p className="mt-1 text-xs text-slate-500">
+                  Accepte les URL de PDF, les liens de partage Canva, ou le code d'intégration HTML (iframe).
+                </p>
             </div>
         </FormSection>
 

@@ -468,7 +468,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
     if (caseStudy.pdfSlideshowUrl) {
         items.push({
             id: 'diaporama' as TabName,
-            label: 'Diaporama',
+            label: 'Présentation',
             icon: <img src={getFtpViewUrl("diaporama.png")} className="h-8 w-8" alt="Diaporama" />
         });
     }
