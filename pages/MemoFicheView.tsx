@@ -567,7 +567,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
         case 'diaporama':
             return caseStudy.pdfSlideshowUrl ? (
                 <div className="bg-white p-4 rounded-lg shadow-md">
-                    <h4 className="font-bold text-slate-800 mb-4">Diaporama PDF</h4>
+                    <h4 className="font-bold text-slate-800 mb-4">Présentation</h4>
                     <EmbeddableViewer source={caseStudy.pdfSlideshowUrl} />
                 </div>
             ) : <div className="text-center text-slate-500">Aucun diaporama PDF disponible.</div>;

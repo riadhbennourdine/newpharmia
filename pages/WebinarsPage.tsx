@@ -332,7 +332,7 @@ const WebinarsPage: React.FC = () => {
 
         const live = tabData.filter((w: Webinar) => w.calculatedStatus === WebinarStatus.LIVE);
         const upcoming = tabData
-            .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING)
+            .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.UPCOMING || w.calculatedStatus === WebinarStatus.REGISTRATION_CLOSED)
             .sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
         const past = tabData
             .filter((w: Webinar) => w.calculatedStatus === WebinarStatus.PAST)
