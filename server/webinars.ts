@@ -9,6 +9,8 @@ import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
 
+const REGISTRATION_CUTOFF_HOUR = 16; // 4 PM
+
 function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
     const now = new Date();
     const webinarStart = new Date(webinarDate);
