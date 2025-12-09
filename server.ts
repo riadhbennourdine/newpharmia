@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { handleSubscription, handleUnsubscription } from './server/subscribe.js';
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
-import { authenticateToken, AuthenticatedRequest } from './server/authMiddleware.js';
+import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus, Rating } from './types.js';
