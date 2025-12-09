@@ -59,7 +59,7 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }
                 );
             case 'pdf':
             case 'Diaporama':
-                return <PdfSlideshow pdfUrl={resource.url} />;
+                return <PdfSlideshow source={resource.url} />;
             case 'Infographie':
                 return <img src={resource.url} alt={resource.title} className="w-full h-full object-contain" />;
             case 'link':

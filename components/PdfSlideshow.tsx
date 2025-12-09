@@ -11,16 +11,46 @@ import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf-worker.min.js`;
 
 interface PdfSlideshowProps {
-  pdfUrl: string;
+  source: string;
 }
 
-const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
+const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ source }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Case 1: Raw HTML Embed Code
+  if (source && (source.trim().startsWith('<iframe') || source.trim().startsWith('<div'))) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full"
+        dangerouslySetInnerHTML={{ __html: source }}
+      />
+    );
+  }
+
+  // From here, we assume 'source' is a URL
+  const absoluteUrl = getAbsoluteImageUrl(source);
+
+  // Case 2: Canva URL
+  if (absoluteUrl && absoluteUrl.includes('canva.com/design')) {
+    return (
+      <div ref={containerRef} className="relative w-full rounded-lg shadow-md overflow-hidden" style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
+        <iframe
+          loading="lazy"
+          className="absolute top-0 left-0 w-full h-full border-0"
+          src={absoluteUrl}
+          allowFullScreen
+          allow="fullscreen"
+          title="Canva Embed"
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Case 3: PDF URL (default)
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const absolutePdfUrl = getAbsoluteImageUrl(pdfUrl);
-
-  const pdfContainerRef = useRef<HTMLDivLement>(null);
-  const { width } = useResizeDetector({ targetRef: pdfContainerRef });
+  const { width } = useResizeDetector({ targetRef: containerRef });
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -31,7 +61,7 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
   const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages || 1));
 
   const toggleFullScreen = () => {
-    const elem = pdfContainerRef.current;
+    const elem = containerRef.current;
     if (elem) {
       if (!document.fullscreenElement) {
         elem.requestFullscreen().catch(err => {
@@ -43,35 +73,35 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
     }
   };
 
-  let fileToLoad = absolutePdfUrl;
-  if (absolutePdfUrl && absolutePdfUrl.startsWith('http')) {
-      fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absolutePdfUrl)}`;
+  let fileToLoad = absoluteUrl;
+  if (absoluteUrl && absoluteUrl.startsWith('http')) {
+      fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absoluteUrl)}`;
+  }
+
+  if (!source) {
+    return <p className="text-red-500 text-center p-4">Source invalide ou manquante.</p>;
   }
 
   return (
-    <div ref={pdfContainerRef} className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md">
-      {absolutePdfUrl ? (
-        <Document
-          file={fileToLoad}
-          onLoadSuccess={onDocumentLoadSuccess}
-          onLoadError={(error) => console.error('Error while loading document:', error)}
-          className="flex justify-center"
-        >
-          <Page 
-            pageNumber={pageNumber} 
-            width={width} 
-            renderTextLayer={false} 
-            renderAnnotationLayer={false} 
-            className="max-w-full h-auto"
-          />
-        </Document>
-      ) : (
-        <p className="text-red-500 text-center p-4">URL PDF invalide ou manquante.</p>
-      )}
+    <div ref={containerRef} className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md">
+      <Document
+        file={fileToLoad}
+        onLoadSuccess={onDocumentLoadSuccess}
+        onLoadError={(error) => console.error('Error while loading document:', error)}
+        className="flex justify-center"
+      >
+        <Page 
+          pageNumber={pageNumber} 
+          width={width} 
+          renderTextLayer={false} 
+          renderAnnotationLayer={false} 
+          className="max-w-full h-auto"
+        />
+      </Document>
 
       {numPages && (
         <>
-          {/* Previous Button */}
+          {/* PDF Controls */}
           <button
             onClick={goToPrevPage}
             disabled={pageNumber <= 1}
@@ -80,8 +110,6 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
           >
             <ChevronLeftIcon className="h-6 w-6" />
           </button>
-
-          {/* Next Button */}
           <button
             onClick={goToNextPage}
             disabled={pageNumber >= numPages}
@@ -90,11 +118,9 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ pdfUrl }) => {
           >
             <ChevronRightIcon className="h-6 w-6" />
           </button>
-
-          {/* Controls Overlay */}
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white text-sm rounded-full px-4 py-1 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
             <a
-              href={absolutePdfUrl}
+              href={absoluteUrl}
               download
               title="Télécharger le PDF"
               onClick={(e) => e.stopPropagation()}

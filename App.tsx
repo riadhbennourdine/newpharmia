@@ -48,6 +48,7 @@ const CartPage = lazy(() => import('./pages/CartPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const DataFixerPage = lazy(() => import('./pages/admin/DataFixer'));
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -91,6 +92,7 @@ const App: React.FC = () => (
                                 <Route path="/quiz-history/:userId" element={<QuizHistoryPage />} />
                                 <Route path="/complete-profile" element={<ProfileCompletionView />} />
                                 <Route path="/my-dashboard" element={<LegacyDashboard />} />
+                                <Route path="/profile" element={<ProfilePage />} />
 
                                 {/* Routes for Formateurs & Admins */}
                                 <Route element={<FormateurOrAdminRoute />}>

@@ -311,6 +311,7 @@ import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
 import ftpRouter from './server/ftp.js'; // Import the new FTP router
 import debugRouter from './server/debug.js'; // Import the debug router
+import profileRoutes from './server/profile.js';
 
 // ===============================================
 // API ROUTES
@@ -336,6 +337,7 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
 app.use('/api/ftp', ftpRouter); // Register the new FTP routes
 app.use('/api/debug', debugRouter); // Register the debug routes
+app.use('/api/profile', profileRoutes);
 
 // ===============================================
 // ADMIN FILE SEARCH API
@@ -1108,7 +1110,7 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
 
         // Create signature
         const signatureClear = GPG_NUM_SITE + GPG_PASSWORD + orderID + formattedAmount + currency;
-        const signature = crypto.createHash('sha1').update(signatureClear).digest('hex');
+        const signature = crypto.createHash('sha256').update(signatureClear).digest('hex');
 
         // Create MD5 password for the form
         const md5Password = crypto.createHash('md5').update(GPG_PASSWORD).digest('hex');
@@ -1162,7 +1164,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
 
         // Verify signature
         const signatureClear = TransStatus + PAYID + GPG_PASSWORD;
-        const expectedSignature = crypto.createHash('sha1').update(signatureClear).digest('hex');
+        const expectedSignature = crypto.createHash('sha256').update(signatureClear).digest('hex');
 
         if (Signature.toLowerCase() !== expectedSignature.toLowerCase()) {
             console.error(`GPG Webhook: Invalid signature. Received: ${Signature}, Expected: ${expectedSignature}`);
@@ -1188,7 +1190,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-app.post('/api/newsletter/send', async (req, res) => {
+app.post('/api/newsletter/send', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     const { subject, htmlContent, roles, cities, statuses, formalGroupIds, webinarId, googleMeetLink, sendToExpired } = req.body;
 
     if (!subject || !htmlContent) {
@@ -1324,7 +1326,7 @@ app.post('/api/newsletter/send', async (req, res) => {
 });
 
 
-app.post('/api/newsletter/send-test', async (req, res) => {
+app.post('/api/newsletter/send-test', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { subject, htmlContent, testEmails, webinarId, sendToExpired } = req.body;
 
@@ -1416,8 +1418,9 @@ app.post('/api/contact', upload.single('attachment'), async (req, res) => {
 });
 
 // SURVEY ROUTES
-app.get('/api/survey/rating', async (req, res) => {
-    const { score, userId } = req.query;
+app.get('/api/survey/rating', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    const { score } = req.query;
+    const userId = req.user?._id; // Get userId from authenticated user
 
     if (!score || !userId) {
         return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on error
@@ -1428,10 +1431,6 @@ app.get('/api/survey/rating', async (req, res) => {
         return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on invalid score
     }
 
-    if (!ObjectId.isValid(userId as string)) {
-        return res.status(400).redirect(`${process.env.CLIENT_URL}#/`); // Redirect to home on invalid userId
-    }
-
     try {
         const client = await clientPromise;
         const db = client.db('pharmia');
@@ -1439,7 +1438,7 @@ app.get('/api/survey/rating', async (req, res) => {
         
         const newRating: Rating = {
             score: scoreNum,
-            userId: new ObjectId(userId as string),
+            userId: new ObjectId(userId as string), // userId is already ObjectId or string
             createdAt: new Date(),
         };
 
