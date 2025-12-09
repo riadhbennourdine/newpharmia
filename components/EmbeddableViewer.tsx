@@ -33,12 +33,27 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
 
   // Case 2: Canva URL
   if (absoluteUrl && absoluteUrl.includes('canva.com/design')) {
+    let embedUrl = absoluteUrl;
+    // Ensure the URL is in the correct embeddable format
+    const urlParts = absoluteUrl.split('?');
+    const baseUrl = urlParts[0];
+
+    // Reconstruct the URL to end with /view?embed
+    if (baseUrl.includes('/view')) {
+      embedUrl = baseUrl + '?embed';
+    } else {
+      // If it's a canva URL but not a "view" link, it might be an edit link.
+      // We'll try to embed it but it may not work as expected.
+      // A more robust solution might require the user to provide the correct share link.
+      embedUrl = baseUrl.replace('/edit', '/view') + '?embed';
+    }
+    
     return (
       <div ref={containerRef} className="relative w-full rounded-lg shadow-md overflow-hidden" style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
         <iframe
           loading="lazy"
           className="absolute top-0 left-0 w-full h-full border-0"
-          src={absoluteUrl}
+          src={embedUrl}
           allowFullScreen
           allow="fullscreen"
           title="Canva Embed"
