@@ -114,8 +114,12 @@ app.post('/api/auth/login', async (req, res) => {
             ]
         });
 
+        console.log('Login attempt with identifier:', identifier);
+        console.log('User found in DB:', user);
+
         if (user && user.passwordHash) {
             const isMatch = await bcrypt.compare(password, user.passwordHash);
+            console.log('Password match result:', isMatch);
 
             if (isMatch) {
                 // Check if subscription is still active
