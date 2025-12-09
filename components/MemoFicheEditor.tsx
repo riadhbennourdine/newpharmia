@@ -730,8 +730,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             )}
           </div>
         </FormSection>
-
-        {/* New FormSection for "Le médicament" specific media */} 
+        
         <FormSection title="Médias et Présentations">
             <div>
                 <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
@@ -747,10 +746,10 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                 </div>
             </div>
             <div>
-                <Label htmlFor="pdfSlideshowUrl">Présentation (URL ou code d'intégration)</Label>
+                <Label htmlFor="pdfSlideshowUrl">Présentation (URL ou code d\'intégration)</Label>
                 <Textarea name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} rows={3} />
                 <p className="mt-1 text-xs text-slate-500">
-                  Accepte les URL de PDF, les liens de partage Canva, ou le code d'intégration HTML (iframe).
+                  Accepte les URL de PDF, les liens de partage Canva, ou le code d\'intégration HTML (iframe).
                 </p>
             </div>
         </FormSection>
@@ -999,7 +998,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </div>
 
-        {/* AI Generation Modal */} 
+        {/* AI Generation Modal */}
         {isGenModalOpen && (
             <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 animate-fade-in">
                 <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
