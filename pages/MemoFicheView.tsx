@@ -11,7 +11,7 @@ import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinn
 import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
-import PdfSlideshow from '../components/PdfSlideshow';
+import EmbeddableViewer from '../components/EmbeddableViewer';
 import { getFtpViewUrl } from '../utils/ftp';
 
 const AccordionSection: React.FC<{
@@ -568,7 +568,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
             return caseStudy.pdfSlideshowUrl ? (
                 <div className="bg-white p-4 rounded-lg shadow-md">
                     <h4 className="font-bold text-slate-800 mb-4">Diaporama PDF</h4>
-                    <PdfSlideshow source={caseStudy.pdfSlideshowUrl} />
+                    <EmbeddableViewer source={caseStudy.pdfSlideshowUrl} />
                 </div>
             ) : <div className="text-center text-slate-500">Aucun diaporama PDF disponible.</div>;
     }

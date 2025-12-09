@@ -10,11 +10,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
 // Configure pdfjs worker source
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf-worker.min.js`;
 
-interface PdfSlideshowProps {
+interface EmbeddableViewerProps {
   source: string;
 }
 
-const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ source }) => {
+const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Case 1: Raw HTML Embed Code
@@ -145,4 +145,4 @@ const PdfSlideshow: React.FC<PdfSlideshowProps> = ({ source }) => {
   );
 };
 
-export default PdfSlideshow;
+export default EmbeddableViewer;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../types';
+import { UserIcon, KeyIcon, UserGroupIcon, PencilIcon, CheckCircleIcon } from '../components/Icons';
 
 const ProfilePage: React.FC = () => {
     const { user, token, setUser } = useAuth();
@@ -33,7 +34,7 @@ const ProfilePage: React.FC = () => {
     }, [user, token]);
 
     if (!user) {
-        return <div>Chargement du profil...</div>;
+        return <div className="flex justify-center items-center h-screen">Chargement du profil...</div>;
     }
     
     const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -50,7 +51,6 @@ const ProfilePage: React.FC = () => {
 
             if (response.ok) {
                 alert('Profil mis à jour avec succès');
-                // Optimistically update user in context
                 setUser({ ...user, city, phoneNumber });
                 setIsEditing(false);
             } else {
@@ -91,121 +91,138 @@ const ProfilePage: React.FC = () => {
 
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Mon Profil</h1>
+        <div className="bg-slate-50 min-h-screen">
+            <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                <h1 className="text-3xl font-bold text-slate-800 mb-8 font-poppins">Mon Profil</h1>
 
-            {/* User Information Section */}
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Informations personnelles</h2>
-                    <button 
-                        onClick={() => setIsEditing(!isEditing)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                        {isEditing ? 'Annuler' : 'Modifier'}
-                    </button>
-                </div>
-                {!isEditing ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-gray-700">Prénom</label>
-                            <p className="text-lg">{user.firstName}</p>
+                {/* User Information Section */}
+                <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center">
+                            <UserIcon className="h-8 w-8 text-teal-600 mr-3"/>
+                            <h2 className="text-2xl font-semibold text-slate-700 font-poppins">Informations personnelles</h2>
                         </div>
-                        <div>
-                            <label className="block text-gray-700">Nom</label>
-                            <p className="text-lg">{user.lastName}</p>
-                        </div>
-                        <div>
-                            <label className="block text-gray-700">Email</label>
-                            <p className="text-lg">{user.email}</p>
-                        </div>
-                        <div>
-                            <label className="block text-gray-700">Ville</label>
-                            <p className="text-lg">{user.city || 'Non spécifiée'}</p>
-                        </div>
-                        <div>
-                            <label className="block text-gray-700">Numéro de téléphone</label>
-                            <p className="text-lg">{user.phoneNumber || 'Non spécifié'}</p>
-                        </div>
-                    </div>
-                ) : (
-                    <form onSubmit={handleProfileUpdate}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700">Ville</label>
-                                <input 
-                                    type="text"
-                                    value={city}
-                                    onChange={(e) => setCity(e.target.value)}
-                                    className="w-full p-2 border rounded"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700">Numéro de téléphone</label>
-                                <input 
-                                    type="text"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className="w-full p-2 border rounded"
-                                />
-                            </div>
-                        </div>
-                        <button type="submit" className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                            Enregistrer les modifications
+                        <button 
+                            onClick={() => setIsEditing(!isEditing)}
+                            className="flex items-center text-sm font-medium text-teal-600 hover:text-teal-700 transition"
+                        >
+                            {isEditing ? 'Annuler' : <> <PencilIcon className="h-4 w-4 mr-1"/> Modifier</> }
                         </button>
-                    </form>
-                )}
-            </div>
-
-            {/* Password Change Section */}
-            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h2 className="text-xl font-semibold mb-4">Changer le mot de passe</h2>
-                <form onSubmit={handlePasswordUpdate}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-gray-700">Mot de passe actuel</label>
-                            <input 
-                                type="password"
-                                value={currentPassword}
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-gray-700">Nouveau mot de passe</label>
-                            <input 
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                        </div>
                     </div>
-                    <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Changer le mot de passe
-                    </button>
-                </form>
-            </div>
-
-            {/* Team Members Section */}
-            {user.role === 'PHARMACIEN' && (
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">Mon Équipe</h2>
-                    {team.length > 0 ? (
-                        <ul>
-                            {team.map(member => (
-                                <li key={member._id as string} className="border-b py-2">
-                                    {member.firstName} {member.lastName} ({member.email})
-                                </li>
-                            ))}
-                        </ul>
+                    {!isEditing ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-slate-600">
+                            <div className="border-b border-slate-200 py-2">
+                                <label className="block text-sm font-medium text-slate-500">Prénom</label>
+                                <p className="text-lg font-roboto">{user.firstName}</p>
+                            </div>
+                            <div className="border-b border-slate-200 py-2">
+                                <label className="block text-sm font-medium text-slate-500">Nom</label>
+                                <p className="text-lg font-roboto">{user.lastName}</p>
+                            </div>
+                            <div className="border-b border-slate-200 py-2">
+                                <label className="block text-sm font-medium text-slate-500">Email</label>
+                                <p className="text-lg font-roboto">{user.email}</p>
+                            </div>
+                            <div className="border-b border-slate-200 py-2">
+                                <label className="block text-sm font-medium text-slate-500">Ville</label>
+                                <p className="text-lg font-roboto">{user.city || 'Non spécifiée'}</p>
+                            </div>
+                            <div className="border-b border-slate-200 py-2">
+                                <label className="block text-sm font-medium text-slate-500">Numéro de téléphone</label>
+                                <p className="text-lg font-roboto">{user.phoneNumber || 'Non spécifié'}</p>
+                            </div>
+                        </div>
                     ) : (
-                        <p>Vous n'avez pas encore de membres dans votre équipe.</p>
+                        <form onSubmit={handleProfileUpdate}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Ville</label>
+                                    <input 
+                                        type="text"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Numéro de téléphone</label>
+                                    <input 
+                                        type="text"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                    />
+                                </div>
+                            </div>
+                            <button type="submit" className="mt-6 flex items-center bg-teal-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-teal-700 transition">
+                                <CheckCircleIcon className="h-5 w-5 mr-2"/> Enregistrer
+                            </button>
+                        </form>
                     )}
                 </div>
-            )}
+
+                {/* Password Change Section */}
+                <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+                    <div className="flex items-center mb-6">
+                        <KeyIcon className="h-8 w-8 text-teal-600 mr-3"/>
+                        <h2 className="text-2xl font-semibold text-slate-700 font-poppins">Changer le mot de passe</h2>
+                    </div>
+                    <form onSubmit={handlePasswordUpdate}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Mot de passe actuel</label>
+                                <input 
+                                    type="password"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Nouveau mot de passe</label>
+                                <input 
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <button type="submit" className="mt-6 bg-teal-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-teal-700 transition">
+                            Mettre à jour le mot de passe
+                        </button>
+                    </form>
+                </div>
+
+                {/* Team Members Section */}
+                {user.role === 'PHARMACIEN' && (
+                    <div className="bg-white p-6 rounded-xl shadow-lg">
+                        <div className="flex items-center mb-6">
+                            <UserGroupIcon className="h-8 w-8 text-teal-600 mr-3"/>
+                            <h2 className="text-2xl font-semibold text-slate-700 font-poppins">Mon Équipe</h2>
+                        </div>
+                        {team.length > 0 ? (
+                            <ul className="space-y-3">
+                                {team.map(member => (
+                                    <li key={member._id as string} className="border-b border-slate-200 pb-3 flex items-center">
+                                        <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mr-4">
+                                            <UserIcon className="h-6 w-6 text-teal-600"/>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-slate-800 font-roboto">{member.firstName} {member.lastName}</p>
+                                            <p className="text-sm text-slate-500 font-roboto">{member.email}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-slate-500 font-roboto">Vous n'avez pas encore de membres dans votre équipe.</p>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

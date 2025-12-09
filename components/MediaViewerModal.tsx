@@ -1,7 +1,7 @@
 import React from 'react';
 import { WebinarResource } from '../types';
 import { XCircleIcon } from './Icons';
-import PdfSlideshow from './PdfSlideshow';
+import EmbeddableViewer from './EmbeddableViewer';
 
 interface MediaViewerModalProps {
     resource: WebinarResource;
@@ -59,7 +59,7 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }
                 );
             case 'pdf':
             case 'Diaporama':
-                return <PdfSlideshow source={resource.url} />;
+                return <EmbeddableViewer source={resource.url} />;
             case 'Infographie':
                 return <img src={resource.url} alt={resource.title} className="w-full h-full object-contain" />;
             case 'link':
