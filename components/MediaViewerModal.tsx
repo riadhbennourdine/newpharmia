@@ -10,64 +10,15 @@ interface MediaViewerModalProps {
 
 const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }) => {
 
-    const getYouTubeVideoId = (url: string): string | null => {
-        if (!url) return null;
-        // Standard watch URL: https://www.youtube.com/watch?v=VIDEO_ID
-        let videoId = url.split('v=')[1];
-        if (videoId) {
-            const ampersandPosition = videoId.indexOf('&');
-            if (ampersandPosition !== -1) {
-                videoId = videoId.substring(0, ampersandPosition);
-            }
-            return videoId;
-        }
-
-        // Shortened URL: https://youtu.be/VIDEO_ID
-        if (url.includes('youtu.be')) {
-            const parts = url.split('/');
-            return parts[parts.length - 1];
-        }
-
-        // Embed URL: https://www.youtube.com/embed/VIDEO_ID
-        if (url.includes('/embed/')) {
-            const parts = url.split('/');
-            return parts[parts.length - 1];
-        }
-
-        return null;
-    };
-
-
     const renderContent = () => {
-        switch (resource.type) {
-            case 'youtube':
-                const videoId = getYouTubeVideoId(resource.url);
-                if (!videoId) {
-                    return <p>Invalid YouTube URL</p>;
-                }
-                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                return (
-                    <iframe
-                        width="100%"
-                        height="100%"
-                        src={embedUrl}
-                        title={resource.title || 'YouTube video player'}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
-                );
-            case 'pdf':
-            case 'Diaporama':
-                return <EmbeddableViewer source={resource.url} />;
-            case 'Infographie':
-                return <img src={resource.url} alt={resource.title} className="w-full h-full object-contain" />;
-            case 'link':
-            case 'Replay':
-                return <iframe src={resource.url} title={resource.title} className="w-full h-full" />;
-            default:
-                return <p>Unsupported media type</p>;
+        // All new resource types should be handled by EmbeddableViewer
+        // The EmbeddableViewer itself handles different types (YouTube, Canva, PDF, HTML embed)
+        if (resource.type === 'Replay' || resource.type === 'Vidéo explainer' || resource.type === 'Infographie' || resource.type === 'Diaporama') {
+            return <EmbeddableViewer source={resource.source} />;
         }
+        
+        // Fallback for any unknown types, though with strict typing this should be rare
+        return <p className="text-red-500 text-center p-4">Type de média non supporté ou source invalide.</p>;
     };
 
     return (
