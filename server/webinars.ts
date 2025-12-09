@@ -9,6 +9,8 @@ import type { AuthenticatedRequest } from './authMiddleware.js';
 
 const router = express.Router();
 
+const REGISTRATION_CUTOFF_HOUR = 16; // 4 PM
+
 function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
     const now = new Date();
     const webinarStart = new Date(webinarDate);
@@ -18,11 +20,19 @@ function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
     const webinarDay = new Date(webinarStart.getFullYear(), webinarStart.getMonth(), webinarStart.getDate());
 
     if (webinarDay.getTime() === today.getTime()) {
-        // If it's today, check the time
-        if (now >= webinarStart) {
-            return WebinarStatus.LIVE;
-        } else {
+        const registrationCutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), REGISTRATION_CUTOFF_HOUR, 0, 0);
+
+        if (now < registrationCutoffTime) {
+            // If it's today and before the cutoff time, registration is still open (considered UPCOMING for registration purposes)
             return WebinarStatus.UPCOMING;
+        } else {
+            // If it's today and after or at the cutoff time, registrations are closed.
+            // Then, check if the webinar has started or is live.
+            if (now >= webinarStart) {
+                return WebinarStatus.LIVE;
+            } else {
+                return WebinarStatus.PAST; // Should not happen if webinarStart is after 16:00 but handles edge cases.
+            }
         }
     } else if (webinarDay < today) {
         return WebinarStatus.PAST;
