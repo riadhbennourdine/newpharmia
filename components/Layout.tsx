@@ -97,6 +97,9 @@ const Header: React.FC = () => {
               </div>
             </div>
           ) : null}
+           <NavLink to="/profile" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+            Mon Profil
+          </NavLink>
           <button
             onClick={handleLogout}
             className={navLinkClass({ isActive: false })}
@@ -160,14 +163,17 @@ const Header: React.FC = () => {
               <NavLink to="/admin/crm" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>CRM</NavLink>
             </div>
           ) : null}
-          <div className="border-t border-gray-200 mt-2 pt-2">
-            <button
-              onClick={handleLogout}
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-            >
-              Déconnexion
-            </button>
-          </div>
+            <div className="border-t border-gray-200 mt-2 pt-2">
+            <NavLink to="/profile" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                Mon Profil
+              </NavLink>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+              >
+                Déconnexion
+              </button>
+            </div>
         </div>
       ) : (
         <div className="pt-2 pb-3 space-y-1">
