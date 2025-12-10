@@ -62,7 +62,38 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
     );
   }
 
-  // Case 3: PDF URL (default)
+  // Case 3: YouTube URL
+  if (absoluteUrl && (absoluteUrl.includes('youtube.com') || absoluteUrl.includes('youtu.be'))) {
+    const getYouTubeVideoId = (url: string) => {
+      let videoId = '';
+      const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(youtubeRegex);
+      if (match && match[1]) {
+        videoId = match[1];
+      }
+      return videoId;
+    };
+    const videoId = getYouTubeVideoId(absoluteUrl);
+
+    if (videoId) {
+      return (
+        <div ref={containerRef} className="relative w-full rounded-lg shadow-md overflow-hidden" style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
+          <iframe
+            loading="lazy"
+            className="absolute top-0 left-0 w-full h-full border-0"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="YouTube Video Player"
+          ></iframe>
+        </div>
+      );
+    } else {
+        return <p className="text-red-500 text-center p-4">URL YouTube invalide. Veuillez vérifier le lien.</p>;
+    }
+  }
+
+  // Case 4: PDF URL (default)
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const { width } = useResizeDetector({ targetRef: containerRef });
