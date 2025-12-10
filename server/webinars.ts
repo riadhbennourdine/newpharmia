@@ -756,8 +756,6 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
 
 // PUT to manage resources for a webinar (Admin only for past, Admin & Webinar Admin for others)
 router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest, res) => {
-    console.log(`[DEBUG] Reached PUT /api/webinars/${req.params.id}/resources handler.`);
-    console.log(`[DEBUG] Request Body:`, JSON.stringify(req.body, null, 2));
     try {
         const { id } = req.params;
         const { resources } = req.body; // Expect an array of WebinarResource objects
