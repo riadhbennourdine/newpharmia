@@ -9,7 +9,14 @@ interface ManageWebinarResourcesModalProps {
 }
 
 const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = ({ webinarId, resources, onClose, onSave }) => {
-    const [localResources, setLocalResources] = useState<WebinarResource[]>(resources || []);
+    // Handle migration from old data shape { url: ... } to new { source: ... }
+    const migratedResources = (resources || []).map((r: any) => ({
+        type: r.type,
+        title: r.title || '',
+        source: r.source || r.url || '',
+    }));
+
+    const [localResources, setLocalResources] = useState<WebinarResource[]>(migratedResources);
 
     const handleAddResource = () => {
         setLocalResources([...localResources, { type: 'Replay', source: '', title: '' }]);
