@@ -55,11 +55,9 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
                                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                                     >
                                         <option value="Replay">Replay</option>
-                                        <option value="Diaporama">Diaporama</option>
+                                        <option value="Vidéo explainer">Vidéo explainer</option>
                                         <option value="Infographie">Infographie</option>
-                                        <option value="pdf">PDF</option>
-                                        <option value="link">Lien</option>
-                                        <option value="youtube">YouTube</option>
+                                        <option value="Diaporama">Diaporama</option>
                                     </select>
                                 </div>
                                 <div>
