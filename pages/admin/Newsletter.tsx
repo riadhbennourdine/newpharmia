@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User } from '../../types';
 import Select from 'react-select';
+import { useAuth } from '../../context/AuthContext';
 import { GroupBase, OptionsOrGroups } from 'react-select/dist/declarations/src/types';
 
 // Définir les types pour les templates
@@ -291,6 +292,7 @@ interface Group {
 }
 
 const Newsletter: React.FC = () => {
+  const { token } = useAuth();
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -438,7 +440,7 @@ const Newsletter: React.FC = () => {
     try {
       const response = await fetch('/api/newsletter/send-test', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ 
           subject, 
           htmlContent: htmlContentToSend, 
@@ -489,7 +491,7 @@ const Newsletter: React.FC = () => {
     try {
       const response = await fetch('/api/newsletter/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ 
           subject, 
           htmlContent: htmlContentToSend, 
