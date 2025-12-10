@@ -796,6 +796,7 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
         }
 
         // Basic validation for each resource
+        /*
         for (const resource of resources) {
             if (!resource.type) {
                 return res.status(400).json({ message: 'Each resource must have a type.' });
@@ -807,6 +808,7 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
                 return res.status(400).json({ message: `Invalid resource type: ${resource.type}` });
             }
         }
+        */
 
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
