@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { User } from '../../types';
 import Select from 'react-select';
-import { useAuth } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 import { GroupBase, OptionsOrGroups } from 'react-select/dist/declarations/src/types';
 
 // Définir les types pour les templates
@@ -292,7 +292,8 @@ interface Group {
 }
 
 const Newsletter: React.FC = () => {
-  const { token } = useAuth();
+  const authContext = useContext(AuthContext);
+  const token = authContext?.token;
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
