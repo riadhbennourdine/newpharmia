@@ -441,46 +441,74 @@ const WebinarsPage: React.FC = () => {
                 )}
 
                 {activeTab === WebinarGroup.MASTER_CLASS && (
-                    <div className="mb-12">
-                        <div className="bg-gradient-to-r from-teal-600 to-cyan-700 rounded-xl p-8 text-white mb-8 shadow-lg">
-                            <h2 className="text-3xl font-bold mb-2">Master Class Officine 2026</h2>
-                            <p className="text-teal-100 text-lg">L'excellence pharmaceutique à votre portée. Choisissez votre formule.</p>
+                    <div className="mb-16">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl font-extrabold text-slate-900 sm:text-5xl">
+                                Master Class Officine 2026
+                            </h2>
+                            <p className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
+                                L'excellence pharmaceutique à votre portée. Choisissez la formule qui correspond à vos ambitions.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             {MASTER_CLASS_PACKS.map((pack) => {
-                                const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
-                                const unitPrice = priceTTC / pack.credits;
-                                
+                                const priceHT = pack.priceHT;
+                                const unitPriceHT = priceHT / pack.credits;
+                                const isPopular = pack.id === 'MC25'; 
+                                const isBestValue = pack.id === 'MC100';
+
                                 return (
-                                    <div key={pack.id} className="bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 flex flex-col hover:shadow-xl transition-shadow duration-300 relative">
+                                    <div 
+                                        key={pack.id} 
+                                        className={`relative flex flex-col p-6 bg-white rounded-2xl shadow-xl transition-transform duration-300 hover:-translate-y-2 border-2 ${
+                                            isPopular ? 'border-teal-500 ring-4 ring-teal-500 ring-opacity-20 z-10 scale-105' : 'border-transparent hover:border-slate-200'
+                                        }`}
+                                    >
                                         {pack.badge && (
-                                            <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 absolute top-0 right-0 rounded-bl-lg z-10">
-                                                {pack.badge}
+                                            <div className="absolute top-0 right-0 -mt-4 -mr-4">
+                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow-sm text-white ${
+                                                    isBestValue ? 'bg-red-500' : 'bg-teal-600'
+                                                }`}>
+                                                    {pack.badge}
+                                                </span>
                                             </div>
                                         )}
-                                        <div className="p-6 flex-1 flex flex-col">
-                                            <h3 className="text-lg font-bold text-slate-800 mb-2">{pack.name}</h3>
-                                            <div className="mb-4">
-                                                <span className="text-3xl font-extrabold text-teal-600">{priceTTC.toFixed(3)}</span>
-                                                <span className="text-slate-500 text-sm font-medium"> DT TTC</span>
-                                            </div>
-                                            <p className="text-slate-600 text-sm mb-6 flex-1">{pack.description}</p>
-                                            
-                                            <div className="border-t border-slate-100 pt-4 mb-6">
-                                                <div className="flex justify-between items-center text-sm">
-                                                    <span className="text-slate-500">Prix/séance:</span>
-                                                    <span className="font-semibold text-slate-700">{unitPrice.toFixed(3)} DT</span>
-                                                </div>
-                                            </div>
 
-                                            <button
-                                                onClick={() => handleBuyPack(pack.id)}
-                                                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-sm text-sm"
-                                            >
-                                                Choisir ce pack
-                                            </button>
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-semibold text-slate-900">{pack.name}</h3>
+                                            <p className="mt-2 text-slate-500 text-sm h-10">{pack.description}</p>
                                         </div>
+
+                                        <div className="mb-6">
+                                            <div className="flex items-baseline">
+                                                <span className="text-3xl font-bold text-slate-900">{priceHT.toFixed(3)}</span>
+                                                <span className="ml-1 text-xl font-medium text-slate-500">DT</span>
+                                                <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-1 mb-6">
+                                            <div className="flex items-center justify-between py-2 border-t border-slate-100">
+                                                <span className="text-sm font-medium text-slate-600">Coût par séance (HT)</span>
+                                                <span className="text-sm font-bold text-teal-600">{unitPriceHT.toFixed(3)} DT</span>
+                                            </div>
+                                            <div className="flex items-center justify-between py-2 border-t border-slate-100">
+                                                <span className="text-sm font-medium text-slate-600">Crédits</span>
+                                                <span className="text-sm font-bold text-slate-900">{pack.credits}</span>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() => handleBuyPack(pack.id)}
+                                            className={`w-full py-3 px-4 rounded-lg font-bold text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                                isPopular 
+                                                    ? 'bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-500' 
+                                                    : 'bg-slate-50 text-teal-700 hover:bg-slate-100 border border-slate-200 focus:ring-teal-500'
+                                            }`}
+                                        >
+                                            Choisir ce pack
+                                        </button>
                                     </div>
                                 );
                             })}
