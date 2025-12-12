@@ -795,16 +795,14 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
 
         // Basic validation for each resource
         for (const resource of resources) {
-            console.log(`[DEBUG] Validating resource:`, JSON.stringify(resource, null, 2));
             if (!resource.type) {
                 return res.status(400).json({ message: 'Each resource must have a type.' });
             }
             if (typeof resource.source !== 'string') {
                 return res.status(400).json({ message: `Resource source must be a string, but it is ${typeof resource.source}.` });
             }
-            const allowedTypes = ['Replay', 'Vidéo explainer', 'Infographie', 'Diaporama'];
+            const allowedTypes = ['Replay', 'Vidéo explainer', 'Infographie', 'Diaporama', 'pdf', 'link', 'youtube'];
             if (!allowedTypes.includes(resource.type)) {
-                console.log(`[DEBUG] Validation FAILED for type: ${resource.type}`);
                 return res.status(400).json({ message: `Invalid resource type: '${resource.type}'. Must be one of: ${allowedTypes.join(', ')}` });
             }
         }
