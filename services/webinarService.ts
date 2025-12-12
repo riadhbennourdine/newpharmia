@@ -62,11 +62,11 @@ export const fetchWebinarById = async (id: string, token?: string | null): Promi
 };
 
 // Registers the current user for a webinar
-export const registerForWebinar = async (webinarId: string, timeSlots: string[], token: string): Promise<{ message: string }> => {
+export const registerForWebinar = async (webinarId: string, timeSlots: string[], token: string, useCredit: boolean = false): Promise<{ message: string }> => {
     const response = await fetch(`${BASE_URL}/${webinarId}/register`, {
         method: 'POST',
         headers: createAuthHeaders(token),
-        body: JSON.stringify({ timeSlots }),
+        body: JSON.stringify({ timeSlots, useCredit }),
     });
     return handleResponse(response);
 };

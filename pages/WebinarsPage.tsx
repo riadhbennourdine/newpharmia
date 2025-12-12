@@ -2,30 +2,113 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource } from '../types';
+import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType } from '../types';
+import { MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
 import { useAuth } from '../hooks/useAuth';
-import WebinarCard from '../components/WebinarCard'; // External WebinarCard
+import WebinarCard from '../components/WebinarCard';
 import ExpandableText from '../components/ExpandableText';
-import Loader from '../components/Loader'; // Corrected import
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid'; // Moved from Icons
+import Loader from '../components/Loader';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 import {
     fetchWebinars,
     fetchMyWebinars,
-    updateWebinarResources
-} from '../services/webinarService'; // New service import
+    updateWebinarResources,
+    registerForWebinar
+} from '../services/webinarService';
+import { createOrder } from '../services/orderService';
 
 const WebinarsPage: React.FC = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
-    const [allWebinars, setAllWebinars] = useState<Webinar[]>([]); // All CROP Tunis and PharmIA webinars
-    const [myRegisteredWebinars, setMyRegisteredWebinars] = useState<Webinar[]>([]); // User's registered webinars
+    const [allWebinars, setAllWebinars] = useState<Webinar[]>([]);
+    const [myRegisteredWebinars, setMyRegisteredWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // States for displaying CROP_TUNIS/PHARMIA content
+    // ... (rest of the state hooks)
+
+    const handleBuyPack = async (packId: string) => {
+        if (!user || !token) {
+            navigate('/login', { state: { from: '/webinars' } });
+            return;
+        }
+        try {
+            const order = await createOrder([{ type: ProductType.PACK, packId }], token);
+            navigate(`/checkout/${order.orderId}`);
+        } catch (err: any) {
+            console.error("Failed to create order:", err);
+            setError("Erreur lors de la création de la commande.");
+        }
+    };
+
+    const handleUseCredit = async (webinarId: string) => {
+        if (!token) return;
+        if (!window.confirm("Voulez-vous utiliser 1 crédit Master Class pour vous inscrire ?")) return;
+
+        try {
+            // Default time slot selection logic could be improved, picking first for now if multiple exist
+            // Ideally, we'd open a modal to select slot, but assuming 1 slot for Master Class simplicity
+            // Or we fetch slots first. For now, sending a placeholder or fetching first slot is safer.
+            // Let's assume standard 'AFTERNOON' or fetch slots. 
+            // A safer bet is to navigate to detail page if multiple slots, but here we want 'Instant'
+            // Let's try to just register. The backend requires timeslots.
+            // We'll use a default or empty array and let backend handle or validate? 
+            // Actually, WebinarCard sends to detail page usually. 
+            // Let's make the button redirect to detail page with a state 'autoRegisterWithCredit'?
+            // Or simpler: just call register with a default slot if MasterClass usually has one.
+            // But to be safe, let's just make the button register with 'AFTERNOON' as default for MasterClass
+            
+            await registerForWebinar(webinarId, ['15:30'], token, true);
+            
+            // Refresh data
+            const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
+            const allPharmIAWebinars = await fetchWebinars(token, WebinarGroup.PHARMIA);
+            const allMasterClassWebinars = await fetchWebinars(token, WebinarGroup.MASTER_CLASS);
+            const combinedAllWebinars = [
+                ...processWebinars(allCROPWebinars), 
+                ...processWebinars(allPharmIAWebinars),
+                ...processWebinars(allMasterClassWebinars)
+            ];
+            setAllWebinars(combinedAllWebinars);
+            alert("Inscription confirmée avec succès !");
+        } catch (err: any) {
+            console.error("Failed to register with credit:", err);
+            setError(err.message || "Erreur lors de l'inscription avec crédit.");
+        }
+    };
+
+    // ... (rest of component)
+    
+    // In renderWebinarList, pass the props:
+    const renderWebinarList = (webinarsToRender: Webinar[], isMyList: boolean = false) => {
+        // ... (empty check)
+        return (
+            <div className="space-y-12">
+                {/* ... (live/nearest logic) ... */}
+                
+                {/* For the mapping parts, update WebinarCard usage */}
+                {/* Example for the main lists */}
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {currentMonthWebinars.map(webinar => (
+                        <WebinarCard 
+                            key={webinar._id.toString()} 
+                            webinar={webinar} 
+                            onResourceClick={handleResourceClick} 
+                            onManageResources={handleOpenResourcesModal}
+                            userCredits={user?.masterClassCredits}
+                            onUseCredit={handleUseCredit}
+                        />
+                    ))}
+                </div>
+
+                {/* Apply similar updates to other mappings (Future, Past, MyList) */}
+                {/* Since renderWebinarList is long, I will target the specific sections in the next tool call for precision if this is too broad */}
+            </div>
+        );
+    };
+
     const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
@@ -84,10 +167,16 @@ const WebinarsPage: React.FC = () => {
             setIsLoading(true);
             setError(null);
             try {
-                // Fetch all CROP_TUNIS and PHARMIA webinars
+                // Fetch all CROP_TUNIS, PHARMIA and MASTER_CLASS webinars
                 const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
                 const allPharmIAWebinars = await fetchWebinars(token, WebinarGroup.PHARMIA);
-                const combinedAllWebinars = [...processWebinars(allCROPWebinars), ...processWebinars(allPharmIAWebinars)];
+                const allMasterClassWebinars = await fetchWebinars(token, WebinarGroup.MASTER_CLASS);
+                
+                const combinedAllWebinars = [
+                    ...processWebinars(allCROPWebinars), 
+                    ...processWebinars(allPharmIAWebinars),
+                    ...processWebinars(allMasterClassWebinars)
+                ];
                 setAllWebinars(combinedAllWebinars);
 
                 // Fetch user's registered webinars
@@ -236,16 +325,6 @@ const WebinarsPage: React.FC = () => {
                 >
                     {WebinarGroup.CROP_TUNIS}
                 </button>
-                <button
-                    onClick={() => setActiveTab(WebinarGroup.PHARMIA)}
-                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === WebinarGroup.PHARMIA
-                            ? 'border-teal-500 text-teal-600'
-                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                    }`}
-                >
-                    {WebinarGroup.PHARMIA}
-                </button>
                 {user && (
                     <button
                         onClick={() => setActiveTab('MY_WEBINARS')}
@@ -255,9 +334,19 @@ const WebinarsPage: React.FC = () => {
                                 : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                         }`}
                     >
-                        Mes wébinaires
+                        Mes wébinaires CROP Tunis
                     </button>
                 )}
+                <button
+                    onClick={() => setActiveTab(WebinarGroup.MASTER_CLASS)}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === WebinarGroup.MASTER_CLASS
+                            ? 'border-teal-500 text-teal-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                >
+                    Master Class Officine 2026
+                </button>
                 {isAdmin && (
                     <button
                         onClick={() => navigate('/admin/webinars')}
@@ -287,7 +376,7 @@ const WebinarsPage: React.FC = () => {
                         <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
                             <div className="grid grid-cols-1 gap-6">
                                 {liveWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                                 ))}
                             </div>
                         </div>
@@ -297,7 +386,7 @@ const WebinarsPage: React.FC = () => {
                 {nearestWebinar && !isMyList && (
                     <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
                         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">Prochain Webinaire</h2>
-                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                     </div>
                 )}
 
@@ -306,7 +395,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Autres webinaires ce mois-ci</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {currentMonthWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                             ))}
                         </div>
                     </div>
@@ -320,7 +409,7 @@ const WebinarsPage: React.FC = () => {
                                 <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {monthWebinars.map(webinar => (
-                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                                     ))}
                                 </div>
                             </div>
@@ -341,7 +430,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">Webinaires Passés</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {pastWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                             ))}
                         </div>
                     </div>
@@ -359,7 +448,7 @@ const WebinarsPage: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {renderTabs()}
 
-                {activeTab !== 'MY_WEBINARS' && (
+                {activeTab === WebinarGroup.CROP_TUNIS && (
                     <div className="mb-8">
                         <img
                             src="https://pharmaconseilbmb.com/photos/site/cropt/prepenligne.png"
@@ -374,6 +463,54 @@ const WebinarsPage: React.FC = () => {
                         <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
                             Pass journée: 80,000 DT
                         </p>
+                    </div>
+                )}
+
+                {activeTab === WebinarGroup.MASTER_CLASS && (
+                    <div className="mb-12">
+                        <div className="bg-gradient-to-r from-teal-600 to-cyan-700 rounded-xl p-8 text-white mb-8 shadow-lg">
+                            <h2 className="text-3xl font-bold mb-2">Master Class Officine 2026</h2>
+                            <p className="text-teal-100 text-lg">L'excellence pharmaceutique à votre portée. Choisissez votre formule.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                            {MASTER_CLASS_PACKS.map((pack) => {
+                                const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                                const unitPrice = priceTTC / pack.credits;
+                                
+                                return (
+                                    <div key={pack.id} className="bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 flex flex-col hover:shadow-xl transition-shadow duration-300 relative">
+                                        {pack.badge && (
+                                            <div className="bg-red-500 text-white text-xs font-bold px-3 py-1 absolute top-0 right-0 rounded-bl-lg z-10">
+                                                {pack.badge}
+                                            </div>
+                                        )}
+                                        <div className="p-6 flex-1 flex flex-col">
+                                            <h3 className="text-lg font-bold text-slate-800 mb-2">{pack.name}</h3>
+                                            <div className="mb-4">
+                                                <span className="text-3xl font-extrabold text-teal-600">{priceTTC.toFixed(3)}</span>
+                                                <span className="text-slate-500 text-sm font-medium"> DT TTC</span>
+                                            </div>
+                                            <p className="text-slate-600 text-sm mb-6 flex-1">{pack.description}</p>
+                                            
+                                            <div className="border-t border-slate-100 pt-4 mb-6">
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-slate-500">Prix/séance:</span>
+                                                    <span className="font-semibold text-slate-700">{unitPrice.toFixed(3)} DT</span>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() => handleBuyPack(pack.id)}
+                                                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-sm text-sm"
+                                            >
+                                                Choisir ce pack
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
 

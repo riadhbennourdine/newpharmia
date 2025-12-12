@@ -237,6 +237,22 @@ export enum WebinarStatus {
 export enum WebinarGroup {
     CROP_TUNIS = 'CROP Tunis',
     PHARMIA = 'PharmIA',
+    MASTER_CLASS = 'MASTER CLASS OFFICINE 2026',
+}
+
+export enum ProductType {
+    WEBINAR = 'WEBINAR',
+    PACK = 'PACK',
+}
+
+export interface Pack {
+    id: string;
+    name: string;
+    description: string;
+    credits: number;
+    priceHT: number;
+    priceTTC?: number;
+    badge?: string;
 }
 
 export interface WebinarResource {
@@ -264,6 +280,7 @@ export interface Webinar {
   createdAt: Date;
   updatedAt: Date;
   group: WebinarGroup;
+  price?: number;
   registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
   calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
   resources?: WebinarResource[]; // New field for media resources
@@ -288,8 +305,11 @@ export interface Order {
   _id: ObjectId | string;
   userId: ObjectId | string;
   items: {
-    webinarId: ObjectId | string;
-    slots: WebinarTimeSlot[];
+    type?: ProductType; // Optional for backward compatibility (default: WEBINAR)
+    webinarId?: ObjectId | string; // Kept for backward compatibility
+    productId?: string; // Generic ID (webinarId or packId)
+    slots?: WebinarTimeSlot[];
+    packId?: string; // Specific if it's a pack
   }[];
   totalAmount: number;
   paymentProofUrl?: string;

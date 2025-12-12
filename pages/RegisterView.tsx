@@ -93,7 +93,6 @@ const RegisterView: React.FC = () => {
                             >
                                 <option value={UserRole.PHARMACIEN}>Pharmacien</option>
                                 <option value={UserRole.PREPARATEUR}>Préparateur</option>
-                                <option value={UserRole.ADMIN_WEBINAR}>Admin Webinar</option>
                             </select>
                         </div>
                         {/* Email Field */}

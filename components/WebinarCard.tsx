@@ -49,7 +49,9 @@ const WebinarCard: React.FC<{
     isMyWebinarCard?: boolean,
     onResourceClick: (resource: WebinarResource) => void;
     onManageResources: (webinar: Webinar) => void;
-}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick, onManageResources }) => {
+    userCredits?: number; // New prop
+    onUseCredit?: (webinarId: string) => void; // New prop
+}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick, onManageResources, userCredits = 0, onUseCredit }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { findItem } = useCart();
@@ -57,6 +59,7 @@ const WebinarCard: React.FC<{
 
     const isAdmin = user?.role === UserRole.ADMIN;
     const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
+    const isMasterClass = webinar.group === WebinarGroup.MASTER_CLASS;
 
     const renderButtons = () => {
         if (webinar.calculatedStatus === WebinarStatus.REGISTRATION_CLOSED) {
@@ -102,6 +105,20 @@ const WebinarCard: React.FC<{
                 </button>
             );
         }
+
+        // Logic for using credits (Master Class Only)
+        if (isMasterClass && userCredits > 0 && onUseCredit && !isInCart) {
+            return (
+                <button
+                    onClick={() => onUseCredit(webinar._id as string)}
+                    className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors flex items-center"
+                >
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    Utiliser 1 crédit
+                </button>
+            );
+        }
+
         if (isInCart) {
             return (
                 <button

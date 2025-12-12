@@ -411,7 +411,7 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
 router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
-        const { timeSlots } = req.body; // Expect an array of time slots
+        const { timeSlots, useCredit } = req.body; // Expect an array of time slots and optional credit flag
 
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });
@@ -433,6 +433,7 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         const client = await clientPromise;
         const db = client.db('pharmia');
         const webinarsCollection = db.collection<Webinar>('webinars');
+        const usersCollection = db.collection('users');
         
         const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) }, { readPreference: 'primary' });
         
@@ -445,11 +446,41 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
             return res.status(409).json({ message: 'Vous êtes déjà inscrit à ce webinaire.' });
         }
 
+        let status: 'PENDING' | 'CONFIRMED' = 'PENDING';
+        let usedCredit = false;
+
+        // Credit Usage Logic
+        if (useCredit) {
+            if (webinar.group !== WebinarGroup.MASTER_CLASS) {
+                return res.status(400).json({ message: 'Les crédits ne sont valables que pour les Master Classes.' });
+            }
+
+            // Fetch latest user data to check balance
+            const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (!user || !user.masterClassCredits || user.masterClassCredits < 1) {
+                return res.status(402).json({ message: 'Solde de crédits insuffisant.' });
+            }
+
+            // Deduct credit
+            const updateResult = await usersCollection.updateOne(
+                { _id: new ObjectId(userId), masterClassCredits: { $gte: 1 } },
+                { $inc: { masterClassCredits: -1 } }
+            );
+
+            if (updateResult.modifiedCount === 0) {
+                 return res.status(409).json({ message: 'Erreur lors du débit du crédit (concurrence).' });
+            }
+
+            status = 'CONFIRMED';
+            usedCredit = true;
+        }
+
         const newAttendee = {
             userId: new ObjectId(userId),
-            status: 'PENDING' as 'PENDING' | 'CONFIRMED',
+            status: status,
             registeredAt: new Date(),
-            timeSlots: timeSlots, // Add the array of selected time slots
+            timeSlots: timeSlots,
+            usedCredit: usedCredit
         };
 
         const result = await webinarsCollection.updateOne(
@@ -458,10 +489,18 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         );
 
         if (result.matchedCount === 0) {
-            return res.status(404).json({ message: 'Webinar not found.' });
+             // Rollback credit if update fails (edge case)
+             if (usedCredit) {
+                 await usersCollection.updateOne({ _id: new ObjectId(userId) }, { $inc: { masterClassCredits: 1 } });
+             }
+            return res.status(404).json({ message: 'Webinar not found during registration.' });
         }
 
-        res.json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
+        if (usedCredit) {
+            res.json({ message: 'Inscription confirmée avec succès (1 crédit utilisé).' });
+        } else {
+            res.json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
+        }
     } catch (error) {
         console.error('Error registering for webinar:', error);
         res.status(500).json({ message: 'Erreur interne du serveur lors de l\'inscription au webinaire.' });

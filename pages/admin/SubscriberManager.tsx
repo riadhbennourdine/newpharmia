@@ -1,29 +1,54 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { User, UserRole } from '../../types';
+import { useAuth } from '../../hooks/useAuth';
 
 const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdate: (user: User) => void; }> = ({ user, onClose, onUpdate }) => {
+    const { token } = useAuth();
     const [subscriptionEndDate, setSubscriptionEndDate] = useState(user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : '');
     const [planName, setPlanName] = useState(user.planName || '');
+    const [credits, setCredits] = useState<number>(user.masterClassCredits || 0);
 
     const handleSave = async () => {
         try {
-            const response = await fetch(`/api/users/${user._id}/subscription`, {
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
+
+            // Update Subscription
+            const subResponse = await fetch(`/api/users/${user._id}/subscription`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify({ subscriptionEndDate, planName }),
             });
 
-            if (!response.ok) {
+            if (!subResponse.ok) {
                 throw new Error('Failed to update subscription');
             }
+            
+            let updatedUser = await subResponse.json();
 
-            const updatedUser = await response.json();
+            // Update Credits if changed
+            if (credits !== (user.masterClassCredits || 0)) {
+                 const creditResponse = await fetch(`/api/users/${user._id}/credits`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({ credits }),
+                });
+                
+                if (!creditResponse.ok) {
+                    throw new Error('Failed to update credits');
+                }
+                // Manually update the user object locally since the subscription endpoint returns the user
+                // but we want the combined result. Or simply trust the updated state.
+                updatedUser = { ...updatedUser, masterClassCredits: credits };
+            }
+
             onUpdate(updatedUser);
             onClose();
         } catch (error) {
             console.error(error);
+            alert('Erreur lors de la mise à jour');
         }
     };
 
@@ -52,6 +77,18 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                         />
                     </div>
+                    <div className="mb-4 bg-teal-50 p-4 rounded-md border border-teal-200">
+                        <label htmlFor="credits" className="block text-sm font-bold text-teal-800">Crédits Master Class</label>
+                        <input
+                            type="number"
+                            id="credits"
+                            min="0"
+                            value={credits}
+                            onChange={(e) => setCredits(parseInt(e.target.value) || 0)}
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-teal-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                        />
+                        <p className="text-xs text-teal-600 mt-1">Modifiez ce solde pour ajouter ou retirer des crédits manuellement.</p>
+                    </div>
                 </div>
                 <div className="flex justify-end space-x-4 mt-8">
                     <button
@@ -73,6 +110,7 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
 };
 
 const SubscriberManager: React.FC = () => {
+  const { token } = useAuth();
   const [subscribers, setSubscribers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +121,8 @@ const SubscriberManager: React.FC = () => {
     const fetchSubscribers = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/users/subscribers');
+             const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+            const response = await fetch('/api/users/subscribers', { headers });
             if (!response.ok) {
                 throw new Error('Failed to fetch subscribers');
             }
@@ -96,7 +135,7 @@ const SubscriberManager: React.FC = () => {
         }
     };
     fetchSubscribers();
-  }, []);
+  }, [token]);
 
   const filteredSubscribers = useMemo(() => {
     return subscribers
@@ -137,7 +176,7 @@ const SubscriberManager: React.FC = () => {
             <tr>
                 <th className="py-2 px-4 border-b text-left">Email</th>
                 <th className="py-2 px-4 border-b text-left">Nom</th>
-                <th className="py-2 px-4 border-b text-left">Date d'inscription</th>
+                <th className="py-2 px-4 border-b text-left">Crédits MC</th>
                 <th className="py-2 px-4 border-b text-left">Valide jusqu'au</th>
                 <th className="py-2 px-4 border-b text-left">Actions</th>
             </tr>
@@ -148,7 +187,7 @@ const SubscriberManager: React.FC = () => {
                 <tr key={subscriber._id}>
                 <td className="py-2 px-4 border-b">{subscriber.email}</td>
                 <td className="py-2 px-4 border-b">{subscriber.firstName} {subscriber.lastName}</td>
-                <td className="py-2 px-4 border-b">{subscriber.createdAt ? new Date(subscriber.createdAt).toLocaleDateString() : 'N/A'}</td>
+                <td className="py-2 px-4 border-b font-bold text-teal-600">{subscriber.masterClassCredits || 0}</td>
                 <td className="py-2 px-4 border-b">{subscriber.subscriptionEndDate ? new Date(subscriber.subscriptionEndDate).toLocaleDateString() : 'N/A'}</td>
                 <td className="py-2 px-4 border-b">
                   <button onClick={() => setSelectedUser(subscriber)} className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">

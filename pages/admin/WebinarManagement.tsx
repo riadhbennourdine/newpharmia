@@ -534,7 +534,20 @@ const WebinarManagement: React.FC = () => {
                                         <select name="group" id="group" value={currentWebinar.group || ''} onChange={handleInputChange} className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md">
                                             <option value={WebinarGroup.CROP_TUNIS}>CROP Tunis</option>
                                             <option value={WebinarGroup.PHARMIA}>PharmIA</option>
+                                            <option value={WebinarGroup.MASTER_CLASS}>Master Class Officine 2026</option>
                                         </select>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="price" className="block text-sm font-medium text-slate-700">Prix (optionnel)</label>
+                                        <input 
+                                            type="number" 
+                                            name="price" 
+                                            id="price" 
+                                            value={currentWebinar.price !== undefined ? currentWebinar.price : ''} 
+                                            onChange={(e) => setCurrentWebinar({ ...currentWebinar, price: e.target.value ? parseFloat(e.target.value) : undefined })}
+                                            placeholder="Laissez vide pour utiliser le prix par défaut du groupe"
+                                            className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" 
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-4 pt-4">

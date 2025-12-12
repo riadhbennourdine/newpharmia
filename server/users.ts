@@ -494,4 +494,37 @@ router.get('/expired-trial', authenticateToken, checkRole([UserRole.ADMIN, UserR
     }
 });
 
+router.put('/:userId/credits', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { credits } = req.body;
+
+        if (typeof credits !== 'number' || credits < 0) {
+            return res.status(400).json({ message: 'Credits must be a non-negative number.' });
+        }
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { masterClassCredits: credits } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({ message: 'User credits updated successfully.', credits });
+
+    } catch (error) {
+        console.error('Error updating user credits:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour des crédits.' });
+    }
+});
+
 export default router;

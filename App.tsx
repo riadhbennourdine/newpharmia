@@ -49,6 +49,7 @@ const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const DataFixerPage = lazy(() => import('./pages/admin/DataFixer'));
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const OrderManager = lazy(() => import('./pages/admin/OrderManager'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -124,6 +125,7 @@ const App: React.FC = () => (
                                     <Route path="/admin/image-manager" element={<ImageManager />} />
                                     <Route path="/admin/webinar-admins" element={<WebinarAdminManager />} />
                                     <Route path="/admin/data-fixer" element={<DataFixerPage />} />
+                                    <Route path="/admin/orders" element={<OrderManager />} />
                                 </Route>
                             </Route>
                             

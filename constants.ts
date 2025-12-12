@@ -1,5 +1,54 @@
 
-export const WEBINAR_PRICE = 80.000; // Price in TND
+export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars
+export const MASTER_CLASS_PRICE = 48.481; // Price in TND for Master Class Unit (39.9 HT + 19% TVA + 1 DT)
+
+export const TAX_RATES = {
+    TVA: 0.19,
+    TIMBRE: 1.000
+};
+
+export const MASTER_CLASS_PACKS = [
+    {
+        id: 'MC_UNIT',
+        name: 'Ticket Unitaire',
+        description: 'Accès à 1 Master Class',
+        credits: 1,
+        priceHT: 39.900,
+        badge: 'Standard'
+    },
+    {
+        id: 'MC10',
+        name: 'Pack Découverte (10)',
+        description: 'Idéal pour découvrir le format. 10 Master Class.',
+        credits: 10,
+        priceHT: 350.000, 
+        badge: 'Populaire'
+    },
+    {
+        id: 'MC25',
+        name: 'Pack Engagé (25)',
+        description: 'Pour une formation régulière. 25 Master Class.',
+        credits: 25,
+        priceHT: 750.000, 
+        badge: 'Meilleure Valeur'
+    },
+    {
+        id: 'MC50',
+        name: 'Pack Expert (50)',
+        description: 'Devenez une référence. 50 Master Class.',
+        credits: 50,
+        priceHT: 1250.000, 
+        badge: '-37% de remise'
+    },
+    {
+        id: 'MC100',
+        name: 'Pack Institution (100)',
+        description: 'Formation continue complète. 100 Master Class.',
+        credits: 100,
+        priceHT: 2000.000, 
+        badge: 'Prix Choc (-50%)'
+    }
+];
 
 export const TOPIC_CATEGORIES = [
     {

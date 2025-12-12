@@ -150,6 +150,12 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ message: 'Veuillez remplir tous les champs obligatoires.' });
         }
 
+        // Security check: Only allow public roles registration
+        const allowedRoles = [UserRole.PHARMACIEN, UserRole.PREPARATEUR];
+        if (!allowedRoles.includes(role)) {
+            return res.status(403).json({ message: 'Inscription non autorisée pour ce rôle.' });
+        }
+
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
