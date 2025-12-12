@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, User, WebinarStatus, WebinarResource } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon, ShareIcon, MediaIcon } from '../../components/Icons';
@@ -93,6 +93,8 @@ const AttendeesList: React.FC<{
 
 const WebinarManagement: React.FC = () => {
     const { user, token } = useAuth();
+    const navigate = useNavigate();
+    const [filterGroup, setFilterGroup] = useState<string>('ALL');
     const [soonestWebinar, setSoonestWebinar] = useState<Webinar | null>(null);
     const [otherWebinars, setOtherWebinars] = useState<Webinar[]>([]);
     const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
@@ -128,7 +130,13 @@ const WebinarManagement: React.FC = () => {
                     if (!response.ok) throw new Error('Failed to fetch webinars');
                     const data: Webinar[] = await response.json();
         
-                    const allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    let allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    
+                    // Filter by group if selected
+                    if (filterGroup !== 'ALL') {
+                        allWebinars = allWebinars.filter(w => w.group === filterGroup);
+                    }
+
                     const now = new Date();
                     
                     const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
@@ -148,7 +156,7 @@ const WebinarManagement: React.FC = () => {
                 } finally {
                     setIsLoading(false);
                 }
-            }, [token]);
+            }, [token, filterGroup]);
         
     useEffect(() => {
         if (token) {
@@ -349,13 +357,33 @@ const WebinarManagement: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
+            {/* Navigation and Filters */}
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+                <div className="flex space-x-4 mb-4 md:mb-0">
+                    <button onClick={() => navigate('/webinars')} className="text-teal-600 hover:text-teal-800 font-medium">
+                        &larr; Retour aux Webinaires
+                    </button>
+                    <span className="text-slate-300">|</span>
+                    <select
+                        value={filterGroup}
+                        onChange={(e) => setFilterGroup(e.target.value)}
+                        className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                    >
+                        <option value="ALL">Tous les groupes</option>
+                        <option value={WebinarGroup.CROP_TUNIS}>CROP Tunis</option>
+                        <option value={WebinarGroup.MASTER_CLASS}>Master Class</option>
+                        <option value={WebinarGroup.PHARMIA}>PharmIA</option>
+                    </select>
+                </div>
                 {(user?.role === UserRole.ADMIN) && (
                     <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
                         + Créer un Webinaire
                     </button>
                 )}
+            </div>
+
+            <div className="flex justify-between items-center mb-2">
+                <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
             </div>
 
             {isLoading && <div className="flex justify-center items-center h-64"><Spinner /></div>}
