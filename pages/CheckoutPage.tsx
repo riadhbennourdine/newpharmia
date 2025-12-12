@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS } from '../constants';
+import * as Constants from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -194,10 +194,10 @@ const CheckoutPage: React.FC = () => {
                     </li>
                 ))}
                 {order.items.filter(i => i.type === ProductType.PACK || !!i.packId).map((item, idx) => {
-                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    const pack = Constants.MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     // Calculate TTC for display if needed, but order.totalAmount has the sum
                     const priceHT = pack ? pack.priceHT : 0;
-                    const priceTTC = (priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    const priceTTC = (priceHT * (1 + Constants.TAX_RATES.TVA)) + Constants.TAX_RATES.TIMBRE;
                     return (
                         <li key={`pack-${idx}`} className="flex justify-between">
                             <span>Pack: {pack ? pack.name : item.packId}</span>
@@ -214,7 +214,7 @@ const CheckoutPage: React.FC = () => {
     const hasPacks = order?.items.some(i => i.type === ProductType.PACK || !!i.packId || (i.productId && i.productId.startsWith('MC')));
     const hasMasterClassWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.MASTER_CLASS);
     const useSkillSeed = hasPacks || hasMasterClassWebinars;
-    const bankDetails = useSkillSeed ? SKILL_SEED_BANK_DETAILS : CROPT_BANK_DETAILS;
+    const bankDetails = useSkillSeed ? Constants.SKILL_SEED_BANK_DETAILS : Constants.CROPT_BANK_DETAILS;
 
     const isPdfRib = bankDetails.imageUrl.toLowerCase().includes('.pdf');
 
@@ -238,15 +238,15 @@ const CheckoutPage: React.FC = () => {
                                 // Calculate totals dynamically for display
                                 let totalHT = 0;
                                 let totalTVA = 0;
-                                const stampDuty = TAX_RATES.TIMBRE;
+                                const stampDuty = Constants.TAX_RATES.TIMBRE;
 
                                 // Packs (Base Price is HT)
                                 const packs = order.items.filter(i => i.type === ProductType.PACK);
                                 packs.forEach(item => {
-                                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                    const pack = Constants.MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                                     if (pack) {
                                         totalHT += pack.priceHT;
-                                        totalTVA += pack.priceHT * TAX_RATES.TVA;
+                                        totalTVA += pack.priceHT * Constants.TAX_RATES.TVA;
                                     }
                                 });
 
