@@ -610,8 +610,11 @@ app.get('/api/memofiches/:id', authenticateToken, async (req: AuthenticatedReque
                 }
             }
             
-            // Check for effective subscriber's active subscription
-            if (effectiveSubscriber && effectiveSubscriber.hasActiveSubscription && effectiveSubscriber.subscriptionEndDate && new Date(effectiveSubscriber.subscriptionEndDate) > new Date()) {
+            // Check for effective subscriber's active subscription OR a valid trial period
+            if (effectiveSubscriber && (
+                (effectiveSubscriber.hasActiveSubscription && effectiveSubscriber.subscriptionEndDate && new Date(effectiveSubscriber.subscriptionEndDate) > new Date()) ||
+                (effectiveSubscriber.trialExpiresAt && new Date(effectiveSubscriber.trialExpiresAt) > new Date())
+            )) {
                 return res.json({
                     ...fiche,
                     isLocked: false,
