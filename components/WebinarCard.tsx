@@ -186,12 +186,19 @@ const WebinarCard: React.FC<{
                     {webinar.resources && webinar.resources.length > 0 ? (
                         <ul className="space-y-2">
                             {webinar.resources.map((resource, index) => (
+                                resource.source && resource.source.trim() !== '' ? (
                                 <li key={index} className="flex items-center justify-between text-sm text-slate-600">
                                     <button onClick={() => onResourceClick(resource)} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
                                         <WebinarResourceIcon resource={resource} />
                                         <span className="ml-2">{resource.title || resource.type}</span>
                                     </button>
                                 </li>
+                                ) : (
+                                <li key={index} className="flex items-center justify-between text-sm text-slate-600 text-red-500 italic">
+                                    <WebinarResourceIcon resource={resource} />
+                                    <span className="ml-2">{resource.title || resource.type} (Source manquante)</span>
+                                </li>
+                                )
                             ))}
                         </ul>
                     ) : (
