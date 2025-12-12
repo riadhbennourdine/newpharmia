@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Order, Webinar, WebinarGroup } from '../types';
+import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { BANK_DETAILS } from '../constants';
+import { BANK_DETAILS, MASTER_CLASS_PACKS } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -42,28 +42,59 @@ const CheckoutPage: React.FC = () => {
                 const orderData: Order = await orderResponse.json();
                 setOrder(orderData);
 
-                // Fetch webinar details for all items in the order
-                const webinarIds = orderData.items.map(item => item.webinarId);
-                const webinarsResponse = await fetch('/api/webinars/by-ids', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ids: webinarIds }),
-                });
+                // Fetch webinar details for webinar items only
+                const webinarIds = orderData.items
+                    .filter(item => (!item.type || item.type === ProductType.WEBINAR) && item.webinarId)
+                    .map(item => item.webinarId);
 
-                if (!webinarsResponse.ok) {
-                    throw new Error('Failed to fetch webinar details.');
+                if (webinarIds.length > 0) {
+                    const webinarsResponse = await fetch('/api/webinars/by-ids', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ids: webinarIds }),
+                    });
+
+                    if (!webinarsResponse.ok) {
+                        throw new Error('Failed to fetch webinar details.');
+                    }
+
+                    const fetchedWebinars: Webinar[] = await webinarsResponse.json();
+                    setWebinarsInOrder(fetchedWebinars);
+                } else {
+                    setWebinarsInOrder([]);
                 }
 
-                const fetchedWebinars: Webinar[] = await webinarsResponse.json();
-                setWebinarsInOrder(fetchedWebinars);
-
-                // Determine if VAT should be applied (only if ALL webinars are CROPT)
-                const allCroptWebinars = fetchedWebinars.every(
-                    (webinar: Webinar) => webinar.group === WebinarGroup.CROP_TUNIS
-                );
-                setApplyVat(!allCroptWebinars);
+                // Determine if VAT should be applied (only if ALL items are CROP_TUNIS webinars)
+                // If there is ANY pack or NON-CROP webinar, VAT logic might differ. 
+                // Based on previous requests: 
+                // CROP = 80DT (TTC included usually, or fixed).
+                // MasterClass = HT + Taxes. 
+                // The backend `orders.ts` already calculated the Total Amount WITH taxes for Packs.
+                // But `orders.ts` for Webinars summed `price` or `WEBINAR_PRICE`.
+                
+                // Let's assume the `totalAmount` from the order is the reference.
+                // However, this display page recalculates tax for display purposes.
+                
+                // Logic: 
+                // If Order contains ANY Master Class Pack -> It's subject to tax breakdown display if we want to show it, 
+                // BUT the order.totalAmount in DB is already the final sum calculated by backend.
+                // The current frontend calculates `taxAmount` on top of `order.totalAmount`. 
+                // !! CRITICAL !!: Backend `orders.ts` calculates `totalAmount` differently for Packs vs Webinars.
+                // For Packs: totalAmount = (HT * 1.19) + 1. It IS the TTC.
+                // For Webinars: totalAmount = Sum(price).
+                
+                // If we display "Total HT" + "TVA" = "Total TTC", we need to reverse calc from the DB total if it's already TTC.
+                // OR we accept that `order.totalAmount` IS the final amount to pay.
+                
+                // Let's simplify: Display `order.totalAmount` as the "Net à payer".
+                // If we want to show details:
+                // Packs are TTC.
+                // CROP are TTC (80DT).
+                
+                // So, setApplyVat(false) to avoid ADDING taxes on top of what's already calculated.
+                setApplyVat(false); 
 
             } catch (err: any) {
                 setError(err.message);
@@ -152,10 +183,31 @@ const CheckoutPage: React.FC = () => {
         return <div className="text-center text-slate-700 py-10">Commande non trouvée.</div>;
     }
 
-    const VAT_RATE = applyVat ? 0.19 : 0;
-    const STAMP_DUTY = applyVat ? 1.000 : 0; // Conditional Timbre Fiscal
-    const taxAmount = order.totalAmount * VAT_RATE;
-    const totalAmountWithVATAndStamp = order.totalAmount + taxAmount + STAMP_DUTY;
+    const renderOrderItems = () => {
+        if (!order) return null;
+        return (
+            <ul className="mb-4 space-y-2 text-sm text-slate-600">
+                {webinarsInOrder.map(w => (
+                    <li key={w._id.toString()} className="flex justify-between">
+                        <span>Webinaire: {w.title}</span>
+                        <span>{w.price ? w.price.toFixed(3) : '80.000'} TND</span>
+                    </li>
+                ))}
+                {order.items.filter(i => i.type === ProductType.PACK).map((item, idx) => {
+                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    // Calculate TTC for display if needed, but order.totalAmount has the sum
+                    const priceHT = pack ? pack.priceHT : 0;
+                    const priceTTC = (priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    return (
+                        <li key={`pack-${idx}`} className="flex justify-between">
+                            <span>Pack: {pack ? pack.name : item.packId}</span>
+                            <span>{priceTTC.toFixed(3)} TND <span className="text-xs text-slate-400">(TTC)</span></span>
+                        </li>
+                    );
+                })}
+            </ul>
+        );
+    };
 
     return (
         <div className="bg-slate-100 min-h-screen py-12">
@@ -166,24 +218,13 @@ const CheckoutPage: React.FC = () => {
 
                     <div className="bg-teal-50 border border-teal-200 rounded-lg p-6 mb-6">
                         <h2 className="text-xl font-bold text-teal-800 mb-4">Récapitulatif de la commande</h2>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span className="text-slate-600">Montant HT:</span>
-                                <span className="font-semibold text-slate-800">{order.totalAmount.toFixed(3)} TND</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-slate-600">TVA (19%):</span>
-                                <span className="font-semibold text-slate-800">{taxAmount.toFixed(3)} TND</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-slate-600">Timbre fiscal:</span>
-                                <span className="font-semibold text-slate-800">{STAMP_DUTY.toFixed(3)} TND</span>
-                            </div>
-                            <hr className="border-t border-teal-200 my-2" />
-                            <div className="flex justify-between items-center">
-                                <span className="text-lg font-bold text-teal-800">Montant Total TTC:</span>
-                                <span className="text-3xl font-extrabold text-teal-600">{totalAmountWithVATAndStamp.toFixed(3)} TND</span>
-                            </div>
+                        
+                        {renderOrderItems()}
+
+                        <hr className="border-t border-teal-200 my-2" />
+                        <div className="flex justify-between items-center mt-4">
+                            <span className="text-lg font-bold text-teal-800">Montant Total à payer:</span>
+                            <span className="text-3xl font-extrabold text-teal-600">{order.totalAmount.toFixed(3)} TND</span>
                         </div>
                     </div>
 
