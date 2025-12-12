@@ -189,7 +189,6 @@ const WebinarCard: React.FC<{
                                 resource.source && resource.source.trim() !== '' ? (
                                 <li key={index} className="flex items-center justify-between text-sm text-slate-600">
                                     <button onClick={() => {
-                                        console.log("Resource button clicked for:", resource);
                                         onResourceClick(resource);
                                     }} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
                                         <WebinarResourceIcon resource={resource} />

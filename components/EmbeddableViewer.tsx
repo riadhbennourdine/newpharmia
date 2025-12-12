@@ -15,7 +15,6 @@ interface EmbeddableViewerProps {
 }
 
 const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
-  console.log("EmbeddableViewer received source:", source);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Case 1: Raw HTML Embed Code
@@ -142,17 +141,14 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
 
 
   if (!source) {
-    console.log("EmbeddableViewer: Source is invalid or missing.", source);
     return <p className="text-red-500 text-center p-4">Source invalide ou manquante.</p>;
   }
 
   // If fileToLoad is empty here (because it was a non-PDF URL that fell through), it means it's not handled as a PDF.
   if (!fileToLoad) {
-      console.log("EmbeddableViewer: fileToLoad is empty, returning format not supported.", absoluteUrl);
       return <p className="text-red-500 text-center p-4">Format de fichier non supporté pour l'affichage.</p>;
   }
 
-  console.log("EmbeddableViewer attempting to load file:", fileToLoad);
   return (
     <div ref={containerRef} className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md">
       <Document
