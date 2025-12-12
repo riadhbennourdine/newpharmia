@@ -436,6 +436,9 @@ const WebinarsPage: React.FC = () => {
                             <p className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
                                 L'excellence pharmaceutique à votre portée. Choisissez la formule qui correspond à vos ambitions.
                             </p>
+                            <p className="mt-2 text-md text-slate-500 max-w-2xl mx-auto italic">
+                                *Tarifs affichés en HT, le montant TTC sera détaillé au paiement.
+                            </p>
                         </div>
 
                         {/* Pricing Accordion Toggle */}
