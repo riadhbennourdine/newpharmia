@@ -338,6 +338,7 @@ app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
+console.log('Mounting Orders Router at /api/orders'); // DEBUG LOG
 app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);

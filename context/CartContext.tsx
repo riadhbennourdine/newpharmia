@@ -1,24 +1,28 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { WebinarTimeSlot, Webinar } from '../types';
+import { WebinarTimeSlot, Webinar, WebinarGroup, ProductType } from '../types';
 
 // Define the shape of a single cart item
 export interface CartItem {
-  webinarId: string;
-  slots: WebinarTimeSlot[];
-  webinarDate: Date;
-  webinarTitle: string;
+  type: ProductType; // 'WEBINAR' or 'PACK'
+  id: string; // webinarId or packId
+  webinarId?: string; // Kept for compatibility/clarity
+  packId?: string;
+  slots?: WebinarTimeSlot[];
+  title: string;
+  date?: Date; // Only for webinars
+  group: WebinarGroup; // Critical for mixed-cart check
 }
 
 // Define the shape of the context data
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (webinar: Webinar, selectedSlots: WebinarTimeSlot[]) => void;
-  removeFromCart: (webinarId: string) => void;
+  addToCart: (item: { webinar?: Webinar, packId?: string, packName?: string, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => void;
+  removeFromCart: (id: string) => void;
   updateItemSlots: (webinarId: string, newSlots: WebinarTimeSlot[]) => void;
   clearCart: () => void;
   getItemCount: () => number;
-  findItem: (webinarId: string) => CartItem | undefined;
+  findItem: (id: string) => CartItem | undefined;
 }
 
 // Create the context with a default value
@@ -34,7 +38,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     // Load cart from local storage on initial load
     try {
       const localData = localStorage.getItem('webinarCart');
-      return localData ? JSON.parse(localData) : [];
+      if (!localData) return [];
+      
+      const parsedData = JSON.parse(localData);
+      
+      // Auto-repair/Migrate legacy items
+      return parsedData.map((item: any) => {
+          if (!item.type) {
+              if (item.packId) return { ...item, type: ProductType.PACK, id: item.packId, group: WebinarGroup.MASTER_CLASS };
+              return { ...item, type: ProductType.WEBINAR, id: item.webinarId, group: WebinarGroup.CROP_TUNIS }; // Default fallback
+          }
+          return item;
+      });
     } catch (error) {
       console.error("Could not parse webinar cart from localStorage", error);
       return [];
@@ -46,28 +61,65 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem('webinarCart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (webinar: Webinar, selectedSlots: WebinarTimeSlot[]) => {
-    const now = new Date();
-    const webinarDateTime = new Date(webinar.date);
+  const addToCart = (input: { webinar?: Webinar, packId?: string, packName?: string, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => {
+    const { webinar, packId, packName, type, selectedSlots } = input;
+    
+    let newItem: CartItem;
+    let itemGroup: WebinarGroup;
 
-    if (webinarDateTime < now) {
-      console.warn(`Cannot add past webinar "${webinar.title}" to cart.`);
-      return;
+    if (type === ProductType.WEBINAR && webinar) {
+        const now = new Date();
+        const webinarDateTime = new Date(webinar.date);
+        if (webinarDateTime < now) {
+            console.warn(`Cannot add past webinar "${webinar.title}" to cart.`);
+            return;
+        }
+        itemGroup = webinar.group;
+        newItem = {
+            type: ProductType.WEBINAR,
+            id: webinar._id as string,
+            webinarId: webinar._id as string,
+            slots: selectedSlots || [],
+            title: webinar.title,
+            date: webinar.date,
+            group: webinar.group
+        };
+    } else if (type === ProductType.PACK && packId) {
+        itemGroup = WebinarGroup.MASTER_CLASS; // Packs are always Master Class for now
+        newItem = {
+            type: ProductType.PACK,
+            id: packId,
+            packId: packId,
+            title: packName || 'Pack Master Class',
+            group: itemGroup
+        };
+    } else {
+        console.error("Invalid addToCart input");
+        return;
+    }
+
+    // Security Check: Mixed Groups
+    if (cartItems.length > 0) {
+        const firstItemGroup = cartItems[0].group;
+        // Check for incompatibility
+        // If current cart is CROP and new item is MASTER_CLASS -> Error
+        // If current cart is MASTER_CLASS and new item is CROP -> Error
+        if (firstItemGroup !== itemGroup) {
+            alert("Impossible d'associer des formations CROP Tunis et des Master Classes dans le même panier pour des raisons de facturation.\n\nVeuillez finaliser votre commande en cours ou vider votre panier.");
+            return;
+        }
     }
 
     setCartItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(i => i.webinarId === webinar._id);
-      const newItem: CartItem = {
-        webinarId: webinar._id as string,
-        slots: selectedSlots,
-        webinarDate: webinar.date,
-        webinarTitle: webinar.title,
-      };
+      const existingItemIndex = prevItems.findIndex(i => i.id === newItem.id);
 
       if (existingItemIndex > -1) {
-        // Item already exists, update its slots
+        // Item already exists
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex] = newItem;
+        // Merge logic if needed, for now just replace/update slots if webinar
+        if (type === ProductType.WEBINAR) {
+             updatedItems[existingItemIndex] = { ...updatedItems[existingItemIndex], slots: newItem.slots };
+        }
         return updatedItems;
       } else {
         // Item does not exist, add it
@@ -76,14 +128,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     });
   };
 
-  const removeFromCart = (webinarId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.webinarId !== webinarId));
+  const removeFromCart = (id: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
   };
 
   const updateItemSlots = (webinarId: string, newSlots: WebinarTimeSlot[]) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.webinarId === webinarId ? { ...item, slots: newSlots } : item
+        item.id === webinarId ? { ...item, slots: newSlots } : item
       )
     );
   };
@@ -94,8 +146,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const getItemCount = () => cartItems.length;
 
-  const findItem = (webinarId: string) => {
-    return cartItems.find(item => item.webinarId === webinarId);
+  const findItem = (id: string) => {
+    return cartItems.find(item => item.id === id);
   };
 
   return (
@@ -103,13 +155,4 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
-};
-
-// Create a custom hook for easy access to the context
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
 };
