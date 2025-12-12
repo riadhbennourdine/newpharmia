@@ -109,15 +109,17 @@ const WebinarsPage: React.FC = () => {
         };
     }, [handleClickOutside]);
 
-    const calculateStatus = useCallback((date: string, duration: number): WebinarStatus => {
+    const calculateStatus = useCallback((date: string, duration: number = 90): WebinarStatus => {
         const now = new Date();
         const startDate = new Date(date);
-        const endDate = new Date(startDate.getTime() + duration * 60000);
+        // Default duration to 90 minutes if missing or 0
+        const effectiveDuration = duration || 90;
+        const endDate = new Date(startDate.getTime() + effectiveDuration * 60000);
 
-        if (now >= startDate && now <= endDate) {
-            return WebinarStatus.LIVE;
-        } else if (now > endDate) {
+        if (now > endDate) {
             return WebinarStatus.PAST;
+        } else if (now >= startDate && now <= endDate) {
+            return WebinarStatus.LIVE;
         } else {
             const registrationDeadline = new Date(startDate.getTime() - 60 * 60000);
             if (now > registrationDeadline) {
