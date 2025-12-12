@@ -356,12 +356,18 @@ const WebinarManagement: React.FC = () => {
         }
     };
     
-    const filteredVolumeFiles = useMemo(() => {
-        if (!searchTerm) return volumeFiles;
-        return volumeFiles.filter(file =>
-            file.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [searchTerm, volumeFiles]);
+    const isSuperAdmin = user?.role === UserRole.ADMIN;
+    const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
+
+    // Force filterGroup for WebinarAdmin
+    useEffect(() => {
+        if (isWebinarAdmin) {
+            setFilterGroup(WebinarGroup.CROP_TUNIS);
+            // DEBUG: Added comment to force rebuild.
+        }
+    }, [isWebinarAdmin]);
+
+    // ... rest of component
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -376,14 +382,15 @@ const WebinarManagement: React.FC = () => {
                         value={filterGroup}
                         onChange={(e) => setFilterGroup(e.target.value)}
                         className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                        disabled={isWebinarAdmin} // Disable if WebinarAdmin
                     >
                         <option value="ALL">Tous les groupes</option>
                         <option value={WebinarGroup.CROP_TUNIS}>CROP Tunis</option>
-                        <option value={WebinarGroup.MASTER_CLASS}>Master Class</option>
+                        {isSuperAdmin && <option value={WebinarGroup.MASTER_CLASS}>Master Class</option>}
                         <option value={WebinarGroup.PHARMIA}>PharmIA</option>
                     </select>
                 </div>
-                {(user?.role === UserRole.ADMIN) && (
+                {isSuperAdmin && ( // Only Super Admin can create webinars
                     <button onClick={() => handleOpenModal()} className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-teal-700">
                         + Créer un Webinaire
                     </button>
