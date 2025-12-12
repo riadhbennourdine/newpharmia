@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { BANK_DETAILS, MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -193,7 +193,7 @@ const CheckoutPage: React.FC = () => {
                         <span>{w.price ? w.price.toFixed(3) : '80.000'} TND</span>
                     </li>
                 ))}
-                {order.items.filter(i => i.type === ProductType.PACK).map((item, idx) => {
+                {order.items.filter(i => i.type === ProductType.PACK || !!i.packId).map((item, idx) => {
                     const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     // Calculate TTC for display if needed, but order.totalAmount has the sum
                     const priceHT = pack ? pack.priceHT : 0;
@@ -208,6 +208,15 @@ const CheckoutPage: React.FC = () => {
             </ul>
         );
     };
+
+    // Determine Bank Details based on Order Content
+    // Robust check: Check type, packId existence, or MC prefix
+    const hasPacks = order?.items.some(i => i.type === ProductType.PACK || !!i.packId || (i.productId && i.productId.startsWith('MC')));
+    const hasMasterClassWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.MASTER_CLASS);
+    const useSkillSeed = hasPacks || hasMasterClassWebinars;
+    const bankDetails = useSkillSeed ? SKILL_SEED_BANK_DETAILS : CROPT_BANK_DETAILS;
+
+    const isPdfRib = bankDetails.imageUrl.toLowerCase().includes('.pdf');
 
     return (
         <div className="bg-slate-100 min-h-screen py-12">
@@ -294,13 +303,26 @@ const CheckoutPage: React.FC = () => {
                         <p className="text-sm text-slate-600">
                             Veuillez effectuer un virement bancaire du montant total sur le compte suivant, en indiquant votre numéro de commande dans le libellé de la transaction.
                         </p>
-                        <div className="mt-4 p-4 bg-slate-50 rounded-md text-sm">
-                            <p><strong>Titulaire:</strong> {BANK_DETAILS.holder}</p>
-                            <p><strong>Banque:</strong> {BANK_DETAILS.bank} ({BANK_DETAILS.branch})</p>
-                            <p><strong>RIB:</strong> {BANK_DETAILS.rib}</p>
-                            <a href={BANK_DETAILS.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
-                                <img src={BANK_DETAILS.imageUrl} alt="RIB" className="rounded-md shadow-sm w-full max-w-xs" />
-                            </a>
+                        <div className="mt-4 p-4 bg-slate-50 rounded-md text-sm border border-slate-200">
+                            <p className="mb-1"><strong>Bénéficiaire:</strong> {bankDetails.holder}</p>
+                            <p className="mb-1"><strong>Banque:</strong> {bankDetails.bank} ({bankDetails.branch})</p>
+                            <p className="mb-3"><strong>RIB:</strong> <span className="font-mono text-base bg-slate-100 px-2 py-1 rounded">{bankDetails.rib}</span></p>
+                            
+                            {isPdfRib ? (
+                                <a 
+                                    href={bankDetails.imageUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="mt-2 inline-flex items-center text-teal-600 hover:text-teal-700 font-medium"
+                                >
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    Télécharger le RIB (PDF)
+                                </a>
+                            ) : (
+                                <a href={bankDetails.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+                                    <img src={bankDetails.imageUrl} alt="RIB" className="rounded-md shadow-sm w-full max-w-xs" />
+                                </a>
+                            )}
                         </div>
                     </div>
 
