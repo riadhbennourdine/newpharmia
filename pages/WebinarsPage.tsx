@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import WebinarCard from '../components/WebinarCard';
 import ExpandableText from '../components/ExpandableText';
+import Loader from '../components/Loader';
 import { Spinner, UploadIcon, ChevronDownIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
