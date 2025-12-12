@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import * as Constants from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -194,10 +194,10 @@ const CheckoutPage: React.FC = () => {
                     </li>
                 ))}
                 {order.items.filter(i => i.type === ProductType.PACK || !!i.packId).map((item, idx) => {
-                    const pack = Constants.MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     // Calculate TTC for display if needed, but order.totalAmount has the sum
                     const priceHT = pack ? pack.priceHT : 0;
-                    const priceTTC = (priceHT * (1 + Constants.TAX_RATES.TVA)) + Constants.TAX_RATES.TIMBRE;
+                    const priceTTC = (priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
                     return (
                         <li key={`pack-${idx}`} className="flex justify-between">
                             <span>Pack: {pack ? pack.name : item.packId}</span>
@@ -210,13 +210,16 @@ const CheckoutPage: React.FC = () => {
     };
 
     // Determine Bank Details based on Order Content
-    // Robust check: Check type, packId existence, or MC prefix
     const hasPacks = order?.items.some(i => i.type === ProductType.PACK || !!i.packId || (i.productId && i.productId.startsWith('MC')));
     const hasMasterClassWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.MASTER_CLASS);
     const useSkillSeed = hasPacks || hasMasterClassWebinars;
-    const bankDetails = useSkillSeed ? Constants.SKILL_SEED_BANK_DETAILS : Constants.CROPT_BANK_DETAILS;
+    
+    // Fallback object to prevent crash if import fails
+    const defaultBank = { holder: 'N/A', bank: 'N/A', branch: '', rib: 'N/A', imageUrl: '' };
+    
+    const bankDetails = (useSkillSeed ? SKILL_SEED_BANK_DETAILS : CROPT_BANK_DETAILS) || defaultBank;
 
-    const isPdfRib = bankDetails.imageUrl.toLowerCase().includes('.pdf');
+    const isPdfRib = bankDetails.imageUrl ? bankDetails.imageUrl.toLowerCase().includes('.pdf') : false;
 
     return (
         <div className="bg-slate-100 min-h-screen py-12">
@@ -238,15 +241,15 @@ const CheckoutPage: React.FC = () => {
                                 // Calculate totals dynamically for display
                                 let totalHT = 0;
                                 let totalTVA = 0;
-                                const stampDuty = Constants.TAX_RATES.TIMBRE;
+                                const stampDuty = TAX_RATES.TIMBRE;
 
                                 // Packs (Base Price is HT)
                                 const packs = order.items.filter(i => i.type === ProductType.PACK);
                                 packs.forEach(item => {
-                                    const pack = Constants.MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                                     if (pack) {
                                         totalHT += pack.priceHT;
-                                        totalTVA += pack.priceHT * Constants.TAX_RATES.TVA;
+                                        totalTVA += pack.priceHT * TAX_RATES.TVA;
                                     }
                                 });
 
