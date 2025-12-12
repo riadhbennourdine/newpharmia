@@ -25,11 +25,11 @@ const OrderManager: React.FC = () => {
         let currentFilteredOrders = orders;
         if (filterType === 'MASTER_CLASS') {
             currentFilteredOrders = orders.filter(order => 
-                order.items.some(item => item.type === ProductType.PACK)
+                (order.items || []).some(item => item.type === ProductType.PACK)
             );
         } else if (filterType === 'CROP_TUNIS') {
             currentFilteredOrders = orders.filter(order => 
-                order.items.some(item => item.type === ProductType.WEBINAR)
+                (order.items || []).some(item => item.type === ProductType.WEBINAR)
             );
         }
         setFilteredOrders(currentFilteredOrders);
@@ -107,19 +107,19 @@ const OrderManager: React.FC = () => {
                 </div>
             ) : (
                 <div className="grid gap-6">
-                    {orders.map(order => (
+                    {filteredOrders.map(order => (
                         <div key={order._id.toString()} className="bg-white rounded-lg shadow-md p-6 border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center">
                             <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-2">
                                     <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                                         {order.status}
                                     </span>
-                                    {order.items.some(item => item.type === ProductType.PACK) && (
+                                    {(order.items || []).some(item => item.type === ProductType.PACK) && (
                                         <span className="bg-teal-100 text-teal-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                                             MASTER CLASS
                                         </span>
                                     )}
-                                    {order.items.some(item => item.type === ProductType.WEBINAR) && (
+                                    {(order.items || []).some(item => item.type === ProductType.WEBINAR) && (
                                         <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                                             CROP TUNIS
                                         </span>
