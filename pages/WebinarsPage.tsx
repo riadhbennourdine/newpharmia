@@ -417,11 +417,14 @@ const WebinarsPage: React.FC = () => {
                             alt="Couverture Webinaires"
                             className="max-w-4xl w-full h-auto rounded-lg shadow-lg object-cover"
                         />
-                        <ExpandableText
-                            text={`<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.`}
-                            maxLength={250}
-                            youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share"
-                        />
+                        <div className="my-6 max-w-4xl mx-auto">
+                            <ExpandableText
+                                text={`<span class="font-bold text-teal-600">Préparateurs en Ligne - Saison 2</span>: Le projet "Préparateurs en ligne" est un programme de formation continue spécifiquement conçu pour les préparateurs en pharmacie d'officine. Il vise à améliorer et actualiser leurs connaissances et compétences en combinant l'expertise des préparateurs seniors et juniors. Le programme propose des sessions en ligne (16 nouvelles séances pour la session 2025/2026), planifiées pour offrir une flexibilité maximale (trois présentations quotidiennes d'un même thème) afin de ne pas perturber l'organisation quotidienne de la pharmacie. L'objectif final est de faire de cette formation un atout majeur pour les pharmaciens en assurant la montée en compétence et la fidélisation de leurs équipes.`}
+                                maxLength={250}
+                                youtubeShortUrl="https://youtube.com/shorts/KwUvB51Wcp8?feature=share"
+                                textSizeClass="text-base"
+                            />
+                        </div>
                         <p className="mt-4 text-2xl font-extrabold text-red-600 max-w-4xl">
                             Pass journée: 80,000 DT
                         </p>
