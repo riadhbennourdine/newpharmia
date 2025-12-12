@@ -221,8 +221,69 @@ const CheckoutPage: React.FC = () => {
                         
                         {renderOrderItems()}
 
-                        <hr className="border-t border-teal-200 my-2" />
-                        <div className="flex justify-between items-center mt-4">
+                        <hr className="border-t border-teal-200 my-4" />
+                        
+                        {/* Tax Breakdown */}
+                        <div className="space-y-2 text-sm text-slate-600">
+                            {(() => {
+                                // Calculate totals dynamically for display
+                                let totalHT = 0;
+                                let totalTVA = 0;
+                                const stampDuty = TAX_RATES.TIMBRE;
+
+                                // Packs (Base Price is HT)
+                                const packs = order.items.filter(i => i.type === ProductType.PACK);
+                                packs.forEach(item => {
+                                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                    if (pack) {
+                                        totalHT += pack.priceHT;
+                                        totalTVA += pack.priceHT * TAX_RATES.TVA;
+                                    }
+                                });
+
+                                // Webinars (Base Price is assumed TTC for CROP, or we treat it as HT if tax applies?)
+                                // Current business rule: CROP webinars are 80DT TTC.
+                                // If we have mixed basket, we add crop price to Total to Pay directly, 
+                                // but for a cleaner breakdown, we can display them separately or assume 0 tax on them if exempt.
+                                // Let's simplify: Display breakdown ONLY if there are taxable items (Packs).
+                                // If only CROP webinars, display simple total.
+                                
+                                const cropWebinars = webinarsInOrder.filter(w => w.group === WebinarGroup.CROP_TUNIS);
+                                const cropTotalTTC = cropWebinars.reduce((sum, w) => sum + (w.price || 80.000), 0);
+                                
+                                // Total Calculation
+                                const finalTotal = totalHT + totalTVA + stampDuty + cropTotalTTC;
+                                
+                                if (packs.length > 0) {
+                                    return (
+                                        <>
+                                            <div className="flex justify-between">
+                                                <span>Total Hors Taxes (Packs):</span>
+                                                <span>{totalHT.toFixed(3)} TND</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>TVA (19%):</span>
+                                                <span>{totalTVA.toFixed(3)} TND</span>
+                                            </div>
+                                            {cropTotalTTC > 0 && (
+                                                <div className="flex justify-between">
+                                                    <span>Webinaires CROP (Net):</span>
+                                                    <span>{cropTotalTTC.toFixed(3)} TND</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between">
+                                                <span>Timbre Fiscal:</span>
+                                                <span>{stampDuty.toFixed(3)} TND</span>
+                                            </div>
+                                        </>
+                                    );
+                                }
+                                return null; // No breakdown for simple CROP orders
+                            })()}
+                        </div>
+
+                        <hr className="border-t border-teal-200 my-4" />
+                        <div className="flex justify-between items-center">
                             <span className="text-lg font-bold text-teal-800">Montant Total à payer:</span>
                             <span className="text-3xl font-extrabold text-teal-600">{order.totalAmount.toFixed(3)} TND</span>
                         </div>
