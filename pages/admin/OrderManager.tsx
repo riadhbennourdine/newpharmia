@@ -94,7 +94,7 @@ const OrderManager: React.FC = () => {
                                 </h3>
                                 <div className="mt-2 text-sm text-slate-600">
                                     <ul className="list-disc list-inside">
-                                        {order.items.map((item, idx) => (
+                                        {(order.items || []).map((item, idx) => (
                                             <li key={idx}>
                                                 {item.type === ProductType.PACK ? `Pack ${item.packId}` : `Webinaire ${item.webinarId}`}
                                                 {item.slots && ` (${item.slots.join(', ')})`}
