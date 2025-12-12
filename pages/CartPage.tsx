@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
 import { Webinar, ProductType } from '../types';
-import { Spinner, TrashIcon } from '../components/Icons';
+import { Spinner, TrashIcon, EditIcon } from '../components/Icons';
 import { WEBINAR_PRICE, MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
 
 const CartPage: React.FC = () => {
@@ -18,8 +17,11 @@ const CartPage: React.FC = () => {
 
   useEffect(() => {
     const fetchWebinarDetails = async () => {
-      // Filter items that are webinars
-      const webinarItems = cartItems.filter(item => item.type === ProductType.WEBINAR && item.webinarId);
+      // Filter items that are webinars (infer if not pack)
+      const webinarItems = cartItems.filter(item => {
+          const isPack = item.type === ProductType.PACK || !!item.packId;
+          return !isPack;
+      });
       
       if (webinarItems.length === 0) {
         setWebinars([]);
@@ -29,10 +31,16 @@ const CartPage: React.FC = () => {
 
       try {
         setIsLoading(true);
-        const webinarIds = webinarItems.map(item => item.webinarId);
+        const webinarIds = webinarItems.map(item => item.webinarId || item.id).filter(id => id);
         // De-duplicate IDs for fetching
         const uniqueIds = Array.from(new Set(webinarIds));
         
+        if (uniqueIds.length === 0) {
+             setWebinars([]);
+             setIsLoading(false);
+             return;
+        }
+
         const response = await fetch('/api/webinars/by-ids', {
           method: 'POST',
           headers: {
@@ -60,14 +68,19 @@ const CartPage: React.FC = () => {
 
   const totalPrice = useMemo(() => {
     return cartItems.reduce((total, item) => {
-        if (item.type === ProductType.WEBINAR) {
-            return total + WEBINAR_PRICE;
-        } else if (item.type === ProductType.PACK && item.packId) {
+        // Robust type checking
+        const isPack = item.type === ProductType.PACK || !!item.packId;
+        
+        if (isPack && item.packId) {
             const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
             if (pack) {
                 // Return TTC price for cart display consistency
                 return total + (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
             }
+            console.warn('Pack not found for ID:', item.packId);
+        } else {
+            // Default to Webinar price
+            return total + WEBINAR_PRICE;
         }
         return total;
     }, 0);
@@ -139,42 +152,10 @@ const CartPage: React.FC = () => {
           <div className="lg:col-span-2 bg-white rounded-lg shadow-md">
             <ul className="divide-y divide-slate-200">
               {cartItems.map((item, index) => {
-                // Render Webinar Item
-                if (item.type === ProductType.WEBINAR) {
-                    const webinar = webinars.find(w => w._id === item.webinarId);
-                    if (!webinar) return null; // Loading or missing
-                    
-                    return (
-                        <li key={`${item.id}-${index}`} className="p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                            <img src={webinar.imageUrl || 'https://via.placeholder.com/150'} alt={webinar.title} className="h-24 w-24 object-cover rounded-md" />
-                            <div className="flex-grow">
-                                <h2 className="font-semibold text-slate-800">{webinar.title}</h2>
-                                <p className="text-sm text-slate-500">Par {webinar.presenter}</p>
-                                <div className="mt-2">
-                                    <h4 className="text-xs font-bold text-slate-600 uppercase">Créneaux choisis :</h4>
-                                    {item.slots && item.slots.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {item.slots.map(slot => (
-                                                <span key={slot} className="text-xs font-medium bg-teal-100 text-teal-800 px-2 py-1 rounded-full">{slot}</span>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs text-red-500">Aucun créneau sélectionné !</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="text-right self-center">
-                                <p className="font-bold text-lg text-teal-600 mb-2">{WEBINAR_PRICE.toFixed(3)} TND</p>
-                                <button onClick={() => removeFromCart(item.id)} className="text-sm text-red-500 hover:text-red-700 flex items-center justify-end w-full">
-                                    <TrashIcon className="h-4 w-4 mr-1" />
-                                    Supprimer
-                                </button>
-                            </div>
-                        </li>
-                    );
-                } 
+                const isPack = item.type === ProductType.PACK || !!item.packId;
+
                 // Render Pack Item
-                else if (item.type === ProductType.PACK) {
+                if (isPack && item.packId) {
                     const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     if (!pack) return null;
                     const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
@@ -199,8 +180,52 @@ const CartPage: React.FC = () => {
                              </div>
                         </li>
                     );
+                } 
+                // Render Webinar Item (Default)
+                else {
+                    const webinarId = item.webinarId || item.id;
+                    const webinar = webinars.find(w => w._id === webinarId);
+                    
+                    // Fallback UI while loading specific webinar details or if missing
+                    if (!webinar) return (
+                        <li key={`${item.id}-${index}`} className="p-4 flex items-center justify-center text-slate-400">
+                            Chargement des détails...
+                        </li>
+                    );
+                    
+                    return (
+                        <li key={`${item.id}-${index}`} className="p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <img src={webinar.imageUrl || 'https://via.placeholder.com/150'} alt={webinar.title} className="h-24 w-24 object-cover rounded-md" />
+                            <div className="flex-grow">
+                                <h2 className="font-semibold text-slate-800">{webinar.title}</h2>
+                                <p className="text-sm text-slate-500">Par {webinar.presenter}</p>
+                                <div className="mt-2">
+                                    <h4 className="text-xs font-bold text-slate-600 uppercase">Créneaux choisis :</h4>
+                                    {item.slots && item.slots.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2 mt-1">
+                                            {item.slots.map(slot => (
+                                                <span key={slot} className="text-xs font-medium bg-teal-100 text-teal-800 px-2 py-1 rounded-full">{slot}</span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-red-500">Aucun créneau sélectionné !</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="text-right self-center">
+                                <p className="font-bold text-lg text-teal-600 mb-2">{WEBINAR_PRICE.toFixed(3)} TND</p>
+                                <button onClick={() => navigate(`/webinars/${webinar._id}`)} className="text-sm text-blue-500 hover:text-blue-700 mb-2 flex items-center justify-end w-full">
+                                    <EditIcon className="h-4 w-4 mr-1" />
+                                    Modifier
+                                </button>
+                                <button onClick={() => removeFromCart(item.id)} className="text-sm text-red-500 hover:text-red-700 flex items-center justify-end w-full">
+                                    <TrashIcon className="h-4 w-4 mr-1" />
+                                    Supprimer
+                                </button>
+                            </div>
+                        </li>
+                    );
                 }
-                return null;
               })}
             </ul>
           </div>

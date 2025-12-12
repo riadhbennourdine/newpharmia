@@ -296,16 +296,18 @@ const WebinarsPage: React.FC = () => {
                         Mes wébinaires CROP Tunis
                     </button>
                 )}
-                <button
-                    onClick={() => setActiveTab(WebinarGroup.MASTER_CLASS)}
-                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === WebinarGroup.MASTER_CLASS
-                            ? 'border-teal-500 text-teal-600'
-                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                    }`}
-                >
-                    Master Class Officine 2026
-                </button>
+                {isAdmin && (
+                    <button
+                        onClick={() => setActiveTab(WebinarGroup.MASTER_CLASS)}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === WebinarGroup.MASTER_CLASS
+                                ? 'border-teal-500 text-teal-600'
+                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        }`}
+                    >
+                        Master Class Officine 2026 (Admin)
+                    </button>
+                )}
                 {isAdmin && (
                     <button
                         onClick={() => navigate('/admin/webinars')}
