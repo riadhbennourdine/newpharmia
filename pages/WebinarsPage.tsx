@@ -270,6 +270,7 @@ const WebinarsPage: React.FC = () => {
 
 
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
+    const isSuperAdmin = user?.role === UserRole.ADMIN;
 
     const renderTabs = () => (
         <div className="mb-8 border-b border-slate-200">
@@ -296,7 +297,7 @@ const WebinarsPage: React.FC = () => {
                         Mes wébinaires CROP Tunis
                     </button>
                 )}
-                {isAdmin && (
+                {isSuperAdmin && (
                     <button
                         onClick={() => setActiveTab(WebinarGroup.MASTER_CLASS)}
                         className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
