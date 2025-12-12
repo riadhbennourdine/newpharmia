@@ -11,6 +11,7 @@ const router = express.Router();
 
 // POST /api/orders/checkout
 // Creates a new order from the user's cart items.
+// Force Rebuild Trigger: 2025-12-12
 router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, res) => {
     // items can now contain webinarId OR packId
     const { items } = req.body as { items: { webinarId?: string, packId?: string, type?: ProductType, slots?: WebinarTimeSlot[] }[] };

@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import WebinarCard from '../components/WebinarCard';
 import ExpandableText from '../components/ExpandableText';
-import Loader from '../components/Loader';
+import { Spinner, UploadIcon, ChevronDownIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 import {
@@ -435,8 +435,27 @@ const WebinarsPage: React.FC = () => {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            {MASTER_CLASS_PACKS.map((pack) => {
+                        {/* Pricing Accordion Toggle */}
+                        <button
+                            onClick={() => setIsPricingOpen(!isPricingOpen)}
+                            className="w-full flex items-center justify-between p-6 bg-white border-l-8 border-teal-500 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer group mb-8"
+                        >
+                            <div className="flex flex-col text-left">
+                                <span className="text-2xl font-bold text-slate-800 group-hover:text-teal-700 transition-colors">
+                                    Consulter les Tarifs & Packs
+                                </span>
+                                <span className="text-sm text-slate-500 mt-1">
+                                    {isPricingOpen ? "Cliquez pour masquer les offres" : "Cliquez pour voir nos offres de lancement (MC10, MC25, MC50...)"}
+                                </span>
+                            </div>
+                            <div className={`p-2 rounded-full bg-slate-100 group-hover:bg-teal-50 transition-colors duration-300 transform ${isPricingOpen ? 'rotate-180' : ''}`}>
+                                <ChevronDownIcon className="h-8 w-8 text-teal-600" />
+                            </div>
+                        </button>
+
+                        {isPricingOpen && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+                                {MASTER_CLASS_PACKS.map((pack) => {
                                 const priceHT = pack.priceHT;
                                 const unitPriceHT = priceHT / pack.credits;
                                 const isPopular = pack.id === 'MC25'; 
@@ -497,7 +516,8 @@ const WebinarsPage: React.FC = () => {
                                     </div>
                                 );
                             })}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
