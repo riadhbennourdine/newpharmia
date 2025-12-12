@@ -183,7 +183,15 @@ const WebinarManagement: React.FC = () => {
     }, [token]);
 
     const handleOpenModal = (webinar: Partial<Webinar> | null = null) => {
-        setCurrentWebinar(webinar ? { ...webinar } : { title: '', description: '', presenter: '', date: new Date(), imageUrl: '', googleMeetLink: '', group: WebinarGroup.PHARMIA });
+        setCurrentWebinar(webinar ? { ...webinar } : { 
+            title: '', 
+            description: '', 
+            presenter: '', 
+            date: new Date(), 
+            imageUrl: '', 
+            googleMeetLink: '', 
+            group: filterGroup !== 'ALL' ? (filterGroup as WebinarGroup) : WebinarGroup.CROP_TUNIS // Default to filtered group or CROP_TUNIS
+        });
         setIsModalOpen(true);
     };
 
