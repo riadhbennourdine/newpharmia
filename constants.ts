@@ -2,6 +2,7 @@
 export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars
 export const MASTER_CLASS_PRICE = 48.481; // Price in TND for Master Class Unit (39.9 HT + 19% TVA + 1 DT)
 
+// This is a dummy comment to force rebuild of this file.
 export const TAX_RATES = {
     TVA: 0.19,
     TIMBRE: 1.000
@@ -109,10 +110,18 @@ export const MEMOFICHES = [
     }
 ];
 
-export const BANK_DETAILS = {
+export const CROPT_BANK_DETAILS = {
     holder: 'CROPT',
     rib: '07309007510558138471',
     bank: 'AMEN BANK',
     branch: 'Alain Savary',
     imageUrl: 'https://pharmaconseilbmb.com/photos/rib-cropt.jpg'
+};
+
+export const SKILL_SEED_BANK_DETAILS = {
+    holder: 'SKILL SEED TEAM',
+    rib: '32024788116183970167',
+    bank: 'alBaraka',
+    branch: 'Hammam Lif',
+    imageUrl: '/api/ftp/view?filePath=%2Frib-skill-seed.pdf'
 };
