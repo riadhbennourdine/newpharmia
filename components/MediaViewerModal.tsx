@@ -13,7 +13,7 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({ resource, onClose }
     const renderContent = () => {
         // All new resource types should be handled by EmbeddableViewer
         // The EmbeddableViewer itself handles different types (YouTube, Canva, PDF, HTML embed)
-        if (resource.type === 'Replay' || resource.type === 'Vidéo explainer' || resource.type === 'Infographie' || resource.type === 'Diaporama') {
+        if (resource.type === 'Replay' || resource.type === 'Vidéo explainer' || resource.type === 'Infographie' || resource.type === 'Diaporama' || resource.type === 'pdf' || resource.type === 'link' || resource.type === 'youtube') {
             return <EmbeddableViewer source={resource.source} />;
         }
         
