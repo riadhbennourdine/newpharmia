@@ -18,6 +18,22 @@ const OrderManager: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+    const [filterType, setFilterType] = useState<'ALL' | 'MASTER_CLASS' | 'CROP_TUNIS'>('ALL');
+    const [filteredOrders, setFilteredOrders] = useState<OrderWithUser[]>([]);
+
+    useEffect(() => {
+        let currentFilteredOrders = orders;
+        if (filterType === 'MASTER_CLASS') {
+            currentFilteredOrders = orders.filter(order => 
+                order.items.some(item => item.type === ProductType.PACK)
+            );
+        } else if (filterType === 'CROP_TUNIS') {
+            currentFilteredOrders = orders.filter(order => 
+                order.items.some(item => item.type === ProductType.WEBINAR)
+            );
+        }
+        setFilteredOrders(currentFilteredOrders);
+    }, [orders, filterType]);
 
     const fetchOrders = async () => {
         setIsLoading(true);
@@ -72,9 +88,20 @@ const OrderManager: React.FC = () => {
 
     return (
         <div className="p-6 bg-slate-50 min-h-screen">
-            <h1 className="text-2xl font-bold text-slate-800 mb-6">Gestion des Commandes (Paiements en attente)</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-slate-800">Gestion des Commandes</h1>
+                <select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    className="form-select block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                >
+                    <option value="ALL">Toutes les commandes</option>
+                    <option value="MASTER_CLASS">Master Class (Packs)</option>
+                    <option value="CROP_TUNIS">CROP Tunis (Webinaires)</option>
+                </select>
+            </div>
 
-            {orders.length === 0 ? (
+            {filteredOrders.length === 0 ? (
                 <div className="bg-white p-8 rounded-lg shadow text-center text-slate-500">
                     Aucune commande en attente de validation.
                 </div>
@@ -87,6 +114,16 @@ const OrderManager: React.FC = () => {
                                     <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                                         {order.status}
                                     </span>
+                                    {order.items.some(item => item.type === ProductType.PACK) && (
+                                        <span className="bg-teal-100 text-teal-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                            MASTER CLASS
+                                        </span>
+                                    )}
+                                    {order.items.some(item => item.type === ProductType.WEBINAR) && (
+                                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                            CROP TUNIS
+                                        </span>
+                                    )}
                                     <span className="text-slate-400 text-sm">#{order._id.toString()}</span>
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-800">
