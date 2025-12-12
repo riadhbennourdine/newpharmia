@@ -81,34 +81,6 @@ const WebinarsPage: React.FC = () => {
 
     // ... (rest of component)
     
-    // In renderWebinarList, pass the props:
-    const renderWebinarList = (webinarsToRender: Webinar[], isMyList: boolean = false) => {
-        // ... (empty check)
-        return (
-            <div className="space-y-12">
-                {/* ... (live/nearest logic) ... */}
-                
-                {/* For the mapping parts, update WebinarCard usage */}
-                {/* Example for the main lists */}
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {currentMonthWebinars.map(webinar => (
-                        <WebinarCard 
-                            key={webinar._id.toString()} 
-                            webinar={webinar} 
-                            onResourceClick={handleResourceClick} 
-                            onManageResources={handleOpenResourcesModal}
-                            userCredits={user?.masterClassCredits}
-                            onUseCredit={handleUseCredit}
-                        />
-                    ))}
-                </div>
-
-                {/* Apply similar updates to other mappings (Future, Past, MyList) */}
-                {/* Since renderWebinarList is long, I will target the specific sections in the next tool call for precision if this is too broad */}
-            </div>
-        );
-    };
-
     const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
     const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
     const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
