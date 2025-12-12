@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType } from '../types';
 import { MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
 import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../context/CartContext';
 import WebinarCard from '../components/WebinarCard';
 import ExpandableText from '../components/ExpandableText';
 import Loader from '../components/Loader';
@@ -20,6 +20,7 @@ import { createOrder } from '../services/orderService';
 
 const WebinarsPage: React.FC = () => {
     const { user, token } = useAuth();
+    const { addToCart } = useCart();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
     const [allWebinars, setAllWebinars] = useState<Webinar[]>([]);
@@ -27,20 +28,47 @@ const WebinarsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // ... (rest of the state hooks)
+    // States for displaying content
+    const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
+    const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
+    const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
+    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
+    const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
 
-    const handleBuyPack = async (packId: string) => {
+    // Modals state
+    const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
+    const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
+    const [isResourcesModalOpen, setIsResourcesModalOpen] = useState(false);
+    const [selectedWebinarForResources, setSelectedWebinarForResources] = useState<Webinar | null>(null);
+
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setDropdownOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [handleClickOutside]);
+
+    const handleBuyPack = (packId: string, packName: string) => {
         if (!user || !token) {
             navigate('/login', { state: { from: '/webinars' } });
             return;
         }
-        try {
-            const order = await createOrder([{ type: ProductType.PACK, packId }], token);
-            navigate(`/checkout/${order.orderId}`);
-        } catch (err: any) {
-            console.error("Failed to create order:", err);
-            setError("Erreur lors de la création de la commande.");
-        }
+        // Use Cart Context to add pack (triggering security check)
+        addToCart({
+            type: ProductType.PACK,
+            packId: packId,
+            packName: packName
+        });
+        navigate('/cart');
     };
 
     const handleUseCredit = async (webinarId: string) => {
@@ -48,18 +76,6 @@ const WebinarsPage: React.FC = () => {
         if (!window.confirm("Voulez-vous utiliser 1 crédit Master Class pour vous inscrire ?")) return;
 
         try {
-            // Default time slot selection logic could be improved, picking first for now if multiple exist
-            // Ideally, we'd open a modal to select slot, but assuming 1 slot for Master Class simplicity
-            // Or we fetch slots first. For now, sending a placeholder or fetching first slot is safer.
-            // Let's assume standard 'AFTERNOON' or fetch slots. 
-            // A safer bet is to navigate to detail page if multiple slots, but here we want 'Instant'
-            // Let's try to just register. The backend requires timeslots.
-            // We'll use a default or empty array and let backend handle or validate? 
-            // Actually, WebinarCard sends to detail page usually. 
-            // Let's make the button redirect to detail page with a state 'autoRegisterWithCredit'?
-            // Or simpler: just call register with a default slot if MasterClass usually has one.
-            // But to be safe, let's just make the button register with 'AFTERNOON' as default for MasterClass
-            
             await registerForWebinar(webinarId, ['15:30'], token, true);
             
             // Refresh data
@@ -79,40 +95,9 @@ const WebinarsPage: React.FC = () => {
         }
     };
 
-    // ... (rest of component)
-    
-    const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
-    const [currentMonthWebinars, setCurrentMonthWebinars] = useState<Webinar[]>([]);
-    const [futureMonthsWebinars, setFutureMonthsWebinars] = useState<Record<string, Webinar[]>>({});
-    const [pastWebinars, setPastWebinars] = useState<Webinar[]>([]);
-    const [nearestWebinar, setNearestWebinar] = useState<Webinar | null>(null);
-
-    // Modals state
-    const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
-    const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
-    const [isResourcesModalOpen, setIsResourcesModalOpen] = useState(false);
-    const [selectedWebinarForResources, setSelectedWebinarForResources] = useState<Webinar | null>(null);
-
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [isDropdownOpen, setDropdownOpen] = useState(false); // This is not used in the current version of the renderTabs, as Master Class is removed, but keeping it for future potential use.
-
-    const handleClickOutside = useCallback((event: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            setDropdownOpen(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [handleClickOutside]);
-
     const calculateStatus = useCallback((date: string, duration: number = 90): WebinarStatus => {
         const now = new Date();
         const startDate = new Date(date);
-        // Default duration to 90 minutes if missing or 0
         const effectiveDuration = duration || 90;
         const endDate = new Date(startDate.getTime() + effectiveDuration * 60000);
 
@@ -141,7 +126,6 @@ const WebinarsPage: React.FC = () => {
             setIsLoading(true);
             setError(null);
             try {
-                // Fetch all CROP_TUNIS, PHARMIA and MASTER_CLASS webinars
                 const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
                 const allPharmIAWebinars = await fetchWebinars(token, WebinarGroup.PHARMIA);
                 const allMasterClassWebinars = await fetchWebinars(token, WebinarGroup.MASTER_CLASS);
@@ -153,10 +137,8 @@ const WebinarsPage: React.FC = () => {
                 ];
                 setAllWebinars(combinedAllWebinars);
 
-                // Fetch user's registered webinars
                 if (user && token) {
                     const myW = await fetchMyWebinars(token);
-                    // Filter myW to only CROP_TUNIS group for "Mes Webinaires" tab as per user request
                     const filteredMyW = myW.filter(w => w.group === WebinarGroup.CROP_TUNIS);
                     setMyRegisteredWebinars(processWebinars(filteredMyW));
                 } else {
@@ -200,10 +182,14 @@ const WebinarsPage: React.FC = () => {
         }
         try {
             await updateWebinarResources(webinarId, resources, token);
-            // Re-fetch all data to refresh the view
             const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
             const allPharmIAWebinars = await fetchWebinars(token, WebinarGroup.PHARMIA);
-            const combinedAllWebinars = [...processWebinars(allCROPWebinars), ...processWebinars(allPharmIAWebinars)];
+            const allMasterClassWebinars = await fetchWebinars(token, WebinarGroup.MASTER_CLASS);
+            const combinedAllWebinars = [
+                ...processWebinars(allCROPWebinars), 
+                ...processWebinars(allPharmIAWebinars),
+                ...processWebinars(allMasterClassWebinars)
+            ];
             setAllWebinars(combinedAllWebinars);
 
             if (user && token) {
@@ -217,7 +203,6 @@ const WebinarsPage: React.FC = () => {
         }
     };
 
-    // Effect for filtering and categorizing webinars based on active tab
     useEffect(() => {
         if (allWebinars.length === 0 && activeTab !== 'MY_WEBINARS') {
             setLiveWebinars([]);
@@ -229,10 +214,9 @@ const WebinarsPage: React.FC = () => {
         }
 
         const tabSpecificWebinars = activeTab === 'MY_WEBINARS'
-            ? myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS) // Ensure only CROP Tunis for "Mes Webinaires"
+            ? myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS)
             : allWebinars.filter(w => w.group === activeTab);
 
-        // Calculate webinar statuses if not already done
         const processedTabWebinars = processWebinars(tabSpecificWebinars);
 
         const now = new Date();
@@ -274,7 +258,6 @@ const WebinarsPage: React.FC = () => {
         }, {} as Record<string, Webinar[]>);
         setFutureMonthsWebinars(groupedFutureWebinars);
 
-        // Set nearest webinar for active tab (only if it's CROP_TUNIS or PHARMIA)
         if (activeTab !== 'MY_WEBINARS' && upcoming.length > 0) {
             setNearestWebinar(upcoming[0]);
         } else {
@@ -394,7 +377,7 @@ const WebinarsPage: React.FC = () => {
                 {isMyList && (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {webinarsToRender.map(webinar => (
-                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} />
+                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
                         ))}
                     </div>
                 )}
@@ -480,12 +463,13 @@ const WebinarsPage: React.FC = () => {
                                             <p className="mt-2 text-slate-500 text-sm h-10">{pack.description}</p>
                                         </div>
 
-                                        <div className="mb-6">
+                                        <div className="mb-4">
                                             <div className="flex items-baseline">
                                                 <span className="text-3xl font-bold text-slate-900">{priceHT.toFixed(3)}</span>
                                                 <span className="ml-1 text-xl font-medium text-slate-500">DT</span>
                                                 <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
                                             </div>
+                                            <p className="mt-1 text-xs text-slate-400 italic">+ 19% TVA + 1.000 Timbre</p>
                                         </div>
 
                                         <div className="flex-1 mb-6">
@@ -500,7 +484,7 @@ const WebinarsPage: React.FC = () => {
                                         </div>
 
                                         <button
-                                            onClick={() => handleBuyPack(pack.id)}
+                                            onClick={() => handleBuyPack(pack.id, pack.name)}
                                             className={`w-full py-3 px-4 rounded-lg font-bold text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                                                 isPopular 
                                                     ? 'bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-500' 
