@@ -146,6 +146,13 @@ const CartPage: React.FC = () => {
     <div className="bg-slate-100 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-6">Votre Panier</h1>
+        
+        {/* DEBUG: Temporary Display of Cart Structure */}
+        <div className="bg-yellow-100 p-4 mb-4 rounded text-xs font-mono overflow-auto max-h-40">
+            <strong>DEBUG - Contenu du Panier (Raw):</strong>
+            <pre>{JSON.stringify(cartItems, null, 2)}</pre>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Cart Items */}
