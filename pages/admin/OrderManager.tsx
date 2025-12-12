@@ -27,7 +27,13 @@ const OrderManager: React.FC = () => {
             });
             if (!response.ok) throw new Error('Failed to fetch orders');
             const data = await response.json();
-            setOrders(data);
+            
+            if (Array.isArray(data)) {
+                setOrders(data);
+            } else {
+                console.error("API response is not an array:", data);
+                setOrders([]);
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {
