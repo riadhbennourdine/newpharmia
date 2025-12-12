@@ -93,7 +93,17 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
     }
   }
 
-  // Case 4: PDF URL (default)
+  // Case 4: Image URL - Check BEFORE PDF to prevent images from being proxied as PDFs
+  const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
+  if (absoluteUrl && imageExtensions.some(ext => absoluteUrl.toLowerCase().endsWith(ext))) {
+    return (
+      <div ref={containerRef} className="flex justify-center items-center w-full h-full p-4">
+        <img src={absoluteUrl} alt="Embedded Image" className="max-w-full max-h-full object-contain rounded-lg shadow-md" />
+      </div>
+    );
+  }
+
+  // Case 5: PDF URL
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const { width } = useResizeDetector({ targetRef: containerRef });
@@ -120,12 +130,23 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
   };
 
   let fileToLoad = absoluteUrl;
-  if (absoluteUrl && absoluteUrl.startsWith('http')) {
+  // ONLY proxy if it's explicitly a PDF and an http(s) URL
+  if (absoluteUrl && absoluteUrl.toLowerCase().endsWith('.pdf') && absoluteUrl.startsWith('http')) {
       fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absoluteUrl)}`;
+  } else if (absoluteUrl && absoluteUrl.startsWith('http') && !absoluteUrl.toLowerCase().endsWith('.pdf')) {
+      // If it's an http(s) link but not a PDF (and not handled by other cases like YouTube, Canva, Image),
+      // we don't want to try rendering it as a PDF. Force it to trigger a "Format non supporté" message.
+      fileToLoad = ''; // This will be caught by the !fileToLoad check below.
   }
 
-  if (!source) {
+
+  if (!source) { // Check 'source' before 'absoluteUrl' to catch initial empty strings
     return <p className="text-red-500 text-center p-4">Source invalide ou manquante.</p>;
+  }
+
+  // If fileToLoad is empty here (because it was a non-PDF URL that fell through), it means it's not handled as a PDF.
+  if (!fileToLoad) {
+      return <p className="text-red-500 text-center p-4">Format de fichier non supporté pour l'affichage.</p>;
   }
 
   return (
