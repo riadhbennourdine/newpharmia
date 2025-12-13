@@ -7,6 +7,8 @@ import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../compo
 import { BANK_DETAILS } from '../constants';
 
 import EmbeddableViewer from '../components/EmbeddableViewer';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
+
 
 const formatUrl = (url: string | undefined): string => {
     if (!url) return '#';
@@ -166,6 +168,7 @@ const WebinarDetailPage: React.FC = () => {
     const [webinar, setWebinar] = useState<Webinar | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [webinarDescription, setWebinarDescription] = useState<string | null>(null);
     const { user, token } = useAuth();
     const navigate = useNavigate();
 
@@ -237,6 +240,39 @@ const WebinarDetailPage: React.FC = () => {
                 }
                 const data = await response.json();
                 setWebinar(data);
+
+                // --- NEW LOGIC FOR MASTERCLASS DESCRIPTION ---
+                if (data.group === WebinarGroup.MASTER_CLASS) {
+                    try {
+                        const mdResponse = await fetch('/content/master_class_description.md');
+                        if (mdResponse.ok) {
+                            const mdText = await mdResponse.text();
+                            setWebinarDescription(mdText);
+                        } else {
+                            console.warn("Failed to fetch global master_class_description.md");
+                            setWebinarDescription(data.description); // Fallback to webinar's own description
+                        }
+                    } catch (mdErr) {
+                        console.error("Error fetching global master_class_description.md:", mdErr);
+                        setWebinarDescription(data.description); // Fallback to webinar's own description
+                    }
+                } else {
+                    // Existing logic for non-MasterClass webinars
+                    try {
+                        const mdResponse = await fetch(`/content/webinars/${webinarId}.md`);
+                        if (mdResponse.ok) {
+                            const mdText = await mdResponse.text();
+                            setWebinarDescription(mdText);
+                        } else {
+                            setWebinarDescription(null); // Explicitly set to null if no specific MD found
+                        }
+                    } catch (mdErr) {
+                        console.warn("No specific markdown description found, using default.", mdErr);
+                        setWebinarDescription(null); // Fallback to null (which means it will use webinar.description)
+                    }
+                }
+                // --- END NEW LOGIC ---
+
             } catch (err: any) {
                 setError(err.message);
             }
@@ -313,7 +349,9 @@ const WebinarDetailPage: React.FC = () => {
                         </div>
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
-                            <div className="prose prose-lg max-w-none text-slate-700 mb-8" dangerouslySetInnerHTML={{ __html: webinar.description.replace(/\n/g, '<br />') }} />
+                            <div className="prose prose-lg max-w-none text-slate-700 mb-8">
+                                <MarkdownRenderer content={webinarDescription || webinar.description} />
+                            </div>
 
                             {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
                                 <div className="mt-8 pt-6 border-t">

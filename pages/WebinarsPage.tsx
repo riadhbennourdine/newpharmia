@@ -11,6 +11,7 @@ import Loader from '../components/Loader';
 import { Spinner, UploadIcon, ChevronDownIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import {
     fetchWebinars,
     fetchMyWebinars,
@@ -29,6 +30,14 @@ const WebinarsPage: React.FC = () => {
     const [myRegisteredWebinars, setMyRegisteredWebinars] = useState<Webinar[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [masterClassDescription, setMasterClassDescription] = useState<string>('');
+
+    useEffect(() => {
+        fetch('/content/master_class_description.md')
+            .then(res => res.text())
+            .then(text => setMasterClassDescription(text))
+            .catch(err => console.error("Failed to load Master Class description", err));
+    }, []);
 
     // States for displaying content
     const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);
@@ -437,12 +446,9 @@ const WebinarsPage: React.FC = () => {
                             <h2 className="text-4xl font-extrabold text-slate-900 sm:text-5xl">
                                 Master Class Officine 2026
                             </h2>
-                            <p className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
-                                L'excellence pharmaceutique à votre portée. Choisissez la formule qui correspond à vos ambitions.
-                            </p>
-                            <p className="mt-2 text-md text-slate-500 max-w-2xl mx-auto italic">
-                                *Tarifs affichés en HT, le montant TTC sera détaillé au paiement.
-                            </p>
+                            <div className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
+                                <MarkdownRenderer content={masterClassDescription} />
+                            </div>
                         </div>
 
                         {/* Pricing Accordion Toggle */}
