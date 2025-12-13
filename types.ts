@@ -60,6 +60,7 @@ export interface User {
   zone?: string;
   secteur?: string;
   paymentProofUrl?: string;
+  masterClassCredits?: number;
 }
 
 export interface Group {

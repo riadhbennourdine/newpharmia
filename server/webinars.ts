@@ -98,7 +98,7 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             if (uniqueUserIds.length > 0) {
                 const users = await usersCollection.find(
                     { _id: { $in: uniqueUserIds } },
-                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1, masterClassCredits: 1 } }
                 ).toArray();
 
                 const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
@@ -245,7 +245,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
                 const usersCollection = db.collection('users');
                 const users = await usersCollection.find(
                     { _id: { $in: userIds } },
-                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1 } }
+                    { projection: { firstName: 1, lastName: 1, username: 1, email: 1, masterClassCredits: 1 } }
                 ).toArray();
                 const userMap = new Map(users.map(u => [u._id.toHexString(), u]));
                 webinarResponse.attendees.forEach(attendee => {

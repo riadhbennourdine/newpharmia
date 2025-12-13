@@ -62,6 +62,9 @@ const AttendeesList: React.FC<{
                                 <div className="flex items-center flex-wrap">
                                     <span>
                                         {getUserDisplayName(attendee.userId as User)} - <span className={`font-medium ${attendee.status === 'CONFIRMED' ? 'text-green-600' : attendee.status === 'PENDING' ? 'text-orange-500' : 'text-blue-500'}`}>{getTranslatedStatus(attendee.status)}</span>
+                                        {(attendee.userId as User).masterClassCredits !== undefined && (
+                                            <span className="ml-2 text-slate-500">(Crédits MC: {(attendee.userId as User).masterClassCredits})</span>
+                                        )}
                                     </span>
                                     {attendee.proofUrl && (
                                         <a href={transformProofUrl(attendee.proofUrl)} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-500 hover:underline">(Voir)</a>
