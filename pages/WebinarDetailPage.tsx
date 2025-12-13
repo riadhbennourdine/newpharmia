@@ -383,7 +383,7 @@ const WebinarDetailPage: React.FC = () => {
                                     <CalendarIcon className="h-5 w-5" />
                                     <span className="font-medium">
                                         {webinar.group === WebinarGroup.MASTER_CLASS
-                                            ? <>Date : {new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br/>Choix du créneau à l'inscription</>
+                                            ? `Date : ${new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
                                             : new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                                     </span>
                                 </div>
@@ -439,7 +439,7 @@ const WebinarDetailPage: React.FC = () => {
                                         <p className={`font-semibold text-center mb-4 ${registeredAttendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>
                                             {registeredAttendee.status === 'CONFIRMED' ? 'Votre inscription est confirmée !' : 'Votre inscription est en attente de validation.'}
                                         </p>
-                                        {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && (
+                                        {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && webinar.group !== WebinarGroup.MASTER_CLASS && (
                                             <>
                                                 <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
                                                 {/* Display current slots or allow modification */}
@@ -476,7 +476,7 @@ const WebinarDetailPage: React.FC = () => {
                                     </p>
                                 ) : webinar.group === WebinarGroup.MASTER_CLASS ? (
                                     <p className="mt-4 text-2xl font-extrabold text-teal-600 text-center">
-                                        Disponible via crédits Master Class
+                                        {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Disponible via crédits Master Class'}
                                     </p>
                                 ) : null}
                             </div>
