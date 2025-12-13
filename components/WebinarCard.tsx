@@ -199,7 +199,7 @@ const WebinarCard: React.FC<{
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
                 <p className="text-xl font-bold text-teal-600 py-2">
                     {isMasterClass
-                        ? (webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class')
+                        ? 'Crédits Master Class' // Always show 'Crédits Master Class' for MCs on the card
                         : new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </p>
                 {renderButtons()}

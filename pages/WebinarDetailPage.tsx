@@ -46,7 +46,9 @@ const getGroupLogo = (group: WebinarGroup): string => {
     webinar: Webinar; // Added webinar prop
     initialSelectedSlots?: WebinarTimeSlot[]; // For already registered users
     onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
-}> = ({ webinar, initialSelectedSlots, onUpdateRegistration }) => {
+    userMasterClassCredits?: number; // New prop for Master Class credit logic
+    onUseCredit?: (webinarId: string) => Promise<void>; // New prop for Master Class credit registration
+}> = ({ webinar, initialSelectedSlots, onUpdateRegistration, userMasterClassCredits = 0, onUseCredit }) => {
     const { addToCart, findItem } = useCart();
     const navigate = useNavigate();
     const isMasterClass = webinar.group === WebinarGroup.MASTER_CLASS;
@@ -158,11 +160,11 @@ const getGroupLogo = (group: WebinarGroup): string => {
                 </>
             )}
             <button
-                onClick={buttonOnClick}
-                disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded} // Disable if not MC and no slots selected and not already added
+                onClick={isMasterClass ? (isAdded ? handleGoToCart : () => onUseCredit(webinar._id as string)) : buttonOnClick}
+                disabled={isMasterClass ? (!onUseCredit || userMasterClassCredits === 0 || isAdded) : (!isMasterClass && selectedSlots.length === 0 && !isAdded)}
                 className={buttonClassName}
             >
-                {buttonText}
+                {isMasterClass ? (isAdded ? 'Ajouté' : (userMasterClassCredits > 0 ? 'Payer avec 1 crédit' : 'Crédits insuffisants')) : buttonText}
             </button>
             {isAdded && !isUpdateMode && (
                 <button
@@ -184,6 +186,33 @@ const WebinarDetailPage: React.FC = () => {
     const [webinarDescription, setWebinarDescription] = useState<string | null>(null);
     const { user, token } = useAuth();
     const navigate = useNavigate();
+
+    const handleUseCreditForMasterClass = async (webinarId: string) => {
+        if (!user || !token || !webinarId) return;
+        if (!window.confirm("Voulez-vous utiliser 1 crédit Master Class pour vous inscrire à ce webinaire ?")) return;
+
+        try {
+            const response = await fetch(`/api/webinars/${webinarId}/register-with-credit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ userId: user._id }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to register with credit');
+            }
+
+            alert("Inscription confirmée avec succès ! 1 crédit a été utilisé.");
+            window.location.reload(); 
+
+        } catch (err: any) {
+            alert(`Erreur lors de l'inscription avec crédit : ${err.message}`);
+        }
+    };
 
     const handleUpdateRegistration = async (newSlots: WebinarTimeSlot[]) => {
         if (!user || !webinarId) return;
@@ -352,7 +381,11 @@ const WebinarDetailPage: React.FC = () => {
                             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90 text-white">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-5 w-5" />
-                                    <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                    <span className="font-medium">
+                                        {webinar.group === WebinarGroup.MASTER_CLASS
+                                            ? <>Date : {new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br/>Choix du créneau à l'inscription</>
+                                            : new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <UserIcon className="h-5 w-5" />
@@ -414,6 +447,8 @@ const WebinarDetailPage: React.FC = () => {
                                                                                                     webinar={webinar} // Pass the webinar object
                                                                                                     initialSelectedSlots={registeredAttendee.timeSlots}
                                                                                                     onUpdateRegistration={handleUpdateRegistration}
+                                                                                                    userMasterClassCredits={user?.masterClassCredits || 0}
+                                                                                                    onUseCredit={handleUseCreditForMasterClass}
                                                                                                 />
                                                                                             </>
                                                                                         )}
@@ -430,7 +465,11 @@ const WebinarDetailPage: React.FC = () => {
                                                                                         )}
                                                                                     </div>
                                                                                 ) : (
-                                                                                    <AddToCartForm webinar={webinar} /> // Pass the webinar object
+                                                                                    <AddToCartForm 
+                                                                                        webinar={webinar} 
+                                                                                        userMasterClassCredits={user?.masterClassCredits || 0}
+                                                                                        onUseCredit={handleUseCreditForMasterClass}
+                                                                                    /> // Pass the webinar object
                                                                                 )}                                {webinar.group === WebinarGroup.CROP_TUNIS ? (
                                     <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
                                         Pass journée: 80,000 DT
