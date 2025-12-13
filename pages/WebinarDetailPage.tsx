@@ -159,13 +159,36 @@ const getGroupLogo = (group: WebinarGroup): string => {
                     </div>
                 </>
             )}
-            <button
-                onClick={isMasterClass ? (isAdded ? handleGoToCart : () => onUseCredit(webinar._id as string)) : buttonOnClick}
-                disabled={isMasterClass ? (!onUseCredit || userMasterClassCredits === 0 || isAdded) : (!isMasterClass && selectedSlots.length === 0 && !isAdded)}
-                className={buttonClassName}
-            >
-                {isMasterClass ? (isAdded ? 'Ajouté' : (userMasterClassCredits > 0 ? 'Payer avec 1 crédit' : 'Crédits insuffisants')) : buttonText}
-            </button>
+            {isMasterClass && !isUpdateMode && !isAdded ? (
+                // For Master Class, if not added and not in update mode
+                <div className="flex flex-col space-y-2 mt-4">
+                    {userMasterClassCredits > 0 && onUseCredit && (
+                        <button
+                            onClick={() => onUseCredit(webinar._id as string)}
+                            className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
+                            disabled={isAdded} // Disable if already added to cart or registered
+                        >
+                            Payer avec 1 crédit
+                        </button>
+                    )}
+                    <button
+                        onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [] })}
+                        className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                        disabled={isAdded} // Disable if already added to cart or registered
+                    >
+                        Ajouter au panier
+                    </button>
+                </div>
+            ) : (
+                // Original button logic for other cases (CROP Tunis, already added, update mode)
+                <button
+                    onClick={buttonOnClick}
+                    disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded} // Disable if not MC and no slots selected and not already added
+                    className={buttonClassName}
+                >
+                    {buttonText}
+                </button>
+            )}
             {isAdded && !isUpdateMode && (
                 <button
                     onClick={() => navigate('/webinars')}
