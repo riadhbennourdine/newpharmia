@@ -1,18 +1,20 @@
-# Description Générale des MasterClass
+# Master Class Officine 2026
 
-Bienvenue aux MasterClass de PharmIA !
+**Bienvenue aux MasterClass PharmIA !**
 
-Nos MasterClass sont conçues pour les professionnels souhaitant approfondir leurs connaissances et compétences dans des domaines spécifiques de la pharmacie. Chaque session est animée par des experts de l'industrie et offre un contenu de pointe.
+Nos MasterClass sont conçues pour les professionnels de la pharmacie. Chaque session, animée par des experts, vous offre un contenu de pointe pour approfondir vos connaissances et compétences.
 
-## Ce que vous apprendrez :
-*   Les dernières avancées dans le domaine.
-*   Des études de cas pratiques.
-*   Des stratégies applicables directement dans votre pratique.
+## Ce que vous y gagnerez :
 
-## Comment ça fonctionne :
-En vous inscrivant à un pack MasterClass, vous obtenez des crédits qui peuvent être utilisés pour participer à nos différentes sessions. Suivez votre solde de crédits et choisissez les MasterClass qui correspondent le mieux à vos besoins.
+*   **Dernières avancées :** Soyez à jour avec les innovations du secteur.
+*   **Cas pratiques :** Apprenez grâce à des études de cas concrètes.
+*   **Stratégies applicables :** Intégrez des méthodes directement dans votre pratique quotidienne.
 
-Rejoignez notre communauté d'apprenants et faites passer votre expertise au niveau supérieur !
+## Fonctionnement :
+
+Inscrivez-vous à un pack MasterClass pour obtenir des crédits. Ces crédits vous permettent de participer aux sessions de votre choix. Suivez votre solde et adaptez votre parcours de formation à vos besoins.
+
+Rejoignez notre communauté et propulsez votre expertise !
 
 ---
-*Note: Cette description est un contenu générique pour toutes les MasterClass. Des détails spécifiques à chaque session seront fournis lors de l'inscription à la MasterClass concernée.*
+*Note : Cette description est générale. Les détails spécifiques à chaque session sont disponibles lors de l'inscription.*

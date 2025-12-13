@@ -71,7 +71,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         const now = new Date();
         const webinarDateTime = new Date(webinar.date);
         if (webinarDateTime < now) {
-            console.warn(`Cannot add past webinar "${webinar.title}" to cart. Webinar Date: ${webinarDateTime.toISOString()}, Current Date: ${now.toISOString()}`);
+            console.warn(`Cannot add past webinar "${webinar.title}" to cart.`);
             return;
         }
         itemGroup = webinar.group;
