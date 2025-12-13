@@ -381,7 +381,7 @@ const WebinarManagement: React.FC = () => {
                     <select
                         value={filterGroup}
                         onChange={(e) => setFilterGroup(e.target.value)}
-                        className="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                        className="form-select pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
                         disabled={isWebinarAdmin} // Disable if WebinarAdmin
                     >
                         <option value="ALL">Tous les groupes</option>
