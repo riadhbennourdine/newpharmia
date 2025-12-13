@@ -77,7 +77,7 @@ const AddToCartForm: React.FC<{
             if (!isUpdateMode && isInitiallyInCart) {
                 // We need to update the item in the cart context if slots change
                 // This assumes addToCart can also handle updates if item exists
-                addToCart(webinar, newSlots);
+                addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: newSlots });
             }
             return newSlots;
         });
@@ -95,7 +95,7 @@ const AddToCartForm: React.FC<{
             alert("Vos créneaux horaires ont été mis à jour avec succès.");
         } else {
             // Add to cart flow
-            addToCart(webinar, selectedSlots);
+            addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: selectedSlots });
             setIsAdded(true);
         }
     };
