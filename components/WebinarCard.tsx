@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus, WebinarResource } from '../types';
