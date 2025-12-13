@@ -9,6 +9,10 @@ import { BANK_DETAILS } from '../constants';
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 
+const isHtmlString = (str: string | null | undefined): boolean => {
+    if (!str) return false;
+    return str.trim().startsWith('<') && str.trim().endsWith('>') && (/<[a-z][\s\S]*>/i.test(str) || /&lt;[a-z][\s\S]*&gt;/i.test(str));
+};
 
 const formatUrl = (url: string | undefined): string => {
     if (!url) return '#';
@@ -350,7 +354,19 @@ const WebinarDetailPage: React.FC = () => {
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
                             <div className="prose prose-lg max-w-none text-slate-700 mb-8">
-                                <MarkdownRenderer content={webinarDescription || webinar.description} />
+                                <MarkdownRenderer content={
+                                    webinar.group === WebinarGroup.MASTER_CLASS
+                                        ? webinarDescription // This is master_class_description.md from fetch
+                                        : (
+                                            webinarDescription && !isHtmlString(webinarDescription)
+                                                ? webinarDescription
+                                                : (
+                                                    webinar.description && !isHtmlString(webinar.description)
+                                                        ? webinar.description
+                                                        : "Description non disponible ou formatée incorrectement."
+                                                )
+                                        )
+                                } />
                             </div>
 
                             {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
