@@ -42,13 +42,14 @@ const getGroupLogo = (group: WebinarGroup): string => {
 };
 
 // Simplified component for time slot selection leading to Add to Cart or updating registration
-const AddToCartForm: React.FC<{ 
+    const AddToCartForm: React.FC<{ 
     webinar: Webinar; // Added webinar prop
     initialSelectedSlots?: WebinarTimeSlot[]; // For already registered users
     onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
 }> = ({ webinar, initialSelectedSlots, onUpdateRegistration }) => {
     const { addToCart, findItem } = useCart();
     const navigate = useNavigate();
+    const isMasterClass = webinar.group === WebinarGroup.MASTER_CLASS;
     const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(() => {
         // If initialSelectedSlots are provided (for registered users), use them.
         // Otherwise, check if the item is in the cart.
@@ -84,7 +85,7 @@ const AddToCartForm: React.FC<{
     };
 
     const handleAction = async () => {
-        if (selectedSlots.length === 0) {
+        if (!isMasterClass && selectedSlots.length === 0) { // Only check for slots if not a Master Class
             alert("Veuillez sélectionner au moins un créneau.");
             return;
         }
@@ -130,26 +131,35 @@ const AddToCartForm: React.FC<{
 
     return (
         <div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
-            <p className="text-sm text-slate-500 mb-3">Vous pouvez sélectionner un ou plusieurs créneaux.</p>
-            <div className="space-y-2">
-                {Object.values(WebinarTimeSlot).map((slot) => (
-                    <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
-                        <input
-                            type="checkbox"
-                            name="timeSlot"
-                            value={slot}
-                            checked={selectedSlots.includes(slot)}
-                            onChange={() => handleCheckboxChange(slot)}
-                            className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-                        />
-                        <span className="ml-3 font-medium text-slate-700">{slot}</span>
-                    </label>
-                ))}
-            </div>
+            {isMasterClass ? (
+                <div className="text-center text-slate-700 font-semibold mb-4">
+                    Inscription via crédits Master Class.
+                    <p className="text-sm text-slate-500 mt-1">Choisissez ce webinaire et validez via votre panier.</p>
+                </div>
+            ) : (
+                <>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
+                    <p className="text-sm text-slate-500 mb-3">Vous pouvez sélectionner un ou plusieurs créneaux.</p>
+                    <div className="space-y-2">
+                        {Object.values(WebinarTimeSlot).map((slot) => (
+                            <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="timeSlot"
+                                    value={slot}
+                                    checked={selectedSlots.includes(slot)}
+                                    onChange={() => handleCheckboxChange(slot)}
+                                    className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                                />
+                                <span className="ml-3 font-medium text-slate-700">{slot}</span>
+                            </label>
+                        ))}
+                    </div>
+                </>
+            )}
             <button
                 onClick={buttonOnClick}
-                disabled={selectedSlots.length === 0 && !isAdded} // Disable if no slots selected and not already added
+                disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded} // Disable if not MC and no slots selected and not already added
                 className={buttonClassName}
             >
                 {buttonText}
@@ -165,7 +175,6 @@ const AddToCartForm: React.FC<{
         </div>
     );
 };
-
 const WebinarDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const webinarId = id;
@@ -422,9 +431,15 @@ const WebinarDetailPage: React.FC = () => {
                                                                                     </div>
                                                                                 ) : (
                                                                                     <AddToCartForm webinar={webinar} /> // Pass the webinar object
-                                                                                )}                                <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
-                                    Pass journée: 80,000 DT
-                                </p>
+                                                                                )}                                {webinar.group === WebinarGroup.CROP_TUNIS ? (
+                                    <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
+                                        Pass journée: 80,000 DT
+                                    </p>
+                                ) : webinar.group === WebinarGroup.MASTER_CLASS ? (
+                                    <p className="mt-4 text-2xl font-extrabold text-teal-600 text-center">
+                                        Disponible via crédits Master Class
+                                    </p>
+                                ) : null}
                             </div>
 
                             {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && webinar.attendees && (
