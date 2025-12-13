@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Webinar, User, UserRole, WebinarTimeSlot, WebinarGroup } from '../types';
+import { Webinar, User, UserRole, WebinarTimeSlot, WebinarGroup, ProductType } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useCart, CartItem } from '../context/CartContext';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
