@@ -93,7 +93,7 @@ const WebinarActionButtons: React.FC<{
 };
 
 // Simplified component for time slot selection leading to Add to Cart or updating registration
-    const AddToCartForm: React.FC<{ 
+    const AddToCartForm: React.FC<{
     webinar: Webinar; // Added webinar prop
     initialSelectedSlots?: WebinarTimeSlot[]; // For already registered users
     onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
@@ -162,7 +162,7 @@ const WebinarActionButtons: React.FC<{
         ? handleAction
         : (isAdded ? handleGoToCart : handleAction);
 
-    const buttonClassName = `w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${
+    const buttonClassName = `w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${ 
         isUpdateMode
             ? 'bg-blue-600 text-white hover:bg-blue-700' // Blue for update mode
             : (isAdded
@@ -470,8 +470,23 @@ const WebinarDetailPage: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
                             <div className="prose prose-lg max-w-none text-slate-700 mb-8">
-
-
+                                <MarkdownRenderer content={
+                                    webinar.group === WebinarGroup.MASTER_CLASS
+                                        ? (
+                                            (webinar.description ? webinar.description + "\n\n---\n\n" : "") +
+                                            (webinarDescription || "")
+                                        )
+                                        : (
+                                            webinarDescription && !isHtmlString(webinarDescription)
+                                                ? webinarDescription
+                                                : (
+                                                    webinar.description && !isHtmlString(webinar.description)
+                                                        ? webinar.description
+                                                        : "Description non disponible ou formatée incorrectement."
+                                                )
+                                        )
+                                } />
+                            </div>
                             {webinar.group === WebinarGroup.MASTER_CLASS && !registeredAttendee && (
                                 <div className="mt-6">
                                     <WebinarActionButtons
@@ -554,7 +569,8 @@ const WebinarDetailPage: React.FC = () => {
                                                                                         isAdded={isAdded} // Pass isAdded state
                                                                                         setIsAdded={setIsAdded} // Pass setIsAdded setter
                                                                                     /> // Pass the webinar object
-                                                                                )}                            </div>
+                                                                                )}
+                            </div>
 
                             {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && webinar.attendees && (
                                  <div className="mt-8 p-4 border-t border-gray-200">
