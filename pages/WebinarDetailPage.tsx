@@ -173,7 +173,7 @@ const getGroupLogo = (group: WebinarGroup): string => {
                     )}
                     <button
                         onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [] })}
-                        className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                        className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
                         disabled={isAdded} // Disable if already added to cart or registered
                     >
                         Ajouter au panier
@@ -418,7 +418,7 @@ const WebinarDetailPage: React.FC = () => {
                         </div>
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
-                            <div className="prose prose-lg max-w-none text-slate-700 mb-8">
+                            <div className="relative prose prose-lg max-w-none text-slate-700 mb-8">
                                 <MarkdownRenderer content={
                                     webinar.group === WebinarGroup.MASTER_CLASS
                                         ? webinarDescription // This is master_class_description.md from fetch
@@ -432,6 +432,11 @@ const WebinarDetailPage: React.FC = () => {
                                                 )
                                         )
                                 } />
+                                {webinar.group === WebinarGroup.MASTER_CLASS && (
+                                    <p className="absolute top-0 right-0 mt-2 mr-2 text-xl font-extrabold text-teal-600">
+                                        {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class'}
+                                    </p>
+                                )}
                             </div>
 
                             {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
@@ -493,16 +498,7 @@ const WebinarDetailPage: React.FC = () => {
                                                                                         userMasterClassCredits={user?.masterClassCredits || 0}
                                                                                         onUseCredit={handleUseCreditForMasterClass}
                                                                                     /> // Pass the webinar object
-                                                                                )}                                {webinar.group === WebinarGroup.CROP_TUNIS ? (
-                                    <p className="mt-4 text-2xl font-extrabold text-red-600 text-center">
-                                        Pass journée: 80,000 DT
-                                    </p>
-                                ) : webinar.group === WebinarGroup.MASTER_CLASS ? (
-                                    <p className="mt-4 text-2xl font-extrabold text-teal-600 text-center">
-                                        {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Disponible via crédits Master Class'}
-                                    </p>
-                                ) : null}
-                            </div>
+                                                                                )}                            </div>
 
                             {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && webinar.attendees && (
                                  <div className="mt-8 p-4 border-t border-gray-200">
