@@ -459,25 +459,27 @@ const WebinarDetailPage: React.FC = () => {
                         </div>
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
-                            <div className="relative prose prose-lg max-w-none text-slate-700 mb-8 mt-8"> {/* Added mt-8 here */}
-                                <MarkdownRenderer content={
-                                    webinar.group === WebinarGroup.MASTER_CLASS
-                                        ? (
-                                            (webinar.description ? webinar.description + "\n\n---\n\n" : "") +
-                                            (webinarDescription || "")
-                                        )
-                                        : (
-                                            webinarDescription && !isHtmlString(webinarDescription)
-                                                ? webinarDescription
-                                                : (
-                                                    webinar.description && !isHtmlString(webinar.description)
-                                                        ? webinar.description
-                                                        : "Description non disponible ou formatée incorrectement."
-                                                )
-                                        )
-                                } />
+                            <div className="flex justify-between items-start mb-8"> {/* Flex container for price and description */}
+                                <div className="prose prose-lg max-w-none text-slate-700">
+                                    <MarkdownRenderer content={
+                                        webinar.group === WebinarGroup.MASTER_CLASS
+                                            ? (
+                                                (webinar.description ? webinar.description + "\n\n---\n\n" : "") +
+                                                (webinarDescription || "")
+                                            )
+                                            : (
+                                                webinarDescription && !isHtmlString(webinarDescription)
+                                                    ? webinarDescription
+                                                    : (
+                                                        webinar.description && !isHtmlString(webinar.description)
+                                                            ? webinar.description
+                                                            : "Description non disponible ou formatée incorrectement."
+                                                    )
+                                            )
+                                    } />
+                                </div>
                                 {webinar.group === WebinarGroup.MASTER_CLASS && (
-                                    <div className="absolute top-0 right-0 mt-0 mr-2 text-right"> {/* Adjusted mt-0 */}
+                                    <div className="flex-shrink-0 ml-4 text-right"> {/* Price on the right */}
                                         <p className="text-sm font-semibold text-slate-700">Prix du Master Class</p>
                                         <p className="text-2xl font-extrabold text-teal-600">
                                             {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class'}
@@ -488,6 +490,7 @@ const WebinarDetailPage: React.FC = () => {
                                     </div>
                                 )}
                             </div>
+
                             {webinar.group === WebinarGroup.MASTER_CLASS && !registeredAttendee && (
                                 <div className="mt-6">
                                     <WebinarActionButtons
