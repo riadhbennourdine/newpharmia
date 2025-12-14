@@ -79,8 +79,9 @@ const CartPage: React.FC = () => {
             }
             console.warn('Pack not found for ID:', item.packId);
         } else {
-            // Default to Webinar price
-            return total + WEBINAR_PRICE;
+            // For non-pack webinars, use item.price (from Webinar.price) or default WEBINAR_PRICE
+            const itemBasePrice = item.price || WEBINAR_PRICE; // item.price is priceHT
+            return total + (itemBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
         }
         return total;
     }, 0);
@@ -214,7 +215,11 @@ const CartPage: React.FC = () => {
                                 </div>
                             </div>
                             <div className="text-right self-center">
-                                <p className="font-bold text-lg text-teal-600 mb-2">{WEBINAR_PRICE.toFixed(3)} TND</p>
+                                {webinar && ( // Ensure webinar details are loaded before showing price
+                                    <p className="font-bold text-lg text-teal-600 mb-2">
+                                        {((item.price || WEBINAR_PRICE) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)} TND <span className="text-sm">(TTC)</span>
+                                    </p>
+                                )}
                                 <button onClick={() => navigate(`/webinars/${webinar._id}`)} className="text-sm text-blue-500 hover:text-blue-700 mb-2 flex items-center justify-end w-full">
                                     <EditIcon className="h-4 w-4 mr-1" />
                                     Modifier
