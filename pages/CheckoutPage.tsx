@@ -187,12 +187,16 @@ const CheckoutPage: React.FC = () => {
         if (!order) return null;
         return (
             <ul className="mb-4 space-y-2 text-sm text-slate-600">
-                {webinarsInOrder.map(w => (
-                    <li key={w._id.toString()} className="flex justify-between">
-                        <span>Webinaire: {w.title}</span>
-                        <span>{w.price ? w.price.toFixed(3) : '80.000'} TND</span>
-                    </li>
-                ))}
+                {webinarsInOrder.map(w => {
+                    const webinarBasePrice = w.price || 80.000; // Assume 80.000 is HT for CROP, w.price for MC is HT
+                    const webinarTTC = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    return (
+                        <li key={w._id.toString()} className="flex justify-between">
+                            <span>Webinaire: {w.title}</span>
+                            <span>{webinarTTC.toFixed(3)} TND <span className="text-xs text-slate-400">(TTC)</span></span>
+                        </li>
+                    );
+                })}
                 {order.items.filter(i => i.type === ProductType.PACK || !!i.packId).map((item, idx) => {
                     const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     // Calculate TTC for display if needed, but order.totalAmount has the sum
@@ -238,66 +242,108 @@ const CheckoutPage: React.FC = () => {
                         {/* Tax Breakdown */}
                         <div className="space-y-2 text-sm text-slate-600">
                             {(() => {
-                                // Calculate totals dynamically for display
-                                let totalHT = 0;
-                                let totalTVA = 0;
-                                const stampDuty = TAX_RATES.TIMBRE;
+                                let calculatedTotalHT = 0;
+                                let calculatedTotalTVA = 0;
+                                const calculatedStampDuty = TAX_RATES.TIMBRE;
+                                let cropWebinarsTTC = 0; // For CROP webinars, their price is already TTC
 
-                                // Packs (Base Price is HT)
-                                const packs = order.items.filter(i => i.type === ProductType.PACK);
-                                packs.forEach(item => {
-                                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                                    if (pack) {
-                                        totalHT += pack.priceHT;
-                                        totalTVA += pack.priceHT * TAX_RATES.TVA;
+                                order.items.forEach(item => {
+                                    const isPack = item.type === ProductType.PACK || !!item.packId;
+                                    
+                                    if (isPack && item.packId) {
+                                        const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                        if (pack) {
+                                            calculatedTotalHT += pack.priceHT;
+                                            calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
+                                        }
+                                    } else { // Assume it's a webinar
+                                        const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
+                                        if (webinarDetails) {
+                                            if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                                                const webinarBasePrice = webinarDetails.price || 0; // MC prices are HT
+                                                calculatedTotalHT += webinarBasePrice;
+                                                calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                                            } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                                                cropWebinarsTTC += (webinarDetails.price || 80.000); // CROP prices are considered TTC (e.g. 80.000 DT)
+                                            }
+                                        }
                                     }
                                 });
 
-                                // Webinars (Base Price is assumed TTC for CROP, or we treat it as HT if tax applies?)
-                                // Current business rule: CROP webinars are 80DT TTC.
-                                // If we have mixed basket, we add crop price to Total to Pay directly, 
-                                // but for a cleaner breakdown, we can display them separately or assume 0 tax on them if exempt.
-                                // Let's simplify: Display breakdown ONLY if there are taxable items (Packs).
-                                // If only CROP webinars, display simple total.
+                                const finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + calculatedStampDuty + cropWebinarsTTC;
                                 
-                                const cropWebinars = webinarsInOrder.filter(w => w.group === WebinarGroup.CROP_TUNIS);
-                                const cropTotalTTC = cropWebinars.reduce((sum, w) => sum + (w.price || 80.000), 0);
+                                const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
                                 
-                                // Total Calculation
-                                const finalTotal = totalHT + totalTVA + stampDuty + cropTotalTTC;
-                                
-                                if (packs.length > 0) {
-                                    return (
-                                        <>
-                                            <div className="flex justify-between">
-                                                <span>Total Hors Taxes (Packs):</span>
-                                                <span>{totalHT.toFixed(3)} TND</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span>TVA (19%):</span>
-                                                <span>{totalTVA.toFixed(3)} TND</span>
-                                            </div>
-                                            {cropTotalTTC > 0 && (
+                                return (
+                                    <>
+                                        {hasTaxableItems && (
+                                            <>
                                                 <div className="flex justify-between">
-                                                    <span>Webinaires CROP (Net):</span>
-                                                    <span>{cropTotalTTC.toFixed(3)} TND</span>
+                                                    <span>Total Hors Taxes:</span>
+                                                    <span>{calculatedTotalHT.toFixed(3)} TND</span>
                                                 </div>
-                                            )}
+                                                <div className="flex justify-between">
+                                                    <span>TVA ({TAX_RATES.TVA * 100}%):</span>
+                                                    <span>{calculatedTotalTVA.toFixed(3)} TND</span>
+                                                </div>
+                                            </>
+                                        )}
+                                        {calculatedStampDuty > 0 && (hasTaxableItems || cropWebinarsTTC > 0) && ( // Show stamp duty if any items or crop webinars exist
                                             <div className="flex justify-between">
                                                 <span>Timbre Fiscal:</span>
-                                                <span>{stampDuty.toFixed(3)} TND</span>
+                                                <span>{calculatedStampDuty.toFixed(3)} TND</span>
                                             </div>
-                                        </>
-                                    );
-                                }
-                                return null; // No breakdown for simple CROP orders
+                                        )}
+                                        {cropWebinarsTTC > 0 && (
+                                            <div className="flex justify-between">
+                                                <span>Webinaires CROP (Net):</span>
+                                                <span>{cropWebinarsTTC.toFixed(3)} TND</span>
+                                            </div>
+                                        )}
+                                    </>
+                                );
                             })()}
                         </div>
 
                         <hr className="border-t border-teal-200 my-4" />
                         <div className="flex justify-between items-center">
                             <span className="text-lg font-bold text-teal-800">Montant Total à payer:</span>
-                            <span className="text-3xl font-extrabold text-teal-600">{order.totalAmount.toFixed(3)} TND</span>
+                            <span className="text-3xl font-extrabold text-teal-600">{
+                                (
+                                    (() => {
+                                        let finalCalculatedTTC = 0;
+                                        let calculatedTotalHT = 0;
+                                        let calculatedTotalTVA = 0;
+                                        const calculatedStampDuty = TAX_RATES.TIMBRE;
+                                        let cropWebinarsTTC = 0;
+
+                                        order.items.forEach(item => {
+                                            const isPack = item.type === ProductType.PACK || !!item.packId;
+                                            
+                                            if (isPack && item.packId) {
+                                                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                                if (pack) {
+                                                    calculatedTotalHT += pack.priceHT;
+                                                    calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
+                                                }
+                                            } else { // Assume it's a webinar
+                                                const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
+                                                if (webinarDetails) {
+                                                    if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                                                        const webinarBasePrice = webinarDetails.price || 0; // MC prices are HT
+                                                        calculatedTotalHT += webinarBasePrice;
+                                                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                                                    } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                                                        cropWebinarsTTC += (webinarDetails.price || 80.000); // CROP prices are considered TTC
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + calculatedStampDuty + cropWebinarsTTC;
+                                        return finalCalculatedTTC;
+                                    })()
+                                ).toFixed(3)
+                            } TND</span>
                         </div>
                     </div>
 
