@@ -41,6 +41,57 @@ const getGroupLogo = (group: WebinarGroup): string => {
     }
 };
 
+// WebinarActionButtons component to encapsulate the button rendering logic
+const WebinarActionButtons: React.FC<{
+    webinar: Webinar;
+    userMasterClassCredits: number;
+    onUseCredit: (webinarId: string) => Promise<void>;
+    isAdded: boolean;
+    handleGoToCart: () => void;
+    handleAction: () => Promise<void>;
+    buttonClassName: string;
+    buttonText: string;
+    buttonOnClick: () => Promise<void> | void;
+    selectedSlots: WebinarTimeSlot[];
+    isMasterClass: boolean;
+    isUpdateMode: boolean;
+}> = ({ webinar, userMasterClassCredits, onUseCredit, isAdded, handleGoToCart, handleAction, buttonClassName, buttonText, buttonOnClick, selectedSlots, isMasterClass, isUpdateMode }) => {
+    const { addToCart } = useCart(); // Assuming addToCart is available in this scope
+
+    if (isMasterClass && !isUpdateMode && !isAdded) {
+        return (
+            <div className="flex flex-col space-y-2 mt-4">
+                {userMasterClassCredits > 0 && onUseCredit && (
+                    <button
+                        onClick={() => onUseCredit(webinar._id as string)}
+                        className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
+                        disabled={isAdded}
+                    >
+                        Payer avec 1 crédit
+                    </button>
+                )}
+                <button
+                    onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [] })}
+                    className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
+                    disabled={isAdded}
+                >
+                    Ajouter au panier
+                </button>
+            </div>
+        );
+    } else {
+        return (
+            <button
+                onClick={buttonOnClick}
+                disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded}
+                className={buttonClassName}
+            >
+                {buttonText}
+            </button>
+        );
+    }
+};
+
 // Simplified component for time slot selection leading to Add to Cart or updating registration
     const AddToCartForm: React.FC<{ 
     webinar: Webinar; // Added webinar prop
@@ -48,19 +99,16 @@ const getGroupLogo = (group: WebinarGroup): string => {
     onUpdateRegistration?: (newSlots: WebinarTimeSlot[]) => Promise<void>; // For registered users
     userMasterClassCredits?: number; // New prop for Master Class credit logic
     onUseCredit?: (webinarId: string) => Promise<void>; // New prop for Master Class credit registration
-}> = ({ webinar, initialSelectedSlots, onUpdateRegistration, userMasterClassCredits = 0, onUseCredit }) => {
-    const { addToCart, findItem } = useCart();
+    isAdded: boolean; // Prop received from parent
+    setIsAdded: React.Dispatch<React.SetStateAction<boolean>>; // Prop received from parent
+}> = ({ webinar, initialSelectedSlots, onUpdateRegistration, userMasterClassCredits = 0, onUseCredit, isAdded, setIsAdded }) => {
+    const { addToCart } = useCart();
     const navigate = useNavigate();
     const isMasterClass = webinar.group === WebinarGroup.MASTER_CLASS;
-    const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(() => {
-        // If initialSelectedSlots are provided (for registered users), use them.
-        // Otherwise, check if the item is in the cart.
-        return initialSelectedSlots || (findItem(webinar._id as string)?.slots || []);
-    });
+    const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(initialSelectedSlots || []);
     
-    // Check if the item is in the cart on initial render (only relevant for non-registered flow)
-    const isInitiallyInCart = !!findItem(webinar._id as string);
-    const [isAdded, setIsAdded] = useState(isInitiallyInCart);
+    // isAdded and setIsAdded are now props
+    // isInitiallyInCart removed
 
     // Determine if we are in "update registration" mode
     const isUpdateMode = !!onUpdateRegistration;
@@ -159,36 +207,20 @@ const getGroupLogo = (group: WebinarGroup): string => {
                     </div>
                 </>
             )}
-            {isMasterClass && !isUpdateMode && !isAdded ? (
-                // For Master Class, if not added and not in update mode
-                <div className="flex flex-col space-y-2 mt-4">
-                    {userMasterClassCredits > 0 && onUseCredit && (
-                        <button
-                            onClick={() => onUseCredit(webinar._id as string)}
-                            className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
-                            disabled={isAdded} // Disable if already added to cart or registered
-                        >
-                            Payer avec 1 crédit
-                        </button>
-                    )}
-                    <button
-                        onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [] })}
-                        className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
-                        disabled={isAdded} // Disable if already added to cart or registered
-                    >
-                        Ajouter au panier
-                    </button>
-                </div>
-            ) : (
-                // Original button logic for other cases (CROP Tunis, already added, update mode)
-                <button
-                    onClick={buttonOnClick}
-                    disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded} // Disable if not MC and no slots selected and not already added
-                    className={buttonClassName}
-                >
-                    {buttonText}
-                </button>
-            )}
+            <WebinarActionButtons
+                webinar={webinar}
+                userMasterClassCredits={userMasterClassCredits}
+                onUseCredit={onUseCredit}
+                isAdded={isAdded}
+                handleGoToCart={handleGoToCart}
+                handleAction={handleAction}
+                buttonClassName={buttonClassName}
+                buttonText={buttonText}
+                buttonOnClick={buttonOnClick}
+                selectedSlots={selectedSlots}
+                isMasterClass={isMasterClass}
+                isUpdateMode={isUpdateMode}
+            />
             {isAdded && !isUpdateMode && (
                 <button
                     onClick={() => navigate('/webinars')}
@@ -208,7 +240,16 @@ const WebinarDetailPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [webinarDescription, setWebinarDescription] = useState<string | null>(null);
     const { user, token } = useAuth();
+    const { findItem } = useCart(); // Access findItem from useCart
+    const [isAdded, setIsAdded] = useState(false); // New state elevated to WebinarDetailPage
     const navigate = useNavigate();
+
+    // Effect to update isAdded state when webinar or cart items change
+    useEffect(() => {
+        if (webinar) {
+            setIsAdded(!!findItem(webinar._id as string));
+        }
+    }, [webinar, findItem]);
 
     const handleUseCreditForMasterClass = async (webinarId: string) => {
         if (!user || !token || !webinarId) return;
@@ -418,10 +459,13 @@ const WebinarDetailPage: React.FC = () => {
                         </div>
                     </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
-                            <div className="relative prose prose-lg max-w-none text-slate-700 mb-8">
+                            <div className="relative prose prose-lg max-w-none text-slate-700 mb-8 mt-8"> {/* Added mt-8 here */}
                                 <MarkdownRenderer content={
                                     webinar.group === WebinarGroup.MASTER_CLASS
-                                        ? webinarDescription // This is master_class_description.md from fetch
+                                        ? (
+                                            (webinar.description ? webinar.description + "\n\n---\n\n" : "") +
+                                            (webinarDescription || "")
+                                        )
                                         : (
                                             webinarDescription && !isHtmlString(webinarDescription)
                                                 ? webinarDescription
@@ -433,11 +477,35 @@ const WebinarDetailPage: React.FC = () => {
                                         )
                                 } />
                                 {webinar.group === WebinarGroup.MASTER_CLASS && (
-                                    <p className="absolute top-0 right-0 mt-2 mr-2 text-xl font-extrabold text-teal-600">
-                                        {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class'}
-                                    </p>
+                                    <div className="absolute top-0 right-0 mt-0 mr-2 text-right"> {/* Adjusted mt-0 */}
+                                        <p className="text-sm font-semibold text-slate-700">Prix du Master Class</p>
+                                        <p className="text-2xl font-extrabold text-teal-600">
+                                            {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class'}
+                                        </p>
+                                        {webinar.price && (
+                                            <p className="text-xs text-slate-500">Hors taxes</p>
+                                        )}
+                                    </div>
                                 )}
                             </div>
+                            {webinar.group === WebinarGroup.MASTER_CLASS && !registeredAttendee && (
+                                <div className="mt-6">
+                                    <WebinarActionButtons
+                                        webinar={webinar}
+                                        userMasterClassCredits={user?.masterClassCredits || 0}
+                                        onUseCredit={handleUseCreditForMasterClass}
+                                        isAdded={isAdded}
+                                        handleGoToCart={() => navigate('/cart')}
+                                        handleAction={async () => { /* no action here, buttons handle their own */ }}
+                                        buttonClassName="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
+                                        buttonText="S'inscrire" // Generic text, actual text comes from WebinarActionButtons
+                                        buttonOnClick={async () => { /* no action here */ }}
+                                        selectedSlots={[]}
+                                        isMasterClass={true}
+                                        isUpdateMode={false}
+                                    />
+                                </div>
+                            )}
 
                             {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
                                 <div className="mt-8 pt-6 border-t">
@@ -477,6 +545,8 @@ const WebinarDetailPage: React.FC = () => {
                                                                                                     onUpdateRegistration={handleUpdateRegistration}
                                                                                                     userMasterClassCredits={user?.masterClassCredits || 0}
                                                                                                     onUseCredit={handleUseCreditForMasterClass}
+                                                                                                    isAdded={isAdded} // Pass isAdded state
+                                                                                                    setIsAdded={setIsAdded} // Pass setIsAdded setter
                                                                                                 />
                                                                                             </>
                                                                                         )}
@@ -497,6 +567,8 @@ const WebinarDetailPage: React.FC = () => {
                                                                                         webinar={webinar} 
                                                                                         userMasterClassCredits={user?.masterClassCredits || 0}
                                                                                         onUseCredit={handleUseCreditForMasterClass}
+                                                                                        isAdded={isAdded} // Pass isAdded state
+                                                                                        setIsAdded={setIsAdded} // Pass setIsAdded setter
                                                                                     /> // Pass the webinar object
                                                                                 )}                            </div>
 
