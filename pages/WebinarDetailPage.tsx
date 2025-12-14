@@ -71,7 +71,7 @@ const WebinarActionButtons: React.FC<{
                     </button>
                 )}
                 <button
-                    onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [] })}
+                    onClick={() => addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: [], price: webinar.price })}
                     className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
                     disabled={isAdded}
                 >
@@ -125,10 +125,9 @@ const WebinarActionButtons: React.FC<{
                 : [...prev, slot];
             
             // If in cart mode and item is already in cart, update it immediately
-            if (!isUpdateMode && isInitiallyInCart) {
-                // We need to update the item in the cart context if slots change
-                // This assumes addToCart can also handle updates if item exists
-                addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: newSlots });
+            // isInitiallyInCart is removed, but we can check if it's currently in cart using `isAdded`
+            if (!isUpdateMode && isAdded) { 
+                addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: newSlots, price: webinar.price });
             }
             return newSlots;
         });
@@ -146,7 +145,7 @@ const WebinarActionButtons: React.FC<{
             alert("Vos créneaux horaires ont été mis à jour avec succès.");
         } else {
             // Add to cart flow
-            addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: selectedSlots });
+            addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: selectedSlots, price: webinar.price });
             setIsAdded(true);
         }
     };
