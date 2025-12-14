@@ -457,39 +457,21 @@ const WebinarDetailPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    </div>
+
+                    {/* NEW PRICE POSITION HERE */}
+                    {webinar.group === WebinarGroup.MASTER_CLASS && (
+                        <div className="text-right mb-4">
+                            <p className="text-xl font-bold text-teal-600">
+                                Prix du Master Class {webinar.price ? `en Hors taxes : ${webinar.price.toFixed(3)} DT` : ': Crédits Master Class'}
+                            </p>
+                        </div>
+                    )}
+                    
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="p-8">
-                            <div className="flex justify-between items-start mb-8"> {/* Flex container for price and description */}
-                                <div className="prose prose-lg max-w-none text-slate-700">
-                                    <MarkdownRenderer content={
-                                        webinar.group === WebinarGroup.MASTER_CLASS
-                                            ? (
-                                                (webinar.description ? webinar.description + "\n\n---\n\n" : "") +
-                                                (webinarDescription || "")
-                                            )
-                                            : (
-                                                webinarDescription && !isHtmlString(webinarDescription)
-                                                    ? webinarDescription
-                                                    : (
-                                                        webinar.description && !isHtmlString(webinar.description)
-                                                            ? webinar.description
-                                                            : "Description non disponible ou formatée incorrectement."
-                                                    )
-                                            )
-                                    } />
-                                </div>
-                                {webinar.group === WebinarGroup.MASTER_CLASS && (
-                                    <div className="flex-shrink-0 ml-4 text-right"> {/* Price on the right */}
-                                        <p className="text-sm font-semibold text-slate-700">Prix du Master Class</p>
-                                        <p className="text-2xl font-extrabold text-teal-600">
-                                            {webinar.price ? `${webinar.price.toFixed(3)} DT` : 'Crédits Master Class'}
-                                        </p>
-                                        {webinar.price && (
-                                            <p className="text-xs text-slate-500">Hors taxes</p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                            <div className="prose prose-lg max-w-none text-slate-700 mb-8">
+
 
                             {webinar.group === WebinarGroup.MASTER_CLASS && !registeredAttendee && (
                                 <div className="mt-6">

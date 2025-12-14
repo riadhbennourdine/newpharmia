@@ -302,6 +302,18 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export interface CartItem {
+  type: ProductType; // 'WEBINAR' or 'PACK'
+  id: string; // webinarId or packId
+  webinarId?: string; // Kept for compatibility/clarity
+  packId?: string;
+  slots?: WebinarTimeSlot[];
+  title: string;
+  date?: Date; // Only for webinars
+  group: WebinarGroup; // Critical for mixed-cart check
+  price?: number; // Added price field
+}
+
 export interface Order {
   _id: ObjectId | string;
   userId: ObjectId | string;

@@ -82,7 +82,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             slots: selectedSlots || [],
             title: webinar.title,
             date: webinar.date,
-            group: webinar.group
+            group: webinar.group,
+            price: webinar.price, // Add webinar price to CartItem
         };
     } else if (type === ProductType.PACK && packId) {
         itemGroup = WebinarGroup.MASTER_CLASS; // Packs are always Master Class for now
