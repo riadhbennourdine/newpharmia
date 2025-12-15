@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
-import { Webinar, ProductType } from '../types';
+import { Webinar, ProductType, WebinarGroup } from '../types';
 import { Spinner, TrashIcon, EditIcon } from '../components/Icons';
 import { WEBINAR_PRICE, MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
 
