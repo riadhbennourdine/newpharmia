@@ -223,7 +223,10 @@ const CartPage: React.FC = () => {
                             <div className="text-right self-center">
                                 {webinar && ( // Ensure webinar details are loaded before showing price
                                     <p className="font-bold text-lg text-teal-600 mb-2">
-                                        {((item.price || WEBINAR_PRICE) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)} TND <span className="text-sm">(TTC)</span>
+                                        {webinar.group === WebinarGroup.MASTER_CLASS
+                                            ? ((item.price || webinar.price || 0) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)
+                                            : WEBINAR_PRICE.toFixed(3) // CROP Tunis is fixed WEBINAR_PRICE
+                                        } TND <span className="text-sm">(TTC)</span>
                                     </p>
                                 )}
                                 <button onClick={() => navigate(`/webinars/${webinar._id}`)} className="text-sm text-blue-500 hover:text-blue-700 mb-2 flex items-center justify-end w-full">
