@@ -5,6 +5,7 @@ import { useData } from '../context/DataContext';
 import { Spinner, ArrowRightIcon } from './Icons';
 import MemoFichePreviewCard from './MemoFichePreviewCard';
 import { Group, CaseStudy } from '../types';
+import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 
 interface Props {
     initialGroup?: Group | null; // Make prop optional
@@ -21,6 +22,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
+    const [showJourneyPopup, setShowJourneyPopup] = useState(false);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -196,11 +198,15 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Mémofiches lues</h1>
                         {user?._id && (
-                            <a href={`/#/read-fiches/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                            <button 
+                                onClick={() => setShowJourneyPopup(true)}
+                                className="absolute top-2 right-2 text-teal-600 hover:text-teal-800"
+                                title="Voir le détail"
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                            </a>
+                            </button>
                         )}
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
@@ -209,11 +215,15 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Quiz réalisés</h1>
                         {user?._id && (
-                            <a href={`/#/quiz-history/${user._id}`} className="absolute top-2 right-2 text-teal-600 hover:text-teal-800">
+                            <button 
+                                onClick={() => setShowJourneyPopup(true)}
+                                className="absolute top-2 right-2 text-teal-600 hover:text-teal-800"
+                                title="Voir le détail"
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                            </a>
+                            </button>
                         )}
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
@@ -259,6 +269,13 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                     </div>
                 )}
             </div>
+            {showJourneyPopup && user && (
+                <PreparateurLearningJourneyPopup
+                    preparerId={user._id as string}
+                    preparerName={`${user.firstName} ${user.lastName}`}
+                    onClose={() => setShowJourneyPopup(false)}
+                />
+            )}
         </>
     );
 };
