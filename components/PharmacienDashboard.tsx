@@ -5,7 +5,8 @@ import LearnerDashboard from './LearnerDashboard';
 import { useAuth } from '../hooks/useAuth';
 import PreparatorCard from './PreparatorCard';
 import EditInstructionModal from './EditInstructionModal';
-import { Spinner } from './Icons'; // Assuming Spinner is available
+import { Spinner, EyeIcon } from './Icons'; // Assuming Spinner is available
+import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 
 const PharmacienDashboard: React.FC = () => {
     const { user } = useAuth();
@@ -18,6 +19,9 @@ const PharmacienDashboard: React.FC = () => {
     const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
     const [primaryFicheDetails, setPrimaryFicheDetails] = useState<CaseStudy | null>(null);
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
+    
+    // State for viewing learning journey
+    const [viewingPreparator, setViewingPreparator] = useState<{id: string, name: string} | null>(null);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -177,7 +181,14 @@ const PharmacienDashboard: React.FC = () => {
                     <h1 className="text-3xl font-bold text-slate-800 mb-6">Statistiques de l'équipe</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {preparators.map(p => (
-                            <PreparatorCard key={p._id as string} preparator={p} />
+                            <PreparatorCard 
+                                key={p._id as string} 
+                                preparator={p} 
+                                onViewJourney={() => setViewingPreparator({
+                                    id: p._id as string, 
+                                    name: `${p.firstName} ${p.lastName}`
+                                })}
+                            />
                         ))}
                     </div>
                 </div>
@@ -186,6 +197,13 @@ const PharmacienDashboard: React.FC = () => {
                 <EditInstructionModal 
                     group={group}
                     onClose={() => setIsInstructionModalOpen(false)}
+                />
+            )}
+            {viewingPreparator && (
+                <PreparateurLearningJourneyPopup
+                    preparerId={viewingPreparator.id}
+                    preparerName={viewingPreparator.name}
+                    onClose={() => setViewingPreparator(null)}
                 />
             )}
         </div>
