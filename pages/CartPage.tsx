@@ -68,24 +68,30 @@ const CartPage: React.FC = () => {
 
   const totalPrice = useMemo(() => {
     return cartItems.reduce((total, item) => {
-        // Robust type checking
         const isPack = item.type === ProductType.PACK || !!item.packId;
         
         if (isPack && item.packId) {
             const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
             if (pack) {
-                // Return TTC price for cart display consistency
                 return total + (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
             }
             console.warn('Pack not found for ID:', item.packId);
-        } else {
-            // For non-pack webinars, use item.price (from Webinar.price) or default WEBINAR_PRICE
-            const itemBasePrice = item.price || WEBINAR_PRICE; // item.price is priceHT
-            return total + (itemBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+        } else { // It's a webinar
+            const webinarDetails = webinars.find(w => w._id === (item.webinarId || item.id));
+            if (webinarDetails) {
+                if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                    const mcBasePrice = item.price || webinarDetails.price || 0; // MC prices are HT
+                    return total + (mcBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                    return total + WEBINAR_PRICE; // CROP prices are 80.000 TTC
+                }
+            } else {
+                console.warn('Webinar details not found for item:', item.id);
+            }
         }
         return total;
     }, 0);
-  }, [cartItems]);
+  }, [cartItems, webinars]); // Added webinars to dependency array
 
   const handleCheckout = async () => {
     if (!token) {

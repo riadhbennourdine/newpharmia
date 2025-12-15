@@ -188,12 +188,19 @@ const CheckoutPage: React.FC = () => {
         return (
             <ul className="mb-4 space-y-2 text-sm text-slate-600">
                 {webinarsInOrder.map(w => {
-                    const webinarBasePrice = w.price || 80.000; // Assume 80.000 is HT for CROP, w.price for MC is HT
-                    const webinarTTC = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    const webinarBasePrice = w.price || 0; // MC prices are HT, CROP will use WEBINAR_PRICE
+                    let itemDisplayPrice = 0;
+                    if (w.group === WebinarGroup.MASTER_CLASS) {
+                        itemDisplayPrice = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    } else if (w.group === WebinarGroup.CROP_TUNIS) {
+                        itemDisplayPrice = WEBINAR_PRICE; // Fixed 80.000 TTC
+                    } else { // Fallback for other webinar types, if any
+                        itemDisplayPrice = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    }
                     return (
                         <li key={w._id.toString()} className="flex justify-between">
                             <span>Webinaire: {w.title}</span>
-                            <span>{webinarTTC.toFixed(3)} TND <span className="text-xs text-slate-400">(TTC)</span></span>
+                            <span>{itemDisplayPrice.toFixed(3)} TND <span className="text-xs text-slate-400">(TTC)</span></span>
                         </li>
                     );
                 })}
