@@ -46,7 +46,7 @@ export const MASTER_CLASS_PACKS = [
         name: 'Pack Institution (100)',
         description: 'Formation continue complète. 100 Master Class.',
         credits: 100,
-        priceHT: 2000.000, 
+        priceHT: 1999.000, 
         badge: 'Prix Choc (-50%)'
     }
 ];
