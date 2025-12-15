@@ -307,6 +307,9 @@ const CheckoutPage: React.FC = () => {
 
     const isPdfRib = bankDetails.imageUrl ? bankDetails.imageUrl.toLowerCase().includes('.pdf') : false;
 
+    // Determine if Konnect (card) payment should be available (only for MasterClass items)
+    const containsMasterClassItems = hasPacks || hasMasterClassWebinars;
+
     return (
         <div className="bg-slate-100 min-h-screen py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -433,24 +436,26 @@ const CheckoutPage: React.FC = () => {
                     {!paymentMethod ? (
                         <div className="mt-8">
                             <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Choisissez votre mode de paiement</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <button
-                                    onClick={() => setPaymentMethod('card')}
-                                    className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all group"
-                                >
-                                    <div className="h-16 w-16 bg-teal-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
-                                        <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                        </svg>
-                                    </div>
-                                    <h4 className="text-lg font-bold text-slate-800">Paiement par Carte</h4>
-                                    <p className="text-sm text-slate-500 text-center mt-2">Paiement sécurisé via Konnect (Bancaire ou E-Dinar)</p>
-                                    <span className="mt-4 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-lg group-hover:bg-teal-700">Choisir</span>
-                                </button>
-
+                            <div className={`grid gap-6 ${containsMasterClassItems ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-1'}`}>
+                                {containsMasterClassItems && (
+                                    <button
+                                        onClick={() => setPaymentMethod('card')}
+                                        className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all group"
+                                    >
+                                        <div className="h-16 w-16 bg-teal-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
+                                            <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                            </svg>
+                                        </div>
+                                        <h4 className="text-lg font-bold text-slate-800">Paiement par Carte</h4>
+                                        <p className="text-sm text-slate-500 text-center mt-2">Paiement sécurisé via Konnect (Bancaire ou E-Dinar)</p>
+                                        <span className="mt-4 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-lg group-hover:bg-teal-700">Choisir</span>
+                                    </button>
+                                )}
+                                {/* Always show transfer payment */}
                                 <button
                                     onClick={() => setPaymentMethod('transfer')}
-                                    className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all group"
+                                    className={`flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all group ${!containsMasterClassItems ? 'col-span-full' : ''}`}
                                 >
                                     <div className="h-16 w-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
                                         <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
