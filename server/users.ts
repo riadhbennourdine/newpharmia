@@ -59,6 +59,7 @@ async function getCollections() {
   const db = client.db('pharmia');
   return {
     usersCollection: db.collection<User>('users'),
+    memofichesCollection: db.collection('memofiches'),
   };
 }
 
@@ -126,6 +127,75 @@ router.get('/by-name', async (req, res) => {
     } catch (error) {
         console.error('Error fetching user by name:', error);
         res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
+router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.ADMIN, UserRole.PHARMACIEN, UserRole.FORMATEUR, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { usersCollection, memofichesCollection } = await getCollections();
+        const { ObjectId } = await import('mongodb');
+
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const readFicheIds = (user.readFiches || []).map(f => {
+            try {
+                return new ObjectId(f.ficheId);
+            } catch (e) {
+                return null;
+            }
+        }).filter(id => id !== null);
+
+        const quizIds = (user.quizHistory || []).map(q => {
+            try {
+                return new ObjectId(q.quizId);
+            } catch (e) {
+                return null;
+            }
+        }).filter(id => id !== null);
+
+        const allRelatedIds = [...readFicheIds, ...quizIds];
+        
+        // Fetch titles for all related fiches
+        let ficheDetailsMap = new Map();
+        if (allRelatedIds.length > 0) {
+            const fiches = await memofichesCollection.find(
+                { _id: { $in: allRelatedIds } },
+                { projection: { title: 1 } }
+            ).toArray();
+            
+            fiches.forEach(f => {
+                ficheDetailsMap.set(f._id.toString(), f.title);
+            });
+        }
+
+        const enrichedReadFiches = (user.readFiches || []).map(f => ({
+            ...f,
+            title: ficheDetailsMap.get(f.ficheId) || 'Fiche inconnue'
+        }));
+
+        const enrichedQuizHistory = (user.quizHistory || []).map(q => ({
+            ...q,
+            title: ficheDetailsMap.get(q.quizId) || 'Quiz inconnu'
+        }));
+
+        res.json({
+            readFiches: enrichedReadFiches,
+            quizHistory: enrichedQuizHistory,
+            viewedMediaIds: user.viewedMediaIds || []
+        });
+
+    } catch (error) {
+        console.error('Error fetching learning journey:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération du parcours.' });
     }
 });
 

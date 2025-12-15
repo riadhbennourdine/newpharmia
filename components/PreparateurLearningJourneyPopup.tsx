@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { User, MemoFiche } from '../types';
 import { Link } from 'react-router-dom';
 
 interface PreparerLearningJourneyPopupProps {
@@ -10,8 +9,8 @@ interface PreparerLearningJourneyPopupProps {
 }
 
 interface LearningJourneyData {
-  readFicheIds: string[];
-  quizHistory: { quizId: string; score: number; completedAt: Date }[];
+  readFiches: { ficheId: string; readAt: string; title: string }[];
+  quizHistory: { quizId: string; score: number; completedAt: string; title: string }[];
   viewedMediaIds: string[];
 }
 
@@ -19,31 +18,25 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [learningJourney, setLearningJourney] = useState<LearningJourneyData | null>(null);
-  const [readFichesDetails, setReadFichesDetails] = useState<MemoFiche[]>([]);
 
   useEffect(() => {
     const fetchLearningJourney = async () => {
       setLoading(true);
       setError(null);
       try {
-        console.log(`Fetching learning journey for preparerId: ${preparerId}`);
-        await new Promise(res => setTimeout(res, 500)); 
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/users/${preparerId}/learning-journey`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
-        const mockData: LearningJourneyData = {
-            readFicheIds: ['mf-001', 'mf-003'],
-            quizHistory: [
-                { quizId: 'mf-001', score: 80, completedAt: new Date() }
-            ],
-            viewedMediaIds: ['video_intro_rgo', 'image_acne_skin']
-        };
-
-        setLearningJourney(mockData);
-
-        if (mockData.readFicheIds && mockData.readFicheIds.length > 0) {
-            const { MEMOFICHES } = await import('../constants');
-            const fichesData = MEMOFICHES.filter(f => mockData.readFicheIds.includes(f._id));
-            setReadFichesDetails(fichesData);
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération du parcours.');
         }
+
+        const data = await response.json();
+        setLearningJourney(data);
 
       } catch (err: any) {
         setError(err.message);
@@ -53,7 +46,9 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
       }
     };
 
-    fetchLearningJourney();
+    if (preparerId) {
+        fetchLearningJourney();
+    }
   }, [preparerId]);
 
   if (loading) {
@@ -81,11 +76,15 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
     return null;
   }
 
-  const quizScoresByFicheId = new Map<string, number>();
+  // Create a map of best scores per quiz/fiche
+  const bestScoresByFicheId = new Map<string, number>();
   if (learningJourney?.quizHistory) {
     for (const quiz of learningJourney.quizHistory) {
       if (quiz.quizId) {
-        quizScoresByFicheId.set(quiz.quizId, quiz.score);
+        const currentBest = bestScoresByFicheId.get(quiz.quizId) || 0;
+        if (quiz.score > currentBest) {
+            bestScoresByFicheId.set(quiz.quizId, quiz.score);
+        }
       }
     }
   }
@@ -102,16 +101,19 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Fiches Consultées ({readFichesDetails?.length ?? 0})</h3>
-            {readFichesDetails && readFichesDetails.length > 0 ? (
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">Fiches Consultées ({learningJourney.readFiches?.length ?? 0})</h3>
+            {learningJourney.readFiches && learningJourney.readFiches.length > 0 ? (
               <ul className="list-disc pl-5 space-y-2">
-                {readFichesDetails.map(fiche => {
-                  const score = quizScoresByFicheId.get(fiche._id);
+                {learningJourney.readFiches.map((fiche, index) => {
+                  const score = bestScoresByFicheId.get(fiche.ficheId);
                   return (
-                    <li key={fiche._id} className="text-gray-600">
-                      <Link to={`/memofiche/${fiche._id}`} onClick={onClose} className="text-teal-600 hover:underline">
+                    <li key={`${fiche.ficheId}-${index}`} className="text-gray-600">
+                      <Link to={`/memofiche/${fiche.ficheId}`} onClick={onClose} className="text-teal-600 hover:underline">
                         {fiche.title}
                       </Link>
+                      <span className="text-xs text-gray-400 ml-2">
+                        (Lu le {new Date(fiche.readAt).toLocaleDateString()})
+                      </span>
                       {score !== undefined && (
                         <span className={`ml-2 font-semibold ${score >= 80 ? 'text-green-600' : 'text-amber-600'}`}>- Validée à {score}%</span>
                       )}
@@ -121,6 +123,24 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
               </ul>
             ) : (
               <p className="text-gray-500 italic">Aucune fiche lue pour le moment.</p>
+            )}
+          </div>
+
+          <div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">Historique des Quiz</h3>
+            {learningJourney.quizHistory && learningJourney.quizHistory.length > 0 ? (
+                <ul className="list-disc pl-5 space-y-2">
+                    {learningJourney.quizHistory.map((quiz, index) => (
+                        <li key={index} className="text-gray-600">
+                            <span className="font-medium">{quiz.title}</span> : <span className={quiz.score >= 80 ? 'text-green-600' : 'text-amber-600'}>{quiz.score}%</span>
+                            <span className="text-xs text-gray-400 ml-2">
+                                ({new Date(quiz.completedAt).toLocaleDateString()})
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className="text-gray-500 italic">Aucun quiz effectué pour le moment.</p>
             )}
           </div>
 
