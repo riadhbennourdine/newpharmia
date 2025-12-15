@@ -133,6 +133,7 @@ router.get('/by-name', async (req, res) => {
 router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.ADMIN, UserRole.PHARMACIEN, UserRole.FORMATEUR, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { userId } = req.params;
+        const { startDate, endDate } = req.query; // Get date filters from query params
         const { usersCollection, memofichesCollection } = await getCollections();
         const { ObjectId } = await import('mongodb');
 
@@ -146,7 +147,31 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        const readFicheIds = (user.readFiches || []).map(f => {
+        let readFiches = user.readFiches || [];
+        let quizHistory = user.quizHistory || [];
+        // Note: viewedMediaIds usually doesn't have a timestamp in the current schema based on types.ts.
+        // If it's just an array of strings, we can't filter it by date. 
+        // We will proceed with filtering what we can.
+
+        // Apply date filtering
+        if (startDate || endDate) {
+            const start = startDate ? new Date(startDate as string) : new Date(0); // Default to epoch if no start date
+            const end = endDate ? new Date(endDate as string) : new Date(); // Default to now if no end date
+            // Adjust end date to include the full day
+            end.setHours(23, 59, 59, 999);
+
+            readFiches = readFiches.filter(f => {
+                const date = new Date(f.readAt);
+                return date >= start && date <= end;
+            });
+
+            quizHistory = quizHistory.filter(q => {
+                const date = new Date(q.completedAt);
+                return date >= start && date <= end;
+            });
+        }
+
+        const readFicheIds = readFiches.map(f => {
             try {
                 return new ObjectId(f.ficheId);
             } catch (e) {
@@ -154,7 +179,7 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
             }
         }).filter(id => id !== null);
 
-        const quizIds = (user.quizHistory || []).map(q => {
+        const quizIds = quizHistory.map(q => {
             try {
                 return new ObjectId(q.quizId);
             } catch (e) {
@@ -177,26 +202,29 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
             });
         }
 
-        const enrichedReadFiches = (user.readFiches || []).map(f => ({
+        const enrichedReadFiches = readFiches.map(f => ({
             ...f,
             title: ficheDetailsMap.get(f.ficheId) || 'Fiche inconnue'
         }));
 
-        const enrichedQuizHistory = (user.quizHistory || []).map(q => ({
+        const enrichedQuizHistory = quizHistory.map(q => ({
             ...q,
             title: ficheDetailsMap.get(q.quizId) || 'Quiz inconnu'
         }));
 
         let averageQuizScore = 0;
-        if (user.quizHistory && user.quizHistory.length > 0) {
-            const totalScores = user.quizHistory.reduce((sum, q) => sum + (q.score || 0), 0);
-            averageQuizScore = Math.round(totalScores / user.quizHistory.length);
+        if (quizHistory.length > 0) {
+            const totalScores = quizHistory.reduce((sum, q) => sum + (q.score || 0), 0);
+            averageQuizScore = Math.round(totalScores / quizHistory.length);
+        } else if ((user.quizHistory || []).length > 0 && (startDate || endDate)) {
+            // If filtering resulted in no quizzes, but the user has history, average is 0 for this period.
+            averageQuizScore = 0;
         }
 
         res.json({
             readFiches: enrichedReadFiches,
             quizHistory: enrichedQuizHistory,
-            viewedMediaIds: user.viewedMediaIds || [],
+            viewedMediaIds: user.viewedMediaIds || [], // Returning all as we can't filter yet
             averageQuizScore: averageQuizScore
         });
 

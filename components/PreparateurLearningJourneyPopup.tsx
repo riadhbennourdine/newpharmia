@@ -6,6 +6,8 @@ interface PreparerLearningJourneyPopupProps {
   preparerId: string;
   preparerName: string;
   onClose: () => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface LearningJourneyData {
@@ -14,7 +16,7 @@ interface LearningJourneyData {
   viewedMediaIds: string[];
 }
 
-const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> = ({ preparerId, preparerName, onClose }) => {
+const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> = ({ preparerId, preparerName, onClose, startDate, endDate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [learningJourney, setLearningJourney] = useState<LearningJourneyData | null>(null);
@@ -25,7 +27,11 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
       setError(null);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/users/${preparerId}/learning-journey`, {
+        const params = new URLSearchParams();
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+
+        const response = await fetch(`/api/users/${preparerId}/learning-journey?${params.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -49,7 +55,7 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
     if (preparerId) {
         fetchLearningJourney();
     }
-  }, [preparerId]);
+  }, [preparerId, startDate, endDate]);
 
   if (loading) {
     return (
@@ -108,7 +114,15 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Parcours d'apprentissage de <span className="text-teal-600">{preparerName || '...'}</span></h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Parcours d'apprentissage de <span className="text-teal-600">{preparerName || '...'}</span></h2>
+        
+        {(startDate || endDate) && (
+            <div className="text-sm text-gray-500 mb-6 bg-gray-50 p-2 rounded border border-gray-200 inline-block">
+                Filtre actif : 
+                {startDate && <span className="font-medium ml-1">du {new Date(startDate).toLocaleDateString()}</span>}
+                {endDate && <span className="font-medium ml-1">au {new Date(endDate).toLocaleDateString()}</span>}
+            </div>
+        )}
 
         <div className="space-y-6">
           <div>

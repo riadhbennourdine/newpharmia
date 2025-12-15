@@ -9,6 +9,8 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose }) => {
   const [selectedPreparator, setSelectedPreparator] = useState<{ id: string; name: string } | null>(null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
@@ -20,6 +22,32 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose })
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+        </div>
+
+        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">Filtrer par période (optionnel)</h3>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                    <label htmlFor="startDate" className="block text-xs font-medium text-gray-500 mb-1">Date de début</label>
+                    <input 
+                        type="date" 
+                        id="startDate" 
+                        value={startDate} 
+                        onChange={(e) => setStartDate(e.target.value)} 
+                        className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                    />
+                </div>
+                <div className="flex-1">
+                    <label htmlFor="endDate" className="block text-xs font-medium text-gray-500 mb-1">Date de fin</label>
+                    <input 
+                        type="date" 
+                        id="endDate" 
+                        value={endDate} 
+                        onChange={(e) => setEndDate(e.target.value)} 
+                        className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                    />
+                </div>
+            </div>
         </div>
 
         <div className="p-6 overflow-y-auto">
@@ -50,7 +78,13 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose })
                     // For now, let's assume we might need to fetch them if not available.
                     // But wait, the admin endpoint /api/admin/groups populates pharmacistNames but NOT preparatorNames.
                     // We need to fetch preparators for this group to get their names.
-                    <PreparatorItem key={id.toString()} preparatorId={id.toString()} onSelect={setSelectedPreparator} />
+                    <PreparatorItem 
+                        key={id.toString()} 
+                        preparatorId={id.toString()} 
+                        onSelect={setSelectedPreparator} 
+                        startDate={startDate}
+                        endDate={endDate}
+                    />
                   ))}
                 </ul>
               ) : (
@@ -78,6 +112,8 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose })
           preparerId={selectedPreparator.id}
           preparerName={selectedPreparator.name}
           onClose={() => setSelectedPreparator(null)}
+          startDate={startDate}
+          endDate={endDate}
         />
       )}
     </div>
@@ -85,7 +121,7 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose })
 };
 
 // Helper component to fetch and display preparator name and average quiz score
-const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: string, name: string }) => void }> = ({ preparatorId, onSelect }) => {
+const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: string, name: string }) => void, startDate?: string, endDate?: string }> = ({ preparatorId, onSelect, startDate, endDate }) => {
     const [user, setUser] = useState<User | null>(null);
     const [averageQuizScore, setAverageQuizScore] = useState<number | null>(null);
 
@@ -99,7 +135,13 @@ const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: st
 
                 // Fetch learning journey data including average quiz score
                 const token = localStorage.getItem('token');
-                const learningJourneyResponse = await fetch(`/api/users/${preparatorId}/learning-journey`, {
+                
+                // Construct query parameters
+                const params = new URLSearchParams();
+                if (startDate) params.append('startDate', startDate);
+                if (endDate) params.append('endDate', endDate);
+                
+                const learningJourneyResponse = await fetch(`/api/users/${preparatorId}/learning-journey?${params.toString()}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -112,7 +154,7 @@ const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: st
             }
         };
         fetchData();
-    }, [preparatorId]);
+    }, [preparatorId, startDate, endDate]);
 
     if (!user) return <li className="text-slate-400">Chargement...</li>;
 
