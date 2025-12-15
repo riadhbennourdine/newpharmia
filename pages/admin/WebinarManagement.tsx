@@ -193,7 +193,8 @@ const WebinarManagement: React.FC = () => {
             date: new Date(), 
             imageUrl: '', 
             googleMeetLink: '', 
-            group: filterGroup !== 'ALL' ? (filterGroup as WebinarGroup) : WebinarGroup.CROP_TUNIS // Default to filtered group or CROP_TUNIS
+            group: filterGroup !== 'ALL' ? (filterGroup as WebinarGroup) : WebinarGroup.CROP_TUNIS, // Default to filtered group or CROP_TUNIS
+            publicationStatus: 'DRAFT'
         });
         setIsModalOpen(true);
     };

@@ -285,6 +285,7 @@ export interface Webinar {
   registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
   calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
   resources?: WebinarResource[]; // New field for media resources
+  publicationStatus?: 'DRAFT' | 'PUBLISHED';
 }
 
 export interface Image {

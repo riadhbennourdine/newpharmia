@@ -53,16 +53,20 @@ router.get('/', softAuthenticateToken, async (req, res) => {
             query.group = group;
         }
 
+        const authReq = req as AuthenticatedRequest;
+        const userRole = authReq.user?.role?.trim().toUpperCase();
+        const isAdmin = userRole === UserRole.ADMIN || userRole === UserRole.ADMIN_WEBINAR;
+
+        // If not admin, only show PUBLISHED webinars
+        if (!isAdmin) {
+            query.publicationStatus = 'PUBLISHED';
+        }
+
         const webinars = await webinarsCollection.find(query).sort({ date: -1 }).toArray();
 
         // console.log('[Webinar Debug] Raw webinars from DB:', JSON.stringify(webinars, null, 2));
 
-        const authReq = req as AuthenticatedRequest;
         const userIdString = authReq.user?._id.toString();
-        
-        // Safer, case-insensitive role check
-        const userRole = authReq.user?.role?.trim().toUpperCase();
-        const isAdmin = userRole === UserRole.ADMIN || userRole === UserRole.ADMIN_WEBINAR;
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
@@ -300,7 +304,7 @@ router.post('/by-ids', async (req, res) => {
 // POST to create a new webinar (Admin only)
 router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
-        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group } = req.body;
+        const { title, description, date, presenter, registrationLink, imageUrl, googleMeetLink, group, publicationStatus } = req.body;
 
         if (!title || !description || !date || !presenter) {
             return res.status(400).json({ message: 'Title, description, date, and presenter are required.' });
@@ -319,6 +323,7 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res
             imageUrl: imageUrl || '',
             googleMeetLink: (googleMeetLink || '').trim(),
             group: group || WebinarGroup.PHARMIA,
+            publicationStatus: publicationStatus || 'DRAFT', // Default to DRAFT if not provided
             attendees: [],
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -354,6 +359,11 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req, r
         updates.updatedAt = new Date();
         if(updates.date) {
             updates.date = new Date(updates.date);
+        }
+
+        // Ensure publicationStatus is a valid value if provided
+        if (updates.publicationStatus && !['DRAFT', 'PUBLISHED'].includes(updates.publicationStatus)) {
+            return res.status(400).json({ message: 'Invalid publicationStatus provided.' });
         }
 
         if (updates.googleMeetLink) {
