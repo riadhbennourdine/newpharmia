@@ -187,10 +187,17 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
             title: ficheDetailsMap.get(q.quizId) || 'Quiz inconnu'
         }));
 
+        let averageQuizScore = 0;
+        if (user.quizHistory && user.quizHistory.length > 0) {
+            const totalScores = user.quizHistory.reduce((sum, q) => sum + (q.score || 0), 0);
+            averageQuizScore = Math.round(totalScores / user.quizHistory.length);
+        }
+
         res.json({
             readFiches: enrichedReadFiches,
             quizHistory: enrichedQuizHistory,
-            viewedMediaIds: user.viewedMediaIds || []
+            viewedMediaIds: user.viewedMediaIds || [],
+            averageQuizScore: averageQuizScore
         });
 
     } catch (error) {

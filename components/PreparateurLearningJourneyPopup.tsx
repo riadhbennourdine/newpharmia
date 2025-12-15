@@ -76,6 +76,17 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
     return null;
   }
 
+  const formatScore = (score: number) => {
+    // Heuristic: If score is between 1 and 10 (inclusive) and is an integer,
+    // assume it needs to be scaled by 10 to represent a percentage out of 100.
+    // E.g., 9 becomes 90%. Scores like 80 will remain 80%.
+    if (score >= 1 && score <= 10 && Number.isInteger(score)) {
+        return `${score * 10}%`;
+    }
+    // Otherwise, assume the score is already in the 0-100 range or not an integer to be scaled.
+    return `${score}%`;
+  };
+
   // Create a map of best scores per quiz/fiche
   const bestScoresByFicheId = new Map<string, number>();
   if (learningJourney?.quizHistory) {
@@ -115,7 +126,7 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
                         (Lu le {new Date(fiche.readAt).toLocaleDateString()})
                       </span>
                       {score !== undefined && (
-                        <span className={`ml-2 font-semibold ${score >= 80 ? 'text-green-600' : 'text-amber-600'}`}>- Validée à {score}%</span>
+                        <span className={`ml-2 font-semibold ${score >= 80 ? 'text-green-600' : 'text-amber-600'}`}>- Validée à {formatScore(score)}</span>
                       )}
                     </li>
                   );
@@ -132,7 +143,7 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
                 <ul className="list-disc pl-5 space-y-2">
                     {learningJourney.quizHistory.map((quiz, index) => (
                         <li key={index} className="text-gray-600">
-                            <span className="font-medium">{quiz.title}</span> : <span className={quiz.score >= 80 ? 'text-green-600' : 'text-amber-600'}>{quiz.score}%</span>
+                            <span className="font-medium">{quiz.title}</span> : <span className={quiz.score >= 80 ? 'text-green-600' : 'text-amber-600'}>{formatScore(quiz.score)}</span>
                             <span className="text-xs text-gray-400 ml-2">
                                 ({new Date(quiz.completedAt).toLocaleDateString()})
                             </span>

@@ -84,22 +84,46 @@ const GroupDetailsModal: React.FC<GroupDetailsModalProps> = ({ group, onClose })
   );
 };
 
-// Helper component to fetch and display preparator name
+// Helper component to fetch and display preparator name and average quiz score
 const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: string, name: string }) => void }> = ({ preparatorId, onSelect }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [averageQuizScore, setAverageQuizScore] = useState<number | null>(null);
 
     React.useEffect(() => {
-        fetch(`/api/users/${preparatorId}`)
-            .then(res => res.json())
-            .then(data => setUser(data))
-            .catch(err => console.error(err));
+        const fetchData = async () => {
+            try {
+                // Fetch user details
+                const userResponse = await fetch(`/api/users/${preparatorId}`);
+                const userData = await userResponse.json();
+                setUser(userData);
+
+                // Fetch learning journey data including average quiz score
+                const token = localStorage.getItem('token');
+                const learningJourneyResponse = await fetch(`/api/users/${preparatorId}/learning-journey`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const learningJourneyData = await learningJourneyResponse.json();
+                setAverageQuizScore(learningJourneyData.averageQuizScore);
+
+            } catch (err) {
+                console.error('Error fetching preparator data:', err);
+            }
+        };
+        fetchData();
     }, [preparatorId]);
 
     if (!user) return <li className="text-slate-400">Chargement...</li>;
 
     return (
         <li className="flex justify-between items-center group">
-            <span className="text-slate-700">{user.firstName} {user.lastName}</span>
+            <span className="text-slate-700">
+                {user.firstName} {user.lastName}
+                {averageQuizScore !== null && (
+                    <span className="ml-2 text-xs font-semibold text-teal-600">({averageQuizScore}%)</span>
+                )}
+            </span>
             <button 
                 onClick={() => onSelect({ id: preparatorId, name: `${user.firstName} ${user.lastName}` })}
                 className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-teal-200"
