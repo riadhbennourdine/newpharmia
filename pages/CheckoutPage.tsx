@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS } from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS, WEBINAR_PRICE } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
