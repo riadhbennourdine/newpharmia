@@ -157,8 +157,14 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
         if (startDate || endDate) {
             const start = startDate ? new Date(startDate as string) : new Date(0); // Default to epoch if no start date
             const end = endDate ? new Date(endDate as string) : new Date(); // Default to now if no end date
-            // Adjust end date to include the full day
+            
+            // Adjust dates with a buffer to handle Timezone differences (e.g. UTC+1)
+            // Subtract 3 hours from start date to catch events that happened at "local midnight" (e.g. 23:00 UTC prev day)
+            start.setHours(start.getHours() - 3);
+
+            // Set end date to end of day, plus buffer
             end.setHours(23, 59, 59, 999);
+            end.setHours(end.getHours() + 3);
 
             readFiches = readFiches.filter(f => {
                 const date = new Date(f.readAt);

@@ -158,12 +158,19 @@ const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: st
 
     if (!user) return <li className="text-slate-400">Chargement...</li>;
 
+    const formatScore = (score: number) => {
+        if (score >= 1 && score <= 10 && Number.isInteger(score)) {
+            return score * 10;
+        }
+        return score;
+    };
+
     return (
         <li className="flex justify-between items-center group">
             <span className="text-slate-700">
                 {user.firstName} {user.lastName}
                 {averageQuizScore !== null && (
-                    <span className="ml-2 text-xs font-semibold text-teal-600">({averageQuizScore}%)</span>
+                    <span className="ml-2 text-xs font-semibold text-teal-600">({formatScore(averageQuizScore)}%)</span>
                 )}
             </span>
             <button 
