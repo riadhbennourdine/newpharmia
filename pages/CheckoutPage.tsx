@@ -295,7 +295,7 @@ const CheckoutPage: React.FC = () => {
                                                 </div>
                                             </>
                                         )}
-                                        {calculatedStampDuty > 0 && (hasTaxableItems || cropWebinarsTTC > 0) && ( // Show stamp duty if any items or crop webinars exist
+                                        {calculatedStampDuty > 0 && (
                                             <div className="flex justify-between">
                                                 <span>Timbre Fiscal:</span>
                                                 <span>{calculatedStampDuty.toFixed(3)} TND</span>

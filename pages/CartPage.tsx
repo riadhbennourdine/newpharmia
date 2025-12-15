@@ -67,13 +67,13 @@ const CartPage: React.FC = () => {
   }, [cartItems]);
 
   const totalPrice = useMemo(() => {
-    return cartItems.reduce((total, item) => {
+    const itemsTotal = cartItems.reduce((total, item) => {
         const isPack = item.type === ProductType.PACK || !!item.packId;
         
         if (isPack && item.packId) {
             const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
             if (pack) {
-                return total + (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                return total + (pack.priceHT * (1 + TAX_RATES.TVA));
             }
             console.warn('Pack not found for ID:', item.packId);
         } else { // It's a webinar
@@ -81,7 +81,7 @@ const CartPage: React.FC = () => {
             if (webinarDetails) {
                 if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
                     const mcBasePrice = item.price || webinarDetails.price || 0; // MC prices are HT
-                    return total + (mcBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    return total + (mcBasePrice * (1 + TAX_RATES.TVA));
                 } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                     return total + WEBINAR_PRICE; // CROP prices are 80.000 TTC
                 }
@@ -91,6 +91,8 @@ const CartPage: React.FC = () => {
         }
         return total;
     }, 0);
+
+    return itemsTotal > 0 ? itemsTotal + TAX_RATES.TIMBRE : 0;
   }, [cartItems, webinars]); // Added webinars to dependency array
 
   const handleCheckout = async () => {
@@ -166,7 +168,7 @@ const CartPage: React.FC = () => {
                 if (isPack && item.packId) {
                     const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
                     if (!pack) return null;
-                    const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
+                    const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA));
 
                     return (
                         <li key={`${item.id}-${index}`} className="p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 bg-teal-50/50">
@@ -224,7 +226,7 @@ const CartPage: React.FC = () => {
                                 {webinar && ( // Ensure webinar details are loaded before showing price
                                     <p className="font-bold text-lg text-teal-600 mb-2">
                                         {webinar.group === WebinarGroup.MASTER_CLASS
-                                            ? ((item.price || webinar.price || 0) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)
+                                            ? ((item.price || webinar.price || 0) * (1 + TAX_RATES.TVA)).toFixed(3)
                                             : WEBINAR_PRICE.toFixed(3) // CROP Tunis is fixed WEBINAR_PRICE
                                         } TND <span className="text-sm">(TTC)</span>
                                     </p>
