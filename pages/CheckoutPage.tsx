@@ -8,7 +8,7 @@ import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETA
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const navigate = useNavigate();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -18,6 +18,8 @@ const CheckoutPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer' | null>(null);
+    const [isKonnectLoading, setIsKonnectLoading] = useState(false);
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -168,6 +170,79 @@ const CheckoutPage: React.FC = () => {
             alert(`Erreur: ${err.message}`);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleKonnectPayment = async () => {
+        if (!order || !token) return;
+        setIsKonnectLoading(true);
+        setError(null);
+
+        // Calculate total amount
+        let totalAmount = 0;
+        let calculatedTotalHT = 0;
+        let calculatedTotalTVA = 0;
+        const calculatedStampDuty = TAX_RATES.TIMBRE;
+        let cropWebinarsTTC = 0;
+
+        order.items.forEach(item => {
+            const isPack = item.type === ProductType.PACK || !!item.packId;
+            if (isPack && item.packId) {
+                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                if (pack) {
+                    calculatedTotalHT += pack.priceHT;
+                    calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
+                }
+            } else {
+                const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
+                if (webinarDetails) {
+                    if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                        const webinarBasePrice = webinarDetails.price || 0;
+                        calculatedTotalHT += webinarBasePrice;
+                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                    } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                        cropWebinarsTTC += (webinarDetails.price || 80.000);
+                    }
+                }
+            }
+        });
+        const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
+        totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
+
+        try {
+            const response = await fetch('/api/konnect/initiate-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    amount: totalAmount,
+                    orderId: order._id,
+                    firstName: user?.firstName,
+                    lastName: user?.lastName,
+                    email: user?.email,
+                    phoneNumber: user?.phone
+                })
+            });
+            
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || 'Erreur lors de l\'initialisation du paiement');
+            }
+
+            const data = await response.json();
+            if (data.payUrl) {
+                window.location.href = data.payUrl;
+            } else {
+                throw new Error('URL de paiement non reçue');
+            }
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || 'Erreur de paiement');
+        } finally {
+            setIsKonnectLoading(false);
         }
     };
 
@@ -354,62 +429,144 @@ const CheckoutPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="mb-6">
-                        <h3 className="font-semibold text-slate-700 mb-2">Instructions de paiement</h3>
-                        <p className="text-sm text-slate-600">
-                            Veuillez effectuer un virement bancaire du montant total sur le compte suivant, en indiquant votre numéro de commande dans le libellé de la transaction.
-                        </p>
-                        <div className="mt-4 p-4 bg-slate-50 rounded-md text-sm border border-slate-200">
-                            <p className="mb-1"><strong>Bénéficiaire:</strong> {bankDetails.holder}</p>
-                            <p className="mb-1"><strong>Banque:</strong> {bankDetails.bank} ({bankDetails.branch})</p>
-                            <p className="mb-3"><strong>RIB:</strong> <span className="font-mono text-base bg-slate-100 px-2 py-1 rounded">{bankDetails.rib}</span></p>
-                            
-                            {isPdfRib ? (
-                                <a 
-                                    href={bankDetails.imageUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="mt-2 inline-flex items-center text-teal-600 hover:text-teal-700 font-medium"
+                    {/* Payment Method Selection */}
+                    {!paymentMethod ? (
+                        <div className="mt-8">
+                            <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Choisissez votre mode de paiement</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <button
+                                    onClick={() => setPaymentMethod('card')}
+                                    className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all group"
                                 >
-                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                    Télécharger le RIB (PDF)
-                                </a>
-                            ) : (
-                                <a href={bankDetails.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
-                                    <img src={bankDetails.imageUrl} alt="RIB" className="rounded-md shadow-sm w-full max-w-xs" />
-                                </a>
-                            )}
-                        </div>
-                    </div>
+                                    <div className="h-16 w-16 bg-teal-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
+                                        <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="text-lg font-bold text-slate-800">Paiement par Carte</h4>
+                                    <p className="text-sm text-slate-500 text-center mt-2">Paiement sécurisé via Konnect (Bancaire ou E-Dinar)</p>
+                                    <span className="mt-4 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-lg group-hover:bg-teal-700">Choisir</span>
+                                </button>
 
-                    <form onSubmit={handleSubmitPayment}>
-                        <h3 className="font-semibold text-slate-700 mb-2">Téléverser la preuve de paiement</h3>
-                        <p className="text-sm text-slate-600 mb-4">
-                            Une fois le virement effectué, veuillez téléverser une capture d'écran ou un reçu comme preuve.
-                        </p>
-                        <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md">
-                            <div className="space-y-1 text-center">
-                                <UploadIcon className="mx-auto h-12 w-12 text-slate-400" />
-                                <div className="flex text-sm text-slate-600">
-                                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500">
-                                        <span>Sélectionner un fichier</span>
-                                        <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*,.pdf" />
-                                    </label>
-                                </div>
-                                <p className="text-xs text-slate-500">{selectedFile ? selectedFile.name : 'PNG, JPG, PDF jusqu\'à 10MB'}</p>
+                                <button
+                                    onClick={() => setPaymentMethod('transfer')}
+                                    className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all group"
+                                >
+                                    <div className="h-16 w-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                                        <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="text-lg font-bold text-slate-800">Virement Bancaire</h4>
+                                    <p className="text-sm text-slate-500 text-center mt-2">Virement direct sur notre compte bancaire</p>
+                                    <span className="mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg group-hover:bg-blue-700">Choisir</span>
+                                </button>
                             </div>
                         </div>
-
-                        <div className="mt-8">
-                            <button
-                                type="submit"
-                                disabled={!selectedFile || isSubmitting}
-                                className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors disabled:bg-teal-400 disabled:cursor-not-allowed flex justify-center items-center"
+                    ) : (
+                        <div className="mt-8 animate-fadeIn">
+                            <button 
+                                onClick={() => setPaymentMethod(null)}
+                                className="mb-6 flex items-center text-sm text-slate-500 hover:text-slate-800 transition-colors"
                             >
-                                {isSubmitting ? <Spinner className="h-5 w-5" /> : 'Soumettre la preuve de paiement'}
+                                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Changer de méthode
                             </button>
+
+                            {paymentMethod === 'card' && (
+                                <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
+                                    <div className="mb-6">
+                                        <div className="mx-auto h-20 w-20 bg-teal-50 rounded-full flex items-center justify-center mb-4">
+                                            <svg className="w-10 h-10 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-slate-800 mb-2">Paiement en ligne</h3>
+                                        <p className="text-slate-600 max-w-md mx-auto">
+                                            Vous allez être redirigé vers notre plateforme de paiement sécurisée Konnect pour finaliser votre transaction.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleKonnectPayment}
+                                        disabled={isKonnectLoading}
+                                        className="w-full max-w-md mx-auto bg-teal-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:bg-teal-700 transition-all transform hover:-translate-y-1 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center"
+                                    >
+                                        {isKonnectLoading ? (
+                                            <>
+                                                <Spinner className="h-5 w-5 mr-3" />
+                                                Initialisation...
+                                            </>
+                                        ) : (
+                                            "Payer maintenant"
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+
+                            {paymentMethod === 'transfer' && (
+                                <div>
+                                    <div className="mb-6">
+                                        <h3 className="font-semibold text-slate-700 mb-2">Instructions de paiement</h3>
+                                        <p className="text-sm text-slate-600">
+                                            Veuillez effectuer un virement bancaire du montant total sur le compte suivant, en indiquant votre numéro de commande dans le libellé de la transaction.
+                                        </p>
+                                        <div className="mt-4 p-4 bg-slate-50 rounded-md text-sm border border-slate-200">
+                                            <p className="mb-1"><strong>Bénéficiaire:</strong> {bankDetails.holder}</p>
+                                            <p className="mb-1"><strong>Banque:</strong> {bankDetails.bank} ({bankDetails.branch})</p>
+                                            <p className="mb-3"><strong>RIB:</strong> <span className="font-mono text-base bg-slate-100 px-2 py-1 rounded">{bankDetails.rib}</span></p>
+                                            
+                                            {isPdfRib ? (
+                                                <a 
+                                                    href={bankDetails.imageUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="mt-2 inline-flex items-center text-teal-600 hover:text-teal-700 font-medium"
+                                                >
+                                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                                    Télécharger le RIB (PDF)
+                                                </a>
+                                            ) : (
+                                                <a href={bankDetails.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+                                                    <img src={bankDetails.imageUrl} alt="RIB" className="rounded-md shadow-sm w-full max-w-xs" />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <form onSubmit={handleSubmitPayment}>
+                                        <h3 className="font-semibold text-slate-700 mb-2">Téléverser la preuve de paiement</h3>
+                                        <p className="text-sm text-slate-600 mb-4">
+                                            Une fois le virement effectué, veuillez téléverser une capture d'écran ou un reçu comme preuve.
+                                        </p>
+                                        <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md">
+                                            <div className="space-y-1 text-center">
+                                                <UploadIcon className="mx-auto h-12 w-12 text-slate-400" />
+                                                <div className="flex text-sm text-slate-600">
+                                                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500">
+                                                        <span>Sélectionner un fichier</span>
+                                                        <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*,.pdf" />
+                                                    </label>
+                                                </div>
+                                                <p className="text-xs text-slate-500">{selectedFile ? selectedFile.name : 'PNG, JPG, PDF jusqu\'à 10MB'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-8">
+                                            <button
+                                                type="submit"
+                                                disabled={!selectedFile || isSubmitting}
+                                                className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-teal-700 transition-colors disabled:bg-teal-400 disabled:cursor-not-allowed flex justify-center items-center"
+                                            >
+                                                {isSubmitting ? <Spinner className="h-5 w-5" /> : 'Soumettre la preuve de paiement'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
                         </div>
-                    </form>
+                    )}
                 </div>
             </div>
         </div>
