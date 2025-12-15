@@ -277,9 +277,8 @@ const CheckoutPage: React.FC = () => {
                                     }
                                 });
 
-                                const finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + calculatedStampDuty + cropWebinarsTTC;
-                                
                                 const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
+                                const finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
                                 
                                 return (
                                     <>
@@ -295,7 +294,7 @@ const CheckoutPage: React.FC = () => {
                                                 </div>
                                             </>
                                         )}
-                                        {calculatedStampDuty > 0 && (
+                                        {calculatedStampDuty > 0 && hasTaxableItems && (
                                             <div className="flex justify-between">
                                                 <span>Timbre Fiscal:</span>
                                                 <span>{calculatedStampDuty.toFixed(3)} TND</span>
@@ -346,7 +345,8 @@ const CheckoutPage: React.FC = () => {
                                                 }
                                             }
                                         });
-                                        finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + calculatedStampDuty + cropWebinarsTTC;
+                                        const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
+                                        finalCalculatedTTC = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
                                         return finalCalculatedTTC;
                                     })()
                                 ).toFixed(3)

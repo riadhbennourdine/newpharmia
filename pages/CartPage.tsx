@@ -67,10 +67,12 @@ const CartPage: React.FC = () => {
   }, [cartItems]);
 
   const totalPrice = useMemo(() => {
+    let hasTaxableItems = false;
     const itemsTotal = cartItems.reduce((total, item) => {
         const isPack = item.type === ProductType.PACK || !!item.packId;
         
         if (isPack && item.packId) {
+            hasTaxableItems = true;
             const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
             if (pack) {
                 return total + (pack.priceHT * (1 + TAX_RATES.TVA));
@@ -80,6 +82,7 @@ const CartPage: React.FC = () => {
             const webinarDetails = webinars.find(w => w._id === (item.webinarId || item.id));
             if (webinarDetails) {
                 if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                    hasTaxableItems = true;
                     const mcBasePrice = item.price || webinarDetails.price || 0; // MC prices are HT
                     return total + (mcBasePrice * (1 + TAX_RATES.TVA));
                 } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
@@ -92,7 +95,7 @@ const CartPage: React.FC = () => {
         return total;
     }, 0);
 
-    return itemsTotal > 0 ? itemsTotal + TAX_RATES.TIMBRE : 0;
+    return itemsTotal > 0 ? itemsTotal + (hasTaxableItems ? TAX_RATES.TIMBRE : 0) : 0;
   }, [cartItems, webinars]); // Added webinars to dependency array
 
   const handleCheckout = async () => {
