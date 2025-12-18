@@ -139,14 +139,32 @@ export const clearIndex = async () => {
 };
 
 /**
+ * Cleans the search query to improve Algolia matching.
+ * Removes common French stop words and verbs.
+ */
+function cleanQuery(query: string): string {
+  const stopWords = ['comment', 'traiter', 'le', 'la', 'les', 'de', 'du', 'des', 'un', 'une', 'pour', 'est', 'ce', 'que', 'quel', 'quels', 'quelle', 'quelles', 'dans', 'sur', 'avec'];
+  return query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(word => !stopWords.includes(word) && word.length > 1)
+    .join(' ');
+}
+
+/**
  * Searches the memofiches index in Algolia.
  * @param query - The search query string.
  * @returns A promise that resolves with the search results.
  */
 export const searchMemoFiches = async (query: string) => {
   try {
-    console.log(`[Algolia] Searching for: "${query}"`);
-    const results = await index.search(query, {
+    const cleaned = cleanQuery(query);
+    console.log(`[Algolia] Original: "${query}" | Cleaned: "${cleaned}"`);
+    
+    // If the query is empty after cleaning (e.g., "Bonjour"), don't search
+    if (!cleaned) return [];
+
+    const results = await index.search(cleaned, {
       hitsPerPage: 5, // Limit to the top 5 results to build the context
     });
     console.log(`[Algolia] Found ${results.hits.length} hits.`);
