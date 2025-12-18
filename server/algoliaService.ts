@@ -3,16 +3,24 @@ const require = createRequire(import.meta.url);
 const algoliasearch = require('algoliasearch');
 import { MemoFiche } from '../types.js';
 
-if (!process.env.ALGOLIA_APP_ID || !process.env.ALGOLIA_WRITE_KEY) {
-  throw new Error('Algolia App ID and Write API Key are required.');
+if (!process.env.ALGOLIA_APP_ID || !process.env.ALGOLIA_WRITE_KEY || !process.env.ALGOLIA_SEARCH_KEY) {
+  throw new Error('Algolia App ID, Search Key and Write API Key are required.');
 }
 
-const client = algoliasearch(
+// Search client (public/search operations)
+const searchClient = algoliasearch(
+  process.env.ALGOLIA_APP_ID,
+  process.env.ALGOLIA_SEARCH_KEY
+);
+
+// Admin client (index/write operations)
+const adminClient = algoliasearch(
   process.env.ALGOLIA_APP_ID,
   process.env.ALGOLIA_WRITE_KEY
 );
 
-const index = client.initIndex('memofiches');
+const index = searchClient.initIndex('memofiches');
+const adminIndex = adminClient.initIndex('memofiches');
 
 export function extractTextFromMemoFiche(fiche: MemoFiche): string {
   let fullText = '';
@@ -100,7 +108,7 @@ export const indexMemoFiches = async (fiches: MemoFiche[]) => {
   });
 
   try {
-    const { objectIDs } = await index.saveObjects(objectsToIndex);
+    const { objectIDs } = await adminIndex.saveObjects(objectsToIndex);
     console.log(`Successfully indexed ${objectIDs.length} memofiches.`);
     return objectIDs;
   } catch (error) {
@@ -111,7 +119,7 @@ export const indexMemoFiches = async (fiches: MemoFiche[]) => {
 
 export const removeMemoFicheFromIndex = async (ficheId: string) => {
   try {
-    const { objectIDs } = await index.deleteObjects([ficheId]);
+    const { objectIDs } = await adminIndex.deleteObjects([ficheId]);
     console.log(`Successfully removed memofiche with ID: ${objectIDs[0]} from index.`);
     return objectIDs;
   } catch (error) {
@@ -122,7 +130,7 @@ export const removeMemoFicheFromIndex = async (ficheId: string) => {
 
 export const clearIndex = async () => {
   try {
-    await index.clearObjects();
+    await adminIndex.clearObjects();
     console.log('Successfully cleared the Algolia index.');
   } catch (error) {
     console.error('Error clearing the Algolia index:', error);
