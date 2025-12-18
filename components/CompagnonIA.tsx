@@ -71,7 +71,11 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
         }
     };
 
-    // ... (renderChatMessage function)
+    const renderChatMessage = (text: string) => {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-teal-700">$1</strong>')
+            .replace(/^\s*[•|*|-]\s+(.*$)/gim, '<div class="flex items-start gap-1.5 ml-1 my-0.5"><span class="text-teal-500 mt-1">•</span><span class="text-sm">$1</span></div>');
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
