@@ -48,7 +48,11 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
 
         try {
             const token = localStorage.getItem('token');
-            const history = messages.map(m => ({ role: m.role, text: m.text }));
+            // Filter out the first message (greeting from model) to comply with Gemini API requirements
+            // The API requires the first message in history to be from 'user'.
+            const history = messages
+                .filter((_, index) => index > 0)
+                .map(m => ({ role: m.role, text: m.text }));
             
             // Send the chosen topic as 'context' to the backend
             const response = await fetch(`/api/gemini/${mode}`, {
