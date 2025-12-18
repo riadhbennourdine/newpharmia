@@ -9,7 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels, isCacheReady } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
@@ -899,6 +899,13 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
 
         // 1. Retrieve: Search for relevant documents in Algolia
         const algoliaResults = await searchMemoFiches(query);
+
+        // If Algolia fails OR returns nothing, but the CACHE is ready, we let Gemini handle it with the cache
+        if ((!algoliaResults || algoliaResults.length === 0) && isCacheReady()) {
+            console.log('[Chat] No Algolia results, but cache is ready. Using cache directly.');
+            const text = await getChatResponse([], "", query, 'mémofiches');
+            return res.json({ message: text, sources: [] });
+        }
 
         if (!algoliaResults || algoliaResults.length === 0) {
             const text = await getChatResponse([], "", query, 'mémofiches');

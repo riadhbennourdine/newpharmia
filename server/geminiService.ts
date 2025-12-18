@@ -371,6 +371,8 @@ QUESTION: ${question}`;
 
 let currentCacheName: string | null = null;
 
+export const isCacheReady = () => !!currentCacheName;
+
 export const refreshKnowledgeBaseCache = async (filePath: string) => {
   try {
     const bestModel = await getBestModel();
