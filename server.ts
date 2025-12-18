@@ -9,7 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels, isCacheReady } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, getPatientResponse, listModels, isCacheReady } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
@@ -944,6 +944,30 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
     } catch (error: any) {
         console.error('Error in RAG chat endpoint:', error);
         res.status(500).json({ message: error.message });
+    }
+});
+
+// NEW: Coach Agent Endpoint
+app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
+    try {
+        const { message, history = [], context = "" } = req.body;
+        const response = await getCoachResponse(history, context, message);
+        res.json({ message: response });
+    } catch (error: any) {
+        console.error('Error in Coach agent:', error);
+        res.status(500).json({ message: "Le coach est indisponible pour le moment." });
+    }
+});
+
+// NEW: Patient Agent Endpoint
+app.post('/api/gemini/patient', authenticateToken, async (req, res) => {
+    try {
+        const { message, history = [], context = "" } = req.body;
+        const response = await getPatientResponse(history, context, message);
+        res.json({ message: response });
+    } catch (error: any) {
+        console.error('Error in Patient agent:', error);
+        res.status(500).json({ message: "Le patient est parti." });
     }
 });
 

@@ -295,6 +295,84 @@ Le contenu de la mémofiche est : "${context}".`;
     return JSON.parse(response.text().trim());
 };
 
+// --- Specialized Agent Personas ---
+
+export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
+    const genAI = new GoogleGenerativeAI(getApiKey());
+    const bestModel = await getBestModel();
+    let modelInput: any = { model: bestModel };
+    
+    // Reuse cache if available
+    if (currentCacheName) {
+        modelInput.cachedContent = currentCacheName;
+    }
+
+    const model = genAI.getGenerativeModel(modelInput);
+    
+    const coachPrompt = `Tu es le "Coach PharmIA", un mentor pédagogique pour pharmaciens et préparateurs.
+    
+INSTRUCTIONS:
+1. Ton but est de TESTER et STIMULER l'apprenant, pas juste de donner la réponse.
+2. Si l'utilisateur pose une question de cours, retourne-lui la question : "Qu'en penses-tu d'abord ?" ou propose un quiz.
+3. Si l'utilisateur se trompe, corrige-le avec bienveillance et explique pourquoi.
+4. Utilise un ton encourageant, dynamique et tutoyant (si approprié).
+5. Sois BREF. Pose une seule question à la fois.
+
+CONTEXTE MÉDICAL (Pour vérification):
+---
+${context || "Utilise tes connaissances générales si le cache est absent."}
+---
+
+DERNIER MESSAGE DE L'APPRENANT: ${userMessage}`;
+
+    const history: Content[] = chatHistory.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+    }));
+
+    const chat = model.startChat({ history });
+    const result = await chat.sendMessage(coachPrompt);
+    return result.response.text().trim();
+};
+
+export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
+    const genAI = new GoogleGenerativeAI(getApiKey());
+    const bestModel = await getBestModel();
+    let modelInput: any = { model: bestModel };
+    
+    if (currentCacheName) {
+        modelInput.cachedContent = currentCacheName;
+    }
+
+    const model = genAI.getGenerativeModel(modelInput);
+
+    const patientPrompt = `Tu es un "Patient Simulé" au comptoir d'une pharmacie.
+    
+INSTRUCTIONS:
+1. Tu ne connais RIEN à la médecine. Tu utilises des mots simples, vagues ("j'ai mal au ventre", "ça pique").
+2. Tu as un problème correspondant à l'une des pathologies présentes dans le CONTEXTE ou le Cache.
+3. L'utilisateur (le pharmacien) doit te questionner pour trouver ce que tu as.
+4. Si le pharmacien pose une bonne question (Red Flag, traitement actuel), réponds honnêtement.
+5. Si le pharmacien te donne un bon conseil, remercie-le et dis que tu vas essayer.
+6. Reste dans ton personnage de patient. Ne donne jamais de conseils médicaux.
+
+CONTEXTE DU CAS (Invisible pour le pharmacien, c'est ta "maladie"):
+---
+${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
+---
+
+PHARMACIEN: ${userMessage}`;
+
+    const history: Content[] = chatHistory.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+    }));
+
+    const chat = model.startChat({ history });
+    const result = await chat.sendMessage(patientPrompt);
+    return result.response.text().trim();
+};
+
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
     
