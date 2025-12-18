@@ -297,13 +297,47 @@ Le contenu de la mémofiche est : "${context}".`;
 
 // --- Specialized Agent Personas ---
 
+import { searchMemoFiches, extractTextFromMemoFiche } from "./algoliaService.js";
+import clientPromise from "./mongo.js";
+import { ObjectId } from "mongodb";
+
+async function getRAGContext(query: string): Promise<string> {
+    if (!query) return "";
+    try {
+        const algoliaResults = await searchMemoFiches(query);
+        if (!algoliaResults || algoliaResults.length === 0) return "";
+
+        const ficheObjectIDs = algoliaResults.map((hit: any) => new ObjectId(hit.objectID));
+        if (ficheObjectIDs.length === 0) return "";
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        const fullFiches = await memofichesCollection.find({ _id: { $in: ficheObjectIDs } }).toArray();
+
+        return fullFiches.map(fiche => {
+            return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
+        }).join('\n---\n');
+    } catch (e) {
+        console.error("Error getting RAG context:", e);
+        return "";
+    }
+}
+
 export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
     const bestModel = await getBestModel();
     let modelInput: any = { model: bestModel };
     
-    // Reuse cache if available
-    if (currentCacheName) {
+    // Fallback RAG if cache is not available (which is the case for Flash Lite free tier)
+    let finalContext = context;
+    if (!currentCacheName && context) {
+        // If we have a topic but no global cache, fetch relevant fiches
+        const ragContext = await getRAGContext(context); // context here is the topic (e.g. "Angine")
+        if (ragContext) {
+            finalContext = `FICHES PERTINENTES TROUVÉES:\n${ragContext}`;
+        }
+    } else if (currentCacheName) {
         modelInput.cachedContent = currentCacheName;
     }
 
@@ -318,9 +352,9 @@ INSTRUCTIONS:
 4. Utilise un ton encourageant, dynamique et tutoyant (si approprié).
 5. Sois BREF. Pose une seule question à la fois.
 
-CONTEXTE MÉDICAL (Pour vérification):
+CONTEXTE MÉDICAL:
 ---
-${context || "Utilise tes connaissances générales si le cache est absent."}
+${finalContext || "Utilise tes connaissances générales si le contexte est absent."}
 ---
 
 DERNIER MESSAGE DE L'APPRENANT: ${userMessage}`;
@@ -340,7 +374,14 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
     const bestModel = await getBestModel();
     let modelInput: any = { model: bestModel };
     
-    if (currentCacheName) {
+    // Fallback RAG logic
+    let finalContext = context;
+    if (!currentCacheName && context) {
+        const ragContext = await getRAGContext(context);
+        if (ragContext) {
+            finalContext = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
+        }
+    } else if (currentCacheName) {
         modelInput.cachedContent = currentCacheName;
     }
 
@@ -350,15 +391,15 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
     
 INSTRUCTIONS:
 1. Tu ne connais RIEN à la médecine. Tu utilises des mots simples, vagues ("j'ai mal au ventre", "ça pique").
-2. Tu as un problème correspondant à l'une des pathologies présentes dans le CONTEXTE ou le Cache.
+2. Tu as un problème correspondant à la pathologie décrite dans le CONTEXTE DU CAS ci-dessous.
 3. L'utilisateur (le pharmacien) doit te questionner pour trouver ce que tu as.
-4. Si le pharmacien pose une bonne question (Red Flag, traitement actuel), réponds honnêtement.
+4. Si le pharmacien pose une bonne question (Red Flag, traitement actuel), réponds honnêtement en t'inspirant de la fiche.
 5. Si le pharmacien te donne un bon conseil, remercie-le et dis que tu vas essayer.
 6. Reste dans ton personnage de patient. Ne donne jamais de conseils médicaux.
 
-CONTEXTE DU CAS (Invisible pour le pharmacien, c'est ta "maladie"):
+CONTEXTE DU CAS (C'est ta "maladie", invisible pour le pharmacien):
 ---
-${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
+${finalContext || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
 ---
 
 PHARMACIEN: ${userMessage}`;
