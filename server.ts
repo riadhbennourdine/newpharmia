@@ -963,6 +963,10 @@ app.get('/api/gemini/list-models', async (req, res) => {
     }
 });
 
+app.get('/api/gemini/cache-status', (req, res) => {
+    res.json({ ready: isCacheReady() });
+});
+
 // KONNECT PAYMENT ROUTES
 app.post('/api/konnect/initiate-payment', authenticateToken, async (req, res) => {
     try {

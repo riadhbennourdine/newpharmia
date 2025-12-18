@@ -137,9 +137,11 @@ export const clearIndex = async () => {
  */
 export const searchMemoFiches = async (query: string) => {
   try {
+    console.log(`[Algolia] Searching for: "${query}"`);
     const results = await index.search(query, {
       hitsPerPage: 5, // Limit to the top 5 results to build the context
     });
+    console.log(`[Algolia] Found ${results.hits.length} hits.`);
     return results.hits;
   } catch (error) {
     console.error('Error searching Algolia index:', error);
