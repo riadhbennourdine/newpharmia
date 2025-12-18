@@ -37,8 +37,8 @@ const PricingPage: React.FC = () => {
     starter: {
       name: 'Starter',
       description: 'Pharmacien + 5 licences Préparateurs',
-      monthly: 79.400,
-      annual: 714.600, // 79.400 * 9
+      monthly: 79.900,
+      annual: 719.100, // 79.900 * 9
       features: [
         'Toutes les fonctionnalités Solo',
         '5 comptes Préparateurs inclus',

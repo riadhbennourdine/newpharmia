@@ -73,8 +73,8 @@ const SubscriptionManagement: React.FC = () => {
     },
     starter: {
       name: 'Starter',
-      monthly: 79.400,
-      annual: 714.600,
+      monthly: 79.900,
+      annual: 719.100,
     },
     gold: {
       name: 'Gold',
