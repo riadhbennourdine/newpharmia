@@ -34,12 +34,12 @@ const getBestModel = async (): Promise<string> => {
     const models = await listModels();
     const modelNames = models.map(m => m.name);
     
-    // Priority list: Flash 2.0 (High Quota) > Flash Latest > 1.5 Pro (if available)
+    // Priority list: Experimental (Fresh Quota) > Flash 2.0 > Flash Latest
     const candidates = [
+      'models/gemini-2.0-flash-exp',
+      'models/gemini-exp-1206',
       'models/gemini-2.0-flash',
-      'models/gemini-flash-latest', 
-      'models/gemini-1.5-pro-latest',
-      'models/gemini-1.5-pro'
+      'models/gemini-flash-latest'
     ];
 
     for (const candidate of candidates) {
@@ -52,12 +52,12 @@ const getBestModel = async (): Promise<string> => {
     }
 
     // Fallback if listModels fails or returns weird data
-    console.warn('[Gemini] Could not auto-select model, falling back to gemini-2.0-flash');
-    return 'gemini-2.0-flash';
+    console.warn('[Gemini] Could not auto-select model, falling back to gemini-2.0-flash-exp');
+    return 'gemini-2.0-flash-exp';
 
   } catch (error) {
     console.error('[Gemini] Error auto-selecting model:', error);
-    return 'gemini-2.0-flash';
+    return 'gemini-2.0-flash-exp';
   }
 };
 
