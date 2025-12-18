@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import { generateKnowledgeBase } from './generateKnowledgeBase';
-import { refreshKnowledgeBaseCache } from './geminiService';
+import { generateKnowledgeBase } from './generateKnowledgeBase.js';
+import { refreshKnowledgeBaseCache } from './geminiService.js';
 
 export function initCronJobs() {
   console.log('Initializing cron jobs...');

@@ -1,8 +1,8 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
-import clientPromise from './mongo';
-import { MemoFiche, MemoFicheSection, MemoFicheSectionContent } from '../types';
+import clientPromise from './mongo.js';
+import { MemoFiche, MemoFicheSection, MemoFicheSectionContent } from '../types.js';
 
 const OUTPUT_FILE = path.join(process.cwd(), 'pharmia_knowledge_base.md');
 const DOCS_FILE = path.join(process.cwd(), 'memofiches_documentation.md');
