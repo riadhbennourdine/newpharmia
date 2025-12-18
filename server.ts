@@ -11,6 +11,9 @@ import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
 import { generateCaseStudyDraft, generateLearningTools, getChatResponse, listModels } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
+import { initCronJobs } from './server/cronService.js';
+import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
+import { refreshKnowledgeBaseCache } from './server/geminiService.js';
 import { User, UserRole, CaseStudy, Group, MemoFicheStatus, Rating, Order, OrderStatus } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
@@ -1623,6 +1626,19 @@ app.listen(port, async () => {
     // await migrateWebinars();
     // await migrateWebinarGroup();
     console.log(`Server is running on http://localhost:${port}`);
+    
+    // Initialize Cron Jobs
+    initCronJobs();
+
+    // Initial Knowledge Base Generation & Caching (Background)
+    if (process.env.NODE_ENV === 'production') {
+        console.log('[Startup] Triggering Knowledge Base update...');
+        generateKnowledgeBase()
+            .then(path => refreshKnowledgeBaseCache(path))
+            .then(() => console.log('[Startup] Knowledge Base updated and cached.'))
+            .catch(err => console.error('[Startup] Failed to update Knowledge Base:', err));
+    }
+
     // await ensureAdminUserExists();
 });
 

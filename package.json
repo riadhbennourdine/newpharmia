@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.21.0",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
     "path-browserify": "^1.0.1",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@types/multer": "^2.0.0",
     "@types/node": "^22.14.0",
+    "@types/node-cron": "^3.0.11",
     "@types/react-dropzone": "^4.2.2",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.1",

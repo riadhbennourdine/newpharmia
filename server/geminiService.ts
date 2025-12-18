@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType, ObjectSchema, ArraySchema } from "@google/generative-ai";
+import { GoogleAIFileManager, GoogleAICacheManager, FileState } from "@google/generative-ai/server";
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 import fetch from 'node-fetch';
 
@@ -245,9 +246,39 @@ Le contenu de la mémofiche est : "${context}".`;
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    
+    // Determine configuration based on cache availability
+    const modelName = currentCacheName ? "gemini-1.5-flash-001" : "gemini-1.5-flash"; 
+    
+    let modelInput: any = { model: modelName };
+    if (currentCacheName) {
+        console.log(`[Chat] Using cached context: ${currentCacheName}`);
+        modelInput.cachedContent = currentCacheName;
+    }
 
-    const finalPrompt = `Tu es PharmIA, un assistant expert pour les professionnels de la pharmacie. Ta mission est de répondre de manière claire, concise et structurée à la QUESTION de l'utilisateur.
+    const model = genAI.getGenerativeModel(modelInput);
+
+    let finalPrompt = "";
+
+    if (currentCacheName) {
+        // With cache: The model knows the content. We just give persona + local context + question.
+        finalPrompt = `Tu es PharmIA, un assistant expert pour les professionnels de la pharmacie. Ta mission est de répondre de manière claire, concise et structurée.
+
+INSTRUCTIONS:
+1. Utilise les connaissances fournies dans le cache (la base de connaissances complète).
+2. Agis comme un expert.
+3. Si des informations contextuelles supplémentaires sont fournies ci-dessous, utilise-les aussi.
+
+CONTEXTE SUPPLÉMENTAIRE (Page courante):
+---
+${context || "Aucun contexte supplémentaire."}
+---
+
+QUESTION: ${question}`;
+
+    } else {
+        // Without cache: Legacy behavior (RAG or context injection)
+        finalPrompt = `Tu es PharmIA, un assistant expert pour les professionnels de la pharmacie. Ta mission est de répondre de manière claire, concise et structurée à la QUESTION de l'utilisateur.
 
 INSTRUCTIONS STRICTES :
 1. Base ta réponse **uniquement** sur les informations fournies dans le CONTEXTE ci-dessous.
@@ -261,6 +292,7 @@ ${context || "Aucune information fournie."}
 ---
 
 QUESTION: ${question}`;
+    }
 
     const history: Content[] = chatHistory.map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
@@ -289,4 +321,64 @@ export const listModels = async (): Promise<any[]> => {
   const response = await fetch(url);
   const data = await response.json() as ListModelsResponse;
   return data.models;
+};
+
+// --- Context Caching Implementation ---
+
+let currentCacheName: string | null = null;
+
+export const refreshKnowledgeBaseCache = async (filePath: string) => {
+  try {
+    const apiKey = getApiKey();
+    const fileManager = new GoogleAIFileManager(apiKey);
+    const cacheManager = new GoogleAICacheManager(apiKey);
+
+    console.log(`[Cache] Uploading file ${filePath} to Gemini...`);
+    
+    const uploadResult = await fileManager.uploadFile(filePath, {
+      mimeType: "text/markdown",
+      displayName: "PharmIA Knowledge Base",
+    });
+
+    const fileUri = uploadResult.file.uri;
+    console.log(`[Cache] File uploaded: ${fileUri}`);
+
+    // Wait for processing to complete
+    let file = await fileManager.getFile(uploadResult.file.name);
+    while (file.state === FileState.PROCESSING) {
+      process.stdout.write(".");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      file = await fileManager.getFile(uploadResult.file.name);
+    }
+    console.log(`\n[Cache] File processing complete: ${file.state}`);
+
+    if (file.state === FileState.FAILED) {
+      throw new Error("File processing failed.");
+    }
+
+    console.log(`[Cache] Creating cache...`);
+    
+    // Create a cache with a 24-hour TTL (matching our Cron job)
+    const cacheResult = await cacheManager.create({
+        model: 'models/gemini-1.5-flash-001',
+        displayName: 'PharmIA Full Knowledge Base',
+        contents: [
+            {
+                role: 'user',
+                parts: [{ fileData: { mimeType: file.mimeType, fileUri: file.uri } }]
+            }
+        ],
+        ttlSeconds: 60 * 60 * 24, // 24 hours
+    });
+
+    currentCacheName = cacheResult.name;
+    console.log(`[Cache] Cache created successfully: ${currentCacheName}`);
+    console.log(`[Cache] Expires at: ${cacheResult.expireTime}`);
+
+    return currentCacheName;
+
+  } catch (error) {
+    console.error("[Cache] Error refreshing cache:", error);
+    throw error;
+  }
 };
