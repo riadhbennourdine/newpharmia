@@ -46,8 +46,9 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
         setError(null);
 
         try {
-            // Use the new RAG-based chat function
-            const response = await sendRAGChatMessage(trimmedInput);
+            // Use the new RAG-based chat function with history
+            const history = messages.map(msg => ({ role: msg.role, text: msg.text }));
+            const response = await sendRAGChatMessage(trimmedInput, history);
             const modelMessage: Message = { role: 'model', text: response.message, sources: response.sources };
             setMessages(prev => [...prev, modelMessage]);
         } catch (err: any) {

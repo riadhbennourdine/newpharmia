@@ -891,7 +891,7 @@ app.post('/api/gemini/chat', authenticateToken, async (req, res) => {
 
 app.post('/api/rag/chat', authenticateToken, async (req, res) => {
     try {
-        const { query } = req.body;
+        const { query, history = [] } = req.body;
 
         if (!query) {
             return res.status(400).json({ message: 'Query is required.' });
@@ -903,12 +903,12 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
         // If Algolia fails OR returns nothing, but the CACHE is ready, we let Gemini handle it with the cache
         if ((!algoliaResults || algoliaResults.length === 0) && isCacheReady()) {
             console.log('[Chat] No Algolia results, but cache is ready. Using cache directly.');
-            const text = await getChatResponse([], "", query, 'mémofiches');
+            const text = await getChatResponse(history, "", query, 'mémofiches');
             return res.json({ message: text, sources: [] });
         }
 
         if (!algoliaResults || algoliaResults.length === 0) {
-            const text = await getChatResponse([], "", query, 'mémofiches');
+            const text = await getChatResponse(history, "", query, 'mémofiches');
             return res.json({ message: text, sources: [] });
         }
 
@@ -927,8 +927,8 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
             return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
         }).join('\n---\n');
         
-        // 3. Generate: Call the chat service with the raw context and question
-        const text = await getChatResponse([], context, query, 'mémofiches'); 
+        // 3. Generate: Call the chat service with the raw context, history and question
+        const text = await getChatResponse(history, context, query, 'mémofiches'); 
         
         const sources = fullFiches.map(fiche => ({
             objectID: fiche._id.toString(),

@@ -69,7 +69,7 @@ export const sendChatMessage = async (messages: {role: string, text: string}[], 
   return handleResponse(response);
 };
 
-export const sendRAGChatMessage = async (query: string): Promise<{ message: string, sources: any[] }> => {
+export const sendRAGChatMessage = async (query: string, history: {role: string, text: string}[] = []): Promise<{ message: string, sources: any[] }> => {
   const token = getAuthToken();
   if (!token) throw new Error("Jeton d'authentification non trouvé.");
 
@@ -79,7 +79,7 @@ export const sendRAGChatMessage = async (query: string): Promise<{ message: stri
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ query })
+    body: JSON.stringify({ query, history })
   });
 
   return handleResponse(response);

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -9,23 +9,31 @@ const getApiKey = () => {
     return API_KEY;
 };
 
-const genAI = new GoogleGenAI({ apiKey: getApiKey() });
-
-async function testListFileStores() {
+async function listModels() {
     try {
-        console.log("Listing available File Search Stores with test script...");
-        const pager = await genAI.fileSearchStores.list();
-        console.log("Successfully called the list API.");
-        if (!pager.page || pager.page.length === 0) {
-            console.log("No File Search Stores found.");
-            return;
+        const genAI = new GoogleGenerativeAI(getApiKey());
+        // The SDK doesn't have a direct 'listModels' on the main class in some versions, 
+        // or it might be different. 
+        // Actually, for listing models, we often use the fetch endpoint directly or a specific manager 
+        // if the SDK exposes it. 
+        // The previous code in geminiService.ts used fetch. Let's do that to be raw and sure.
+        
+        console.log("Listing models via API...");
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${getApiKey()}`);
+        const data = await response.json();
+        
+        if (data.models) {
+            console.log("Available Models:");
+            data.models.forEach(m => {
+                console.log(`- ${m.name} (Supported methods: ${m.supportedGenerationMethods})`);
+            });
+        } else {
+            console.log("No models found or error structure:", data);
         }
-        for (const store of pager.page) {
-            console.log(`- Found store: ${store.name} (Display Name: ${store.displayName})`);
-        }
+
     } catch (error) {
-        console.error("Error in test script listing File Search Stores:", error);
+        console.error("Error listing models:", error);
     }
 }
 
-testListFileStores();
+listModels();
