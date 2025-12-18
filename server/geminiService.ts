@@ -315,8 +315,10 @@ async function getRAGContext(query: string): Promise<string> {
         const memofichesCollection = db.collection<CaseStudy>('memofiches');
         const fullFiches = await memofichesCollection.find({ _id: { $in: ficheObjectIDs } }).toArray();
 
+        // Limit context size to reduce token usage
         return fullFiches.map(fiche => {
-            return `Titre: ${fiche.title}\nContenu: ${extractTextFromMemoFiche(fiche)}\n`;
+            const content = extractTextFromMemoFiche(fiche);
+            return `Titre: ${fiche.title}\nContenu: ${content.substring(0, 3000)}...\n`;
         }).join('\n---\n');
     } catch (e) {
         console.error("Error getting RAG context:", e);
@@ -329,16 +331,15 @@ export const getCoachResponse = async (chatHistory: {role: string, text: string}
     const bestModel = await getBestModel();
     let modelInput: any = { model: bestModel };
     
-    // Fallback RAG if cache is not available (which is the case for Flash Lite free tier)
-    let finalContext = context;
-    if (!currentCacheName && context) {
-        // If we have a topic but no global cache, fetch relevant fiches
-        const ragContext = await getRAGContext(context); // context here is the topic (e.g. "Angine")
-        if (ragContext) {
-            finalContext = `FICHES PERTINENTES TROUVÉES:\n${ragContext}`;
-        }
-    } else if (currentCacheName) {
+    // Reuse cache if available, or fallback to RAG
+    if (currentCacheName) {
         modelInput.cachedContent = currentCacheName;
+    } else if (context) {
+        // Fallback RAG if cache is not available
+        const ragContext = await getRAGContext(context);
+        if (ragContext) {
+            context = `FICHES PERTINENTES:\n${ragContext}`;
+        }
     }
 
     const model = genAI.getGenerativeModel(modelInput);
@@ -352,19 +353,20 @@ INSTRUCTIONS:
 4. Utilise un ton encourageant, dynamique et tutoyant (si approprié).
 5. Sois BREF. Pose une seule question à la fois.
 
-CONTEXTE MÉDICAL:
+CONTEXTE MÉDICAL (Pour vérification):
 ---
-${finalContext || "Utilise tes connaissances générales si le contexte est absent."}
+${context || "Utilise tes connaissances générales si le cache est absent."}
 ---
 
 DERNIER MESSAGE DE L'APPRENANT: ${userMessage}`;
 
-    const history: Content[] = chatHistory.map(msg => ({
+    // Limit history to last 6 turns to save tokens
+    const recentHistory = chatHistory.slice(-6).map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
     }));
 
-    const chat = model.startChat({ history });
+    const chat = model.startChat({ history: recentHistory });
     const result = await chat.sendMessage(coachPrompt);
     return result.response.text().trim();
 };
@@ -374,15 +376,15 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
     const bestModel = await getBestModel();
     let modelInput: any = { model: bestModel };
     
-    // Fallback RAG logic
-    let finalContext = context;
-    if (!currentCacheName && context) {
+    // Reuse cache if available, or fallback to RAG
+    if (currentCacheName) {
+        modelInput.cachedContent = currentCacheName;
+    } else if (context) {
+        // Fallback RAG logic
         const ragContext = await getRAGContext(context);
         if (ragContext) {
-            finalContext = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
+            context = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
         }
-    } else if (currentCacheName) {
-        modelInput.cachedContent = currentCacheName;
     }
 
     const model = genAI.getGenerativeModel(modelInput);
@@ -399,17 +401,18 @@ INSTRUCTIONS:
 
 CONTEXTE DU CAS (C'est ta "maladie", invisible pour le pharmacien):
 ---
-${finalContext || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
+${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
 ---
 
 PHARMACIEN: ${userMessage}`;
 
-    const history: Content[] = chatHistory.map(msg => ({
+    // Limit history to last 6 turns
+    const recentHistory = chatHistory.slice(-6).map(msg => ({
         role: msg.role === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
     }));
 
-    const chat = model.startChat({ history });
+    const chat = model.startChat({ history: recentHistory });
     const result = await chat.sendMessage(patientPrompt);
     return result.response.text().trim();
 };
