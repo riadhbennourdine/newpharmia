@@ -6,6 +6,7 @@ import { Spinner, ArrowRightIcon } from './Icons';
 import MemoFichePreviewCard from './MemoFichePreviewCard';
 import { Group, CaseStudy } from '../types';
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
+import CompagnonIA from './CompagnonIA';
 
 interface Props {
     initialGroup?: Group | null; // Make prop optional
@@ -23,6 +24,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
     const [showJourneyPopup, setShowJourneyPopup] = useState(false);
+    const [compagnonMode, setCompagnonMode] = useState<'coach' | 'patient' | null>(null);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -189,6 +191,46 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                     )}
                 </div>
             )}
+            {/* Nouveau : Compagnon IA Agent Section */}
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold text-teal-600 mb-4">Bonjour, {user?.firstName} !</h2>
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-teal-100 overflow-hidden relative">
+                    <div className="relative z-10">
+                        <p className="text-slate-700 font-semibold text-lg mb-4">Que souhaites-tu faire aujourd'hui ?</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button 
+                                onClick={() => setCompagnonMode('coach')}
+                                className="flex items-center justify-between p-4 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-all group shadow-sm hover:shadow-md active:scale-95"
+                            >
+                                <div className="text-left">
+                                    <h3 className="font-bold text-teal-800">Réviser avec mon Coach</h3>
+                                    <p className="text-xs text-teal-600">Teste tes connaissances sur les fiches</p>
+                                </div>
+                                <div className="bg-teal-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <button 
+                                onClick={() => setCompagnonMode('patient')}
+                                className="flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-xl hover:bg-orange-100 transition-all group shadow-sm hover:shadow-md active:scale-95"
+                            >
+                                <div className="text-left">
+                                    <h3 className="font-bold text-orange-800">Simuler un Patient</h3>
+                                    <p className="text-xs text-orange-600">Mise en situation réelle au comptoir</p>
+                                </div>
+                                <div className="bg-orange-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <h2 className="text-2xl font-bold text-teal-600 mb-4">Statistiques d'apprentissage</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -234,46 +276,12 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                     </div>
                 </div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <p className="text-teal-700 font-semibold text-base">
-                    "{encouragement}"
-                </p>
-                <Link 
-                    to="/memofiches" 
-                    className="mt-4 inline-flex items-center gap-2 bg-teal-600 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                >
-                    Explorer les mémofiches
-                    <ArrowRightIcon className="h-4 w-4" />
-                </Link>
-            </div>
-            <div className="mt-8">
-                <h2 className="text-2xl font-bold text-teal-600 mb-6">Dernières mémofiches ajoutées</h2>
-                {fichesLoading ? (
-                    <div className="flex justify-center items-center h-40"><Spinner className="h-10 w-10 text-teal-600" /></div>
-                ) : fiches.length > 0 ? (
-                    <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {fiches.map(cs => (
-                                <MemoFichePreviewCard key={cs._id} caseStudy={cs} />
-                            ))}
-                        </div>
-                        <div className="text-center mt-8">
-                            <Link to="/memofiches" className="font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-                                Voir toutes les mémofiches &rarr;
-                            </Link>
-                        </div>
-                    </>
-                ) : (
-                    <div className="text-center py-10 bg-white rounded-lg shadow-sm">
-                        <p className="text-slate-500">Aucune mémofiche à afficher pour le moment.</p>
-                    </div>
-                )}
-            </div>
-            {showJourneyPopup && user && (
-                <PreparateurLearningJourneyPopup
-                    preparerId={user._id as string}
-                    preparerName={`${user.firstName} ${user.lastName}`}
-                    onClose={() => setShowJourneyPopup(false)}
+            {/* Modal Compagnon IA */}
+            {compagnonMode && user && (
+                <CompagnonIA 
+                    mode={compagnonMode} 
+                    userName={user.firstName} 
+                    onClose={() => setCompagnonMode(null)} 
                 />
             )}
         </>
