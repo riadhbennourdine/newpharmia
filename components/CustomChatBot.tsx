@@ -26,7 +26,15 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
     };
 
     const renderChatMessage = (text: string) => {
-        return text.replace(/\*\*(.*?)\*\*/g, `<strong class="font-semibold text-teal-600">$1</strong>`);
+        let rendered = text
+            // Handle Bold (**text**)
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-teal-700">$1</strong>')
+            // Handle Headers (### Title)
+            .replace(/^### (.*$)/gim, '<h4 class="text-sm font-bold text-slate-800 mt-2 mb-1 uppercase tracking-tight">$1</h4>')
+            // Handle Bullet Points (* item or - item)
+            .replace(/^\s*[*|-]\s+(.*$)/gim, '<div class="flex items-start gap-1.5 ml-1 my-0.5"><span class="text-teal-500 mt-1">•</span><span class="text-sm">$1</span></div>');
+        
+        return rendered;
     };
 
     useEffect(() => {

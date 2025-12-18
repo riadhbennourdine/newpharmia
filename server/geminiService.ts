@@ -322,8 +322,8 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
 
 INSTRUCTIONS:
 1. **SOIS CONCIS ET SYNTHÉTIQUE** : La réponse doit être courte, dense et lisible rapidement sur un chat. Allez droit au but.
-2. Utilise prioritairement la base de connaissances du cache.
-3. Utilise des listes à puces pour structurer l'information et faciliter la lecture rapide.
+2. Utilise des puces (point •) pour structurer l'information.
+3. Ne pas abuser des titres (###). Utilise du gras pour mettre en valeur les sections importantes.
 4. Réponds chaleureusement aux salutations, mais reste très bref sur les politesses.
 5. Si une information spécifique est dans le CONTEXTE SUPPLÉMENTAIRE, utilise-la.
 6. Ne mentionne jamais le "cache" ou les "fiches".
@@ -341,8 +341,8 @@ QUESTION: ${question}`;
 
 INSTRUCTIONS:
 1. **SOIS CONCIS ET SYNTHÉTIQUE** : La réponse doit être courte, dense et lisible rapidement sur un chat. Allez droit au but.
-2. Base ta réponse **prioritairement** sur le CONTEXTE ci-dessous.
-3. Utilise des listes à puces pour structurer l'information.
+2. Utilise des puces (point •) pour structurer l'information.
+3. Ne pas abuser des titres (###). Utilise du gras pour mettre en valeur les sections importantes.
 4. Réponds chaleureusement aux salutations, mais reste très bref.
 5. Ne mentionne pas explicitement "le contexte fourni".
 
