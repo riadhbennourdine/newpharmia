@@ -7,6 +7,7 @@ import PreparatorCard from './PreparatorCard';
 import EditInstructionModal from './EditInstructionModal';
 import { Spinner, EyeIcon } from './Icons'; // Assuming Spinner is available
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
+import CompagnonIA from './CompagnonIA';
 
 const PharmacienDashboard: React.FC = () => {
     const { user } = useAuth();
@@ -22,6 +23,7 @@ const PharmacienDashboard: React.FC = () => {
     
     // State for viewing learning journey
     const [viewingPreparator, setViewingPreparator] = useState<{id: string, name: string} | null>(null);
+    const [compagnonMode, setCompagnonMode] = useState<'coach' | 'patient' | null>(null);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -144,7 +146,7 @@ const PharmacienDashboard: React.FC = () => {
                 </button>
             </div>
 
-            {selectedMenu === 'parcours' && <LearnerDashboard group={group} />}
+            {selectedMenu === 'parcours' && <LearnerDashboard initialGroup={group} />}
             {selectedMenu === 'equipe' && (
                 <div className="container mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
@@ -178,6 +180,46 @@ const PharmacienDashboard: React.FC = () => {
 
                         <button onClick={() => setIsInstructionModalOpen(true)} className="text-sm text-teal-600 hover:text-teal-800 font-semibold mt-4">Modifier la consigne</button>
                     </div>
+
+                    {/* Compagnon IA Agent Section for Pharmacist */}
+                    <div className="mb-8">
+                        <div className="bg-white rounded-xl shadow-lg p-6 border border-teal-100 overflow-hidden relative">
+                            <div className="relative z-10">
+                                <p className="text-slate-700 font-semibold text-lg mb-4">Outils Pédagogiques IA (Test & Démo)</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <button 
+                                        onClick={() => setCompagnonMode('coach')}
+                                        className="flex items-center justify-between p-4 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-all group shadow-sm hover:shadow-md active:scale-95"
+                                    >
+                                        <div className="text-left">
+                                            <h3 className="font-bold text-teal-800">Tester le Coach</h3>
+                                            <p className="text-xs text-teal-600">Voir comment l'IA teste vos équipes</p>
+                                        </div>
+                                        <div className="bg-teal-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                    <button 
+                                        onClick={() => setCompagnonMode('patient')}
+                                        className="flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-xl hover:bg-orange-100 transition-all group shadow-sm hover:shadow-md active:scale-95"
+                                    >
+                                        <div className="text-left">
+                                            <h3 className="font-bold text-orange-800">Simuler un Patient</h3>
+                                            <p className="text-xs text-orange-600">Tester la mise en situation</p>
+                                        </div>
+                                        <div className="bg-orange-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <h1 className="text-3xl font-bold text-slate-800 mb-6">Statistiques de l'équipe</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {preparators.map(p => (
@@ -204,6 +246,13 @@ const PharmacienDashboard: React.FC = () => {
                     preparerId={viewingPreparator.id}
                     preparerName={viewingPreparator.name}
                     onClose={() => setViewingPreparator(null)}
+                />
+            )}
+            {compagnonMode && user && (
+                <CompagnonIA 
+                    mode={compagnonMode} 
+                    userName={user.firstName} 
+                    onClose={() => setCompagnonMode(null)} 
                 />
             )}
         </div>
