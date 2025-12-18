@@ -14,7 +14,7 @@ const getApiKey = () => {
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", safetySettings: [
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001", safetySettings: [
     {
       category: HarmCategory.HARM_CATEGORY_HARASSMENT,
       threshold: HarmBlockThreshold.BLOCK_NONE,
@@ -217,7 +217,7 @@ const learningToolsSchema: ObjectSchema = {
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
 
     const context = `
         Titre: ${memoContent.title}
@@ -247,8 +247,8 @@ Le contenu de la mémofiche est : "${context}".`;
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
     
-    // Determine configuration based on cache availability
-    const modelName = currentCacheName ? "gemini-1.5-flash-001" : "gemini-1.5-flash"; 
+    // Always use the specific version that supports caching and is known to work
+    const modelName = "gemini-1.5-flash-001";
     
     let modelInput: any = { model: modelName };
     if (currentCacheName) {
