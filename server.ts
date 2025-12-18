@@ -26,8 +26,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8080;
 
+// Trust proxy is required for rate limiting to work correctly behind a load balancer (like Railway/Heroku)
+app.set('trust proxy', 1);
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 

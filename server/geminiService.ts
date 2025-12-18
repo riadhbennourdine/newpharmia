@@ -378,6 +378,10 @@ let currentCacheName: string | null = null;
 export const isCacheReady = () => !!currentCacheName;
 
 export const refreshKnowledgeBaseCache = async (filePath: string) => {
+    // Temporary disable cache creation to avoid 429 errors on free tier models (2.5-flash limit=0)
+    console.warn("[Cache] Cache creation disabled to prevent 429 errors on free tier.");
+    return null;
+
   try {
     const bestModel = await getBestModel();
     // Support caching on 1.5, 2.0, 2.5, 3.0+ models

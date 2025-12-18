@@ -47,7 +47,11 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
 
         try {
             // Use the new RAG-based chat function with history
-            const history = messages.map(msg => ({ role: msg.role, text: msg.text }));
+            // Filter out the first message if it's from the model (the greeting)
+            const history = messages
+                .filter((_, index) => index > 0) 
+                .map(msg => ({ role: msg.role, text: msg.text }));
+            
             const response = await sendRAGChatMessage(trimmedInput, history);
             const modelMessage: Message = { role: 'model', text: response.message, sources: response.sources };
             setMessages(prev => [...prev, modelMessage]);
