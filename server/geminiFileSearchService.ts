@@ -32,7 +32,7 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
  */
 export const searchInFiles = async (query: string, files: { name: string; uri: string; mimeType: string; }[]) => {
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const fileParts = files.map(file => ({
     fileData: {
