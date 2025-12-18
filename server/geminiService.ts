@@ -34,12 +34,13 @@ const getBestModel = async (): Promise<string> => {
     const models = await listModels();
     const modelNames = models.map(m => m.name);
     
-    // Priority list: Flash 1.5 (Fast & Cheap) > Pro 1.5 (Smart)
+    // Priority list: Flash 2.5/2.0 (Fast & Cheap) > Pro 2.5 (Smart) > Flash Latest
     const candidates = [
-      'models/gemini-1.5-flash-001',
-      'models/gemini-1.5-flash',
-      'models/gemini-1.5-pro-001',
-      'models/gemini-1.5-pro'
+      'models/gemini-2.5-flash',
+      'models/gemini-2.0-flash',
+      'models/gemini-2.5-pro',
+      'models/gemini-3-flash-preview',
+      'models/gemini-flash-latest'
     ];
 
     for (const candidate of candidates) {
@@ -52,12 +53,12 @@ const getBestModel = async (): Promise<string> => {
     }
 
     // Fallback if listModels fails or returns weird data
-    console.warn('[Gemini] Could not auto-select model, falling back to gemini-1.5-flash');
-    return 'gemini-1.5-flash';
+    console.warn('[Gemini] Could not auto-select model, falling back to gemini-2.5-flash');
+    return 'gemini-2.5-flash';
 
   } catch (error) {
     console.error('[Gemini] Error auto-selecting model:', error);
-    return 'gemini-1.5-flash';
+    return 'gemini-2.5-flash';
   }
 };
 
@@ -299,8 +300,8 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
     const genAI = new GoogleGenerativeAI(getApiKey());
     
     const bestModel = await getBestModel();
-    // Cache is only supported on 1.5 models
-    const supportsCache = bestModel.includes('1.5');
+    // Cache is supported on 1.5, 2.x, 3.x
+    const supportsCache = !!bestModel.match(/(1\.5|2\.|3\.)/);
     
     let modelInput: any = { model: bestModel };
     
@@ -373,8 +374,9 @@ let currentCacheName: string | null = null;
 export const refreshKnowledgeBaseCache = async (filePath: string) => {
   try {
     const bestModel = await getBestModel();
-    if (!bestModel.includes('1.5')) {
-        console.warn(`[Cache] Skipping cache creation because selected model ${bestModel} does not support caching (requires 1.5+).`);
+    // Support caching on 1.5, 2.0, 2.5, 3.0+ models
+    if (!bestModel.match(/(1\.5|2\.|3\.)/)) {
+        console.warn(`[Cache] Skipping cache creation because selected model ${bestModel} might not support caching.`);
         return null;
     }
     
@@ -409,7 +411,7 @@ export const refreshKnowledgeBaseCache = async (filePath: string) => {
     
     // Create a cache with a 24-hour TTL (matching our Cron job)
     const cacheResult = await cacheManager.create({
-        model: 'models/gemini-1.5-flash-001',
+        model: 'models/gemini-2.5-flash',
         displayName: 'PharmIA Full Knowledge Base',
         contents: [
             {
