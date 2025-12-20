@@ -328,19 +328,26 @@ async function getRAGContext(query: string): Promise<string> {
 
 export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
     try {
+        console.log(`[Coach] Starting request for subject: ${context || 'General'}`);
         const genAI = new GoogleGenerativeAI(getApiKey());
         const bestModel = await getBestModel();
         
-        // Cache is supported on 1.5, 2.x, and latest flash models
         const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
+        let modelInput: any = { 
+            model: bestModel,
+            safetySettings: [
+                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            ]
+        };
         
-        let modelInput: any = { model: bestModel };
-        
-        // Use cache only if supported and available
         if (supportsCache && currentCacheName) {
+            console.log(`[Coach] Using cache: ${currentCacheName}`);
             modelInput.cachedContent = currentCacheName;
         } else if (context) {
-            // Fallback RAG if cache is not available or supported
+            console.log(`[Coach] Using RAG context for: ${context}`);
             const ragContext = await getRAGContext(context);
             if (ragContext) {
                 context = `FICHES PERTINENTES:\n${ragContext}`;
@@ -371,7 +378,6 @@ ${context || "Utilise tes connaissances officinales générales."}
 
 DERNIER MESSAGE DE L'APPRENANT : ${userMessage}`;
 
-        // Ensure history starts with user and alternates to satisfy Gemini API requirements
         let validHistory = chatHistory.slice(-6);
         if (validHistory.length > 0 && validHistory[0].role !== 'user') {
             validHistory = validHistory.slice(1);
@@ -382,32 +388,46 @@ DERNIER MESSAGE DE L'APPRENANT : ${userMessage}`;
             parts: [{ text: msg.text }]
         }));
 
+        console.log(`[Coach] Sending message with ${recentHistory.length} turns of history...`);
         const chat = model.startChat({ history: recentHistory });
         const result = await chat.sendMessage(coachPrompt);
         
         if (!result.response) {
+            console.error('[Coach] No response from model.');
             throw new Error("Pas de réponse du modèle.");
         }
         
-        return result.response.text().trim();
+        const text = result.response.text().trim();
+        console.log(`[Coach] Successfully received response (${text.length} chars).`);
+        return text;
     } catch (error: any) {
-        console.error('[Coach] Error:', error);
+        console.error('[Coach] Error details:', error);
         throw new Error(error.message || "Erreur lors de la communication avec le coach.");
     }
 };
 
 export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
     try {
+        console.log(`[Patient] Starting request for subject: ${context || 'General'}`);
         const genAI = new GoogleGenerativeAI(getApiKey());
         const bestModel = await getBestModel();
         
         const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
-        
-        let modelInput: any = { model: bestModel };
+        let modelInput: any = { 
+            model: bestModel,
+            safetySettings: [
+                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            ]
+        };
         
         if (supportsCache && currentCacheName) {
+            console.log(`[Patient] Using cache: ${currentCacheName}`);
             modelInput.cachedContent = currentCacheName;
         } else if (context) {
+            console.log(`[Patient] Using RAG context for: ${context}`);
             const ragContext = await getRAGContext(context);
             if (ragContext) {
                 context = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
@@ -433,7 +453,6 @@ ${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun conte
 
 PHARMACIEN: ${userMessage}`;
 
-        // Ensure history starts with user and alternates
         let validHistory = chatHistory.slice(-6);
         if (validHistory.length > 0 && validHistory[0].role !== 'user') {
             validHistory = validHistory.slice(1);
@@ -444,16 +463,20 @@ PHARMACIEN: ${userMessage}`;
             parts: [{ text: msg.text }]
         }));
 
+        console.log(`[Patient] Sending message with ${recentHistory.length} turns of history...`);
         const chat = model.startChat({ history: recentHistory });
         const result = await chat.sendMessage(patientPrompt);
         
         if (!result.response) {
+            console.error('[Patient] No response from model.');
             throw new Error("Pas de réponse du modèle.");
         }
         
-        return result.response.text().trim();
+        const text = result.response.text().trim();
+        console.log(`[Patient] Successfully received response (${text.length} chars).`);
+        return text;
     } catch (error: any) {
-        console.error('[Patient] Error:', error);
+        console.error('[Patient] Error details:', error);
         throw new Error(error.message || "Erreur lors de la communication avec le patient.");
     }
 };
