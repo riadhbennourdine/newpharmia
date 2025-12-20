@@ -17,13 +17,19 @@ Instructions de formatage impératives pour chaque section :
 - Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 
 Instructions spécifiques par section :
-- **Questions clés à poser**: Chaque ligne doit être une question pertinente commençant par un mot-clé en évidence (ex: **Antécédents**).
-- **Aperçu pathologie**: Ne pas dépasser 10 points. Chaque point doit commencer par un mot-clé en évidence. Simplifier le contenu pour qu'il soit très direct.
-- **Signaux d'alerte**: Chaque point doit être un signal d'alerte commençant par un mot-clé en évidence (ex: - **Fièvre élevée**).
-- **mainTreatment**: Liste des traitements principaux. Chaque élément doit être une chaîne de caractères. Pour chaque traitement, inclure le nom de la molécule ou du produit, sa classe pharmacologique, la posologie usuelle, et les conseils de prise principaux. Le format doit être clair et structuré, par exemple : "**Nom du produit** (Classe) : Posologie - Conseil de prise".
-- **associatedProducts**: Liste des produits associés. Chaque élément doit être une chaîne de caractères. Ne pas dépasser 12 points. Chaque point doit concerner un produit ou une classe de produits et commencer par le nom en évidence (ex: **Paracétamol**).
-- **lifestyleAdvice**: Liste des conseils d'hygiène de vie. Chaque élément doit être une chaîne de caractères.
-- **dietaryAdvice**: Liste des conseils alimentaires. Chaque élément doit être une chaîne de caractères.
+- **Questions clés à poser**: Vous DEVEZ utiliser la méthode **P.H.A.R.M.A** pour structurer les questions. Chaque ligne doit correspondre à une lettre de l'acronyme :
+    - **P**atient (Qui ? Âge, physiologie, grossesse/allaitement...)
+    - **H**istorique des symptômes (Depuis quand ? Comment c'est arrivé ?)
+    - **A**ntécédents & Allergies (Maladies chroniques ? Allergies connues ?)
+    - **R**emèdes déjà pris (Automédication tentée ? Efficacité ?)
+    - **M**édicaments actuels (Traitements en cours pour intéractions ?)
+    - **A**utres symptômes (Signes associés, fièvre, douleurs...)
+- **Aperçu pathologie**: Ne pas dépasser 10 points. Synthétiser la physiopathologie pour qu'elle soit compréhensible au comptoir. Chaque point commence par un mot-clé en gras.
+- **Signaux d'alerte**: Liste stricte des signes nécessitant une orientation médicale immédiate (Red Flags).
+- **mainTreatment (Traitement principal)**: Liste des traitements de première intention (OTC ou conseils pharmacien). Format: "**Nom Molécule/Produit** (Classe) : Posologie adulte/enfant - Conseil clé".
+- **associatedProducts (Produits complémentaires)**: Proposer une prise en charge globale (compléments, dispositifs, prévention). Max 12 points. Format: "**Nom Produit** (Intérêt) : Pourquoi le conseiller ?".
+- **lifestyleAdvice (Hygiène de vie)**: Conseils non-médicamenteux pratiques et applicables immédiatement.
+- **dietaryAdvice (Conseils alimentaires)**: Aliments à privilégier ou éviter spécifiquement pour cette pathologie.
 `;
 
     const pharmacologieFormattingInstructions = `

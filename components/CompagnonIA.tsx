@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon } from './Icons';
+import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon, ArrowPathIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
