@@ -97,12 +97,20 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                 body: JSON.stringify({ message: trimmedInput, history, context: topic }) 
             });
 
-            if (!response.ok) throw new Error('Erreur API');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Erreur API');
+            }
             const data = await response.json();
             
             setMessages(prev => [...prev, { role: 'model', text: data.message }]);
         } catch (err: any) {
-            setMessages(prev => [...prev, { role: 'model', text: "Désolé, je rencontre une petite difficulté technique. Peux-tu reformuler ?" }]);
+            console.error('Chat Error:', err);
+            const errorMessage = err.message === 'Erreur API' 
+                ? "Le coach est temporairement indisponible. Peux-tu réessayer dans un instant ?"
+                : `Difficulté technique : ${err.message}. Peux-tu reformuler ?`;
+            
+            setMessages(prev => [...prev, { role: 'model', text: errorMessage }]);
         } finally {
             setIsLoading(false);
         }

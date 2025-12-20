@@ -34,30 +34,30 @@ const getBestModel = async (): Promise<string> => {
     const models = await listModels();
     const modelNames = models.map(m => m.name);
     
-    // Priority list: Flash Lite (Separate Quota?) > Flash Stable > Flash 2.0
+    // Priority list
     const candidates = [
-      'models/gemini-flash-lite-latest',
       'models/gemini-2.0-flash-lite-preview-02-05',
       'models/gemini-2.0-flash-lite',
-      'models/gemini-flash-latest'
+      'models/gemini-flash-lite-latest',
+      'models/gemini-2.0-flash',
+      'models/gemini-1.5-flash-latest',
+      'models/gemini-1.5-flash'
     ];
 
     for (const candidate of candidates) {
         if (modelNames.some(name => name.includes(candidate) || name === candidate)) {
-            // Strip 'models/' prefix if the SDK expects just the name (though it handles both)
             cachedBestModel = candidate.replace('models/', '');
             console.log(`[Gemini] Auto-selected model: ${cachedBestModel}`);
             return cachedBestModel;
         }
     }
 
-    // Fallback if listModels fails or returns weird data
-    console.warn('[Gemini] Could not auto-select model, falling back to gemini-flash-lite-latest');
-    return 'gemini-flash-lite-latest';
+    cachedBestModel = 'gemini-1.5-flash';
+    return cachedBestModel;
 
   } catch (error) {
     console.error('[Gemini] Error auto-selecting model:', error);
-    return 'gemini-flash-lite-latest';
+    return 'gemini-1.5-flash';
   }
 };
 
@@ -327,24 +327,29 @@ async function getRAGContext(query: string): Promise<string> {
 }
 
 export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
-    const genAI = new GoogleGenerativeAI(getApiKey());
-    const bestModel = await getBestModel();
-    let modelInput: any = { model: bestModel };
-    
-    // Reuse cache if available, or fallback to RAG
-    if (currentCacheName) {
-        modelInput.cachedContent = currentCacheName;
-    } else if (context) {
-        // Fallback RAG if cache is not available
-        const ragContext = await getRAGContext(context);
-        if (ragContext) {
-            context = `FICHES PERTINENTES:\n${ragContext}`;
+    try {
+        const genAI = new GoogleGenerativeAI(getApiKey());
+        const bestModel = await getBestModel();
+        
+        // Cache is supported on 1.5, 2.x, and latest flash models
+        const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
+        
+        let modelInput: any = { model: bestModel };
+        
+        // Use cache only if supported and available
+        if (supportsCache && currentCacheName) {
+            modelInput.cachedContent = currentCacheName;
+        } else if (context) {
+            // Fallback RAG if cache is not available or supported
+            const ragContext = await getRAGContext(context);
+            if (ragContext) {
+                context = `FICHES PERTINENTES:\n${ragContext}`;
+            }
         }
-    }
 
-    const model = genAI.getGenerativeModel(modelInput);
-    
-    const coachPrompt = `Tu es le "Coach PharmIA", un mentor pour pharmaciens et préparateurs.
+        const model = genAI.getGenerativeModel(modelInput);
+        
+        const coachPrompt = `Tu es le "Coach PharmIA", un mentor pour pharmaciens et préparateurs.
 
 TA MISSION : Guider l'apprenant dans une simulation d'entretien de comptoir fluide et structurée.
 
@@ -366,42 +371,58 @@ ${context || "Utilise tes connaissances officinales générales."}
 
 DERNIER MESSAGE DE L'APPRENANT : ${userMessage}`;
 
-    // Limit history to last 6 turns to save tokens
-    const recentHistory = chatHistory.slice(-6).map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-    }));
+        // Ensure history starts with user and alternates to satisfy Gemini API requirements
+        let validHistory = chatHistory.slice(-6);
+        if (validHistory.length > 0 && validHistory[0].role !== 'user') {
+            validHistory = validHistory.slice(1);
+        }
 
-    const chat = model.startChat({ history: recentHistory });
-    const result = await chat.sendMessage(coachPrompt);
-    return result.response.text().trim();
+        const recentHistory = validHistory.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+        }));
+
+        const chat = model.startChat({ history: recentHistory });
+        const result = await chat.sendMessage(coachPrompt);
+        
+        if (!result.response) {
+            throw new Error("Pas de réponse du modèle.");
+        }
+        
+        return result.response.text().trim();
+    } catch (error: any) {
+        console.error('[Coach] Error:', error);
+        throw new Error(error.message || "Erreur lors de la communication avec le coach.");
+    }
 };
 
 export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
-    const genAI = new GoogleGenerativeAI(getApiKey());
-    const bestModel = await getBestModel();
-    let modelInput: any = { model: bestModel };
-    
-    // Reuse cache if available, or fallback to RAG
-    if (currentCacheName) {
-        modelInput.cachedContent = currentCacheName;
-    } else if (context) {
-        // Fallback RAG logic
-        const ragContext = await getRAGContext(context);
-        if (ragContext) {
-            context = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
+    try {
+        const genAI = new GoogleGenerativeAI(getApiKey());
+        const bestModel = await getBestModel();
+        
+        const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
+        
+        let modelInput: any = { model: bestModel };
+        
+        if (supportsCache && currentCacheName) {
+            modelInput.cachedContent = currentCacheName;
+        } else if (context) {
+            const ragContext = await getRAGContext(context);
+            if (ragContext) {
+                context = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
+            }
         }
-    }
 
-    const model = genAI.getGenerativeModel(modelInput);
+        const model = genAI.getGenerativeModel(modelInput);
 
-    const patientPrompt = `Tu es un "Patient Simulé" au comptoir d'une pharmacie.
+        const patientPrompt = `Tu es un "Patient Simulé" au comptoir d'une pharmacie.
     
 INSTRUCTIONS:
 1. Tu ne connais RIEN à la médecine. Tu utilises des mots simples, vagues ("j'ai mal au ventre", "ça pique").
 2. Tu as un problème correspondant à la pathologie décrite dans le CONTEXTE DU CAS ci-dessous.
 3. L'utilisateur (le pharmacien) doit te questionner pour trouver ce que tu as.
-4. Si le pharmacien pose une bonne question (Red Flag, traitement actuel), réponds honnêtement en t'inspirant de la fiche.
+4. Si le pharmacien pose une bonne question (Red Flag, traitement actuel), réponds hononêtement en t'inspirant de la fiche.
 5. Si le pharmacien te donne un bon conseil, remercie-le et dis que tu vas essayer.
 6. Reste dans ton personnage de patient. Ne donne jamais de conseils médicaux.
 
@@ -412,15 +433,29 @@ ${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun conte
 
 PHARMACIEN: ${userMessage}`;
 
-    // Limit history to last 6 turns
-    const recentHistory = chatHistory.slice(-6).map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-    }));
+        // Ensure history starts with user and alternates
+        let validHistory = chatHistory.slice(-6);
+        if (validHistory.length > 0 && validHistory[0].role !== 'user') {
+            validHistory = validHistory.slice(1);
+        }
 
-    const chat = model.startChat({ history: recentHistory });
-    const result = await chat.sendMessage(patientPrompt);
-    return result.response.text().trim();
+        const recentHistory = validHistory.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+        }));
+
+        const chat = model.startChat({ history: recentHistory });
+        const result = await chat.sendMessage(patientPrompt);
+        
+        if (!result.response) {
+            throw new Error("Pas de réponse du modèle.");
+        }
+        
+        return result.response.text().trim();
+    } catch (error: any) {
+        console.error('[Patient] Error:', error);
+        throw new Error(error.message || "Erreur lors de la communication avec le patient.");
+    }
 };
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
