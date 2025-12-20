@@ -24,6 +24,15 @@ export enum MemoFicheStatus {
   PUBLISHED = 'Published',
 }
 
+export interface SimulationResult {
+    date: Date;
+    score: number;
+    feedback: string;
+    topic: string;
+    conversationHistory: { role: string; text: string; }[];
+    recommendedFiches?: { _id: string; title: string; }[];
+}
+
 export interface User {
   _id: ObjectId | string;
   username?: string;
@@ -46,6 +55,7 @@ export interface User {
   resetPasswordExpires?: Date;
   readFiches?: { ficheId: string; readAt: Date; }[];
   quizHistory?: any[];
+  simulationHistory?: SimulationResult[];
   viewedMediaIds?: string[];
   phoneNumber?: string;
   status?: ClientStatus;

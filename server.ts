@@ -9,12 +9,12 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, getPatientResponse, listModels, isCacheReady } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, getPatientResponse, listModels, isCacheReady, evaluateSimulation } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
 import { refreshKnowledgeBaseCache } from './server/geminiService.js';
-import { User, UserRole, CaseStudy, Group, MemoFicheStatus, Rating, Order, OrderStatus } from './types.js';
+import { User, UserRole, CaseStudy, Group, MemoFicheStatus, Rating, Order, OrderStatus, SimulationResult } from './types.js';
 import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MASTER_CLASS_PACKS } from './constants.js';
@@ -956,6 +956,45 @@ app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
     } catch (error: any) {
         console.error('Error in Coach agent:', error);
         res.status(500).json({ message: "Le coach est indisponible pour le moment." });
+    }
+});
+
+// NEW: Evaluation Endpoint
+app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+        const { history, topic } = req.body;
+        const userId = req.user!._id;
+
+        if (!history || !topic) {
+            return res.status(400).json({ message: 'History and topic are required.' });
+        }
+
+        const evaluation = await evaluateSimulation(history, topic);
+
+        // Save to user profile
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection<User>('users');
+
+        const simulationResult: SimulationResult = {
+            date: new Date(),
+            score: evaluation.score,
+            feedback: evaluation.feedback,
+            topic: topic,
+            conversationHistory: history,
+            recommendedFiches: evaluation.recommendedFiches
+        };
+
+        await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $push: { simulationHistory: simulationResult as any } }
+        );
+
+        res.json(evaluation);
+
+    } catch (error: any) {
+        console.error('Error in evaluation endpoint:', error);
+        res.status(500).json({ message: "Erreur lors de l'évaluation." });
     }
 });
 

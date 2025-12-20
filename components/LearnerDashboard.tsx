@@ -142,6 +142,12 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
         ? Math.round(quizHistory.reduce((acc, quiz) => acc + (quiz.score || 0), 0) / quizRealises)
         : 0;
 
+    const simulationHistory = user?.simulationHistory || [];
+    const simulationsRealisees = simulationHistory.length;
+    const averageSimulationScore = simulationsRealisees > 0
+        ? Math.round(simulationHistory.reduce((acc, sim) => acc + (sim.score || 0), 0) / simulationsRealisees)
+        : 0;
+
     const encouragementMessages = [
         "Chaque mémofiche lue est un pas de plus vers l'excellence.",
         "La connaissance est votre plus grand atout. Continuez comme ça !",
@@ -233,7 +239,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
 
             <div>
                 <h2 className="text-2xl font-bold text-teal-600 mb-4">Statistiques d'apprentissage</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl relative">
                         <p className="text-6xl font-bold text-teal-600 my-2 animated-gradient-text">
                             {validReadFichesCount}
@@ -272,7 +278,13 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                         <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
                             {averageScore}%
                         </p>
-                        <h1 className="text-lg text-slate-600 font-medium">Score moyen</h1>
+                        <h1 className="text-lg text-slate-600 font-medium">Score Quiz</h1>
+                    </div>
+                    <div className="bg-white rounded-xl shadow-lg p-6 text-center flex flex-col justify-center items-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                        <p className="text-6xl font-bold my-2" style={{color: '#0D9488'}}>
+                            {averageSimulationScore}%
+                        </p>
+                        <h1 className="text-lg text-slate-600 font-medium">Score Simulations</h1>
                     </div>
                 </div>
             </div>

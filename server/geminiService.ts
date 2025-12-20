@@ -570,3 +570,73 @@ export const refreshKnowledgeBaseCache = async (filePath: string) => {
     throw error;
   }
 };
+
+export const evaluateSimulation = async (chatHistory: {role: string, text: string}[], topic: string): Promise<any> => {
+    const genAI = new GoogleGenerativeAI(getApiKey());
+    // Using a capable model for evaluation
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+
+    const prompt = `
+    Tu es un expert évaluateur en pharmacie. Tu viens d'observer une simulation d'entretien entre un "Coach PharmIA" (l'examinateur) et un "Apprenant" (l'utilisateur).
+    Le sujet était : "${topic}".
+
+    TA MISSION :
+    1. Analyser la pertinence des réponses de l'apprenant (rigueur scientifique, empathie, structure du conseil).
+    2. Attribuer une note sur 100.
+    3. Rédiger un feedback constructif (points forts, points à améliorer).
+    4. Suggérer 3 mots-clés de pathologies ou médicaments liés pour recommander des lectures.
+
+    FORMAT DE RÉPONSE JSON ATTENDU :
+    {
+      "score": number, // 0 à 100
+      "feedback": string, // Texte court (max 3 phrases)
+      "searchKeywords": string[] // Liste de 3 mots-clés pour rechercher des fiches
+    }
+
+    HISTORIQUE DE LA CONVERSATION :
+    ${JSON.stringify(chatHistory)}
+    `;
+
+    try {
+        const result = await model.generateContent(prompt);
+        const evaluation = JSON.parse(result.response.text());
+
+        // Find recommended fiches using Algolia
+        let recommendedFiches: any[] = [];
+        if (evaluation.searchKeywords && Array.isArray(evaluation.searchKeywords) && evaluation.searchKeywords.length > 0) {
+             const searchPromises = evaluation.searchKeywords.map((keyword: string) => searchMemoFiches(keyword));
+             const searchResults = await Promise.all(searchPromises);
+             
+             // Flatten and deduplicate by objectID
+             const allHits = searchResults.flat();
+             const seenIds = new Set();
+             recommendedFiches = [];
+             
+             for (const hit of allHits) {
+                 if (!seenIds.has(hit.objectID)) {
+                     seenIds.add(hit.objectID);
+                     recommendedFiches.push({
+                         _id: hit.objectID,
+                         title: hit.title
+                     });
+                 }
+                 if (recommendedFiches.length >= 3) break;
+             }
+        }
+        
+        return {
+            ...evaluation,
+            recommendedFiches
+        };
+
+    } catch (error) {
+        console.error("Error evaluating simulation:", error);
+        // Return a fallback so the UI doesn't crash
+        return {
+            score: 0,
+            feedback: "Une erreur est survenue lors de l'évaluation.",
+            searchKeywords: [],
+            recommendedFiches: []
+        };
+    }
+};
