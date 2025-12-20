@@ -181,11 +181,11 @@ const PharmacienDashboard: React.FC = () => {
                         <button onClick={() => setIsInstructionModalOpen(true)} className="text-sm text-teal-600 hover:text-teal-800 font-semibold mt-4">Modifier la consigne</button>
                     </div>
 
-                    {/* Compagnon IA Agent Section for Pharmacist */}
+                    {/* Votre Coach PharmIA d'apprentissage au quotidien Section for Pharmacist */}
                     <div className="mb-8">
                         <div className="bg-white rounded-xl shadow-lg p-6 border border-teal-100 overflow-hidden relative">
                             <div className="relative z-10">
-                                <p className="text-slate-700 font-semibold text-lg mb-4">Outils Pédagogiques IA (Test & Démo)</p>
+                                <p className="text-slate-700 font-semibold text-lg mb-4">Votre Coach PharmIA d'apprentissage au quotidien</p>
                                 <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-center">
                                     <div className="flex justify-center md:justify-start">
                                         <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-teal-100 shadow-md">
@@ -207,7 +207,7 @@ const PharmacienDashboard: React.FC = () => {
                                                 </svg>
                                             </div>
                                             <div className="text-left">
-                                                <h3 className="font-bold text-teal-800 text-xl mb-1">Tester le Coach</h3>
+                                                <h3 className="font-bold text-teal-800 text-xl mb-1">Coach PharmIA</h3>
                                                 <p className="text-sm text-teal-600 font-medium">Voir comment l'IA teste vos équipes</p>
                                             </div>
                                         </div>
