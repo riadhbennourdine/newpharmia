@@ -28,26 +28,25 @@ export const listModels = async (): Promise<any[]> => {
 let cachedBestModel: string | null = null;
 
 const getBestModel = async (): Promise<string> => {
+  // We'll prioritize stability over 'latest' for the free tier
   if (cachedBestModel) return cachedBestModel;
 
   try {
     const models = await listModels();
     const modelNames = models.map(m => m.name);
+    console.log(`[Gemini] Available models: ${modelNames.join(', ')}`);
     
-    // Priority list
+    // Priority list: 1.5-flash is the most reliable on free tier right now
     const candidates = [
-      'models/gemini-1.5-flash-latest',
       'models/gemini-1.5-flash',
-      'models/gemini-2.0-flash-lite-preview-02-05',
-      'models/gemini-2.0-flash-lite',
-      'models/gemini-flash-lite-latest',
-      'models/gemini-2.0-flash'
+      'models/gemini-1.5-flash-latest',
+      'models/gemini-flash-latest'
     ];
 
     for (const candidate of candidates) {
         if (modelNames.some(name => name.includes(candidate) || name === candidate)) {
             cachedBestModel = candidate.replace('models/', '');
-            console.log(`[Gemini] Auto-selected model: ${cachedBestModel}`);
+            console.log(`[Gemini] Selected stable model: ${cachedBestModel}`);
             return cachedBestModel;
         }
     }
@@ -56,7 +55,7 @@ const getBestModel = async (): Promise<string> => {
     return cachedBestModel;
 
   } catch (error) {
-    console.error('[Gemini] Error auto-selecting model:', error);
+    console.error('[Gemini] Error listing models:', error);
     return 'gemini-1.5-flash';
   }
 };
@@ -402,6 +401,9 @@ DERNIER MESSAGE DE L'APPRENANT : ${userMessage}`;
         return text;
     } catch (error: any) {
         console.error('[Coach] Error details:', error);
+        if (error.message?.includes('429')) {
+            cachedBestModel = null; 
+        }
         throw new Error(error.message || "Erreur lors de la communication avec le coach.");
     }
 };
@@ -412,7 +414,7 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
         const genAI = new GoogleGenerativeAI(getApiKey());
         const bestModel = await getBestModel();
         
-        const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
+        const supportsCache = !!bestModel.match(/(1\.5|2\.0|flash-latest|flash-lite-latest)/);
         let modelInput: any = { 
             model: bestModel,
             safetySettings: [
@@ -477,6 +479,9 @@ PHARMACIEN: ${userMessage}`;
         return text;
     } catch (error: any) {
         console.error('[Patient] Error details:', error);
+        if (error.message?.includes('429')) {
+            cachedBestModel = null;
+        }
         throw new Error(error.message || "Erreur lors de la communication avec le patient.");
     }
 };
