@@ -116,9 +116,11 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
             setMessages(prev => [...prev, { role: 'model', text: data.message }]);
         } catch (err: any) {
             console.error('Chat Error:', err);
-            const errorMessage = err.message === 'Erreur API' 
-                ? "Le coach est temporairement indisponible. Peux-tu réessayer dans un instant ?"
-                : `Difficulté technique : ${err.message}. Peux-tu reformuler ?`;
+            const errorMessage = err.message.includes('429') 
+                ? "Le serveur est très sollicité. Merci de patienter une minute avant de réessayer."
+                : err.message === 'Erreur API' 
+                    ? "Le coach est temporairement indisponible. Peux-tu réessayer dans un instant ?"
+                    : `Difficulté technique : ${err.message}. Peux-tu reformuler ?`;
             
             setMessages(prev => [...prev, { role: 'model', text: errorMessage }]);
         } finally {

@@ -36,12 +36,12 @@ const getBestModel = async (): Promise<string> => {
     
     // Priority list
     const candidates = [
+      'models/gemini-1.5-flash-latest',
+      'models/gemini-1.5-flash',
       'models/gemini-2.0-flash-lite-preview-02-05',
       'models/gemini-2.0-flash-lite',
       'models/gemini-flash-lite-latest',
-      'models/gemini-2.0-flash',
-      'models/gemini-1.5-flash-latest',
-      'models/gemini-1.5-flash'
+      'models/gemini-2.0-flash'
     ];
 
     for (const candidate of candidates) {
