@@ -38,6 +38,16 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
     const [evaluationResult, setEvaluationResult] = useState<{score: number, feedback: string, recommendedFiches: any[]} | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
+    // Auto-scroll to bottom when messages change
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }, [messages, isLoading]);
+
     // ... (rest of useEffect and functions)
 
     const handleEvaluate = async () => {
