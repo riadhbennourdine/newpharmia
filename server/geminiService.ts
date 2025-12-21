@@ -92,9 +92,40 @@ export const listModels = async (): Promise<any[]> => {
 let cachedBestModel: string | null = null;
 
 const getBestModel = async (): Promise<string> => {
-  // Hardcode priority for stability: gemini-2.0-flash seems to have 0 quota for some free tiers
-  // Fallback to the reliable 1.5-flash
-  return 'gemini-1.5-flash';
+  // If we already found a working model, stick with it (unless it fails later)
+  if (cachedBestModel) return cachedBestModel;
+
+  try {
+    const models = await listModels();
+    const modelNames = models.map(m => m.name.replace('models/', ''));
+    console.log(`[Gemini] Available models from API: ${modelNames.join(', ')}`);
+    
+    // Priority list: Try 1.5 Flash (fastest), then Pro (stable), then standard Flash
+    const candidates = [
+        'gemini-1.5-flash',
+        'gemini-1.5-flash-latest',
+        'gemini-1.5-pro',
+        'gemini-pro'
+    ];
+
+    for (const candidate of candidates) {
+        if (modelNames.includes(candidate)) {
+            cachedBestModel = candidate;
+            console.log(`[Gemini] Selected best available model: ${cachedBestModel}`);
+            return cachedBestModel;
+        }
+    }
+    
+    // Fallback: take the first one that looks like a gemini model
+    const fallback = modelNames.find(m => m.includes('gemini')) || 'gemini-pro';
+    console.warn(`[Gemini] No preferred model found. Using fallback: ${fallback}`);
+    cachedBestModel = fallback;
+    return fallback;
+
+  } catch (error) {
+    console.error('[Gemini] Failed to list models. Defaulting to gemini-pro.', error);
+    return 'gemini-pro';
+  }
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
