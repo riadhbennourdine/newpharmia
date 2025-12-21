@@ -287,8 +287,11 @@ Message : ${userMessage}`;
                 console.error(`[Coach] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(lastUsedKey);
                 attempts++;
-                if (attempts >= 5) throw new Error(`Saturation API (...${lastUsedKey.slice(-4)}). Réessayez.`);
-                await new Promise(r => setTimeout(r, 500));
+                if (attempts >= 5) throw new Error("Toutes les clés sont occupées. Veuillez patienter 1 minute avant de réessayer.");
+                
+                // Increase wait time significantly to let the quota reset (4s)
+                console.log(`[Coach] Waiting 4s before switching key...`);
+                await new Promise(resolve => setTimeout(resolve, 4000));
             }
         }
         return "Erreur service.";
@@ -311,10 +314,12 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
                 const result = await chat.sendMessage(patientPrompt);
                 return result.response.text().trim();
             } catch (error: any) {
+                console.error(`[Patient] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(lastUsedKey);
                 attempts++;
-                if (attempts >= 5) throw new Error("Service Patient saturé.");
-                await new Promise(r => setTimeout(r, 500));
+                if (attempts >= 5) throw new Error(`Service Patient saturé (Dernier échec sur ...${lastUsedKey.slice(-4)}).`);
+                console.log(`[Patient] Waiting 4s before switching key...`);
+                await new Promise(r => setTimeout(r, 4000));
             }
         }
         return "Erreur service.";
@@ -336,10 +341,12 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
                 const result = await chat.sendMessage(`Tu es PharmIA assistant. Réponds en texte brut. Contexte: ${context}. Question: ${question}`);
                 return result.response.text().trim();
             } catch (error: any) {
+                console.error(`[Chat] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(lastUsedKey);
                 attempts++;
                 if (attempts >= 5) throw new Error("Chat saturé.");
-                await new Promise(r => setTimeout(r, 500));
+                console.log(`[Chat] Waiting 4s before switching key...`);
+                await new Promise(r => setTimeout(r, 4000));
             }
         }
         return "Erreur service.";
