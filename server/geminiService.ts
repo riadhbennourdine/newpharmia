@@ -77,7 +77,7 @@ const keyManager = new KeyManager();
 const getApiKey = () => keyManager.getNextKey();
 
 // Stable model choice
-const MODEL_NAME = "gemini-1.5-flash";
+const MODEL_NAME = "gemini-pro";
 
 // --- Case Study Generation ---
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
