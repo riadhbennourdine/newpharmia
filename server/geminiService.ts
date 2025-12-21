@@ -171,7 +171,17 @@ TEXTE BRUT.
 Sujet de la simulation : ${context || "Attente du sujet"}
 Dernier message de l'apprenant : ${userMessage}`;
 
-                const safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                
+                // Gemini API restriction: History must start with a 'user' role.
+                // If the first message is 'model' (our initial greeting), prepend a synthetic user prompt.
+                if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
+                    safeHistory = [
+                        { role: 'user', parts: [{ text: `Je souhaite démarrer une simulation de comptoir sur le sujet : ${context}` }] },
+                        ...safeHistory
+                    ];
+                }
+
                 const chat = model.startChat({ history: safeHistory });
                 const result = await chat.sendMessage(coachPrompt);
                 return result.response.text().trim();

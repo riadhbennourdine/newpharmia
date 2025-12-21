@@ -204,8 +204,12 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
 
                 {!isTopicSelected ? (
                     <div className="flex flex-col items-center justify-center flex-grow p-10 text-center space-y-8 bg-slate-50/50">
-                        <div className="bg-white p-6 rounded-full shadow-lg ring-4 ring-teal-50">
-                            <BrainCircuitIcon className="w-14 h-14 text-teal-600" />
+                        <div className="bg-white p-0.5 rounded-full shadow-lg ring-4 ring-teal-50 overflow-hidden w-24 h-24 flex-shrink-0">
+                            <img 
+                                src="/api/ftp/view?filePath=%2Fcoach-pharmia.png" 
+                                alt="Coach PharmIA" 
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                         
                         <div className="space-y-2">
