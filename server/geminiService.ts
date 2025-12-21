@@ -28,34 +28,23 @@ export const listModels = async (): Promise<any[]> => {
 let cachedBestModel: string | null = null;
 
 const getBestModel = async (): Promise<string> => {
-  // We'll prioritize stability over 'latest' for the free tier
   if (cachedBestModel) return cachedBestModel;
-
+  // Hardcode priority for stability on free tier: prefer 2.0 Flash then 1.5 Flash
+  const candidates = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+  
   try {
     const models = await listModels();
-    const modelNames = models.map(m => m.name);
-    console.log(`[Gemini] Available models: ${modelNames.join(', ')}`);
+    const modelNames = models.map(m => m.name.replace('models/', ''));
     
-    // Priority list: 1.5-flash is the most reliable on free tier right now
-    const candidates = [
-      'models/gemini-1.5-flash',
-      'models/gemini-1.5-flash-latest',
-      'models/gemini-flash-latest'
-    ];
-
     for (const candidate of candidates) {
-        if (modelNames.some(name => name.includes(candidate) || name === candidate)) {
-            cachedBestModel = candidate.replace('models/', '');
-            console.log(`[Gemini] Selected stable model: ${cachedBestModel}`);
+        if (modelNames.includes(candidate)) {
+            cachedBestModel = candidate;
+            console.log(`[Gemini] Selected model: ${cachedBestModel}`);
             return cachedBestModel;
         }
     }
-
-    cachedBestModel = 'gemini-1.5-flash';
-    return cachedBestModel;
-
+    return 'gemini-1.5-flash';
   } catch (error) {
-    console.error('[Gemini] Error listing models:', error);
     return 'gemini-1.5-flash';
   }
 };
@@ -326,96 +315,62 @@ async function getRAGContext(query: string): Promise<string> {
 }
 
 export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
-    try {
-        console.log(`[Coach] Starting request for subject: ${context || 'General'}`);
-        const genAI = new GoogleGenerativeAI(getApiKey());
-        const bestModel = await getBestModel();
-        
-        const supportsCache = !!bestModel.match(/(1\.5|2\.|flash-latest|flash-lite-latest)/);
-        let modelInput: any = { 
-            model: bestModel,
-            safetySettings: [
-                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            ]
-        };
-        
-        if (supportsCache && currentCacheName) {
-            console.log(`[Coach] Using cache: ${currentCacheName}`);
-            modelInput.cachedContent = currentCacheName;
-        } else if (context) {
-            console.log(`[Coach] Using RAG context for: ${context}`);
-            const ragContext = await getRAGContext(context);
-            if (ragContext) {
-                context = `FICHES PERTINENTES:\n${ragContext}`;
-            }
+    let attempts = 0;
+    while (attempts < 3) {
+        try {
+            console.log(`[Coach] Attempt ${attempts + 1} for subject: ${context || 'General'}`);
+            const genAI = new GoogleGenerativeAI(getApiKey());
+            const bestModel = await getBestModel();
+            
+            const model = genAI.getGenerativeModel({
+                model: bestModel,
+                safetySettings: [
+                    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                ]
+            });
+
+            // Ultra-concise prompt to save tokens
+            const coachPrompt = `Tu es "Coach PharmIA", expert officinal.
+Objectif: Valider l'apprenant en 4 étapes: 1.Interrogatoire(PHARMA) 2.Pathologie 3.Traitement 4.Conseil.
+
+RÈGLES:
+1. DÉBUT: Si 1er message, utilise UNIQUEMENT:
+   Cas comptoir : [Situation avec Prénom Arabe]
+   Citation patient : "[Citation]"
+   Quelle est votre attitude devant ce cas comptoir, quelles questions vous allez lui poser ?
+2. SUITE: Evalue la réponse. Si incomplet (selon PHARMA), cite les manques.
+3. AVANCE TOUJOURS à l'étape suivante. Ne boucle jamais.
+4. Si demande réponse -> Donne la et avance.
+5. FORMAT: Texte brut, concis, pas de markdown, pas de bla-bla.
+
+CONTEXTE: ${context || "Officine"}
+DERNIER MESSAGE: ${userMessage}`;
+
+            // Limit history sent to model (Last 6 turns)
+            const safeHistory = chatHistory.slice(-6).map(msg => ({
+                role: msg.role === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.text }]
+            }));
+
+            const chat = model.startChat({ history: safeHistory });
+            const result = await chat.sendMessage(coachPrompt);
+            
+            if (!result.response) throw new Error("No response");
+            
+            return result.response.text().trim();
+
+        } catch (error: any) {
+            console.error(`[Coach] Attempt ${attempts + 1} failed:`, error.message);
+            attempts++;
+            if (attempts >= 3) throw new Error("Le service est momentanément saturé.");
+            // Exponential backoff
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
         }
-
-        const model = genAI.getGenerativeModel(modelInput);
-        
-        const coachPrompt = `Tu es le "Coach PharmIA", un mentor expert et direct.
-
-L'objectif est de valider les connaissances de l'apprenant en 4 étapes rapides :
-1. Interrogatoire (PHARMA)
-2. Aperçu Pathologie (Signes d'alerte & Mécanisme)
-3. Traitement principal
-4. Produits complémentaires & Hygiène de vie
-
-RÈGLES DE FORMAT (STRICT - AUCUN SYMBOLE) :
-1. Écris en texte brut uniquement.
-2. INTERDIT : Pas de gras (**), pas d'italique (*), pas de titres (###), pas de crochets ([ ]).
-3. INTERDIT : Ne jamais écrire de phrases d'attente comme "(Attendez la réponse)".
-
-RÈGLES DE DÉMARRAGE :
-Au tout début, utilise UNIQUEMENT cette structure :
-Cas comptoir : [Description situation avec prénom Foulen/Foulena ou arabe]
-Citation patient : "[Propos du patient]"
-Quelle est votre attitude devant ce cas comptoir, quelles questions vous allez lui poser ?
-
-RÈGLES DE PROGRESSION :
-- Analyse les réponses selon P.H.A.R.M.A.
-- Si des points manquent, cite-les simplement.
-- Passe IMMÉDIATEMENT à l'étape suivante (Pathologie -> Traitement -> Conseil).
-- Ne reste jamais bloqué sur une étape.
-
-CONTEXTE MÉDICAL :
----
-${context || "Pratique officinale générale."}
----
-
-DERNIER MESSAGE DE L'APPRENANT : ${userMessage}`;
-
-        let validHistory = chatHistory.slice(-6);
-        if (validHistory.length > 0 && validHistory[0].role !== 'user') {
-            validHistory = validHistory.slice(1);
-        }
-
-        const recentHistory = validHistory.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-        }));
-
-        console.log(`[Coach] Sending message with ${recentHistory.length} turns of history...`);
-        const chat = model.startChat({ history: recentHistory });
-        const result = await chat.sendMessage(coachPrompt);
-        
-        if (!result.response) {
-            console.error('[Coach] No response from model.');
-            throw new Error("Pas de réponse du modèle.");
-        }
-        
-        const text = result.response.text().trim();
-        console.log(`[Coach] Successfully received response (${text.length} chars).`);
-        return text;
-    } catch (error: any) {
-        console.error('[Coach] Error details:', error);
-        if (error.message?.includes('429')) {
-            cachedBestModel = null; 
-        }
-        throw new Error(error.message || "Erreur lors de la communication avec le coach.");
     }
+    return "Erreur service.";
 };
 
 export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
@@ -460,7 +415,7 @@ INSTRUCTIONS:
 
 CONTEXTE DU CAS (C'est ta "maladie", invisible pour le pharmacien):
 ---
-${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."}
+${context || "Choisis une pathologie courante (ex: Rhume, Angine) si aucun contexte n'est fourni."} 
 ---
 
 PHARMACIEN: ${userMessage}`;
@@ -533,7 +488,7 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
     
     CONTEXTE SUPPLÉMENTAIRE (Page courante):
     ---
-    ${context || "Aucun contexte spécifique supplémentaire."}
+    ${context || "Aucun contexte spécifique supplémentaire."} 
     ---
     
     QUESTION: ${question}`;
@@ -555,7 +510,7 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
         
         CONTEXTE:
         ---
-        ${context || "Aucune fiche spécifique trouvée pour cette recherche."}
+        ${context || "Aucune fiche spécifique trouvée pour cette recherche."} 
         ---
         
         QUESTION: ${question}`;
