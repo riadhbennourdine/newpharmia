@@ -128,6 +128,14 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
         }
     };
 
+    const handleReset = () => {
+        setMessages([]);
+        setTopic('');
+        setEvaluationResult(null);
+        setIsTopicSelected(mode === 'coach'); 
+        setInputValue('');
+    };
+
     const renderChatMessage = (text: string) => {
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-teal-700">$1</strong>')
@@ -158,6 +166,13 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                                 {isEvaluating ? 'Évaluation...' : 'Terminer & Évaluer'}
                             </button>
                         )}
+                        <button 
+                            onClick={handleReset} 
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+                            title="Réinitialiser"
+                        >
+                            <ArrowPathIcon className="h-6 w-6" />
+                        </button>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                             <XCircleIcon className="h-6 w-6" />
                         </button>
