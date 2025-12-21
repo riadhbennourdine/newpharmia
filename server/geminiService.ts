@@ -92,25 +92,9 @@ export const listModels = async (): Promise<any[]> => {
 let cachedBestModel: string | null = null;
 
 const getBestModel = async (): Promise<string> => {
-  if (cachedBestModel) return cachedBestModel;
-  // Hardcode priority for stability on free tier: prefer 2.0 Flash then 1.5 Flash
-  const candidates = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-  
-  try {
-    const models = await listModels();
-    const modelNames = models.map(m => m.name.replace('models/', ''));
-    
-    for (const candidate of candidates) {
-        if (modelNames.includes(candidate)) {
-            cachedBestModel = candidate;
-            console.log(`[Gemini] Selected model: ${cachedBestModel}`);
-            return cachedBestModel;
-        }
-    }
-    return 'gemini-1.5-flash';
-  } catch (error) {
-    return 'gemini-1.5-flash';
-  }
+  // Hardcode priority for stability: gemini-2.0-flash seems to have 0 quota for some free tiers
+  // Fallback to the reliable 1.5-flash
+  return 'gemini-1.5-flash';
 };
 
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
