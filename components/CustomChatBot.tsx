@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { sendRAGChatMessage } from '../services/geminiService';
 import { Link } from 'react-router-dom';
-import { BrainCircuitIcon, Spinner, MicIcon, MicOffIcon, SpeakerIcon, XCircleIcon } from './Icons';
+import { BrainCircuitIcon, Spinner, MicIcon, MicOffIcon, SpeakerIcon, XCircleIcon, ArrowPathIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
@@ -10,16 +10,23 @@ interface Message {
 }
 
 const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, title }) => {
-    const [messages, setMessages] = useState<Message[]>([
+    const initialMessages: Message[] = [
         {
             role: 'model',
             text: `Bonjour! Je suis votre assistant PharmIA. Je suis là pour répondre à vos questions sur :\n\n**${title}**\n\nComment puis-je vous aider aujourd'hui ?`
         }
-    ]);
+    ];
+    const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    const handleReset = () => {
+        setMessages(initialMessages);
+        setInputValue('');
+        setError(null);
+    };
 
     const stripMarkdown = (text: string) => {
         return text.replace(/\*{1,2}(.*?)\*{1,2}/g, '$1');
@@ -78,9 +85,18 @@ const CustomChatBot: React.FC<{ context: string, title: string }> = ({ context, 
 
     return (
         <div className="flex flex-col max-h-[600px] bg-white rounded-lg shadow-lg border border-slate-200/80">
-            <div className="flex items-center p-4 border-b border-slate-200/80 bg-slate-50 rounded-t-lg">
-                <img src="/assets/favicon.png" alt="PharmIA Logo" className="h-6 w-6 mr-3" />
-                <h3 className="text-lg font-bold text-slate-800">Assistant PharmIA</h3>
+            <div className="flex items-center justify-between p-4 border-b border-slate-200/80 bg-slate-50 rounded-t-lg">
+                <div className="flex items-center">
+                    <img src="/assets/favicon.png" alt="PharmIA Logo" className="h-6 w-6 mr-3" />
+                    <h3 className="text-lg font-bold text-slate-800">Assistant PharmIA</h3>
+                </div>
+                <button 
+                    onClick={handleReset}
+                    className="p-1.5 hover:bg-slate-200 rounded-full transition-all text-slate-500"
+                    title="Réinitialiser la discussion"
+                >
+                    <ArrowPathIcon className="w-5 h-5" />
+                </button>
             </div>
 
             <div ref={chatContainerRef} className="flex-grow p-4 space-y-4 overflow-y-auto">

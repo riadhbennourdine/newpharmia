@@ -98,7 +98,7 @@ export const CheckCircleIcon: React.FC<{ className?: string }> = ({ className })
 );
 
 export const ArrowPathIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.125 1.125 0 009 12.75V11.25c0-1.036.84-1.875 1.875-1.875h4.992m-4.993 0l3.181-3.181M15 1.5l-3.181 3.181A1.125 1.125 0 0112 5.25v1.5c0 1.035-.84 1.875-1.875 1.875H4.125m5.605-4.72L10.5 2.25H21v4.992m0 0l-3.181 3.181A1.125 1.125 0 0115 12.75v1.5c0 1.035.84 1.875 1.875 1.875h4.992m-4.993 0l3.181 3.181" />
     </svg>
 );
@@ -141,19 +141,19 @@ export const ArrowUturnLeftIcon: React.FC<{ className?: string }> = ({ className
 
 export const ArrowLeftCircleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0118 0z" />
     </svg>
 );
 
 export const ArrowRightCircleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0118 0z" />
     </svg>
 );
 
 export const PlusCircleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0118 0z" />
     </svg>
 );
 
