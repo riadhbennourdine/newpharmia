@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import AlgoliaSearch from '../components/AlgoliaSearch';
 import { BookOpenIcon, VideoCameraIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { UserRole } from '../types';
 
 const Dashboard: React.FC = () => {
     const { user } = useAuth();
@@ -30,7 +31,9 @@ const Dashboard: React.FC = () => {
                     </Link>
                     <Link to="/my-dashboard" className="group flex items-center text-slate-600 hover:text-teal-700 transition-colors duration-300">
                         <UserGroupIcon className="h-5 w-5 mr-2 text-slate-400 group-hover:text-teal-600 transition-colors duration-300" />
-                        <span className="font-medium">Gestion Équipe</span>
+                        <span className="font-medium">
+                            {user?.role === UserRole.PREPARATEUR ? 'Parcours' : 'Équipe'}
+                        </span>
                     </Link>
                 </div>
             </main>
