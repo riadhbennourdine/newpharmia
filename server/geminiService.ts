@@ -6,10 +6,63 @@ import fetch from 'node-fetch';
 // NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
 
 
+// --- API Key Manager for Rotation ---
+class KeyManager {
+    private keys: string[] = [];
+    private currentIndex = 0;
+    private exhaustedKeys: Map<string, number> = new Map(); // Key -> Timestamp when it will be ready
+
+    constructor() {
+        // Load primary key
+        if (process.env.GEMINI_API_KEY) this.keys.push(process.env.GEMINI_API_KEY);
+        
+        // Load additional keys (GEMINI_API_KEY_2, GEMINI_API_KEY_3, etc.)
+        for (let i = 2; i <= 10; i++) {
+            const key = process.env[`GEMINI_API_KEY_${i}`];
+            if (key) this.keys.push(key);
+        }
+        
+        if (this.keys.length === 0) {
+            console.error("CRITICAL: No GEMINI_API_KEY found in environment variables.");
+        } else {
+            console.log(`[KeyManager] Loaded ${this.keys.length} API keys.`);
+        }
+    }
+
+    getNextKey(): string {
+        if (this.keys.length === 0) throw new Error("Aucune clé API Gemini configurée.");
+
+        const now = Date.now();
+        let attempts = 0;
+
+        // Try to find a non-exhausted key
+        while (attempts < this.keys.length) {
+            const key = this.keys[this.currentIndex];
+            this.currentIndex = (this.currentIndex + 1) % this.keys.length;
+
+            const readyAt = this.exhaustedKeys.get(key);
+            if (!readyAt || now > readyAt) {
+                return key;
+            }
+            attempts++;
+        }
+
+        // If all keys are exhausted, return the one that expires soonest (or just the next one and hope)
+        console.warn("[KeyManager] All keys are currently marked as exhausted. Using next available.");
+        return this.keys[this.currentIndex];
+    }
+
+    markKeyAsExhausted(key: string) {
+        // Mark key as exhausted for 60 seconds
+        this.exhaustedKeys.set(key, Date.now() + 60000);
+        console.warn(`[KeyManager] Key ...${key.slice(-4)} marked as exhausted for 60s.`);
+    }
+}
+
+const keyManager = new KeyManager();
+
 const getApiKey = () => {
-  const API_KEY = process.env.GEMINI_API_KEY;
-  if (!API_KEY) throw new Error("La clé API de Gemini n'est pas configurée.");
-  return API_KEY;
+  return keyManager.getNextKey();
 };
 
 interface ListModelsResponse {
