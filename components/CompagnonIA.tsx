@@ -39,7 +39,7 @@ const TypewriterMessage = ({ text, onComplete }: { text: string; onComplete?: ()
     // Render markdown-like formatting (bold, bullet points) on the fly
     const renderContent = (content: string) => {
         return content
-            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-teal-800">$1</strong>') // Bold
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-teal-600">$1</strong>') // Bold Teal
             .replace(/^\s*[•|*|-]\s+(.*)/gm, '<div class="flex items-start gap-2 my-1"><span class="text-teal-500 mt-1.5 text-xs">●</span><span>$1</span></div>') // Bullets
             .replace(/\n/g, '<br />'); // Line breaks
     };
@@ -310,19 +310,18 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                                                     text={msg.text} 
                                                     onComplete={() => setIsTyping(false)} 
                                                 />
-                                            ) : (
-                                                // For user messages or old AI messages, render directly
-                                                <span 
-                                                    className="leading-relaxed"
-                                                    dangerouslySetInnerHTML={{ 
-                                                        __html: msg.text
-                                                            .replace(/\*\*(.*?)\*\*/g, msg.role === 'user' ? '<strong>$1</strong>' : '<strong class="font-bold text-teal-800">$1</strong>')
-                                                            .replace(/^\s*[•|*|-]\s+(.*)/gm, '<div class="flex items-start gap-2 my-1"><span class="text-teal-500 mt-1.5 text-xs">●</span><span>$1</span></div>')
-                                                            .replace(/\n/g, '<br />')
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
+                                                                                        ) : (
+                                                                                            // For user messages or old AI messages, render directly
+                                                                                            <span 
+                                                                                                className="leading-relaxed"
+                                                                                                dangerouslySetInnerHTML={{ 
+                                                                                                    __html: msg.text
+                                                                                                        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-teal-600">$1</strong>')
+                                                                                                        .replace(/^\s*[•|*|-]\s+(.*)/gm, '<div class="flex items-start gap-2 my-1"><span class="text-teal-500 mt-1.5 text-xs">●</span><span>$1</span></div>')
+                                                                                                        .replace(/\n/g, '<br />')
+                                                                                                }} 
+                                                                                            />
+                                                                                        )}                                        </div>
                                     </div>
                                 </div>
                             )})
