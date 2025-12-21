@@ -954,8 +954,10 @@ app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
         const response = await getCoachResponse(history, context, message);
         res.json({ message: response });
     } catch (error: any) {
-        console.error('Error in Coach agent:', error);
-        res.status(500).json({ message: error.message || "Le coach est indisponible pour le moment." });
+        console.error('CRITICAL: Coach agent error:', error);
+        // Return a very detailed message for debugging
+        const errorMessage = error.message || "Erreur inconnue";
+        res.status(500).json({ message: `Détail technique: ${errorMessage}` });
     }
 });
 

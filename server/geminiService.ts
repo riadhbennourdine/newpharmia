@@ -371,7 +371,8 @@ export const getCoachResponse = async (chatHistory: {role: string, text: string}
         while (attempts < 3) {
             try {
                 console.log(`[Coach] Processing request (Attempt ${attempts + 1})...`);
-                const genAI = new GoogleGenerativeAI(getApiKey());
+                const apiKey = getApiKey();
+                const genAI = new GoogleGenerativeAI(apiKey);
                 const bestModel = await getBestModel();
                 
                 const model = genAI.getGenerativeModel({ 
@@ -408,18 +409,23 @@ DERNIER MESSAGE: ${userMessage}`;
                 const chat = model.startChat({ history: safeHistory });
                 const result = await chat.sendMessage(coachPrompt);
                 
-                if (!result.response) throw new Error("No response");
+                if (!result.response) throw new Error("Réponse vide de l'API Gemini.");
                 
                 return result.response.text().trim();
 
             } catch (error: any) {
-                console.error(`[Coach] Attempt ${attempts + 1} failed:`, error.message);
+                console.error(`[Coach] Attempt ${attempts + 1} failed:`, error);
                 attempts++;
-                if (attempts >= 3) throw new Error("Service saturé (File d'attente pleine).");
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                if (attempts >= 3) {
+                    const errorMsg = error.message?.includes('429') 
+                        ? "Quota API dépassé (Trop de requêtes). Réessayez dans 60 secondes." 
+                        : (error.message || "Erreur inconnue de l'IA.");
+                    throw new Error(errorMsg);
+                }
+                await new Promise(resolve => setTimeout(resolve, 1500 * attempts));
             }
         }
-        return "Erreur service.";
+        return "Erreur critique du service IA.";
     });
 };
 
