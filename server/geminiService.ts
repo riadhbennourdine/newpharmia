@@ -3,9 +3,6 @@ import { GoogleAIFileManager, GoogleAICacheManager, FileState } from "@google/ge
 import { CaseStudy, MemoFicheStatus } from "../types.js";
 import fetch from 'node-fetch';
 
-// NOTE: This file has been refactored to use the new '@google/generative-ai' SDK.
-
-
 // --- API Key Manager for Rotation ---
 class KeyManager {
     private keys: string[] = [];
@@ -471,7 +468,7 @@ DERNIER MESSAGE: ${userMessage}`;
                 attempts++;
                 if (attempts >= 3) {
                     const errorMsg = error.message?.includes('429') 
-                        ? "Quota API dépassé (Trop de requêtes). Réessayez dans 60 secondes." 
+                        ? "Quota API dépassé (Trop de requêtes). Réessayez dans 60 secondes."
                         : (error.message || "Erreur inconnue de l'IA.");
                     throw new Error(errorMsg);
                 }
