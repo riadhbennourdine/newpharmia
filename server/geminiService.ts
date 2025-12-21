@@ -10,19 +10,30 @@ class KeyManager {
     private exhaustedKeys: Map<string, number> = new Map(); // Key -> Timestamp when it will be ready
 
     constructor() {
-        // Load primary key
-        if (process.env.GEMINI_API_KEY) this.keys.push(process.env.GEMINI_API_KEY);
+        console.log("[KeyManager] Initializing...");
         
-        // Load additional keys (GEMINI_API_KEY_2, GEMINI_API_KEY_3, etc.)
-        for (let i = 2; i <= 10; i++) {
-            const key = process.env[`GEMINI_API_KEY_${i}`];
-            if (key) this.keys.push(key);
+        // Load primary key
+        if (process.env.GEMINI_API_KEY) {
+            this.keys.push(process.env.GEMINI_API_KEY);
+            console.log(`[KeyManager] Loaded Primary Key: ...${process.env.GEMINI_API_KEY.slice(-4)}`);
+        } else {
+            console.error("[KeyManager] CRITICAL: Primary GEMINI_API_KEY is missing!");
         }
         
+        // Load additional keys (GEMINI_API_KEY_2 to 10)
+        for (let i = 2; i <= 10; i++) {
+            const envVarName = `GEMINI_API_KEY_${i}`;
+            const key = process.env[envVarName];
+            if (key && key.trim() !== "") {
+                this.keys.push(key);
+                console.log(`[KeyManager] Loaded ${envVarName}: ...${key.slice(-4)}`);
+            }
+        }
+        
+        console.log(`[KeyManager] Total keys available: ${this.keys.length}`);
+        
         if (this.keys.length === 0) {
-            console.error("CRITICAL: No GEMINI_API_KEY found in environment variables.");
-        } else {
-            console.log(`[KeyManager] Loaded ${this.keys.length} API keys.`);
+            console.error("CRITICAL: No GEMINI_API_KEYS available. Service will fail.");
         }
     }
 
@@ -35,32 +46,35 @@ class KeyManager {
         // Try to find a non-exhausted key
         while (attempts < this.keys.length) {
             const key = this.keys[this.currentIndex];
-            this.currentIndex = (this.currentIndex + 1) % this.keys.length;
-
+            
             const readyAt = this.exhaustedKeys.get(key);
             if (!readyAt || now > readyAt) {
+                // Move index for next time (Round Robin)
+                this.currentIndex = (this.currentIndex + 1) % this.keys.length;
                 return key;
             }
+            
+            // This key is exhausted, check next one
+            this.currentIndex = (this.currentIndex + 1) % this.keys.length;
             attempts++;
         }
 
-        // If all keys are exhausted, return the one that expires soonest (or just the next one and hope)
-        console.warn("[KeyManager] All keys are currently marked as exhausted. Using next available.");
+        // If all keys are exhausted, log a warning and return the one that expires soonest 
+        // (or just the current one to force a retry that might fail but keeps logic simple)
+        console.warn("[KeyManager] All keys are currently marked as exhausted!");
         return this.keys[this.currentIndex];
     }
 
     markKeyAsExhausted(key: string) {
         // Mark key as exhausted for 60 seconds
         this.exhaustedKeys.set(key, Date.now() + 60000);
-        console.warn(`[KeyManager] Key ...${key.slice(-4)} marked as exhausted for 60s.`);
+        console.warn(`[KeyManager] Key ...${key.slice(-4)} marked as exhausted until ${new Date(Date.now() + 60000).toTimeString().split(' ')[0]}`);
     }
 }
 
+// Singleton instance
 const keyManager = new KeyManager();
-
-const getApiKey = () => {
-  return keyManager.getNextKey();
-};
+const getApiKey = () => keyManager.getNextKey();
 
 interface ListModelsResponse {
   models: any[];
