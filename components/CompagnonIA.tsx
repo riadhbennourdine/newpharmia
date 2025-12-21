@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { RotateCcw } from 'lucide-react';
-import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon } from './Icons';
+import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon, ArrowPathIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
@@ -190,7 +189,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                             className="p-2.5 hover:bg-white/20 rounded-full transition-all text-white active:scale-90"
                             title="Réinitialiser"
                         >
-                            <RotateCcw className="h-5 w-5" />
+                            <ArrowPathIcon className="h-5 w-5" />
                         </button>
                         <button onClick={onClose} className="p-2.5 hover:bg-white/20 rounded-full transition-all active:scale-90">
                             <XCircleIcon className="h-6 w-6" />
