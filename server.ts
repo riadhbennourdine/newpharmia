@@ -955,7 +955,7 @@ app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
         res.json({ message: response });
     } catch (error: any) {
         console.error('Error in Coach agent:', error);
-        res.status(500).json({ message: "Le coach est indisponible pour le moment." });
+        res.status(500).json({ message: error.message || "Le coach est indisponible pour le moment." });
     }
 });
 
@@ -994,7 +994,7 @@ app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedReq
 
     } catch (error: any) {
         console.error('Error in evaluation endpoint:', error);
-        res.status(500).json({ message: "Erreur lors de l'évaluation." });
+        res.status(500).json({ message: error.message || "Erreur lors de l'évaluation." });
     }
 });
 
@@ -1006,7 +1006,7 @@ app.post('/api/gemini/patient', authenticateToken, async (req, res) => {
         res.json({ message: response });
     } catch (error: any) {
         console.error('Error in Patient agent:', error);
-        res.status(500).json({ message: "Le patient est parti." });
+        res.status(500).json({ message: error.message || "Le patient est parti." });
     }
 });
 
