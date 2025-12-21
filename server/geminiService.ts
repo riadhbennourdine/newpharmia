@@ -122,7 +122,7 @@ Texte brut uniquement. Contexte: ${context} Msg: ${userMessage}`;
             } catch (error: any) {
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
                 attempts++;
-                if (attempts >= 5) throw new Error("Serveur saturé. Réessayez dans 30s.");
+                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
@@ -146,7 +146,7 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
             } catch (error: any) {
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
                 attempts++;
-                if (attempts >= 5) throw new Error("Patient indisponible.");
+                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
@@ -169,7 +169,7 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
             } catch (error: any) {
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
                 attempts++;
-                if (attempts >= 5) throw new Error("Chat saturé.");
+                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
