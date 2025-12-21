@@ -652,28 +652,31 @@ export const refreshKnowledgeBaseCache = async (filePath: string) => {
 
 export const evaluateSimulation = async (chatHistory: {role: string, text: string}[], topic: string): Promise<any> => {
     const genAI = new GoogleGenerativeAI(getApiKey());
-    // Using a capable model for evaluation
+    // Using flash model which is faster and cheaper for evaluation
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
 
+    // Safety: Limit history to last 15 turns to avoid token overflow
+    const safeHistory = chatHistory.length > 15 ? chatHistory.slice(-15) : chatHistory;
+
     const prompt = `
-    Tu es un expert évaluateur en pharmacie. Tu viens d'observer une simulation d'entretien entre un "Coach PharmIA" (l'examinateur) et un "Apprenant" (l'utilisateur).
+    Tu es un expert évaluateur en pharmacie. Tu viens d'observer une simulation d'entretien.
     Le sujet était : "${topic}".
 
     TA MISSION :
-    1. Analyser la pertinence des réponses de l'apprenant (rigueur scientifique, empathie, structure du conseil).
+    1. Analyser les réponses de l'apprenant.
     2. Attribuer une note sur 100.
-    3. Rédiger un feedback constructif (points forts, points à améliorer).
-    4. Suggérer 3 mots-clés de pathologies ou médicaments liés pour recommander des lectures.
+    3. Rédiger un feedback constructif.
+    4. Suggérer 3 mots-clés pour des lectures.
 
-    FORMAT DE RÉPONSE JSON ATTENDU :
+    FORMAT JSON :
     {
-      "score": number, // 0 à 100
-      "feedback": string, // Texte court (max 3 phrases)
-      "searchKeywords": string[] // Liste de 3 mots-clés pour rechercher des fiches
+      "score": number,
+      "feedback": string,
+      "searchKeywords": string[]
     }
 
-    HISTORIQUE DE LA CONVERSATION :
-    ${JSON.stringify(chatHistory)}
+    HISTORIQUE (Derniers échanges) :
+    ${JSON.stringify(safeHistory)}
     `;
 
     try {
@@ -683,23 +686,26 @@ export const evaluateSimulation = async (chatHistory: {role: string, text: strin
         // Find recommended fiches using Algolia
         let recommendedFiches: any[] = [];
         if (evaluation.searchKeywords && Array.isArray(evaluation.searchKeywords) && evaluation.searchKeywords.length > 0) {
-             const searchPromises = evaluation.searchKeywords.map((keyword: string) => searchMemoFiches(keyword));
-             const searchResults = await Promise.all(searchPromises);
-             
-             // Flatten and deduplicate by objectID
-             const allHits = searchResults.flat();
-             const seenIds = new Set();
-             recommendedFiches = [];
-             
-             for (const hit of allHits) {
-                 if (!seenIds.has(hit.objectID)) {
-                     seenIds.add(hit.objectID);
-                     recommendedFiches.push({
-                         _id: hit.objectID,
-                         title: hit.title
-                     });
+             try {
+                 const searchPromises = evaluation.searchKeywords.map((keyword: string) => searchMemoFiches(keyword));
+                 const searchResults = await Promise.all(searchPromises);
+                 
+                 const allHits = searchResults.flat();
+                 const seenIds = new Set();
+                 recommendedFiches = [];
+                 
+                 for (const hit of allHits) {
+                     if (!seenIds.has(hit.objectID)) {
+                         seenIds.add(hit.objectID);
+                         recommendedFiches.push({
+                             _id: hit.objectID,
+                             title: hit.title
+                         });
+                     }
+                     if (recommendedFiches.length >= 3) break;
                  }
-                 if (recommendedFiches.length >= 3) break;
+             } catch (err) {
+                 console.warn("Algolia search failed during evaluation:", err);
              }
         }
         
@@ -710,10 +716,10 @@ export const evaluateSimulation = async (chatHistory: {role: string, text: strin
 
     } catch (error) {
         console.error("Error evaluating simulation:", error);
-        // Return a fallback so the UI doesn't crash
+        // Graceful fallback instead of crashing
         return {
             score: 0,
-            feedback: "Une erreur est survenue lors de l'évaluation.",
+            feedback: "L'évaluation n'a pas pu être générée en raison d'une surcharge momentanée. Continuez à vous entraîner !",
             searchKeywords: [],
             recommendedFiches: []
         };

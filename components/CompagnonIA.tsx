@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon, ArrowPathIcon } from './Icons';
+import { RotateCcw } from 'lucide-react';
+import { BrainCircuitIcon, Spinner, XCircleIcon, ArrowRightIcon } from './Icons';
 
 interface Message {
     role: 'user' | 'model';
@@ -55,9 +56,11 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
         setIsEvaluating(true);
         try {
             const token = localStorage.getItem('token');
-            // Filter out the first message (greeting)
+            // Filter out the first message and LIMIT history to avoid token limits (429)
+            // Taking the last 15 exchanges max + the initial system context is handled by backend prompt
             const history = messages
                 .filter((_, index) => index > 0)
+                .slice(-15) // Keep only last 15 messages for evaluation context
                 .map(m => ({ role: m.role, text: m.text }));
             
             const response = await fetch('/api/gemini/evaluate', {
@@ -74,7 +77,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
             setEvaluationResult(data);
         } catch (err: any) {
             console.error(err);
-            setMessages(prev => [...prev, { role: 'model', text: "Désolé, je n'ai pas pu générer l'évaluation." }]);
+            setMessages(prev => [...prev, { role: 'model', text: "Désolé, je n'ai pas pu générer l'évaluation (chat trop long ou serveur occupé)." }]);
         } finally {
             setIsEvaluating(false);
         }
@@ -91,10 +94,10 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
 
         try {
             const token = localStorage.getItem('token');
-            // Filter out the first message (greeting from model) to comply with Gemini API requirements
-            // The API requires the first message in history to be from 'user'.
+            // Limit context for normal chat as well
             const history = messages
                 .filter((_, index) => index > 0)
+                .slice(-10) // Keep chat memory to last 10 turns for speed
                 .map(m => ({ role: m.role, text: m.text }));
             
             // Send the chosen topic as 'context' to the backend
@@ -171,7 +174,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                             className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
                             title="Réinitialiser"
                         >
-                            <ArrowPathIcon className="h-6 w-6" />
+                            <RotateCcw className="h-6 w-6" />
                         </button>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                             <XCircleIcon className="h-6 w-6" />
