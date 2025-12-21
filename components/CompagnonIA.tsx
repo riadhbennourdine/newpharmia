@@ -66,12 +66,33 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
 
     useEffect(() => {
         if (isTopicSelected && messages.length === 0) {
-            setMessages([
-                {
-                    role: 'model',
-                    text: `Excellent choix ! Le thème est : **${topic}**. Je suis ton Coach PharmIA et je vais t'accompagner.\n\nCommençons la simulation. Un patient se présente au comptoir... Que fais-tu en premier ?`
+            // Trigger the first AI message automatically by calling the coach service
+            const triggerInitialScenario = async () => {
+                setIsLoading(true);
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/api/gemini/coach`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ 
+                            message: `DÉMARRAGE : Lance une simulation de comptoir sur le sujet : ${topic}. Présente directement l'entrée d'un patient avec une demande ou plainte réaliste.`, 
+                            history: [], 
+                            context: topic 
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('Erreur initialisation');
+                    const data = await response.json();
+                    setIsTyping(true);
+                    setMessages([{ role: 'model', text: data.message }]);
+                } catch (err) {
+                    console.error(err);
+                    setMessages([{ role: 'model', text: "Erreur lors du lancement de la simulation." }]);
+                } finally {
+                    setIsLoading(false);
                 }
-            ]);
+            };
+            triggerInitialScenario();
         }
     }, [isTopicSelected, topic, messages.length]);
 
