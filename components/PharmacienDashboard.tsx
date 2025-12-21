@@ -23,7 +23,7 @@ const PharmacienDashboard: React.FC = () => {
     
     // State for viewing learning journey
     const [viewingPreparator, setViewingPreparator] = useState<{id: string, name: string} | null>(null);
-    const [compagnonMode, setCompagnonMode] = useState<'coach' | 'patient' | null>(null);
+    const [showCompagnon, setShowCompagnon] = useState(false);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -197,7 +197,7 @@ const PharmacienDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <button 
-                                        onClick={() => setCompagnonMode('coach')}
+                                        onClick={() => setShowCompagnon(true)}
                                         className="flex items-center justify-between p-6 bg-teal-50 border border-teal-200 rounded-2xl hover:bg-teal-100 transition-all group shadow-sm hover:shadow-md active:scale-95 h-full"
                                     >
                                         <div className="flex items-center gap-4">
@@ -248,11 +248,10 @@ const PharmacienDashboard: React.FC = () => {
                     onClose={() => setViewingPreparator(null)}
                 />
             )}
-            {compagnonMode && user && (
+            {showCompagnon && user && (
                 <CompagnonIA 
-                    mode={compagnonMode} 
-                    userName={user.firstName} 
-                    onClose={() => setCompagnonMode(null)} 
+                    user={user} 
+                    onClose={() => setShowCompagnon(false)} 
                 />
             )}
         </div>

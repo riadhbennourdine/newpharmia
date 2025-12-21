@@ -24,7 +24,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [additionalFicheDetails, setAdditionalFicheDetails] = useState<CaseStudy[]>([]);
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
     const [showJourneyPopup, setShowJourneyPopup] = useState(false);
-    const [compagnonMode, setCompagnonMode] = useState<'coach' | 'patient' | null>(null);
+    const [showCompagnon, setShowCompagnon] = useState(false);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -214,7 +214,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                                 </div>
                             </div>
                             <button 
-                                onClick={() => setCompagnonMode('coach')}
+                                onClick={() => setShowCompagnon(true)}
                                 className="flex items-center justify-between p-6 bg-teal-50 border border-teal-200 rounded-2xl hover:bg-teal-100 transition-all group shadow-sm hover:shadow-md active:scale-95 h-full"
                             >
                                 <div className="flex items-center gap-4">
@@ -289,11 +289,10 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                 </div>
             </div>
             {/* Modal Compagnon IA */}
-            {compagnonMode && user && (
+            {showCompagnon && user && (
                 <CompagnonIA 
-                    mode={compagnonMode} 
-                    userName={user.firstName} 
-                    onClose={() => setCompagnonMode(null)} 
+                    user={user} 
+                    onClose={() => setShowCompagnon(false)} 
                 />
             )}
         </>

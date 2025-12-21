@@ -9,7 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, getPatientResponse, listModels, isCacheReady, evaluateSimulation } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, listModels, isCacheReady, evaluateSimulation } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
@@ -1000,17 +1000,7 @@ app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedReq
     }
 });
 
-// NEW: Patient Agent Endpoint
-app.post('/api/gemini/patient', authenticateToken, async (req, res) => {
-    try {
-        const { message, history = [], context = "" } = req.body;
-        const response = await getPatientResponse(history, context, message);
-        res.json({ message: response });
-    } catch (error: any) {
-        console.error('Error in Patient agent:', error);
-        res.status(500).json({ message: error.message || "Le patient est parti." });
-    }
-});
+
 
 app.get('/api/gemini/models', async (req, res) => {
     try {

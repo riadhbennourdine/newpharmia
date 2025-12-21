@@ -151,24 +151,27 @@ export const getCoachResponse = async (chatHistory: {role: string, text: string}
                 const genAI = new GoogleGenerativeAI(key);
                 const model = genAI.getGenerativeModel({ model: modelName });
                 
-                const coachPrompt = `Tu es "Coach PharmIA", un mentor expert.
+                const coachPrompt = `Tu es "Coach PharmIA", un mentor expert en pharmacie.
 TON : Professionnel, fluide, pédagogique mais pas scolaire.
 
-MISSION : Guider la simulation (1.Interrogatoire -> 2.Pathologie -> 3.Traitement -> 4.Conseils).
+MISSION : Accompagner l'apprenant dans une simulation de comptoir. 
+Le dialogue se déroule EXCLUSIVEMENT entre TOI (le Coach) et l'APPRENANT.
 
-RÈGLES DE RÉPONSE (SUBTILITÉ) :
-1. **Incarne le Patient** : Réponds aux questions de l'apprenant en utilisant les prénoms Foulen/Foulena.
-2. **Complète sans blâmer** : Si l'apprenant oublie des points importants de P.H.A.R.M.A., ne dis pas "Vous avez oublié X". Fais plutôt dire au patient : *"Ah, j'ai oublié de préciser que..."* ou *"Pour info, je suis..."*.
-3. **Avance** : Une fois les infos données, pose la question de l'étape SUIVANTE.
-4. **Détection** : Si l'apprenant a DÉJÀ répondu à l'étape suivante (ex: a donné le diagnostic), valide et passe directement à celle d'après.
+RÈGLES :
+1. **Ne joue PAS le rôle du patient**. Le patient n'intervient pas directement dans le chat.
+2. **Décris les faits** : Si l'apprenant pose une question au patient ou effectue une action, réponds en tant que Coach en décrivant la réaction du patient ou les informations qu'il donne. 
+   Exemple : "Le patient vous répond qu'il a des douleurs depuis hier..." ou "Vous remarquez que le patient semble inquiet."
+3. **Guide la démarche** : Utilise la méthode P.H.A.R.M.A. Guide l'apprenant à travers les étapes (1.Interrogatoire -> 2.Pathologie -> 3.Traitement -> 4.Conseils).
+4. **Subtilité** : Si l'apprenant oublie un point important, suggère-le avec bienveillance (ex: "N'oubliez pas de vérifier si le patient a d'autres traitements en cours").
+5. **Avance** : Pose toujours une question pour l'étape suivante ou demande à l'apprenant ce qu'il décide de faire.
 
-FIN : "Simulation terminée ! Cliquez sur 'Terminer & Évaluer'."
+FIN : Quand la simulation est complète et que tous les conseils ont été donnés, dis : "Simulation terminée ! Cliquez sur 'Terminer & Évaluer' pour voir votre bilan."
 
 TEXTE BRUT.
-Contexte : ${context}
-Dernier message : ${userMessage}`;
+Sujet de la simulation : ${context || "Attente du sujet"}
+Dernier message de l'apprenant : ${userMessage}`;
 
-                const safeHistory = chatHistory.slice(-6).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                const safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 const chat = model.startChat({ history: safeHistory });
                 const result = await chat.sendMessage(coachPrompt);
                 return result.response.text().trim();
@@ -193,31 +196,7 @@ Dernier message : ${userMessage}`;
     });
 };
 
-export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
-    return globalQueue.add(async () => {
-        let attempts = 0;
-        while (attempts < 5) {
-            const key = getApiKey();
-            try {
-                const modelName = await getValidModel(key);
-                const genAI = new GoogleGenerativeAI(key);
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const patientPrompt = `Tu es un patient simulé (Foulen/Foulena). Sois simple et ignorant en médecine. Maladie: ${context}. Msg: ${userMessage}`;
-                const safeHistory = chatHistory.slice(-6).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
-                const chat = model.startChat({ history: safeHistory });
-                const result = await chat.sendMessage(patientPrompt);
-                return result.response.text().trim();
-            } catch (error: any) {
-                if (error.message?.includes('404')) cachedValidModel = null;
-                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
-                attempts++;
-                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
-                await new Promise(r => setTimeout(r, 1000));
-            }
-        }
-        return "Erreur service.";
-    });
-};
+
 
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     return globalQueue.add(async () => {
