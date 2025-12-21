@@ -167,7 +167,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                 {/* Header with Gradient */}
                 <div className="flex items-center justify-between p-5 bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md z-10">
                     <div className="flex items-center gap-4">
-                        <div className="bg-white p-0.5 rounded-xl shadow-md overflow-hidden">
+                        <div className="bg-white p-0.5 rounded-full shadow-md overflow-hidden flex-shrink-0">
                             <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="PharmIA" className="h-10 w-10 object-cover" />
                         </div>
                         <div>
@@ -292,19 +292,18 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                                 const isModel = msg.role === 'model';
                                 
                                 return (
-                                <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}>
-                                    <div className={`max-w-[88%] p-4 rounded-2xl shadow-sm relative ${ 
-                                        msg.role === 'user' 
-                                        ? 'bg-teal-600 text-white rounded-br-none ml-12' 
-                                        : 'bg-white text-slate-800 border border-slate-200/60 rounded-bl-none mr-12'
-                                    }`}>
-                                        {/* Avatar for AI */}
-                                        {isModel && (
-                                            <div className="absolute -left-11 bottom-0 w-9 h-9 bg-white rounded-full flex items-center justify-center border-2 border-teal-100 shadow-sm overflow-hidden">
-                                                <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
-                                            </div>
-                                        )}
-                                        
+                                                                <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}>
+                                                                    <div className={`max-w-[88%] p-4 rounded-2xl shadow-sm relative ${
+                                                                        msg.role === 'user' 
+                                                                        ? 'bg-teal-600 text-white rounded-br-none ml-12' 
+                                                                        : 'bg-white text-slate-800 border border-slate-200/60 rounded-bl-none ml-12'
+                                                                    }`}>
+                                                                        {/* Avatar for AI */}
+                                                                        {isModel && (
+                                                                            <div className="absolute -left-12 bottom-0 w-9 h-9 bg-white rounded-full flex items-center justify-center border-2 border-teal-100 shadow-sm overflow-hidden flex-shrink-0">
+                                                                                <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
+                                                                            </div>
+                                                                        )}                                        
                                         <div className="text-[15px]">
                                             {isModel && isLastMessage && isTyping ? (
                                                 <TypewriterMessage 
