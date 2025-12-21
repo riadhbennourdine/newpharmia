@@ -190,7 +190,7 @@ const PharmacienDashboard: React.FC = () => {
                                     <div className="flex justify-center md:justify-start">
                                         <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-teal-100 shadow-md">
                                             <img 
-                                                src="/api/ftp/view?filePath=%2Fcoach.png" 
+                                                src="/api/ftp/view?filePath=%2Fcoach-pharmia.png" 
                                                 alt="Coach PharmIA" 
                                                 className="w-full h-full object-cover"
                                             />

@@ -135,11 +135,17 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                 body: JSON.stringify({ message: trimmedInput, history, context: topic })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Erreur API');
+            let data;
+            try {
+                data = await response.json();
+            } catch (jsonError) {
+                console.error("Failed to parse JSON response:", jsonError);
+                throw new Error("Erreur de communication avec le serveur (Format invalide).");
             }
-            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Erreur API');
+            }
             
             setIsTyping(true); // Start typewriter effect
             setMessages(prev => [...prev, { role: 'model', text: data.message }]);
@@ -167,7 +173,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                 <div className="flex items-center justify-between p-5 bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md z-10">
                     <div className="flex items-center gap-4">
                         <div className="bg-white p-0.5 rounded-full shadow-md overflow-hidden flex-shrink-0">
-                            <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="PharmIA" className="h-10 w-10 object-cover" />
+                            <img src="/api/ftp/view?filePath=%2Fcoach-pharmia.png" alt="PharmIA" className="h-10 w-10 object-cover" />
                         </div>
                         <div>
                             <h3 className="font-bold text-lg tracking-tight">{mode === 'coach' ? 'Coach PharmIA' : 'Patient Simulé'}</h3>
@@ -178,7 +184,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                         {mode === 'coach' && isTopicSelected && !evaluationResult && messages.length > 2 && (
                             <button 
                                 onClick={handleEvaluate}
-                                disabled={isEvaluating || isLoading || isTyping}
+                                disabled={isEvaluating || isLoading}
                                 className="bg-white/20 hover:bg-white/30 active:bg-white/40 text-white text-xs px-4 py-2 rounded-lg transition-all font-semibold mr-2 border border-white/10 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isEvaluating ? 'Calcul...' : 'Terminer & Évaluer'}
@@ -260,7 +266,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                             <div className="space-y-4">
                                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
                                     <span className="bg-orange-100 p-1 rounded-md overflow-hidden w-6 h-6 flex items-center justify-center">
-                                        <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
+                                        <img src="/api/ftp/view?filePath=%2Fcoach-pharmia.png" alt="Coach" className="w-full h-full object-cover" />
                                     </span>
                                     Recommandations Ciblées
                                 </h3>
@@ -300,7 +306,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                                                                         {/* Avatar for AI */}
                                                                         {isModel && (
                                                                             <div className="absolute -left-12 bottom-0 w-9 h-9 bg-white rounded-full flex items-center justify-center border-2 border-teal-100 shadow-sm overflow-hidden flex-shrink-0">
-                                                                                <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
+                                                                                <img src="/api/ftp/view?filePath=%2Fcoach-pharmia.png" alt="Coach" className="w-full h-full object-cover" />
                                                                             </div>
                                                                         )}                                        
                                         <div className="text-[15px]">
