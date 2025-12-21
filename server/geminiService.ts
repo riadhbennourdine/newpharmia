@@ -432,14 +432,15 @@ const globalQueue = new GeminiQueue();
 export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
     return globalQueue.add(async () => {
         let attempts = 0;
-        while (attempts < 3) {
+        let lastUsedKey = "";
+        while (attempts < 5) {
             try {
-                console.log(`[Coach] Processing request (Attempt ${attempts + 1})...`);
-                const apiKey = getApiKey();
-                const genAI = new GoogleGenerativeAI(apiKey);
+                lastUsedKey = getApiKey();
+                console.log(`[Coach] Processing request (Attempt ${attempts + 1}) with key ...${lastUsedKey.slice(-4)}`);
+                const genAI = new GoogleGenerativeAI(lastUsedKey);
                 const bestModel = await getBestModel();
                 
-                const model = genAI.getGenerativeModel({ 
+                const model = genAI.getGenerativeModel ({
                     model: bestModel,
                     safetySettings: [
                         { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -478,15 +479,21 @@ DERNIER MESSAGE: ${userMessage}`;
                 return result.response.text().trim();
 
             } catch (error: any) {
-                console.error(`[Coach] Attempt ${attempts + 1} failed:`, error);
+                console.error(`[Coach] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
+                
+                if (error.message?.includes('429')) {
+                    keyManager.markKeyAsExhausted(lastUsedKey);
+                }
+
                 attempts++;
-                if (attempts >= 3) {
+                if (attempts >= 5) {
                     const errorMsg = error.message?.includes('429') 
-                        ? "Quota API dépassé (Trop de requêtes). Réessayez dans 60 secondes."
-                        : (error.message || "Erreur inconnue de l'IA.");
+                        ? `Toutes les clés sont saturées (Dernier échec sur ...${lastUsedKey.slice(-4)}). Réessayez dans une minute.` 
+                        : `Erreur IA (...${lastUsedKey.slice(-4)}): ${error.message}`;
                     throw new Error(errorMsg);
                 }
-                await new Promise(resolve => setTimeout(resolve, 1500 * attempts));
+                // Wait slightly before retry with next key
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
         return "Erreur critique du service IA.";
@@ -495,36 +502,26 @@ DERNIER MESSAGE: ${userMessage}`;
 
 export const getPatientResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
     return globalQueue.add(async () => {
-        try {
-            console.log(`[Patient] Starting request for subject: ${context || 'General'}`);
-            const genAI = new GoogleGenerativeAI(getApiKey());
-            const bestModel = await getBestModel();
-            
-            const supportsCache = !!bestModel.match(/(1\.5|2\.0|flash-latest|flash-lite-latest)/);
-            let modelInput: any = { 
-                model: bestModel,
-                safetySettings: [
-                    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-                    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-                ]
-            };
-            
-            if (supportsCache && currentCacheName) {
-                console.log(`[Patient] Using cache: ${currentCacheName}`);
-                modelInput.cachedContent = currentCacheName;
-            } else if (context) {
-                console.log(`[Patient] Using RAG context for: ${context}`);
-                const ragContext = await getRAGContext(context);
-                if (ragContext) {
-                    context = `CAS CLINIQUE RÉEL (Simule un patient ayant ces symptômes):\n${ragContext}`;
-                }
-            }
+        let attempts = 0;
+        let lastUsedKey = "";
+        while (attempts < 5) {
+            try {
+                lastUsedKey = getApiKey();
+                console.log(`[Patient] Starting request with key ...${lastUsedKey.slice(-4)}`);
+                const genAI = new GoogleGenerativeAI(lastUsedKey);
+                const bestModel = await getBestModel();
+                
+                const model = genAI.getGenerativeModel ({
+                    model: bestModel,
+                    safetySettings: [
+                        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                    ]
+                });
 
-            const model = genAI.getGenerativeModel(modelInput);
-
-            const patientPrompt = `Tu es un "Patient Simulé" au comptoir d'une pharmacie.
+                const patientPrompt = `Tu es un "Patient Simulé" au comptoir d'une pharmacie.
         
     INSTRUCTIONS:
     1. Tu ne connais RIEN à la médecine. Tu utilises des mots simples, vagues ("j'ai mal au ventre", "ça pique").
@@ -541,119 +538,136 @@ export const getPatientResponse = async (chatHistory: {role: string, text: strin
 
     PHARMACIEN: ${userMessage}`;
 
-            let validHistory = chatHistory.slice(-6);
-            if (validHistory.length > 0 && validHistory[0].role !== 'user') {
-                validHistory = validHistory.slice(1);
-            }
+                let validHistory = chatHistory.slice(-6);
+                if (validHistory.length > 0 && validHistory[0].role !== 'user') {
+                    validHistory = validHistory.slice(1);
+                }
 
-            const recentHistory = validHistory.map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
-            }));
+                const recentHistory = validHistory.map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                }));
 
-            console.log(`[Patient] Sending message with ${recentHistory.length} turns of history...`);
-            const chat = model.startChat({ history: recentHistory });
-            const result = await chat.sendMessage(patientPrompt);
-            
-            if (!result.response) {
-                console.error('[Patient] No response from model.');
-                throw new Error("Pas de réponse du modèle.");
+                const chat = model.startChat({ history: recentHistory });
+                const result = await chat.sendMessage(patientPrompt);
+                
+                if (!result.response) throw new Error("Pas de réponse du modèle.");
+                
+                return result.response.text().trim();
+            } catch (error: any) {
+                console.error(`[Patient] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
+                if (error.message?.includes('429')) {
+                    keyManager.markKeyAsExhausted(lastUsedKey);
+                }
+                attempts++;
+                if (attempts >= 5) throw new Error(`Service Patient saturé (Dernier échec sur ...${lastUsedKey.slice(-4)}).`);
+                await new Promise(r => setTimeout(r, 500));
             }
-            
-            const text = result.response.text().trim();
-            console.log(`[Patient] Successfully received response (${text.length} chars).`);
-            return text;
-        } catch (error: any) {
-            console.error('[Patient] Error details:', error);
-            if (error.message?.includes('429')) {
-                cachedBestModel = null;
-            }
-            throw new Error(error.message || "Erreur lors de la communication avec le patient.");
         }
+        return "Erreur service.";
     });
 };
+
 export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
     return globalQueue.add(async () => {
-        const genAI = new GoogleGenerativeAI(getApiKey());
-        
-        const bestModel = await getBestModel();
-        // Cache is supported on 1.5, 2.x, 3.x
-        const supportsCache = !!bestModel.match(/(1\.5|2\.|3\.)/);
-        
-        let modelInput: any = { model: bestModel };
-        
-        if (supportsCache && currentCacheName) {
-            console.log(`[Chat] Using cached context: ${currentCacheName} with model ${bestModel}`);
-            modelInput.cachedContent = currentCacheName;
-        } else if (currentCacheName) {
-            console.warn(`[Chat] Cache is available but model ${bestModel} does not support it. Falling back to standard context injection.`);
-        }
-
-        const model = genAI.getGenerativeModel(modelInput);
-
-        let finalPrompt = "";
-
-            if (supportsCache && currentCacheName) {
-                // With cache: The model knows the content. We just give persona + local context + question.
-                finalPrompt = `Tu es PharmIA, l'assistant intelligent, bienveillant et expert dédié aux professionnels de la pharmacie.
-        
-        INSTRUCTIONS DE PERSONNALITÉ ET DE TON :
-        1. **Humain et Conversationnel** : Adopte un ton naturel, fluide et empathique. Évite le style robotique ou trop télégraphique. Tu es un collègue de confiance qui échange avec un autre professionnel.
-        2. **Pédagogique et Clair** : Tes réponses doivent être structurées mais rédigées avec des phrases complètes et agréables à lire.
-        3. **Engagement** : Montre de l'intérêt pour la demande. N'hésite pas à encourager l'utilisateur ou à proposer une ouverture pertinente à la fin de ta réponse.
-        4. **Formatage** : Utilise des puces (•) pour lister les points importants et du gras (**gras**) pour les mots-clés, afin de faciliter la lecture rapide sans perdre en fluidité.
-        
-        CONSIGNES DE CONTENU :
-        1. Utilise le CONTEXTE SUPPLÉMENTAIRE pour fournir une réponse précise et contextualisée.
-        2. Réponds chaleureusement aux salutations et aux questions informelles.
-        3. Ne mentionne jamais le "cache" ou les mécanismes techniques internes.
-        
-        CONTEXTE SUPPLÉMENTAIRE (Page courante):
-        ---
-        ${context || "Aucun contexte spécifique supplémentaire."}
-        ---
-        
-        QUESTION: ${question}`;
-        
-                } else {
-                    // Without cache: Legacy behavior (RAG or context injection)
-                    finalPrompt = `Tu es PharmIA, l'assistant intelligent, bienveillant et expert dédié aux professionnels de la pharmacie.
-            
-            INSTRUCTIONS DE PERSONNALITÉ ET DE TON :
-            1. **Humain et Conversationnel** : Adopte un ton naturel, fluide et empathique. Évite le style robotique ou trop télégraphique. Tu es un collègue de confiance.
-            2. **Pédagogique et Clair** : Tes réponses doivent être structurées mais rédigées avec des phrases complètes et agréables à lire.
-            3. **Engagement** : Montre de l'intérêt pour la demande.
-            4. **Formatage** : Utilise des puces (•) pour lister les points importants et du gras (**gras**) pour les mots-clés.
-            
-            CONSIGNES DE CONTENU :
-            1. Base ta réponse sur le CONTEXTE fourni ci-dessous si pertinent.
-            2. Si le contexte ne contient pas la réponse, utilise tes connaissances générales en le précisant poliment.
-            3. Ne mentionne pas explicitement "le contexte fourni" ou "la base de données".
-            
-            CONTEXTE:
-            ---
-            ${context || "Aucune fiche spécifique trouvée pour cette recherche."}
-            ---
-            
-            QUESTION: ${question}`;
+        let attempts = 0;
+        let lastUsedKey = "";
+        while (attempts < 5) {
+            try {
+                lastUsedKey = getApiKey();
+                const genAI = new GoogleGenerativeAI(lastUsedKey);
+                
+                const bestModel = await getBestModel();
+                // Cache is supported on 1.5, 2.x, 3.x
+                const supportsCache = !!bestModel.match(/(1\.5|2\.|3\.)/);
+                
+                let modelInput: any = { model: bestModel };
+                
+                if (supportsCache && currentCacheName) {
+                    console.log(`[Chat] Using cached context: ${currentCacheName} with model ${bestModel}`);
+                    modelInput.cachedContent = currentCacheName;
+                } else if (currentCacheName) {
+                    console.warn(`[Chat] Cache is available but model ${bestModel} does not support it. Falling back to standard context injection.`);
                 }
-        const history: Content[] = chatHistory.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-        }));
-        
-        const chat = model.startChat({
-            history: history,
-            generationConfig: {
-            maxOutputTokens: 1500,
-            },
-        });
 
-        const result = await chat.sendMessage(finalPrompt);
-        const response = result.response;
-        return response.text().trim();
+                const model = genAI.getGenerativeModel(modelInput);
+
+                let finalPrompt = "";
+
+                    if (supportsCache && currentCacheName) {
+                        // With cache: The model knows the content. We just give persona + local context + question.
+                        finalPrompt = `Tu es PharmIA, l'assistant intelligent, bienveillant et expert dédié aux professionnels de la pharmacie.
+                
+                INSTRUCTIONS DE PERSONNALITÉ ET DE TON :
+                1. **Humain et Conversationnel** : Adopte un ton naturel, fluide et empathique. Évite le style robotique ou trop télégraphique. Tu es un collègue de confiance qui échange avec un autre professionnel.
+                2. **Pédagogique et Clair** : Tes réponses doivent être structurées mais rédigées avec des phrases complètes et agréables à lire.
+                3. **Engagement** : Montre de l'intérêt pour la demande. N'hésite pas à encourager l'utilisateur ou à proposer une ouverture pertinente à la fin de ta réponse.
+                4. **Formatage** : Utilise des puces (•) pour lister les points importants et du gras (**gras**) pour les mots-clés, afin de faciliter la lecture rapide sans perdre en fluidité.
+                
+                CONSIGNES DE CONTENU :
+                1. Utilise le CONTEXTE SUPPLÉMENTAIRE pour fournir une réponse précise et contextualisée.
+                2. Réponds chaleureusement aux salutations et aux questions informelles.
+                3. Ne mentionne jamais le "cache" ou les mécanismes techniques internes.
+                
+                CONTEXTE SUPPLÉMENTAIRE (Page courante):
+                ---
+                ${context || "Aucun contexte spécifique supplémentaire."}
+                ---
+                
+                QUESTION: ${question}`;
+                
+                        } else {
+                            // Without cache: Legacy behavior (RAG or context injection)
+                            finalPrompt = `Tu es PharmIA, l'assistant intelligent, bienveillant et expert dédié aux professionnels de la pharmacie.
+                    
+                    INSTRUCTIONS DE PERSONNALITÉ ET DE TON :
+                    1. **Humain et Conversationnel** : Adopte un ton naturel, fluide et empathique. Évite le style robotique ou trop télégraphique. Tu es un collègue de confiance.
+                    2. **Pédagogique et Clair** : Tes réponses doivent être structurées mais rédigées avec des phrases complètes et agréables à lire.
+                    3. **Engagement** : Montre de l'intérêt pour la demande.
+                    4. **Formatage** : Utilise des puces (•) pour lister les points importants et du gras (**gras**) pour les mots-clés.
+                    
+                    CONSIGNES DE CONTENU :
+                    1. Base ta réponse sur le CONTEXTE fourni ci-dessous si pertinent.
+                    2. Si le contexte ne contient pas la réponse, utilise tes connaissances générales en le précisant poliment.
+                    3. Ne mentionne pas explicitement "le contexte fourni" ou "la base de données".
+                    
+                    CONTEXTE:
+                    ---
+                    ${context || "Aucune fiche spécifique trouvée pour cette recherche."} 
+                    ---
+                    
+                    QUESTION: ${question}`;
+                        }
+                const history: Content[] = chatHistory.map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                }));
+                
+                const chat = model.startChat({
+                    history: history,
+                    generationConfig: {
+                    maxOutputTokens: 1500,
+                    },
+                });
+
+                const result = await chat.sendMessage(finalPrompt);
+                const response = result.response;
+                return response.text().trim();
+
+            } catch (error: any) {
+                console.error(`[Chat] Attempt ${attempts + 1} failed with key ...${lastUsedKey.slice(-4)}:`, error.message);
+                if (error.message?.includes('429')) {
+                    keyManager.markKeyAsExhausted(lastUsedKey);
+                }
+                attempts++;
+                if (attempts >= 5) throw new Error(`Le chat est momentanément saturé (Dernier échec sur ...${lastUsedKey.slice(-4)}).`);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+        return "Erreur service.";
     });
 };
+
 // --- Context Caching Implementation ---
 
 let currentCacheName: string | null = null;
