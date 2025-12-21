@@ -87,7 +87,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
     }, [messages, isLoading, isTyping]); // Scroll on new message, loading state, or typing effect
 
     const handleEvaluate = async () => {
-        if (isEvaluating || messages.length < 3) return;
+        if (isEvaluating || messages.length < 2) return;
         setIsEvaluating(true);
         try {
             const token = localStorage.getItem('token');
@@ -181,7 +181,7 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        {mode === 'coach' && isTopicSelected && !evaluationResult && messages.length > 2 && (
+                        {isTopicSelected && !evaluationResult && messages.length > 1 && (
                             <button 
                                 onClick={handleEvaluate}
                                 disabled={isEvaluating || isLoading}
@@ -195,7 +195,9 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                             className="p-2.5 hover:bg-white/20 rounded-full transition-all text-white active:scale-90"
                             title="Réinitialiser"
                         >
-                            <ArrowPathIcon className="h-5 w-5" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.181m0 0l-3.181-3.181A1.125 1.125 0 009 12.75V11.25c0-1.036.84-1.875 1.875-1.875h4.992m-4.993 0l3.181-3.181M15 1.5l-3.181 3.181A1.125 1.125 0 0112 5.25v1.5c0 1.035-.84 1.875 1.875 1.875H4.125m5.605-4.72L10.5 2.25H21v4.992m0 0l-3.181 3.181A1.125 1.125 0 0115 12.75v1.5c0 1.035.84 1.875 1.875 1.875h4.992m-4.993 0l3.181 3.181" />
+                            </svg>
                         </button>
                         <button onClick={onClose} className="p-2.5 hover:bg-white/20 rounded-full transition-all active:scale-90">
                             <XCircleIcon className="h-6 w-6" />
