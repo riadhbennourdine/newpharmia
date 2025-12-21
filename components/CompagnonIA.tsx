@@ -167,8 +167,8 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                 {/* Header with Gradient */}
                 <div className="flex items-center justify-between p-5 bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md z-10">
                     <div className="flex items-center gap-4">
-                        <div className="bg-white/25 p-2.5 rounded-xl shadow-inner backdrop-blur-md">
-                            <BrainCircuitIcon className="h-7 w-7 text-white" />
+                        <div className="bg-white p-0.5 rounded-xl shadow-md overflow-hidden">
+                            <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="PharmIA" className="h-10 w-10 object-cover" />
                         </div>
                         <div>
                             <h3 className="font-bold text-lg tracking-tight">{mode === 'coach' ? 'Coach PharmIA' : 'Patient Simulé'}</h3>
@@ -260,7 +260,9 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                         {evaluationResult.recommendedFiches && evaluationResult.recommendedFiches.length > 0 && (
                             <div className="space-y-4">
                                 <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                                    <span className="bg-orange-100 text-orange-600 p-1 rounded-md"><BrainCircuitIcon className="w-4 h-4" /></span>
+                                    <span className="bg-orange-100 p-1 rounded-md overflow-hidden w-6 h-6 flex items-center justify-center">
+                                        <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
+                                    </span>
                                     Recommandations Ciblées
                                 </h3>
                                 <div className="grid gap-3">
@@ -298,8 +300,8 @@ const CompagnonIA: React.FC<Props> = ({ mode, userName, onClose }) => {
                                     }`}>
                                         {/* Avatar for AI */}
                                         {isModel && (
-                                            <div className="absolute -left-10 bottom-0 w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                                                <BrainCircuitIcon className="w-5 h-5 text-teal-600" />
+                                            <div className="absolute -left-11 bottom-0 w-9 h-9 bg-white rounded-full flex items-center justify-center border-2 border-teal-100 shadow-sm overflow-hidden">
+                                                <img src="/api/ftp/view?filePath=%2Fcoach.png" alt="Coach" className="w-full h-full object-cover" />
                                             </div>
                                         )}
                                         
