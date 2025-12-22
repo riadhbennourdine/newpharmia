@@ -115,23 +115,46 @@ const getValidModel = async (apiKey: string): Promise<string> => {
     }
 };
 
+// Helper to clean JSON string
+const cleanJson = (text: string): string => {
+    let clean = text.trim();
+    // Remove markdown code blocks if present
+    if (clean.startsWith('```json')) {
+        clean = clean.substring(7);
+    } else if (clean.startsWith('```')) {
+        clean = clean.substring(3);
+    }
+    if (clean.endsWith('```')) {
+        clean = clean.substring(0, clean.length - 3);
+    }
+    return clean.trim();
+};
+
 // --- Case Study Generation ---
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
   const apiKey = getApiKey();
   const modelName = await getValidModel(apiKey);
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: modelName });
+  const model = genAI.getGenerativeModel({ 
+      model: modelName,
+      generationConfig: { responseMimeType: "application/json" }
+  });
   const result = await model.generateContent(prompt);
-  return { ...JSON.parse(result.response.text()), status: MemoFicheStatus.DRAFT };
+  const cleanText = cleanJson(result.response.text());
+  return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
     const apiKey = getApiKey();
     const modelName = await getValidModel(apiKey);
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: modelName });
+    const model = genAI.getGenerativeModel({ 
+        model: modelName,
+        generationConfig: { responseMimeType: "application/json" }
+    });
     const result = await model.generateContent(`Génère des outils pédagogiques JSON pour: ${memoContent.title}`);
-    return JSON.parse(result.response.text());
+    const cleanText = cleanJson(result.response.text());
+    return JSON.parse(cleanText);
 };
 
 // --- Specialized Agent Personas ---
@@ -252,7 +275,8 @@ export const evaluateSimulation = async (chatHistory: {role: string, text: strin
     const prompt = `Expert évaluateur. Sujet: ${topic}. Histoire: ${JSON.stringify(chatHistory.slice(-15))}. Donne score(0-100), feedback court, 3 mots-clés en JSON {score, feedback, searchKeywords}.`;
     try {
         const result = await model.generateContent(prompt);
-        return { ...JSON.parse(result.response.text()), recommendedFiches: [] };
+        const cleanText = cleanJson(result.response.text());
+        return { ...JSON.parse(cleanText), recommendedFiches: [] };
     } catch (error) { return { score: 0, feedback: "Évaluation indisponible.", recommendedFiches: [] }; }
 };
 
