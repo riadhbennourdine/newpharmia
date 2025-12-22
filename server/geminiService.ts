@@ -141,7 +141,16 @@ export const generateCaseStudyDraft = async (prompt: string, memoFicheType: stri
   });
   const result = await model.generateContent(prompt);
   const cleanText = cleanJson(result.response.text());
-  return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
+  try {
+      return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
+  } catch (error) {
+      console.error("JSON Parsing Failed for Case Study Draft.");
+      console.error("Error:", error);
+      console.error("Text Length:", cleanText.length);
+      console.error("First 100 chars:", cleanText.substring(0, 100));
+      console.error("Last 100 chars:", cleanText.substring(cleanText.length - 100));
+      throw error;
+  }
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {

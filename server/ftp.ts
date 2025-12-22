@@ -24,7 +24,7 @@ const getFtpConfig = () => {
     };
 };
 
-const MAX_CONNECTIONS = 5;
+const MAX_CONNECTIONS = 3;
 const pool: Client[] = [];
 const queue: ((client: Client) => void)[] = [];
 let activeConnections = 0;
@@ -34,7 +34,6 @@ async function createClient(): Promise<Client> {
     client.ftp.verbose = false;
     try {
         await client.access(getFtpConfig());
-        activeConnections++;
         console.log(`FTP connected. Active connections: ${activeConnections}`);
         return client;
     } catch (err) {
@@ -44,24 +43,32 @@ async function createClient(): Promise<Client> {
 }
 
 export async function getFtpClient(): Promise<Client> {
-    if (pool.length > 0) {
+    // 1. Try to get from pool
+    while (pool.length > 0) {
         const client = pool.pop()!;
         try {
             // A simple NOOP command to check if the connection is still alive.
             await client.send('NOOP');
             return client;
         } catch (err) {
-            console.warn('Stale FTP connection found, creating a new one.');
-            activeConnections--;
-            return createClient();
+            console.warn('Stale FTP connection found, discarding.');
+            client.close(); // Close the socket
+            activeConnections--; // We lost a connection, so decrement
         }
     }
 
+    // 2. Check if we can create a new one
     if (activeConnections < MAX_CONNECTIONS) {
-        return createClient();
+        activeConnections++; // Reserve the slot synchronously
+        try {
+            return await createClient();
+        } catch (err) {
+            activeConnections--; // Release the slot if creation failed
+            throw err;
+        }
     }
 
-    // Wait for a client to be released.
+    // 3. Wait for a client to be released.
     return new Promise(resolve => {
         queue.push(resolve);
     });
