@@ -130,38 +130,64 @@ const cleanJson = (text: string): string => {
     return clean.trim();
 };
 
+// Helper for executing Gemini calls with retry logic
+const executeGeminiCall = async <T>(task: (model: any) => Promise<T>): Promise<T> => {
+    return globalQueue.add(async () => {
+        let attempts = 0;
+        const maxAttempts = 5;
+        let lastError: any;
+
+        while (attempts < maxAttempts) {
+            const key = getApiKey();
+            try {
+                const modelName = await getValidModel(key);
+                const genAI = new GoogleGenerativeAI(key);
+                const model = genAI.getGenerativeModel({ 
+                    model: modelName,
+                    generationConfig: { responseMimeType: "application/json" }
+                });
+                
+                return await task(model);
+            } catch (error: any) {
+                lastError = error;
+                console.warn(`[Gemini] Attempt ${attempts + 1} failed: ${error.message}`);
+
+                // Handle specific error codes
+                if (error.message?.includes('404')) cachedValidModel = null;
+                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+                
+                // Check for 503 Service Unavailable (Overloaded)
+                if (error.message?.includes('503')) {
+                    console.warn(`[Gemini] Model overloaded (503). Waiting longer...`);
+                    await new Promise(r => setTimeout(r, 2000 * (attempts + 1))); // Longer backoff for 503
+                } else {
+                    await new Promise(r => setTimeout(r, 1000 * (attempts + 1))); // Standard exponential backoff
+                }
+
+                attempts++;
+            }
+        }
+        
+        throw new Error(`Gemini generation failed after ${maxAttempts} attempts. Last error: ${lastError?.message}`);
+    });
+};
+
 // --- Case Study Generation ---
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-  const apiKey = getApiKey();
-  const modelName = await getValidModel(apiKey);
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ 
-      model: modelName,
-      generationConfig: { responseMimeType: "application/json" }
-  });
-  const result = await model.generateContent(prompt);
-  const cleanText = cleanJson(result.response.text());
-  try {
-      return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
-  } catch (error) {
-      console.error("JSON Parsing Failed for Case Study Draft.");
-      console.error("Error:", error);
-      console.error("Text Length:", cleanText.length);
-      console.error("First 100 chars:", cleanText.substring(0, 100));
-      console.error("Last 100 chars:", cleanText.substring(cleanText.length - 100));
-      throw error;
-  }
+    return executeGeminiCall(async (model) => {
+        const result = await model.generateContent(prompt);
+        const cleanText = cleanJson(result.response.text());
+        try {
+            return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
+        } catch (error) {
+            console.error("JSON Parsing Failed for Case Study Draft.");
+            console.error("Text Length:", cleanText.length);
+            throw error;
+        }
+    });
 };
 
 export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Promise<Partial<CaseStudy>> => {
-    const apiKey = getApiKey();
-    const modelName = await getValidModel(apiKey);
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-        model: modelName,
-        generationConfig: { responseMimeType: "application/json" }
-    });
-
     // Construct a context string from the memo content
     const context = `
     Titre: ${memoContent.title}
@@ -190,9 +216,11 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
 
     Ensure the output is valid JSON. Language: French.`;
 
-    const result = await model.generateContent(prompt);
-    const cleanText = cleanJson(result.response.text());
-    return JSON.parse(cleanText);
+    return executeGeminiCall(async (model) => {
+        const result = await model.generateContent(prompt);
+        const cleanText = cleanJson(result.response.text());
+        return JSON.parse(cleanText);
+    });
 };
 
 // --- Specialized Agent Personas ---
