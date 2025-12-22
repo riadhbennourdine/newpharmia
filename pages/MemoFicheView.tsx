@@ -67,7 +67,7 @@ const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
         return (
             <ul>
                 {items.map((item, index) => (
-                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                    <li key={index} dangerouslySetInnerHTML={{ __html: typeof item === 'string' ? item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) : item }}></li>
                 ))}
             </ul>
         );
@@ -104,7 +104,7 @@ const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) =>
         return (
             <ul>
                 {items.map((item, index) => (
-                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                    <li key={index} dangerouslySetInnerHTML={{ __html: typeof item === 'string' ? item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) : item }}></li>
                 ))}
             </ul>
         );
@@ -135,7 +135,7 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
         return (
             <ul>
                 {items.map((item, index) => (
-                    <li key={index} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) }}></li>
+                    <li key={index} dangerouslySetInnerHTML={{ __html: typeof item === 'string' ? item.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`) : item }}></li>
                 ))}
             </ul>
         );
@@ -293,7 +293,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   };
 
   const renderMarkdown = (text: string, isRedKeywordSection: boolean = false) => {
-    let html = text;
+    let html = typeof text === 'string' ? text : String(text || '');
 
     // Keywords (bold)
     const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
