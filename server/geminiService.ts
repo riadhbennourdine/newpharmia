@@ -161,7 +161,36 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
         model: modelName,
         generationConfig: { responseMimeType: "application/json" }
     });
-    const result = await model.generateContent(`Génère des outils pédagogiques JSON pour: ${memoContent.title}`);
+
+    // Construct a context string from the memo content
+    const context = `
+    Titre: ${memoContent.title}
+    Sujet/Description: ${memoContent.sourceText || memoContent.shortDescription}
+    Situation Patient: ${typeof memoContent.patientSituation === 'string' ? memoContent.patientSituation : ''}
+    Questions Clés: ${(memoContent.keyQuestions || []).join('\n')}
+    Aperçu Pathologie: ${typeof memoContent.pathologyOverview === 'string' ? memoContent.pathologyOverview : ''}
+    Signaux d'alerte: ${(memoContent.redFlags || []).join('\n')}
+    Traitement: ${(memoContent.mainTreatment || []).join('\n')}
+    Conseils: ${(memoContent.lifestyleAdvice || []).join('\n')}
+    `;
+
+    const prompt = `Based on the following memo fiche content, generate educational tools in JSON format.
+    
+    Content:
+    ${context}
+
+    Output Requirements:
+    1. "flashcards": Array of objects with "question" and "answer". Max 10 cards. Focus on key knowledge.
+    2. "quiz": Array of objects (max 5 questions) with:
+       - "question" (string)
+       - "options" (array of 4 strings)
+       - "correctAnswerIndex" (number, 0-3)
+       - "explanation" (string, explaining why the answer is correct)
+    3. "glossary": Array of objects with "term" and "definition" for difficult medical terms found in the content.
+
+    Ensure the output is valid JSON. Language: French.`;
+
+    const result = await model.generateContent(prompt);
     const cleanText = cleanJson(result.response.text());
     return JSON.parse(cleanText);
 };

@@ -83,7 +83,21 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
 
     let prompt = '';
     if (memoFicheType === 'maladie') {
-        prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
+        prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
+        
+        Tu dois générer un objet JSON avec les clés exactes suivantes :
+        - "title" : Titre de la mémofiche
+        - "shortDescription" : Courte description
+        - "patientSituation" : Cas comptoir (description du patient et de sa demande)
+        - "keyQuestions" : Tableau de chaînes de caractères (Questions clés à poser)
+        - "pathologyOverview" : Aperçu pathologie (Physiopathologie simplifiée)
+        - "redFlags" : Tableau de chaînes de caractères (Signaux d'alerte)
+        - "mainTreatment" : Tableau de chaînes de caractères (Traitement principal)
+        - "associatedProducts" : Tableau de chaînes de caractères (Produits complémentaires)
+        - "lifestyleAdvice" : Tableau de chaînes de caractères (Hygiène de vie)
+        - "dietaryAdvice" : Tableau de chaînes de caractères (Conseils alimentaires)
+
+        ${formattingInstructions}`;
     } else if (memoFicheType === 'pharmacologie') {
         prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
     } else if (memoFicheType === 'dispositifs-medicaux') {
