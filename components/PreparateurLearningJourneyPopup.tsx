@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import SkillHeatmap from './SkillHeatmap';
 
 interface PreparerLearningJourneyPopupProps {
   preparerId: string;
@@ -14,6 +15,7 @@ interface LearningJourneyData {
   readFiches: { ficheId: string; readAt: string; title: string }[];
   quizHistory: { quizId: string; score: number; completedAt: string; title: string }[];
   viewedMediaIds: string[];
+  skillsHeatmap: { category: string; score: number; count: number }[];
 }
 
 const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> = ({ preparerId, preparerName, onClose, startDate, endDate }) => {
@@ -125,6 +127,12 @@ const PreparerLearningJourneyPopup: React.FC<PreparerLearningJourneyPopupProps> 
         )}
 
         <div className="space-y-6">
+          {learningJourney.skillsHeatmap && learningJourney.skillsHeatmap.length > 0 && (
+            <div className="mb-8">
+              <SkillHeatmap skills={learningJourney.skillsHeatmap} />
+            </div>
+          )}
+          
           <div>
             <h3 className="text-xl font-semibold text-gray-700 mb-3">Fiches Consultées ({learningJourney.readFiches?.length ?? 0})</h3>
             {learningJourney.readFiches && learningJourney.readFiches.length > 0 ? (
