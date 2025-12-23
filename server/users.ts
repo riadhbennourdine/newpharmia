@@ -213,9 +213,47 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
             title: ficheDetailsMap.get(f.ficheId) || 'Fiche inconnue'
         }));
 
-        const enrichedQuizHistory = quizHistory.map(q => ({
-            ...q,
-            title: ficheDetailsMap.get(q.quizId) || 'Quiz inconnu'
+        // Calculate mastery by category
+        const masteryByCategory: Record<string, { totalScore: number, count: number, system: string }> = {};
+        
+        // We need to fetch the full memofiche objects to get their categories/systems
+        const fullFiches = await memofichesCollection.find(
+            { _id: { $in: allRelatedIds } },
+            { projection: { title: 1, theme: 1, system: 1 } }
+        ).toArray();
+
+        const ficheInfoMap = new Map();
+        fullFiches.forEach(f => {
+            ficheInfoMap.set(f._id.toString(), { 
+                title: f.title, 
+                theme: f.theme || 'Général', 
+                system: f.system || 'Autre' 
+            });
+        });
+
+        const enrichedQuizHistory = quizHistory.map(q => {
+            const info = ficheInfoMap.get(q.quizId) || { title: 'Quiz inconnu', theme: 'Général', system: 'Autre' };
+            
+            // Aggregate for mastery
+            const category = info.system;
+            if (!masteryByCategory[category]) {
+                masteryByCategory[category] = { totalScore: 0, count: 0, system: category };
+            }
+            masteryByCategory[category].totalScore += (q.score || 0);
+            masteryByCategory[category].count += 1;
+
+            return {
+                ...q,
+                title: info.title,
+                theme: info.theme,
+                system: info.system
+            };
+        });
+
+        const skillsHeatmap = Object.keys(masteryByCategory).map(cat => ({
+            category: cat,
+            score: Math.round(masteryByCategory[cat].totalScore / masteryByCategory[cat].count),
+            count: masteryByCategory[cat].count
         }));
 
         let averageQuizScore = 0;
@@ -230,8 +268,9 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
         res.json({
             readFiches: enrichedReadFiches,
             quizHistory: enrichedQuizHistory,
-            viewedMediaIds: user.viewedMediaIds || [], // Returning all as we can't filter yet
-            averageQuizScore: averageQuizScore
+            viewedMediaIds: user.viewedMediaIds || [],
+            averageQuizScore: averageQuizScore,
+            skillsHeatmap: skillsHeatmap
         });
 
     } catch (error) {

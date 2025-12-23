@@ -7,6 +7,7 @@ import MemoFichePreviewCard from './MemoFichePreviewCard';
 import { Group, CaseStudy } from '../types';
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
+import SkillHeatmap from './SkillHeatmap';
 
 interface Props {
     initialGroup?: Group | null; // Make prop optional
@@ -25,6 +26,28 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [validReadFichesCount, setValidReadFichesCount] = useState(user?.readFiches?.length || 0);
     const [showJourneyPopup, setShowJourneyPopup] = useState(false);
     const [showCompagnon, setShowCompagnon] = useState(false);
+    const [skills, setSkills] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchLearningJourney = async () => {
+            if (!user?._id) return;
+            try {
+                const response = await fetch(`/api/users/${user._id}/learning-journey`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.skillsHeatmap) {
+                        setSkills(data.skillsHeatmap);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching skills heatmap:', error);
+            }
+        };
+
+        if (user?._id) {
+            fetchLearningJourney();
+        }
+    }, [user?._id]);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -286,6 +309,10 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
                         </p>
                         <h1 className="text-lg text-slate-600 font-medium">Score Simulations</h1>
                     </div>
+                </div>
+
+                <div className="mb-8">
+                    <SkillHeatmap skills={skills} />
                 </div>
             </div>
             {/* Modal Compagnon IA */}
