@@ -16,7 +16,9 @@ const LatestRegistrations: React.FC = () => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setUsers(data);
+                    // Filter to only show Pharmacists
+                    const pharmacistsOnly = data.filter((u: User) => u.role === 'PHARMACIEN');
+                    setUsers(pharmacistsOnly);
                 }
             } catch (error) {
                 console.error("Failed to fetch latest users", error);
@@ -31,14 +33,13 @@ const LatestRegistrations: React.FC = () => {
 
     return (
         <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-bold mb-4 text-slate-700">Dernières Inscriptions</h3>
+            <h3 className="text-xl font-bold mb-4 text-slate-700">Derniers Pharmaciens Inscrits</h3>
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ville</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -51,13 +52,6 @@ const LatestRegistrations: React.FC = () => {
                                     {user.firstName} {user.lastName}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                        user.role === 'PHARMACIEN' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                                    }`}>
-                                        {user.role}
-                                    </span>
-                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.city || '-'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.phoneNumber || '-'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -88,7 +82,7 @@ const CRMDashboard = () => {
         <h2 className="text-lg font-bold mb-4 text-gray-800">Menu CRM</h2>
         <nav className="flex flex-col space-y-1">
           <NavLink to="/admin/crm" end className={navLinkClass}>
-            Tableau de bord
+            Dernières Inscriptions
           </NavLink>
           <NavLink to="/admin/crm/clients" className={navLinkClass}>
             Clients
