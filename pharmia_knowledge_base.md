@@ -4432,3 +4432,139 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 
 ---
 
+# Lumbago: Conseils à l'officine
+
+**Type:** maladie | **Thème:** Maladies courantes | **Système:** Ostéo-articulaire | **Niveau:** Facile
+
+> Mémofiche pratique pour la prise en charge officinale du lumbago aigu, une douleur fréquente du bas du dos, souvent bénigne mais intense, avec un focus sur les questions clés, les signaux d'alerte, les traitements et les conseils d'hygiène de vie.
+
+### Situation Patient / Cas Comptoir
+
+Une patiente de 40 ans se présente au comptoir avec une demande directe de naproxène pour un mal de dos.
+
+### Aperçu Pathologie
+
+-**La lombalgie aiguë, le lumbago** , est une douleur fréquente dans le **bas du dos**.
+-Elle survient **souvent** de manière **brutale** suite à un **effort**, un **faux mouvement**, une **mauvaise posture**, les métiers qui nécessitent de faire de **longs trajets**…
+-**La douleur** peut être **intense** et provoquer un **blocage** du bas du dos
+-Elle peut **irradier** dans les **fesses** ou à la **face postérieure des cuisses**, mais généralement pas au-delà des genoux. 
+-Dans la majorité des cas (neuf sur dix), **la lombalgie aiguë est bénigne** et s'améliore en **quelques jours** ou **semaines**
+-**Des contractures musculaires** peuvent également être une cause de la **douleur**.
+
+### Questions Clés
+
+- -Depuis combien de temps ressentez-vous cette douleur ?
+- -Comment la douleur est-elle apparue ? Était-ce progressif ou brutal ?
+- -Où précisément se situe la douleur ? Irradie-t-elle ?
+- -Avez-vous d'autres symptômes associés, comme de la fièvre, des troubles urinaires, une perte de poids inexpliquée, ou des douleurs qui vous réveillent la nuit ?
+- -Avez-vous déjà eu des épisodes de mal de dos auparavant ?
+- -Avez-vous déjà essayé quelque chose pour soulager cette douleur?
+- -Prenez-vous d'autres médicaments ?
+- -Avez-vous des allergies ?
+
+### Signaux d'Alerte (Red Flags)
+
+- -Présence de **fièvre inexpliquée** associée à la douleur.
+- -Perte de poids **involontaire** et **inexpliquée**.
+- -Douleurs de type **inflammatoire** qui réveillent le patient la **nuit**, **insensibles au repos**.
+- -Difficultés à uriner (rétention, incontinence) ou autres troubles sphinctériens.
+- -Antécédents de cancer.
+- -Douleur trop intense, persistante et invalidante, ou altération de l'état général.
+- -Présence de troubles de la sensibilité (fourmillements, engourdissements dans les jambes, paresthésies) ou faiblesse musculaire.
+- -Douleur irradiant au-delà du genou, notamment le long de la jambe jusqu'au pied.
+- -Douleur survenue suite à un traumatisme (chute, choc).
+- -Absence d'amélioration notable après 48 heures de traitement symptomatique bien conduit.
+- -Lumbago devenant fréquemment récidivant ou chronique.
+
+### Traitement Principal
+
+- **-Paracétamol** :
+- **.1** g par prise, jusqu'à 3-4 fois par jour (max **4**g/jour)
+- **.4** heures **au minimum** entre les prises
+- **.**À privilégier en**première intention**
+- **-AINS**: **Ibuprofène** : 
+- **.200** à **400** mg par prise, **2** à **3** fois par jour, sur une courte durée (5 jours). 
+- **.CI**: ulcère gastroduodénal, insuffisance rénale, cardiaque, hépatique, grossesse > 6 mois( 24Semaines d'Aménorrhée) et les interactions médicamenteuses: anticoagulants
+- **-Méphénésine**: **Myorelaxant**: 
+- **.500**mg à **1**g par prise **3** fois par jour.
+- **.**Généralement sur une **courte** période (moins d'une semaine).
+- **.**À conseiller si les contractures musculaires sont **intenses**, en complément des antalgiques
+- **.**Ex: DécontractylⓇ
+
+### Produits Associés
+
+- **-Patchs AINS** : Pour une action locale ciblée.
+- **.**Appliquer directement sur la zone douloureuse toutes les 12 heures, en évitant les peaux lésées.
+- **-Gels/Pommade anti-inflammatoires** :Ibuprofène ou diclofénac
+- **.**Soulagement localisé des douleurs et des contractures musculaires
+- **-Ceinture de contention lombaire** : 
+- **.**Soulager la douleur, soutenir et stabiliser la région lombaire.
+- **.**Permet le maintien de l'activité, en réduisant la tension musculaire et limitant les mouvements excessifs.
+- **-Magnésium**:
+- **.**Essentiel pour la **fonction musculaire et nerveuse**
+- **.**Aide à réduire les spasmes musculaires et les tensions associées au lumbago.
+- **-Oméga-3**
+- **.** Contribuent à réduire l'inflammation et la douleur associées à la lombalgie.
+- **-Harpagophytum**:
+- **.**Anti-inflammatoire et Antalgique. 
+- **.CI**: Reflux gastro-œsophagien, Ulcère de l'estomac ou du duodénum, Calculs biliaires
+- **.**Ex: RhumatylⓇ, Dolo-softⓇ
+- **-Poche de chaud/froid**: 
+- **.**La chaleur détend les muscles contractés, le froid soulage l'inflammation aigue.
+- **-Saule Blanc**: 
+- **.**Antalgiques et anti-inflammatoire.
+- **.CI**: Allergie aux dérivés salicylés. Ex: SoulagelⓇ
+- **-Curcuma**: 
+- **.**Anti-inflammatoire et antioxydant.
+- **.**Ex: Phytoflore CurcumaⓇ
+- **-Cassis**: 
+- **.**Anti-inflammatoire et diurétique. 
+- **.**Attention: Peut interagir avec les plantes et médicaments diurétiques et présenter un risque d'hypotension. Ex: Etno-CassisⓇ
+
+### Conseils Hygiène de Vie
+
+- -Prévoir un **court repos initial** si la douleur est **intense**
+- -Reprendre **progressivement** les activités **normales dès que possible**, en évitant les efforts intenses et les mouvements brusques.
+- -Adopter de **bonnes postures au quotidien** : garder le dos droit, fléchir les jambes pour soulever des charges, éviter de se pencher en avant.
+- -Pratiquer une activité physique **régulière** et **modérée** (marche, natation, vélo, yoga doux) pour **renforcer la musculature** du **dos** et des **abdominaux**.
+- -**Limiter** la station **assise prolongée**
+- -**Éviter** le port de **talons hauts** qui modifient la courbure lombaire et **augmentent** la **pression** sur le **dos**.
+- -Utiliser une **literie ferme** et un **oreiller adapté** pour maintenir un **bon alignement** de la colonne vertébrale pendant le sommeil.
+
+### Conseils Alimentaires
+
+- -En cas de surcharge pondérale, conseiller une **réduction progressive** et **équilibrée** du poids pour **diminuer** la **pression** sur le **dos**.
+- -**Réduire** la consommation d'**aliments** connus pour **favoriser l'inflammation** (sucre raffiné, viande rouge transformée, certains produits laitiers).
+- -Favoriser les aliments **riches en Oméga-3** (poissons gras comme les sardines, maquereaux, saumon, graines de lin) pour leurs propriétés **anti-inflammatoires**.
+- -Maintenir une **bonne hydratation** tout au long de la journée (eau, tisanes non sucrées).
+- -Privilégier une **alimentation équilibrée**, riche en fruits, légumes, céréales complètes et légumineuses, qui apportent vitamines et minéraux essentiels.
+
+### Conseils Traitement
+
+
+
+### Flashcards (Révision)
+
+- Q: Quelle est la définition d'un Lumbago?
+  R:  C'est une douleur musculaire au niveau du bas du dos, pouvant aller jusqu'au blocage du dos.
+- Q: Citez trois questions clés à poser concernant l'historique et le type de la douleur lors d'un lumbago.
+  R: Depuis combien de temps la douleur est-elle présente ? Comment est-elle apparue ? Où se situe-t-elle et irradie-t-elle ?
+- Q: Citez 3 signaux d'alerte nécessitant une consultation médicale pour un lumbago
+  R: Fièvre inexpliquée, perte de poids involontaire, douleurs nocturnes, antécédents de cancer, troubles neurologiques, irradiation étendue au-delà du genou.
+- Q: Quel est l'antalgique de première intention recommandé pour le lumbago, surtout en cas de contre-indications aux AINS ?
+  R: Le Paracétamol.
+- Q: Quelles sont les contre-indications majeures à l'utilisation de l'Ibuprofène (AINS)?
+  R: Ulcère gastroduodénal, insuffisance rénale/cardiaque/hépatique sévères, ou grossesse > 6 mois.
+- Q: Quand peut-on conseiller un myorelaxant comme la Méphénésine pour un lumbago ?
+  R: Si les contractures musculaires sont intenses, en complément des antalgiques.
+- Q: Quels compléments alimentaires à propriété anti inflammatoires peut-on conseiller an association des antalgiques?
+  R: Des compléments alimentaires à base de: Curcuma, Harpagophytum, Cassis ou Saule blanc.
+- Q: Comment utiliser les poches Chaud/ Froid?
+  R: La chaleur est utilisée pour relâcher les muscles contractés alors que le froid est indiqué comme anti inflammatoire en présence de signes d' inflammation aigue.
+- Q: Citez les recommandations hygiéniques à conseiller au patient en cas de lumbago.
+  R: Prévoir un repos initial si la douleur est intense, reprendre progressivement les activités quotidiennes dès que possible.
+- Q: Citez les recommandations hygiéniques à conseiller au patient pour éviter les récidives de lumbago.
+  R: Pratiquer une activité physique modérée et régulière, adopter de bonnes postures au quotidien, éviter la station assisse de façon prolongée.
+
+---
+
