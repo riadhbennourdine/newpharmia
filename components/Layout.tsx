@@ -67,6 +67,11 @@ const Header: React.FC = () => {
           <NavLink to="/memofiches" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Mémofiches
           </NavLink>
+          {user?.role === UserRole.ADMIN && (
+            <NavLink to="/apps" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+              Apps
+            </NavLink>
+          )}
           {user?.role !== UserRole.ADMIN && (
             <NavLink to="/contact" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
               Contact
@@ -137,6 +142,11 @@ const Header: React.FC = () => {
           <NavLink to="/memofiches" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
             Mémofiches
           </NavLink>
+          {user?.role === UserRole.ADMIN && (
+            <NavLink to="/apps" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+              Apps
+            </NavLink>
+          )}
           {user?.role !== UserRole.ADMIN && (
             <NavLink to="/contact" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
               Contact

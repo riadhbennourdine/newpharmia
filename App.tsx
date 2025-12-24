@@ -50,6 +50,8 @@ const DataFixerPage = lazy(() => import('./pages/admin/DataFixer'));
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const OrderManager = lazy(() => import('./pages/admin/OrderManager'));
+const AppsPage = lazy(() => import('./pages/AppsPage'));
+const DermoGuideApp = lazy(() => import('./pages/apps/DermoGuideApp'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -119,6 +121,8 @@ const App: React.FC = () => (
                                 {/* Routes for Admins ONLY */}
                                 <Route element={<AdminOnlyRoute />}>
                                     <Route path="/generateur" element={<GeneratorView />} />
+                                    <Route path="/apps" element={<AppsPage />} />
+                                    <Route path="/apps/dermo" element={<DermoGuideApp />} />
                                     <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                                     <Route path="/admin/newsletter" element={<NewsletterManager />} />
                                     <Route path="/admin/webinars" element={<WebinarManagement />} />
