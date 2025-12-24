@@ -133,7 +133,7 @@ router.get('/by-name', async (req, res) => {
 router.get('/latest', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const latestUsers = await usersCollection.find({})
+        const latestUsers = await usersCollection.find({ role: UserRole.PHARMACIEN })
             .sort({ createdAt: -1 })
             .limit(10)
             .project({ _id: 1, firstName: 1, lastName: 1, email: 1, role: 1, city: 1, phoneNumber: 1, createdAt: 1 })

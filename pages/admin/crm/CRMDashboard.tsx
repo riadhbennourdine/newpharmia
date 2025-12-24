@@ -16,9 +16,7 @@ const LatestRegistrations: React.FC = () => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    // Filter to only show Pharmacists
-                    const pharmacistsOnly = data.filter((u: User) => u.role === 'PHARMACIEN');
-                    setUsers(pharmacistsOnly);
+                    setUsers(data);
                 }
             } catch (error) {
                 console.error("Failed to fetch latest users", error);
