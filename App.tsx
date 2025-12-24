@@ -105,6 +105,7 @@ const App: React.FC = () => (
                                 <Route element={<FormateurOrAdminRoute />}>
                                     <Route path="/edit-memofiche" element={<MemoFicheEditorPage />} />
                                     <Route path="/edit-memofiche/:id" element={<MemoFicheEditorPage />} />
+                                    <Route path="/admin" element={<AdminPanel />} />
                                     {/* CRM Routes for Formateurs & Admins */}
                                     <Route path="/admin/crm" element={<CRMDashboard />}>
                                         <Route index element={<Navigate to="appointments" replace />} />
@@ -118,7 +119,6 @@ const App: React.FC = () => (
                                 {/* Routes for Admins ONLY */}
                                 <Route element={<AdminOnlyRoute />}>
                                     <Route path="/generateur" element={<GeneratorView />} />
-                                    <Route path="/admin" element={<AdminPanel />} />
                                     <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                                     <Route path="/admin/newsletter" element={<NewsletterManager />} />
                                     <Route path="/admin/webinars" element={<WebinarManagement />} />

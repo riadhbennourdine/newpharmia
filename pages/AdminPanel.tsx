@@ -5,9 +5,13 @@ import Newsletter from './admin/Newsletter';
 import CRMDashboard from './admin/crm/CRMDashboard';
 import GroupManagementPage from './admin/GroupManagement';
 import AssignmentManager from './admin/AssignmentManager'; // Import the new component
+import { useAuth } from '../hooks/useAuth';
+import { UserRole } from '../types';
 
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('crm');
+  const { user } = useAuth();
+  const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
     <div className="container mx-auto p-4 sm:p-8 animate-fade-in">
@@ -23,42 +27,46 @@ const AdminPanel: React.FC = () => {
             >
               CRM / Abonnés
             </button>
-            <button
-              onClick={() => setActiveTab('newsletter')}
-              className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'newsletter' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              Newsletter
-            </button>
-            <button
-              onClick={() => setActiveTab('groups')}
-              className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'groups' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              Groupes
-            </button>
-            <NavLink
-              to="/admin/orders"
-              className={({ isActive }) =>
-                `px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${isActive ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`
-              }
-            >
-              Commandes
-            </NavLink>
-            <NavLink
-              to="/admin/image-manager"
-              className={({ isActive }) =>
-                `px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${isActive ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`
-              }
-            >
-              Images
-            </NavLink>
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => setActiveTab('newsletter')}
+                  className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'newsletter' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Newsletter
+                </button>
+                <button
+                  onClick={() => setActiveTab('groups')}
+                  className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'groups' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Groupes
+                </button>
+                <NavLink
+                  to="/admin/orders"
+                  className={({ isActive }) =>
+                    `px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${isActive ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`
+                  }
+                >
+                  Commandes
+                </NavLink>
+                <NavLink
+                  to="/admin/image-manager"
+                  className={({ isActive }) =>
+                    `px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${isActive ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`
+                  }
+                >
+                  Images
+                </NavLink>
+              </>
+            )}
           </nav>
         </div>
       </div>
 
       <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-md min-h-[400px]">
         {activeTab === 'crm' && <CRMDashboard />}
-        {activeTab === 'newsletter' && <Newsletter />}
-        {activeTab === 'groups' && <GroupManagementPage />}
+        {activeTab === 'newsletter' && isAdmin && <Newsletter />}
+        {activeTab === 'groups' && isAdmin && <GroupManagementPage />}
       </div>
     </div>
   );

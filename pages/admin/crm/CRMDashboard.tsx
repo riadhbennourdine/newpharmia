@@ -66,6 +66,9 @@ const LatestRegistrations: React.FC = () => {
 
 const CRMDashboard = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 font-medium text-sm rounded-md ${
       isActive ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-100'
@@ -82,12 +85,16 @@ const CRMDashboard = () => {
           <NavLink to="/admin/crm" end className={navLinkClass}>
             Dernières Inscriptions
           </NavLink>
-          <NavLink to="/admin/crm/clients" className={navLinkClass}>
-            Clients
-          </NavLink>
-          <NavLink to="/admin/crm/prospects" className={navLinkClass}>
-            Prospects
-          </NavLink>
+          {isAdmin && (
+            <>
+              <NavLink to="/admin/crm/clients" className={navLinkClass}>
+                Clients
+              </NavLink>
+              <NavLink to="/admin/crm/prospects" className={navLinkClass}>
+                Prospects
+              </NavLink>
+            </>
+          )}
           <NavLink to="/admin/crm/appointments" className={navLinkClass}>
             Rendez-vous
           </NavLink>

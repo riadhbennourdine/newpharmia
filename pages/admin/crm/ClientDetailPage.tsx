@@ -26,6 +26,11 @@ const ClientDetailPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Subscription state
+  const [selectedPlan, setSelectedPlan] = useState('Premium');
+  const [subscriptionStartDate, setSubscriptionStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [subscriptionDuration, setSubscriptionDuration] = useState(12);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
         setSelectedFile(e.target.files[0]);
@@ -103,8 +108,9 @@ const ClientDetailPage = () => {
   const handleActivateSubscription = async () => {
     if (!client) return;
 
-    const subscriptionEndDate = new Date();
-    subscriptionEndDate.setFullYear(subscriptionEndDate.getFullYear() + 1);
+    const startDate = new Date(subscriptionStartDate);
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + subscriptionDuration);
 
     try {
       const response = await fetch(`/api/users/${client._id}/subscription`,
@@ -112,8 +118,9 @@ const ClientDetailPage = () => {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            subscriptionEndDate: subscriptionEndDate.toISOString(),
-            planName: 'Premium',
+            subscriptionStartDate: startDate.toISOString(), // Send start date too if backend supports it, currently backend might only use endDate or derive start. Let's send endDate primarily.
+            subscriptionEndDate: endDate.toISOString(),
+            planName: selectedPlan,
             hasActiveSubscription: true,
             status: ClientStatus.ACTIVE_CLIENT
           }),
@@ -263,12 +270,56 @@ const ClientDetailPage = () => {
                   + Planifier un RDV
                 </button>
                 {client.status === ClientStatus.PROSPECT && (
-                  <button 
-                    onClick={handleActivateSubscription}
-                    className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                  >
-                    Activer l'abonnement
-                  </button>
+                  <div className="mt-6 p-4 border border-teal-100 rounded-md bg-teal-50">
+                    <h4 className="font-semibold text-teal-700 mb-2">Activer l'abonnement</h4>
+                    
+                    <div className="space-y-3 mb-3">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Plan</label>
+                        <select 
+                          value={selectedPlan} 
+                          onChange={(e) => setSelectedPlan(e.target.value)}
+                          className="w-full p-2 border rounded text-sm"
+                        >
+                          <option value="Standard">Standard</option>
+                          <option value="Premium">Premium</option>
+                          <option value="Entreprise">Entreprise</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Date de début</label>
+                        <input 
+                          type="date" 
+                          value={subscriptionStartDate} 
+                          onChange={(e) => setSubscriptionStartDate(e.target.value)}
+                          className="w-full p-2 border rounded text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Durée</label>
+                        <select 
+                          value={subscriptionDuration} 
+                          onChange={(e) => setSubscriptionDuration(Number(e.target.value))}
+                          className="w-full p-2 border rounded text-sm"
+                        >
+                          <option value={1}>1 Mois</option>
+                          <option value={3}>3 Mois</option>
+                          <option value={6}>6 Mois</option>
+                          <option value={12}>1 An</option>
+                          <option value={24}>2 Ans</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={handleActivateSubscription}
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium"
+                    >
+                      Confirmer Activation
+                    </button>
+                  </div>
                 )}
             </div>
 
