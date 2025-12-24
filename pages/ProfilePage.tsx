@@ -7,6 +7,7 @@ const ProfilePage: React.FC = () => {
     const { user, token, setUser } = useAuth();
     const [city, setCity] = useState(user?.city || '');
     const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
+    const [email, setEmail] = useState(user?.email || '');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [team, setTeam] = useState<User[]>([]);
@@ -46,12 +47,12 @@ const ProfilePage: React.FC = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ city, phoneNumber })
+                body: JSON.stringify({ city, phoneNumber, email })
             });
 
             if (response.ok) {
                 alert('Profil mis à jour avec succès');
-                setUser({ ...user, city, phoneNumber });
+                setUser({ ...user, city, phoneNumber, email });
                 setIsEditing(false);
             } else {
                 const errorData = await response.json();
@@ -135,6 +136,15 @@ const ProfilePage: React.FC = () => {
                     ) : (
                         <form onSubmit={handleProfileUpdate}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                    <input 
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Ville</label>
                                     <input 

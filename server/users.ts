@@ -130,6 +130,21 @@ router.get('/by-name', async (req, res) => {
     }
 });
 
+router.get('/latest', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const latestUsers = await usersCollection.find({})
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .project({ _id: 1, firstName: 1, lastName: 1, email: 1, role: 1, city: 1, phoneNumber: 1, createdAt: 1 })
+            .toArray();
+        res.json(latestUsers);
+    } catch (error) {
+        console.error('Error fetching latest users:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des derniers inscrits.' });
+    }
+});
+
 router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.ADMIN, UserRole.PHARMACIEN, UserRole.FORMATEUR, UserRole.ADMIN_WEBINAR]), async (req, res) => {
     try {
         const { userId } = req.params;

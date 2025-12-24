@@ -12,6 +12,7 @@ const RegisterView: React.FC = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [city, setCity] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [role, setRole] = useState<UserRole>(UserRole.PREPARATEUR);
@@ -50,7 +51,7 @@ const RegisterView: React.FC = () => {
         setError(null);
         setIsLoading(true);
         try {
-            const userData = { email, username, password, role, pharmacistId, firstName, lastName, city };
+            const userData = { email, username, password, role, pharmacistId, firstName, lastName, city, phoneNumber };
             await register(userData as any);
             alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
             navigate('/login');
@@ -108,6 +109,20 @@ const RegisterView: React.FC = () => {
                                 placeholder="Adresse email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        {/* Phone Number Field */}
+                        <div>
+                            <label htmlFor="phone-number-register" className="sr-only">Numéro de téléphone</label>
+                            <input
+                                id="phone-number-register"
+                                name="phoneNumber"
+                                type="tel"
+                                autoComplete="tel"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                                placeholder="Numéro de téléphone"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                             />
                         </div>
                         {/* Username Field */}

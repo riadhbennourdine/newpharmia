@@ -174,16 +174,87 @@ const executeGeminiCall = async <T>(task: (model: any) => Promise<T>): Promise<T
 
 // --- Case Study Generation ---
 export const generateCaseStudyDraft = async (prompt: string, memoFicheType: string): Promise<Partial<CaseStudy>> => {
-    return executeGeminiCall(async (model) => {
-        const result = await model.generateContent(prompt);
-        const cleanText = cleanJson(result.response.text());
-        try {
-            return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
-        } catch (error) {
-            console.error("JSON Parsing Failed for Case Study Draft.");
-            console.error("Text Length:", cleanText.length);
-            throw error;
+    const caseStudySchema: ObjectSchema = {
+        type: SchemaType.OBJECT,
+        properties: {
+            title: { type: SchemaType.STRING, description: "Titre clair et professionnel de la mémofiche." },
+            shortDescription: { type: SchemaType.STRING, description: "Résumé en une phrase de l'objectif de la fiche." },
+            theme: { type: SchemaType.STRING, description: "Thème principal (ex: Antalgiques, Diabète)." },
+            system: { type: SchemaType.STRING, description: "Système physiologique concerné (ex: Cardiovasculaire, Digestif)." },
+            patientSituation: { type: SchemaType.STRING, description: "Description de la situation typique au comptoir." },
+            keyQuestions: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Liste des questions essentielles à poser au patient (P.H.A.R.M.A)."
+            },
+            pathologyOverview: { type: SchemaType.STRING, description: "Bref rappel physiopathologique simple." },
+            redFlags: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Signaux d'alerte nécessitant une redirection médicale immédiate."
+            },
+            mainTreatment: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Traitement de première intention recommandé."
+            },
+            associatedProducts: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Produits de conseil associés (compléments, hygiène)."
+            },
+            lifestyleAdvice: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Conseils d'hygiène de vie essentiels."
+            },
+            dietaryAdvice: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Conseils alimentaires spécifiques."
+            },
+            keyPoints: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Points clés à mémoriser (Résumé)."
+            },
+            references: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "Sources ou bases légales."
+            },
+        },
+        required: ['title', 'shortDescription', 'theme', 'system', 'patientSituation', 'keyQuestions', 'redFlags', 'keyPoints'],
+    };
+
+    return globalQueue.add(async () => {
+        let attempts = 0;
+        const maxAttempts = 3;
+        while (attempts < maxAttempts) {
+            const key = getApiKey();
+            try {
+                const modelName = await getValidModel(key);
+                const genAI = new GoogleGenerativeAI(key);
+                const model = genAI.getGenerativeModel({ 
+                    model: modelName,
+                    generationConfig: { 
+                        responseMimeType: "application/json",
+                        responseSchema: caseStudySchema 
+                    }
+                });
+                
+                const result = await model.generateContent(prompt);
+                const cleanText = result.response.text();
+                return { ...JSON.parse(cleanText), status: MemoFicheStatus.DRAFT };
+            } catch (error: any) {
+                console.warn(`[Gemini] Case Study Draft Attempt ${attempts + 1} failed: ${error.message}`);
+                if (error.message?.includes('404')) cachedValidModel = null;
+                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+                attempts++;
+                await new Promise(r => setTimeout(r, 1000 * attempts));
+            }
         }
+        throw new Error("Failed to generate Case Study Draft after multiple attempts.");
     });
 };
 
@@ -200,26 +271,94 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
     Conseils: ${(memoContent.lifestyleAdvice || []).join('\n')}
     `;
 
-    const prompt = `Based on the following memo fiche content, generate educational tools in JSON format.
-    
-    Content:
+    const prompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques. La langue de sortie doit être le français.
+
+    Contenu:
     ${context}
+    `;
+    
+    const learningToolsSchema: ObjectSchema = {
+      type: SchemaType.OBJECT,
+      properties: {
+        flashcards: {
+          type: SchemaType.ARRAY,
+          description: "Liste de 10 flashcards (question/réponse) axées sur les connaissances clés.",
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              question: { type: SchemaType.STRING, description: "La question de la flashcard." },
+              answer: { type: SchemaType.STRING, description: "La réponse à la question." },
+            },
+            required: ['question', 'answer'],
+          },
+        },
+        quiz: {
+          type: SchemaType.ARRAY,
+          description: "Quiz de 5 questions pour tester la compréhension.",
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              question: { type: SchemaType.STRING, description: "La question du quiz." },
+              options: {
+                type: SchemaType.ARRAY,
+                description: "Un tableau de 4 chaînes de caractères représentant les options de réponse.",
+                items: { type: SchemaType.STRING },
+              },
+              correctAnswerIndex: { type: SchemaType.NUMBER, description: "L'index (0-3) de la bonne réponse dans le tableau d'options." },
+              explanation: { type: SchemaType.STRING, description: "Une brève explication de la raison pour laquelle la réponse est correcte." },
+            },
+            required: ['question', 'options', 'correctAnswerIndex', 'explanation'],
+          },
+        },
+        glossary: {
+          type: SchemaType.ARRAY,
+          description: "Un glossaire des termes médicaux difficiles trouvés dans le contenu.",
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              term: { type: SchemaType.STRING, description: "Le terme médical." },
+              definition: { type: SchemaType.STRING, description: "La définition du terme." },
+            },
+            required: ['term', 'definition'],
+          },
+        },
+      },
+      required: ['flashcards', 'quiz', 'glossary'],
+    };
 
-    Output Requirements:
-    1. "flashcards": Array of objects with "question" and "answer". Max 10 cards. Focus on key knowledge.
-    2. "quiz": Array of objects (max 5 questions) with:
-       - "question" (string)
-       - "options" (array of 4 strings)
-       - "correctAnswerIndex" (number, 0-3)
-       - "explanation" (string, explaining why the answer is correct)
-    3. "glossary": Array of objects with "term" and "definition" for difficult medical terms found in the content.
+    return globalQueue.add(async () => {
+        let attempts = 0;
+        const maxAttempts = 5;
+        let lastError: any;
 
-    Ensure the output is valid JSON. Language: French.`;
+        while (attempts < maxAttempts) {
+            const key = getApiKey();
+            try {
+                const modelName = await getValidModel(key);
+                const genAI = new GoogleGenerativeAI(key);
+                const model = genAI.getGenerativeModel({
+                    model: modelName,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: learningToolsSchema,
+                    },
+                });
 
-    return executeGeminiCall(async (model) => {
-        const result = await model.generateContent(prompt);
-        const cleanText = cleanJson(result.response.text());
-        return JSON.parse(cleanText);
+                const result = await model.generateContent(prompt);
+                const jsonText = result.response.text();
+                if (jsonText) return JSON.parse(jsonText);
+                throw new Error("Empty response from Gemini API.");
+            } catch (error: any) {
+                lastError = error;
+                console.warn(`[Gemini] Attempt ${attempts + 1} (generateLearningTools) failed: ${error.message}`);
+                if (error.message?.includes('404')) cachedValidModel = null;
+                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+                const delay = error.message?.includes('503') ? 2000 * (attempts + 1) : 1000 * (attempts + 1);
+                await new Promise(r => setTimeout(r, delay));
+                attempts++;
+            }
+        }
+        throw new Error(`Gemini generation failed for Learning Tools after ${maxAttempts} attempts. Last error: ${lastError?.message}`);
     });
 };
 
@@ -234,11 +373,9 @@ export const getCoachResponse = async (chatHistory: {role: string, text: string}
         while (attempts < 5) {
             const key = getApiKey();
             try {
-                // Ensure we have a valid model name first
-                const modelName = await getValidModel(key);
-                
+                // Optimization: Always prefer 'flash' for speed in chat
                 const genAI = new GoogleGenerativeAI(key);
-                const model = genAI.getGenerativeModel({ model: modelName });
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
                 
                 const coachPrompt = `Tu es "Coach PharmIA", un mentor expert en pharmacie.
 TON : Dynamique, bienveillant, et surtout **FLUIDE**.
@@ -266,8 +403,6 @@ Message de l'apprenant : ${userMessage}`;
 
                 let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 
-                // Gemini API restriction: History must start with a 'user' role.
-                // If the first message is 'model' (our initial greeting), prepend a synthetic user prompt.
                 if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
                     safeHistory = [
                         { role: 'user', parts: [{ text: `Je souhaite démarrer une simulation de comptoir sur le sujet : ${context}` }] },
@@ -279,19 +414,9 @@ Message de l'apprenant : ${userMessage}`;
                 const result = await chat.sendMessage(coachPrompt);
                 return result.response.text().trim();
             } catch (error: any) {
-                // Force reset model cache if 404 occurs to re-discover valid model
-                if (error.message?.includes('404')) cachedValidModel = null;
-                
                 if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
                 attempts++;
-                
-                if (attempts >= 5) {
-                    const errorMsg = error.message?.includes('404') 
-                        ? `Erreur technique : Aucun modèle IA compatible trouvé (404). Vérifiez l'accès API.`
-                        : `Échec critique Google API : ${error.message}`;
-                    throw new Error(errorMsg);
-                }
-                
+                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
@@ -331,16 +456,43 @@ export const isCacheReady = () => !!currentCacheName;
 export const refreshKnowledgeBaseCache = async (filePath: string) => { return null; };
 
 export const evaluateSimulation = async (chatHistory: {role: string, text: string}[], topic: string): Promise<any> => {
+    const evaluationSchema: ObjectSchema = {
+        type: SchemaType.OBJECT,
+        properties: {
+            score: { type: SchemaType.NUMBER, description: "Score de 0 à 100 basé sur la pertinence du conseil." },
+            feedback: { type: SchemaType.STRING, description: "Feedback constructif et court pour l'apprenant." },
+            searchKeywords: { 
+                type: SchemaType.ARRAY, 
+                items: { type: SchemaType.STRING },
+                description: "3 mots-clés pour recommander des fiches pertinentes."
+            }
+        },
+        required: ['score', 'feedback', 'searchKeywords']
+    };
+
     const key = getApiKey();
     const modelName = await getValidModel(key);
     const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: modelName, generationConfig: { responseMimeType: "application/json" } });
-    const prompt = `Expert évaluateur. Sujet: ${topic}. Histoire: ${JSON.stringify(chatHistory.slice(-15))}. Donne score(0-100), feedback court, 3 mots-clés en JSON {score, feedback, searchKeywords}.`;
+    const model = genAI.getGenerativeModel({ 
+        model: modelName, 
+        generationConfig: { 
+            responseMimeType: "application/json",
+            responseSchema: evaluationSchema
+        } 
+    });
+    
+    const prompt = `Tu es un expert évaluateur en pharmacie. Analyse la simulation suivante sur le sujet : ${topic}.
+    Histoire de la conversation : ${JSON.stringify(chatHistory.slice(-15))}.
+    Évalue la qualité du questionnement, la justesse du traitement et la pertinence des conseils.`;
+
     try {
         const result = await model.generateContent(prompt);
-        const cleanText = cleanJson(result.response.text());
-        return { ...JSON.parse(cleanText), recommendedFiches: [] };
-    } catch (error) { return { score: 0, feedback: "Évaluation indisponible.", recommendedFiches: [] }; }
+        const jsonText = result.response.text();
+        return { ...JSON.parse(jsonText), recommendedFiches: [] };
+    } catch (error) { 
+        console.error("[Gemini] Evaluation failed:", error);
+        return { score: 0, feedback: "Évaluation indisponible momentanément.", recommendedFiches: [] }; 
+    }
 };
 
 export const listModels = async (): Promise<any[]> => { return [{ name: "auto-discovered" }]; };

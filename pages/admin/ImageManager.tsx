@@ -129,6 +129,72 @@ const ImageManager: React.FC = () => {
         }
     };
 
+    const handleRename = async (itemName: string) => {
+        const newName = window.prompt("Entrez le nouveau nom:", itemName);
+        if (!newName || newName === itemName) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        const oldPath = path.posix.join(currentPath, itemName);
+        const newPath = path.posix.join(currentPath, newName);
+
+        try {
+            const response = await fetch('/api/ftp/rename', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ oldPath, newPath }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to rename item.');
+            }
+
+            await fetchFtpItems(); // Refresh
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleMove = async (itemName: string) => {
+        const destination = window.prompt("Entrez le chemin du dossier de destination (ex: /images/promo):", currentPath);
+        if (!destination || destination === currentPath) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        const oldPath = path.posix.join(currentPath, itemName);
+        const newPath = path.posix.join(destination, itemName);
+
+        try {
+             const response = await fetch('/api/ftp/rename', { // Use rename endpoint for moving
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ oldPath, newPath }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to move item.');
+            }
+
+            await fetchFtpItems(); // Refresh
+        } catch (err: any) {
+             setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleCreateFolder = async () => {
         if (!newFolderName.trim()) {
             setError('Le nom du dossier ne peut pas être vide.');
@@ -276,21 +342,27 @@ const ImageManager: React.FC = () => {
                                     </p>
                                     <p className="text-xs text-slate-500">Modifié: {new Date(item.modifyTime).toLocaleDateString()}</p>
                                 </div>
-                                <div className="p-2 flex justify-between items-center border-t">
-                                    {item.type === 'file' && (
-                                        <button
-                                            onClick={() => handleCopyUrl(item.name)}
-                                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                <div className="p-2 flex flex-col space-y-2 border-t">
+                                     <div className="flex justify-between items-center">
+                                        {item.type === 'file' && (
+                                            <button
+                                                onClick={() => handleCopyUrl(item.name)}
+                                                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                            >
+                                                Copier URL
+                                            </button>
+                                        )}
+                                         <button
+                                            onClick={() => handleDelete(item.name, item.type)}
+                                            className="text-xs text-red-600 hover:text-red-800 font-medium"
                                         >
-                                            Copier l'URL
+                                            Supprimer
                                         </button>
-                                    )}
-                                    <button
-                                        onClick={() => handleDelete(item.name, item.type)}
-                                        className="text-sm text-red-600 hover:text-red-800 font-medium ml-2"
-                                    >
-                                        Supprimer
-                                    </button>
+                                     </div>
+                                     <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                                        <button onClick={() => handleRename(item.name)} className="text-xs text-gray-600 hover:text-teal-600">Renommer</button>
+                                        <button onClick={() => handleMove(item.name)} className="text-xs text-gray-600 hover:text-teal-600">Déplacer</button>
+                                     </div>
                                 </div>
                             </div>
                         ))}

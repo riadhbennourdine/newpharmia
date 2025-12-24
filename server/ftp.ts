@@ -258,4 +258,113 @@ router.post('/mkdir', async (req, res) => {
     }
 });
 
+import clientPromise from './mongo.js'; // Import clientPromise
+
+// POST /api/ftp/rename
+router.post('/rename', async (req, res) => {
+    const { oldPath, newPath } = req.body;
+
+    if (!oldPath || !newPath) {
+        return res.status(400).json({ message: 'Old path and new path are required.' });
+    }
+
+    let ftpClient;
+    try {
+        ftpClient = await getFtpClient();
+        await ftpClient.rename(oldPath, newPath);
+
+        // Update MongoDB 'images' collection
+        try {
+            const client = await clientPromise;
+            const db = client.db('pharmia');
+            const imagesCollection = db.collection('images');
+
+            // Construct public URLs assuming a standard mapping.
+            // Adjust this logic if your FTP structure maps differently to public URLs.
+            // Example: FTP path "/folder/image.jpg" -> URL "/uploads/folder/image.jpg"
+            // Ensure paths don't start with multiple slashes if joining
+            const cleanOldPath = oldPath.startsWith('/') ? oldPath.substring(1) : oldPath;
+            const cleanNewPath = newPath.startsWith('/') ? newPath.substring(1) : newPath;
+
+            const oldUrl = `/uploads/${cleanOldPath}`;
+            const newUrl = `/uploads/${cleanNewPath}`;
+
+            // 1. Update 'images' collection
+            const updateResult = await imagesCollection.updateMany(
+                { url: oldUrl },
+                { $set: { url: newUrl } }
+            );
+            console.log(`Updated ${updateResult.modifiedCount} image records in DB from ${oldUrl} to ${newUrl}`);
+
+            // 2. Update 'memofiches' collection (Direct Fields)
+            const memofichesCollection = db.collection('memofiches');
+            await memofichesCollection.updateMany({ coverImageUrl: oldUrl }, { $set: { coverImageUrl: newUrl } });
+            await memofichesCollection.updateMany({ "media.url": oldUrl }, { $set: { "media.$.url": newUrl } });
+
+            // 3. Deep Content Replacement (Markdown fields)
+            // Use regex to find any document containing the old URL substring
+            const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const urlRegex = new RegExp(escapeRegExp(oldUrl), 'g'); // Global replacement
+
+            const fichesToUpdate = await memofichesCollection.find({
+                $or: [
+                    { patientSituation: { $regex: escapeRegExp(oldUrl) } },
+                    { pathologyOverview: { $regex: escapeRegExp(oldUrl) } },
+                    { "sections.content.value": { $regex: escapeRegExp(oldUrl) } },
+                    { sourceText: { $regex: escapeRegExp(oldUrl) } }
+                ]
+            }).toArray();
+
+            for (const doc of fichesToUpdate) {
+                let modified = false;
+                
+                // Helper to replace in string
+                const replaceInText = (text: any) => {
+                    if (typeof text === 'string' && text.includes(oldUrl)) {
+                        modified = true;
+                        return text.replace(urlRegex, newUrl);
+                    }
+                    return text;
+                };
+
+                // Top-level fields
+                doc.patientSituation = replaceInText(doc.patientSituation);
+                doc.pathologyOverview = replaceInText(doc.pathologyOverview);
+                doc.sourceText = replaceInText(doc.sourceText);
+
+                // Nested Sections
+                if (doc.sections && Array.isArray(doc.sections)) {
+                    doc.sections = doc.sections.map((section: any) => {
+                        if (section.content && Array.isArray(section.content)) {
+                            section.content = section.content.map((contentItem: any) => {
+                                if (contentItem.value && typeof contentItem.value === 'string') {
+                                    return { ...contentItem, value: replaceInText(contentItem.value) };
+                                }
+                                return contentItem;
+                            });
+                        }
+                        return section;
+                    });
+                }
+
+                if (modified) {
+                    await memofichesCollection.updateOne({ _id: doc._id }, { $set: doc });
+                    console.log(`Deep updated content in memofiche ${doc._id}`);
+                }
+            }
+
+        } catch (dbError) {
+            console.error('Failed to update image URL in database after FTP rename:', dbError);
+            // We choose not to fail the request here, as the file operation succeeded.
+        }
+
+        res.status(200).json({ message: 'Item renamed/moved successfully.' });
+    } catch (err) {
+        console.error('FTP rename error:', err);
+        res.status(500).json({ message: 'Failed to rename/move item on FTP.' });
+    } finally {
+        if (ftpClient) releaseFtpClient(ftpClient);
+    }
+});
+
 export default router;

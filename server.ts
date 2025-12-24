@@ -151,7 +151,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.post('/api/auth/register', async (req, res) => {
     try {
-        const { email, username, password, role, pharmacistId, firstName, lastName, city } = req.body;
+        const { email, username, password, role, pharmacistId, firstName, lastName, city, phoneNumber } = req.body;
 
         // Basic validation
         if (!email || !username || !password || !role || !firstName || !lastName) {
@@ -187,6 +187,7 @@ app.post('/api/auth/register', async (req, res) => {
             firstName,
             lastName,
             city,
+            phoneNumber, // Added phoneNumber
             createdAt: new Date(),
             trialExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             hasActiveSubscription: false, 
