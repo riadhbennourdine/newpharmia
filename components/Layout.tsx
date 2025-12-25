@@ -75,11 +75,6 @@ const Header: React.FC = () => {
               </div>
             </NavLink>
           )}
-          {user?.role === UserRole.ADMIN && (
-            <NavLink to="/apps" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-              Apps
-            </NavLink>
-          )}
           {user?.role !== UserRole.ADMIN && (
             <NavLink to="/contact" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
               Contact
@@ -156,11 +151,6 @@ const Header: React.FC = () => {
                 <BrainCircuitIcon className="h-5 w-5 mr-2" />
                 <span>Apps</span>
               </div>
-            </NavLink>
-          )}
-          {user?.role === UserRole.ADMIN && (
-            <NavLink to="/apps" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-              Apps
             </NavLink>
           )}
           {user?.role !== UserRole.ADMIN && (
