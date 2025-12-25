@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeftIcon, Spinner, BookOpenIcon, SparklesIcon, TrendingUpIcon } from '../../components/Icons';
+import { ArrowLeftIcon, Spinner, BookOpenIcon, SimulationIcon, TrendingUpIcon } from '../../components/Icons';
 import { useNavigate } from 'react-router-dom';
 import { CaseStudy } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
@@ -214,7 +214,7 @@ const DermoFicheCard: React.FC<{ fiche: CaseStudy, user: any }> = ({ fiche, user
                         onClick={() => navigate(`/apps/dermo/simulation/${fiche._id}`)}
                         className="flex items-center justify-center px-4 py-2.5 bg-pink-600 text-white rounded-xl hover:bg-pink-700 font-bold transition-all duration-200 shadow-lg shadow-pink-200 hover:shadow-pink-300"
                     >
-                        <SparklesIcon className="h-5 w-5 mr-2" /> Simulation
+                        <SimulationIcon className="h-5 w-5 mr-2" /> Simulation
                     </button>
                     <button 
                         onClick={() => isSimulated && navigate(`/memofiche/${fiche._id}`)}

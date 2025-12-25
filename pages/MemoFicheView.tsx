@@ -7,7 +7,7 @@ import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
 import { ensureArray } from '../utils/array';
 import getAbsoluteImageUrl from '../utils/image';
 import { getIconUrl } from '../utils/icons';
-import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon, ImageIcon, BookOpenIcon, SparklesIcon } from '../components/Icons'; // Added ImageIcon, BookOpenIcon, SparklesIcon
+import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon, ImageIcon, BookOpenIcon, SparklesIcon, SimulationIcon } from '../components/Icons'; // Added ImageIcon, BookOpenIcon, SparklesIcon, SimulationIcon
 import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
@@ -655,7 +655,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                           onClick={() => navigate(`/apps/dermo/simulation/${caseStudy._id}`)}
                           className="px-10 py-4 bg-white text-pink-600 font-bold rounded-2xl hover:bg-pink-50 transition-all shadow-lg text-lg flex items-center mx-auto transform hover:scale-105 active:scale-95"
                       >
-                          <SparklesIcon className="h-6 w-6 mr-2" /> Lancer la Simulation Finale
+                          <SimulationIcon className="h-6 w-6 mr-2" /> Lancer la Simulation Finale
                       </button>
                   </div>
               )}

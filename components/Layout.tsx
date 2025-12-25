@@ -23,11 +23,21 @@ const Header: React.FC = () => {
     `${baseLinkClass} ${
       isActive ? 'text-teal-700 font-semibold' : 'text-teal-600 hover:text-teal-500'
     }`;
+
+  const pinkNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `${baseLinkClass} ${
+      isActive ? 'text-pink-700 font-semibold' : 'text-pink-600 hover:text-pink-500'
+    }`;
   
   const mobileBaseLinkClass = "block px-3 py-2 rounded-md text-base font-medium font-poppins";
   const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `${mobileBaseLinkClass} ${
       isActive ? 'bg-teal-50 text-teal-700' : 'text-teal-600 hover:bg-gray-50 hover:text-teal-500'
+    }`;
+
+  const pinkMobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `${mobileBaseLinkClass} ${
+      isActive ? 'bg-pink-50 text-pink-700' : 'text-pink-600 hover:bg-gray-50 hover:text-pink-500'
     }`;
 
   const cartLink = (
@@ -68,11 +78,8 @@ const Header: React.FC = () => {
             Mémofiches
           </NavLink>
           {user?.role === UserRole.ADMIN && (
-            <NavLink to="/apps" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-              <div className="flex items-center">
-                <BrainCircuitIcon className="h-5 w-5 mr-1" />
-                <span>Apps</span>
-              </div>
+            <NavLink to="/apps" className={pinkNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+              Apps
             </NavLink>
           )}
           {user?.role !== UserRole.ADMIN && (
@@ -146,11 +153,8 @@ const Header: React.FC = () => {
             Mémofiches
           </NavLink>
           {user?.role === UserRole.ADMIN && (
-            <NavLink to="/apps" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-              <div className="flex items-center">
-                <BrainCircuitIcon className="h-5 w-5 mr-2" />
-                <span>Apps</span>
-              </div>
+            <NavLink to="/apps" className={pinkMobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+              Apps
             </NavLink>
           )}
           {user?.role !== UserRole.ADMIN && (

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../hooks/useAuth';
-import { ArrowLeftIcon, Spinner, PaperAirplaneIcon, SparklesIcon, CheckCircleIcon } from '../../components/Icons';
+import { ArrowLeftIcon, Spinner, PaperAirplaneIcon, SimulationIcon, CheckCircleIcon } from '../../components/Icons';
 import getAbsoluteImageUrl from '../../utils/image';
 import { CaseStudy } from '../../types';
 
@@ -191,9 +191,11 @@ const DermoSimulationPage: React.FC = () => {
                             <div className="max-w-2xl mx-auto">
                                 <div className="text-center mb-10">
                                     <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-teal-50 mb-4 ring-8 ring-teal-50 shadow-inner">
-                                        <span className="text-4xl font-black text-teal-600">{evaluation?.score}%</span>
+                                        <span className="text-4xl font-black text-teal-600">
+                                            <SimulationIcon className="h-12 w-12" />
+                                        </span>
                                     </div>
-                                    <h3 className="text-3xl font-extrabold text-slate-800">Bilan de l'Entretien</h3>
+                                    <h3 className="text-3xl font-extrabold text-slate-800">{evaluation?.score}%</h3>
                                     <p className="text-slate-500 mt-2 font-medium">Cas : {fiche.title}</p>
                                 </div>
 
