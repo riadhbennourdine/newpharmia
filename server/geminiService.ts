@@ -495,4 +495,122 @@ export const evaluateSimulation = async (chatHistory: {role: string, text: strin
     }
 };
 
+export const generateDermoFicheJSON = async (pathologyName: string, rawText: string): Promise<Partial<CaseStudy>> => {
+    return globalQueue.add(async () => {
+        const key = getApiKey();
+        const modelName = await getValidModel(key);
+        const genAI = new GoogleGenerativeAI(key);
+        
+        // Define a strict schema that maps to CaseStudy but enforces Dermo content
+        const dermoSchema: ObjectSchema = {
+            type: SchemaType.OBJECT,
+            properties: {
+                title: { type: SchemaType.STRING, description: "Titre: [Nom Pathologie] - DermoGuide" },
+                shortDescription: { type: SchemaType.STRING, description: "Définition courte et percutante." },
+                theme: { type: SchemaType.STRING, enum: ["Dermatologie"] },
+                system: { type: SchemaType.STRING, description: "Groupe DermoGuide (ex: Groupe A - Ça gratte)" },
+                patientSituation: { 
+                    type: SchemaType.OBJECT,
+                    properties: {
+                        title: { type: SchemaType.STRING, description: "Toujours 'Cas Comptoir'" },
+                        content: {
+                            type: SchemaType.ARRAY,
+                            items: {
+                                type: SchemaType.OBJECT,
+                                properties: {
+                                    type: { type: SchemaType.STRING, enum: ["text", "image"] },
+                                    value: { type: SchemaType.STRING, description: "Le texte du cas ou un prompt pour l'image" }
+                                }
+                            }
+                        }
+                    },
+                    required: ["title", "content"]
+                },
+                keyQuestions: { 
+                    type: SchemaType.ARRAY, 
+                    items: { type: SchemaType.STRING },
+                    description: "Questions PHARMA (Profil, Histoire, Analyse...)" 
+                },
+                pathologyOverview: {
+                    type: SchemaType.OBJECT,
+                    properties: {
+                        title: { type: SchemaType.STRING, description: "Toujours 'Analyse Sémiologique'" },
+                        content: {
+                            type: SchemaType.ARRAY,
+                            items: {
+                                type: SchemaType.OBJECT,
+                                properties: {
+                                    type: { type: SchemaType.STRING, enum: ["text"] },
+                                    value: { type: SchemaType.STRING, description: "Détail des lésions élémentaires (Macule, Papule...)" }
+                                }
+                            }
+                        }
+                    },
+                    required: ["title", "content"]
+                },
+                redFlags: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                recommendations: {
+                    type: SchemaType.OBJECT,
+                    properties: {
+                        mainTreatment: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                        associatedProducts: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                        lifestyleAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                        dietaryAdvice: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
+                    },
+                    required: ["mainTreatment", "associatedProducts", "lifestyleAdvice"]
+                },
+                keyPoints: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+                references: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
+            },
+            required: ["title", "shortDescription", "theme", "system", "patientSituation", "keyQuestions", "pathologyOverview", "redFlags", "recommendations"]
+        };
+
+        const model = genAI.getGenerativeModel({ 
+            model: modelName, 
+            generationConfig: { 
+                responseMimeType: "application/json",
+                responseSchema: dermoSchema
+            } 
+        });
+
+        const prompt = `Tu es Expert DermoGuide.
+        Génère une mémofiche structurée pour la pathologie : "${pathologyName}".
+        
+        SOURCE (Si vide, utilise tes connaissances) :
+        "${rawText || "N/A"}"
+
+        CONSIGNES SPÉCIFIQUES :
+        1. **System** : Choisis le Groupe DermoGuide (A: Ça gratte, B: Boutons Visage, C: Plaques, D: Mains/Pieds).
+        2. **PatientSituation** : Crée un scénario réaliste "Cas Comptoir".
+           - **IMAGE OBLIGATOIRE** : Ajoute un objet dans le tableau 'content' avec { "type": "image", "value": "Description très précise et visuelle de la lésion pour le photographe (ex: Zoom sur plaque squameuse...)" }.
+        3. **KeyQuestions (PHARMA)** : 
+           - Structure les questions par P.H.A.R.M.A (Profil, Histoire, Analyse, Récurrence, Médicaments, Alerte).
+        4. **PathologyOverview (Analyse)** : 
+           - Décris précisément les lésions élémentaires (Macule, Papule, Squame...). C'est le cœur du diagnostic.
+        5. **RedFlags** : Signes d'urgence absolue.
+        6. **Recommendations** : Protocole Hygiène + Traitement + Soin.
+
+        Langue : Français.`;
+
+        try {
+            const result = await model.generateContent(prompt);
+            const data = JSON.parse(result.response.text());
+            
+            // Post-processing to match the exact CaseStudy interface shape if needed
+            return {
+                ...data,
+                status: MemoFicheStatus.DRAFT,
+                // Flatten recommendations to match CaseStudy root properties if the schema nested them
+                mainTreatment: data.recommendations.mainTreatment,
+                associatedProducts: data.recommendations.associatedProducts,
+                lifestyleAdvice: data.recommendations.lifestyleAdvice,
+                dietaryAdvice: data.recommendations.dietaryAdvice
+            };
+        } catch (error: any) {
+            console.error("[Gemini] Dermo Generation failed:", error);
+            throw error;
+        }
+    });
+};
+
 export const listModels = async (): Promise<any[]> => { return [{ name: "auto-discovered" }]; };

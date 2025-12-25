@@ -9,7 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, listModels, isCacheReady, evaluateSimulation } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, listModels, isCacheReady, evaluateSimulation, generateDermoFicheJSON } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
@@ -844,6 +844,20 @@ app.get('/api/proxy-pdf', async (req, res) => {
         res.status(500).json({ message: 'Internal server error while proxying PDF.' });
     }
 });
+app.post('/api/gemini/generate-dermo-fiche', async (req, res) => {
+    try {
+        const { pathologyName, rawText } = req.body;
+        if (!pathologyName) {
+            return res.status(400).json({ message: 'Pathology name is required.' });
+        }
+        const draft = await generateDermoFicheJSON(pathologyName, rawText || "");
+        res.json(draft);
+    } catch (error: any) {
+        console.error('Error generating dermo fiche:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 app.post('/api/gemini/generate-draft', async (req, res) => {
     try {
         const { prompt, memoFicheType } = req.body;

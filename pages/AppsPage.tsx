@@ -16,6 +16,15 @@ const AppsPage: React.FC = () => {
       color: 'bg-pink-50 text-pink-700 hover:bg-pink-100',
     },
     {
+      id: 'dermo-generator',
+      title: 'Générateur DermoGuide',
+      description: 'Outil IA pour transformer vos cours et atlas en mémofiches structurées PHARMA prêtes à l\'emploi.',
+      icon: '🧬',
+      route: '/apps/dermoguide-generator',
+      status: 'BETA',
+      color: 'bg-teal-50 text-teal-700 hover:bg-teal-100',
+    },
+    {
       id: 'dose-calculator',
       title: 'CalculoDose',
       description: 'Calculateur rapide de doses pédiatriques selon le poids et l\'âge. Sécurisez vos délivrances.',
