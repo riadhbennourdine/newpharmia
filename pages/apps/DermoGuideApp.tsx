@@ -210,5 +210,3 @@ const DermoFicheCard: React.FC<{ fiche: CaseStudy, user: any }> = ({ fiche, user
 };
 
 export default DermoGuideApp;
-
-export default DermoGuideApp;
