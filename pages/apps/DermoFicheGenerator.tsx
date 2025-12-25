@@ -91,6 +91,7 @@ const DermoFicheGenerator: React.FC = () => {
 
             // 2. Prepare JSON with image handling
             const cleanData = JSON.parse(JSON.stringify(generatedJson));
+            cleanData.status = 'Published'; // Force publication for immediate visibility in DermoGuide app
             
             const sanitizeSection = (section: any) => {
                 if (section && section.content && Array.isArray(section.content)) {

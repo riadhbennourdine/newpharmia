@@ -479,10 +479,15 @@ app.get('/api/memofiches', async (req, res) => {
             }
         } else {
             // Other roles (Apprenant, etc.) only see PUBLISHED fiches or fiches without a status
-            query.$or = [
-                { status: { $in: [MemoFicheStatus.PUBLISHED, 'Publiée'] } },
-                { status: { $exists: false } }
-            ];
+            // EXCEPTION: Dermatologie fiches are always visible in their dedicated app if requested
+            if (theme === 'Dermatologie') {
+                // No status restriction for DermoGuide app
+            } else {
+                query.$or = [
+                    { status: { $in: [MemoFicheStatus.PUBLISHED, 'Publiée'] } },
+                    { status: { $exists: false } }
+                ];
+            }
         }
 
         const total = await memofichesCollection.countDocuments(query);

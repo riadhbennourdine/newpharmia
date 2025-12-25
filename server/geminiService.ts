@@ -600,7 +600,7 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
             // Post-processing to match the exact CaseStudy interface shape if needed
             return {
                 ...data,
-                status: MemoFicheStatus.DRAFT,
+                status: MemoFicheStatus.PUBLISHED,
                 // Flatten recommendations to match CaseStudy root properties if the schema nested them
                 mainTreatment: data.recommendations.mainTreatment,
                 associatedProducts: data.recommendations.associatedProducts,
