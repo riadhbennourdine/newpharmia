@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { BeakerIcon, ArrowPathIcon, DocumentDuplicateIcon } from '../../components/Icons';
+import { useNavigate } from 'react-router-dom';
+import { BeakerIcon, ArrowPathIcon, DocumentDuplicateIcon, CheckCircleIcon, PhotoIcon } from '../../components/Icons';
 
 const DermoFicheGenerator: React.FC = () => {
+    const navigate = useNavigate();
     const [pathologyName, setPathologyName] = useState('');
     const [rawText, setRawText] = useState('');
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [generatedJson, setGeneratedJson] = useState<any>(null);
     const [error, setError] = useState('');
 
@@ -46,6 +50,92 @@ const DermoFicheGenerator: React.FC = () => {
         if (generatedJson) {
             navigator.clipboard.writeText(JSON.stringify(generatedJson, null, 2));
             alert("JSON copié dans le presse-papier !");
+        }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedImage(e.target.files[0]);
+        }
+    };
+
+    const handleSaveAndRedirect = async () => {
+        if (!generatedJson) return;
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem('token');
+            
+            // 1. Upload Image if selected
+            let uploadedImageUrl = '';
+            if (selectedImage) {
+                const formData = new FormData();
+                formData.append('imageFile', selectedImage);
+                formData.append('name', pathologyName || 'DermoImage');
+                formData.append('theme', 'Dermatologie');
+
+                const uploadResponse = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (uploadResponse.ok) {
+                    const uploadResult = await uploadResponse.json();
+                    uploadedImageUrl = uploadResult.imageUrl;
+                } else {
+                    console.warn("Image upload failed");
+                }
+            }
+
+            // 2. Prepare JSON with image handling
+            const cleanData = JSON.parse(JSON.stringify(generatedJson));
+            
+            const sanitizeSection = (section: any) => {
+                if (section && section.content && Array.isArray(section.content)) {
+                    section.content = section.content.map((item: any) => {
+                        // Priority: If user uploaded an image, use it in the first image slot found
+                        if (item.type === 'image') {
+                            if (uploadedImageUrl) {
+                                // Consume the uploaded image
+                                const url = uploadedImageUrl;
+                                // uploadedImageUrl = ''; // Uncomment if we only want to use it once, but using it everywhere is safer for now
+                                return { type: 'image', value: url };
+                            }
+                            
+                            // If no upload but prompts exists, convert to text
+                            if (item.value && !item.value.startsWith('http')) {
+                                return { type: 'text', value: `📸 **Image à prévoir :** ${item.value}` };
+                            }
+                        }
+                        return item;
+                    });
+                }
+            };
+            
+            sanitizeSection(cleanData.patientSituation);
+            sanitizeSection(cleanData.pathologyOverview);
+
+            // 3. Save Fiche
+            const response = await fetch('/api/memofiches', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(cleanData)
+            });
+
+            if (!response.ok) throw new Error("Erreur lors de la sauvegarde de la fiche");
+            
+            const newFiche = await response.json();
+            navigate(`/memofiche/${newFiche._id}`);
+            
+        } catch (err: any) {
+            alert("Erreur lors de la sauvegarde : " + err.message);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -91,10 +181,34 @@ const DermoFicheGenerator: React.FC = () => {
                                 <textarea
                                     value={rawText}
                                     onChange={(e) => setRawText(e.target.value)}
-                                    rows={12}
+                                    rows={8}
                                     placeholder="Collez ici le texte clinique décrivant la pathologie, les symptômes, les traitements..."
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 font-mono text-sm"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Illustration (Optionnel)
+                                </label>
+                                <div className="flex items-center space-x-4">
+                                    <label className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <PhotoIcon className="h-5 w-5 text-gray-500 mr-2" />
+                                        <span className="text-sm text-gray-700">Choisir une image...</span>
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleImageChange} 
+                                            className="hidden" 
+                                        />
+                                    </label>
+                                    {selectedImage && (
+                                        <span className="text-sm text-teal-600 font-medium truncate max-w-xs">
+                                            {selectedImage.name}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">Cette image remplacera la suggestion de l'IA dans la fiche finale.</p>
                             </div>
 
                             <button
@@ -135,15 +249,27 @@ const DermoFicheGenerator: React.FC = () => {
                                 <span className="bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">ETAPE 2</span>
                                 Résultat
                             </h2>
-                            {generatedJson && (
-                                <button
-                                    onClick={handleCopyToClipboard}
-                                    className="text-sm text-teal-600 hover:text-teal-800 flex items-center"
-                                >
-                                    <DocumentDuplicateIcon className="h-4 w-4 mr-1" />
-                                    Copier JSON
-                                </button>
-                            )}
+                            <div className="flex space-x-2">
+                                {generatedJson && (
+                                    <>
+                                        <button
+                                            onClick={handleCopyToClipboard}
+                                            className="text-sm text-gray-500 hover:text-gray-800 flex items-center px-3 py-1 rounded border border-gray-300"
+                                        >
+                                            <DocumentDuplicateIcon className="h-4 w-4 mr-1" />
+                                            Copier
+                                        </button>
+                                        <button
+                                            onClick={handleSaveAndRedirect}
+                                            disabled={isSaving}
+                                            className="text-sm text-white bg-teal-600 hover:bg-teal-700 flex items-center px-3 py-1 rounded shadow-sm font-medium"
+                                        >
+                                            {isSaving ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <CheckCircleIcon className="h-4 w-4 mr-1" />}
+                                            Sauvegarder & Voir
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         <div className="flex-grow bg-slate-50 rounded-lg border border-gray-200 p-4 font-mono text-xs text-slate-700 overflow-auto max-h-[600px] whitespace-pre-wrap">
@@ -160,7 +286,7 @@ const DermoFicheGenerator: React.FC = () => {
                         {generatedJson && (
                             <div className="mt-4 pt-4 border-t border-gray-100">
                                 <p className="text-sm text-gray-500 italic mb-2">
-                                    * Vérifiez toujours le contenu médical avant publication.
+                                    * L'image sélectionnée (si présente) sera automatiquement intégrée à la place du texte généré lors de la sauvegarde.
                                 </p>
                             </div>
                         )}
