@@ -18,7 +18,7 @@ const AppsPage: React.FC = () => {
     {
       id: 'dermo-generator',
       title: 'Générateur DermoGuide',
-      description: '[OUTIL ADMIN] Créez des fiches à partir de vos atlas grâce à l\'IA.',
+      description: '[OUTIL ADMIN] Créez vos fiches à partir de vos atlas grâce à l\'IA.',
       icon: '🧬',
       route: '/apps/dermoguide-generator',
       status: 'BETA',
@@ -34,7 +34,7 @@ const AppsPage: React.FC = () => {
             Apps PharmIA
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            Des outils spécialisés conçus pour simplifier votre quotidien à l\'officine et sécuriser vos conseils.
+            Des outils spécialisés conçus pour simplifier votre quotidien à l'officine et sécuriser vos conseils.
           </p>
         </div>
 
