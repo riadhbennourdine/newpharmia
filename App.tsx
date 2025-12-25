@@ -53,6 +53,7 @@ const OrderManager = lazy(() => import('./pages/admin/OrderManager'));
 const AppsPage = lazy(() => import('./pages/AppsPage'));
 const DermoGuideApp = lazy(() => import('./pages/apps/DermoGuideApp'));
 const DermoFicheGenerator = lazy(() => import('./pages/apps/DermoFicheGenerator'));
+const DermoSimulationPage = lazy(() => import('./pages/apps/DermoSimulationPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -123,9 +124,9 @@ const App: React.FC = () => (
                                 <Route element={<AdminOnlyRoute />}>
                                     <Route path="/generateur" element={<GeneratorView />} />
                                     <Route path="/apps" element={<AppsPage />} />
-                                    <Route path="/apps/dermo" element={<DermoGuideApp />} />
-            <Route path="/apps/dermoguide-generator" element={<DermoFicheGenerator />} />
-                                    <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
+                                                                        <Route path="/apps/dermo" element={<DermoGuideApp />} />
+                                                                        <Route path="/apps/dermo/simulation/:id" element={<DermoSimulationPage />} />
+                                                                        <Route path="/apps/dermoguide-generator" element={<DermoFicheGenerator />} />                                    <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
                                     <Route path="/admin/newsletter" element={<NewsletterManager />} />
                                     <Route path="/admin/webinars" element={<WebinarManagement />} />
                                     <Route path="/admin/image-manager" element={<ImageManager />} />

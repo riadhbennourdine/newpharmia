@@ -9,7 +9,7 @@ import { handleSubscription, handleUnsubscription } from './server/subscribe.js'
 import { uploadFileToGemini, searchInFiles } from './server/geminiFileSearchService.js';
 import fs from 'fs';
 import { authenticateToken, AuthenticatedRequest, checkRole } from './server/authMiddleware.js';
-import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, listModels, isCacheReady, evaluateSimulation, generateDermoFicheJSON } from './server/geminiService.js';
+import { generateCaseStudyDraft, generateLearningTools, getChatResponse, getCoachResponse, listModels, isCacheReady, evaluateSimulation, generateDermoFicheJSON, getDermoPatientResponse } from './server/geminiService.js';
 import { indexMemoFiches, removeMemoFicheFromIndex, searchMemoFiches, extractTextFromMemoFiche } from './server/algoliaService.js';
 import { initCronJobs } from './server/cronService.js';
 import { generateKnowledgeBase } from './server/generateKnowledgeBase.js';
@@ -964,6 +964,20 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
     }
 });
 
+app.post('/api/gemini/dermo-patient', authenticateToken, async (req, res) => {
+    try {
+        const { message, history = [], fiche } = req.body;
+        if (!fiche) {
+            return res.status(400).json({ message: 'Fiche content is required.' });
+        }
+        const response = await getDermoPatientResponse(history, fiche, message);
+        res.json({ message: response });
+    } catch (error: any) {
+        console.error('Dermo patient simulation error:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // NEW: Coach Agent Endpoint
 app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
     try {
@@ -978,10 +992,9 @@ app.post('/api/gemini/coach', authenticateToken, async (req, res) => {
     }
 });
 
-// NEW: Evaluation Endpoint
 app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
-        const { history, topic } = req.body;
+        const { history, topic, ficheId } = req.body;
         const userId = req.user!._id;
 
         if (!history || !topic) {
@@ -995,11 +1008,17 @@ app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedReq
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
 
-        const simulationResult: SimulationResult = {
+        // Check if user has already read the fiche to determine if it's a post-reading simulation
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const hasRead = user?.readFiches?.some((rf: any) => rf.ficheId === ficheId);
+
+        const simulationResult: SimulationResult & { ficheId?: string; isPostReading?: boolean } = {
             date: new Date(),
             score: evaluation.score,
             feedback: evaluation.feedback,
             topic: topic,
+            ficheId: ficheId,
+            isPostReading: !!hasRead,
             conversationHistory: history,
             recommendedFiches: evaluation.recommendedFiches
         };
@@ -1010,10 +1029,9 @@ app.post('/api/gemini/evaluate', authenticateToken, async (req: AuthenticatedReq
         );
 
         res.json(evaluation);
-
     } catch (error: any) {
-        console.error('Error in evaluation endpoint:', error);
-        res.status(500).json({ message: error.message || "Erreur lors de l'évaluation." });
+        console.error('Evaluation Error:', error);
+        res.status(500).json({ message: error.message });
     }
 });
 

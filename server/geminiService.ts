@@ -613,4 +613,47 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
     });
 };
 
+export const getDermoPatientResponse = async (chatHistory: {role: string, text: string}[], fiche: CaseStudy, userMessage: string): Promise<string> => {
+    return globalQueue.add(async () => {
+        let attempts = 0;
+        while (attempts < 5) {
+            const key = getApiKey();
+            try {
+                const genAI = new GoogleGenerativeAI(key);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                
+                const patientPrompt = `Tu es un PATIENT qui vient à la pharmacie pour un problème de peau.
+TON : Un peu inquiet, utilise des mots simples, ne connais pas le vocabulaire médical de pointe.
+
+TON CAS (Basé sur cette fiche) :
+TITRE : ${fiche.title}
+ANALYSE : ${JSON.stringify(fiche.pathologyOverview)}
+QUESTIONS CLÉS (PHARMA) : ${JSON.stringify(fiche.keyQuestions)}
+RED FLAGS : ${JSON.stringify(fiche.redFlags)}
+
+CONSIGNES :
+1. RESTE DANS TON RÔLE DE PATIENT. Ne sors JAMAIS du personnage.
+2. Ne donne JAMAIS de conseils médicaux ou de diagnostic toi-même.
+3. Réponds aux questions du pharmacien en te basant sur les informations de ta fiche.
+4. Si le pharmacien te demande de décrire ce qu'il voit (Analyse), utilise des termes de patient : "c'est rouge", "ça gratte beaucoup", "y'a des croûtes", "c'est tout sec", "y'a des petites bulles".
+5. Si une information n'est pas explicitement dans la fiche, invente un détail réaliste pour un patient (ex: "je travaille dehors", "j'ai changé de lessive hier").
+
+Message du pharmacien : ${userMessage}`;
+
+                let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                
+                const chat = model.startChat({ history: safeHistory });
+                const result = await chat.sendMessage(patientPrompt);
+                return result.response.text().trim();
+            } catch (error: any) {
+                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+                attempts++;
+                if (attempts >= 5) throw new Error(`Échec critique Google API : ${error.message}`);
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+        return "Erreur service simulation.";
+    });
+};
+
 export const listModels = async (): Promise<any[]> => { return [{ name: "auto-discovered" }]; };

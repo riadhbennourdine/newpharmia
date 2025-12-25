@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeftIcon, Spinner, BookOpenIcon, SparklesIcon } from '../../components/Icons';
+import { ArrowLeftIcon, Spinner, BookOpenIcon, SparklesIcon, TrendingUpIcon } from '../../components/Icons';
 import { useNavigate } from 'react-router-dom';
 import { CaseStudy } from '../../types';
+import { useAuth } from '../../hooks/useAuth';
 import getAbsoluteImageUrl from '../../utils/image';
 
 const DermoGuideApp: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [fiches, setFiches] = useState<CaseStudy[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -60,7 +62,7 @@ const DermoGuideApp: React.FC = () => {
                 <div className="mb-10 text-center">
                     <h2 className="text-3xl font-extrabold text-slate-900 font-poppins">Catalogue DermoGuide</h2>
                     <p className="mt-3 text-lg text-slate-600 max-w-3xl mx-auto">
-                        Sécurisez votre conseil dermatologique au comptoir. Accédez aux fiches cliniques et entraînez-vous avec l'IA.
+                        Priorité à la simulation : Entraînez-vous d'abord, accédez à la fiche ensuite pour progresser.
                     </p>
                 </div>
 
@@ -85,7 +87,7 @@ const DermoGuideApp: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                                         {groupFiches.map(fiche => (
-                                            <DermoFicheCard key={fiche._id} fiche={fiche} />
+                                            <DermoFicheCard key={fiche._id} fiche={fiche} user={user} />
                                         ))}
                                     </div>
                                 </section>
@@ -110,9 +112,17 @@ const DermoGuideApp: React.FC = () => {
     );
 };
 
-const DermoFicheCard: React.FC<{ fiche: CaseStudy }> = ({ fiche }) => {
+const DermoFicheCard: React.FC<{ fiche: CaseStudy, user: any }> = ({ fiche, user }) => {
     const navigate = useNavigate();
     
+    // Find simulations for this specific fiche
+    const sims = user?.simulationHistory?.filter((s: any) => s.ficheId === fiche._id) || [];
+    const isSimulated = sims.length > 0;
+    
+    // Get pre-reading and post-reading scores
+    const preReadSim = sims.find((s: any) => !s.isPostReading);
+    const postReadSim = sims.find((s: any) => s.isPostReading);
+
     // Find the lesion image in patientSituation content
     const lesionImage = Array.isArray(fiche.patientSituation?.content) 
         ? fiche.patientSituation.content.find((c: any) => c.type === 'image')?.value 
@@ -134,6 +144,22 @@ const DermoFicheCard: React.FC<{ fiche: CaseStudy }> = ({ fiche }) => {
                     </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* Score badges */}
+                <div className="absolute top-4 right-4 flex flex-col gap-2">
+                    {preReadSim && (
+                        <div className="bg-white/90 backdrop-blur px-2 py-1 rounded-lg shadow-sm border border-slate-200 flex flex-col items-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase leading-none mb-1">Initial</span>
+                            <span className="text-sm font-bold text-slate-800 leading-none">{preReadSim.score}%</span>
+                        </div>
+                    )}
+                    {postReadSim && (
+                        <div className="bg-teal-500/90 backdrop-blur px-2 py-1 rounded-lg shadow-md border border-teal-400 flex flex-col items-center">
+                            <span className="text-[9px] font-black text-white uppercase leading-none mb-1">Final</span>
+                            <span className="text-sm font-bold text-white leading-none">{postReadSim.score}%</span>
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="p-6 flex-grow flex flex-col">
                 <div className="flex items-start justify-between mb-3">
@@ -141,25 +167,48 @@ const DermoFicheCard: React.FC<{ fiche: CaseStudy }> = ({ fiche }) => {
                         {fiche.title}
                     </h3>
                 </div>
-                <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-grow leading-relaxed">
+                <p className="text-sm text-slate-600 line-clamp-2 mb-6 flex-grow leading-relaxed">
                     {fiche.shortDescription}
                 </p>
+
+                {preReadSim && postReadSim && (
+                    <div className="mb-4 flex items-center gap-2 p-2 bg-teal-50 rounded-lg border border-teal-100">
+                        <TrendingUpIcon className="h-4 w-4 text-teal-600" />
+                        <span className="text-xs font-bold text-teal-800">
+                            Progression : {postReadSim.score - preReadSim.score > 0 ? '+' : ''}{postReadSim.score - preReadSim.score}%
+                        </span>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                     <button 
-                        onClick={() => navigate(`/memofiche/${fiche._id}`)}
-                        className="flex items-center justify-center px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-pink-50 hover:text-pink-700 font-bold transition-all duration-200 border border-transparent hover:border-pink-200"
-                    >
-                        <BookOpenIcon className="h-5 w-5 mr-2" /> Lire
-                    </button>
-                    <button 
+                        onClick={() => navigate(`/apps/dermo/simulation/${fiche._id}`)}
                         className="flex items-center justify-center px-4 py-2.5 bg-pink-600 text-white rounded-xl hover:bg-pink-700 font-bold transition-all duration-200 shadow-lg shadow-pink-200 hover:shadow-pink-300"
                     >
                         <SparklesIcon className="h-5 w-5 mr-2" /> Simulation
                     </button>
+                    <button 
+                        onClick={() => isSimulated && navigate(`/memofiche/${fiche._id}`)}
+                        disabled={!isSimulated}
+                        className={`flex items-center justify-center px-4 py-2.5 rounded-xl font-bold transition-all duration-200 border ${
+                            isSimulated 
+                                ? 'bg-slate-100 text-slate-700 hover:bg-pink-50 hover:text-pink-700 border-transparent hover:border-pink-200' 
+                                : 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed'
+                        }`}
+                    >
+                        <BookOpenIcon className="h-5 w-5 mr-2" /> Lire { !isSimulated && '🔒' }
+                    </button>
                 </div>
+                {!isSimulated && (
+                    <p className="text-[10px] text-center mt-3 font-bold text-slate-400 uppercase tracking-widest">
+                        Faites une simulation pour débloquer
+                    </p>
+                )}
             </div>
         </div>
     );
 };
+
+export default DermoGuideApp;
 
 export default DermoGuideApp;

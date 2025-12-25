@@ -641,6 +641,25 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                     </button>
                   )}
               </div>
+
+              {caseStudy.theme === 'Dermatologie' && (
+                  <div className="mt-12 p-8 bg-pink-600 rounded-3xl text-white text-center shadow-xl animate-fade-in">
+                      <div className="inline-flex items-center justify-center h-16 w-16 bg-white/20 rounded-full mb-4">
+                        <SparklesIcon className="h-8 w-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">Lecture Terminée !</h3>
+                      <p className="mb-8 text-pink-100 max-w-md mx-auto">
+                          Mettez vos nouvelles connaissances en pratique avec une simulation finale pour valider votre progression.
+                      </p>
+                      <button 
+                          onClick={() => navigate(`/apps/dermo/simulation/${caseStudy._id}`)}
+                          className="px-10 py-4 bg-white text-pink-600 font-bold rounded-2xl hover:bg-pink-50 transition-all shadow-lg text-lg flex items-center mx-auto transform hover:scale-105 active:scale-95"
+                      >
+                          <SparklesIcon className="h-6 w-6 mr-2" /> Lancer la Simulation Finale
+                      </button>
+                  </div>
+              )}
+
               {showQRCode && canGenerateQRCode && (
                 <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md animate-fade-in">
                   <h3 className="text-lg font-bold text-slate-800 mb-4">Partagez cette fiche avec ce QR Code</h3>
