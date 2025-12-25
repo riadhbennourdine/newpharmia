@@ -653,10 +653,18 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
             <div className="lg:col-span-1 z-10 mt-16">
                 <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
                 <div 
-                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 h-96"
+                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 h-96 flex items-center justify-center"
                     onClick={() => setInfographicModalOpen(true)}
                 >
-                    <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
+                    {caseStudy.infographicImageUrl.includes('canva.com') ? (
+                        <div className="text-center p-4">
+                            <span className="text-6xl mb-4 block">🎨</span>
+                            <span className="text-slate-700 font-bold text-lg">Infographie Interactive</span>
+                            <p className="text-sm text-slate-500 mt-2">Cliquez pour interagir</p>
+                        </div>
+                    ) : (
+                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
+                    )}
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                         <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
@@ -666,19 +674,26 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
       </div>
 
       {isInfographicModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setInfographicModalOpen(false)}>
-            <img 
-                src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} 
-                alt="Infographie en plein écran" 
-                className="max-w-[95vw] max-h-[95vh] object-contain" 
-                onClick={(e) => e.stopPropagation()} 
-            />
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" onClick={() => setInfographicModalOpen(false)}>
+            <div className="w-full max-w-[95vw] max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                {caseStudy.infographicImageUrl && caseStudy.infographicImageUrl.includes('canva.com') ? (
+                     <div className="w-full max-w-5xl">
+                        <EmbeddableViewer source={caseStudy.infographicImageUrl} />
+                     </div>
+                ) : (
+                    <img 
+                        src={getAbsoluteImageUrl(caseStudy.infographicImageUrl || '')} 
+                        alt="Infographie en plein écran" 
+                        className="max-w-full max-h-[90vh] object-contain rounded-md" 
+                    />
+                )}
+            </div>
             <button 
                 onClick={() => setInfographicModalOpen(false)}
-                className="absolute top-4 right-4 bg-white rounded-full p-2 text-slate-800 hover:bg-slate-200"
+                className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
                 aria-label="Fermer"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
