@@ -507,7 +507,7 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
             properties: {
                 title: { type: SchemaType.STRING, description: "Titre: [Nom Pathologie] - DermoGuide" },
                 shortDescription: { type: SchemaType.STRING, description: "Définition courte et percutante." },
-                theme: { type: SchemaType.STRING, enum: ["Dermatologie"] },
+                theme: { type: SchemaType.STRING, enum: ["Dermatologie"], format: "enum" },
                 system: { type: SchemaType.STRING, description: "Groupe DermoGuide (ex: Groupe A - Ça gratte)" },
                 patientSituation: { 
                     type: SchemaType.OBJECT,
@@ -518,7 +518,7 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
                             items: {
                                 type: SchemaType.OBJECT,
                                 properties: {
-                                    type: { type: SchemaType.STRING, enum: ["text", "image"] },
+                                    type: { type: SchemaType.STRING, enum: ["text", "image"], format: "enum" },
                                     value: { type: SchemaType.STRING, description: "Le texte du cas ou un prompt pour l'image" }
                                 }
                             }
@@ -540,7 +540,7 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
                             items: {
                                 type: SchemaType.OBJECT,
                                 properties: {
-                                    type: { type: SchemaType.STRING, enum: ["text"] },
+                                    type: { type: SchemaType.STRING, enum: ["text"], format: "enum" },
                                     value: { type: SchemaType.STRING, description: "Détail des lésions élémentaires (Macule, Papule...)" }
                                 }
                             }
