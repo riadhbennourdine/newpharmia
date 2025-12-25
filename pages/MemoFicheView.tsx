@@ -7,7 +7,7 @@ import { CaseStudy, UserRole, MemoFicheSectionContent } from '../types';
 import { ensureArray } from '../utils/array';
 import getAbsoluteImageUrl from '../utils/image';
 import { getIconUrl } from '../utils/icons';
-import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon, ImageIcon, BookOpenIcon } from '../components/Icons'; // Added ImageIcon, BookOpenIcon
+import { VideoCameraIcon, KeyIcon, CheckCircleIcon, PencilIcon, TrashIcon, Spinner, ShareIcon, ImageIcon, BookOpenIcon, SparklesIcon } from '../components/Icons'; // Added ImageIcon, BookOpenIcon, SparklesIcon
 import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
