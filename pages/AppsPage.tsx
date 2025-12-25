@@ -7,9 +7,18 @@ const AppsPage: React.FC = () => {
 
   const apps = [
     {
+      id: 'dermo-guide',
+      title: 'DermoGuide',
+      description: 'L\'application d\'aide au triage dermatologique. Identifiez les lésions, accédez aux protocoles et lancez des simulations.',
+      icon: '🧴',
+      route: '/apps/dermo',
+      status: 'BETA',
+      color: 'bg-pink-50 text-pink-700 hover:bg-pink-100',
+    },
+    {
       id: 'dermo-generator',
       title: 'Générateur DermoGuide',
-      description: 'Outil IA pour transformer vos cours et atlas en mémofiches structurées PHARMA prêtes à l\'emploi.',
+      description: '[OUTIL ADMIN] Créez des fiches à partir de vos atlas grâce à l\'IA.',
       icon: '🧬',
       route: '/apps/dermoguide-generator',
       status: 'BETA',

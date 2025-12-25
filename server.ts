@@ -465,6 +465,8 @@ app.get('/api/memofiches', async (req, res) => {
 
         if (theme !== 'all') {
             query.theme = theme;
+        } else {
+            query.theme = { $ne: "Dermatologie" };
         }
         if (system !== 'all') {
             query.system = system;
