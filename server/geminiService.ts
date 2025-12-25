@@ -644,6 +644,13 @@ Message du pharmacien : ${userMessage}`;
 
                 let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 
+                if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
+                    safeHistory = [
+                        { role: 'user', parts: [{ text: `Je suis au comptoir et je reçois un patient.` }] },
+                        ...safeHistory
+                    ];
+                }
+
                 const chat = model.startChat({ history: safeHistory });
                 const result = await chat.sendMessage(patientPrompt);
                 return result.response.text().trim();
