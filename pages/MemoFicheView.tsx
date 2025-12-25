@@ -14,6 +14,62 @@ import FlashcardDeck from '../components/FlashcardDeck';
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import { getFtpViewUrl } from '../utils/ftp';
 
+const ComparisonCard: React.FC<{ title: string; description: string }> = ({ title, description }) => {
+    const navigate = useNavigate();
+    const [linkedFiche, setLinkedFiche] = useState<CaseStudy | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchLinkedFiche = async () => {
+            try {
+                // Search for a fiche with this title
+                const response = await fetch(`/api/memofiches?search=${encodeURIComponent(title)}&limit=1`);
+                const data = await response.json();
+                if (data.data && data.data.length > 0) {
+                    setLinkedFiche(data.data[0]);
+                }
+            } catch (err) {
+                console.error("Error fetching linked fiche:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchLinkedFiche();
+    }, [title]);
+
+    const lesionImage = linkedFiche && Array.isArray(linkedFiche.patientSituation?.content) 
+        ? linkedFiche.patientSituation.content.find((c: any) => c.type === 'image')?.value 
+        : linkedFiche?.coverImageUrl;
+
+    return (
+        <div className="flex flex-col sm:flex-row bg-slate-50 rounded-xl overflow-hidden border border-slate-200 hover:border-pink-300 transition-colors group">
+            <div className="w-full sm:w-32 h-32 bg-slate-200 flex-shrink-0 relative overflow-hidden">
+                {lesionImage ? (
+                    <img src={getAbsoluteImageUrl(lesionImage)} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400">
+                        <ImageIcon className="h-8 w-8 opacity-20" />
+                    </div>
+                )}
+            </div>
+            <div className="p-4 flex-grow">
+                <div className="flex justify-between items-start">
+                    <h4 className="font-bold text-slate-800 group-hover:text-pink-600 transition-colors">{title}</h4>
+                    {linkedFiche && (
+                        <button 
+                            onClick={() => navigate(`/memofiche/${linkedFiche._id}`)}
+                            className="text-[10px] font-black uppercase tracking-widest bg-white border border-slate-200 px-2 py-1 rounded hover:bg-slate-800 hover:text-white transition-all"
+                        >
+                            Voir la fiche
+                        </button>
+                    )}
+                </div>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{description}</p>
+            </div>
+        </div>
+    );
+};
+
 const AccordionSection: React.FC<{
     title: string;
     icon: React.ReactNode;
@@ -294,6 +350,17 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const renderMarkdown = (text: string, isRedKeywordSection: boolean = false) => {
     let html = typeof text === 'string' ? text : String(text || '');
+
+    // --- CUSTOM: Dermo Comparator Link Mapping ---
+    // Detect "COMPARAISON : [Patho] | DESCRIPTION : [Desc] | LIEN_REQUIS : true"
+    if (html.includes('COMPARAISON :')) {
+        const regex = /COMPARAISON\s*:\s*(.*?)\s*\|\s*DESCRIPTION\s*:\s*(.*?)\s*\|\s*LIEN_REQUIS\s*:\s*true/g;
+        return <div className="grid grid-cols-1 gap-4 mt-4">
+            {Array.from(html.matchAll(regex)).map((match, idx) => (
+                <ComparisonCard key={idx} title={match[1]} description={match[2]} />
+            ))}
+        </div>;
+    }
 
     // Keywords (bold)
     const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';

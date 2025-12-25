@@ -575,21 +575,25 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
         });
 
         const prompt = `Tu es Expert DermoGuide.
-        Génère une mémofiche structurée pour la pathologie : "${pathologyName}".
+        Ta mission est de transformer du texte clinique en une mémofiche structurée (JSON).
         
-        SOURCE (Si vide, utilise tes connaissances) :
-        "${rawText || "N/A"}"
+        **PRIORITÉ DE MAPPAGE (Si ces sections existent dans la source) :**
+        1. **IDENTITÉ** -> Mappe le Titre, le Groupe DermoGuide (A, B, C, D) et la Définition courte.
+        2. **CAS COMPTOIR & VISUEL** -> 'Scénario Patient' va dans 'patientSituation.content[type:text]', 'DESCRIPTION VISUELLE' va dans 'patientSituation.content[type:image]'.
+        3. **ANALYSE P.H.A.R.M.A** -> Répartis précisément les infos dans 'keyQuestions' (P, H, A, R, M, A) et 'pathologyOverview' (Lésions élémentaires, Évolution).
+        4. **PROTOCOLE CONSEIL** -> Mappe Hygiène, Traitement et Soin dans 'recommendations'.
+        5. **COMPARATEUR VISUEL** -> Crée une section dans 'customSections' intitulée "Comparateur Visuel". 
+           Pour chaque pathologie de comparaison, utilise STRICTEMENT ce format de texte : 
+           "COMPARAISON : [NOM EXACT DE LA PATHOLOGIE] | DESCRIPTION : [Différences clés] | LIEN_REQUIS : true"
 
-        CONSIGNES SPÉCIFIQUES :
-        1. **System** : Choisis le Groupe DermoGuide (A: Ça gratte, B: Boutons Visage, C: Plaques, D: Mains/Pieds).
-        2. **PatientSituation** : Crée un scénario réaliste "Cas Comptoir".
-           - **IMAGE OBLIGATOIRE** : Ajoute un objet dans le tableau 'content' avec { "type": "image", "value": "Description très précise et visuelle de la lésion pour le photographe (ex: Zoom sur plaque squameuse...)" }.
-        3. **KeyQuestions (PHARMA)** : 
-           - Structure les questions par P.H.A.R.M.A (Profil, Histoire, Analyse, Récurrence, Médicaments, Alerte).
-        4. **PathologyOverview (Analyse)** : 
-           - Décris précisément les lésions élémentaires (Macule, Papule, Squame...). C'est le cœur du diagnostic.
-        5. **RedFlags** : Signes d'urgence absolue.
-        6. **Recommendations** : Protocole Hygiène + Traitement + Soin.
+        **CONSIGNES SPÉCIFIQUES :**
+        - Ignore les indicateurs de points type '+2', '+4'.
+        - **IMAGE PROMPT** : Si une 'DESCRIPTION VISUELLE' est fournie, utilise-la pour l'objet image.
+        - **System** : Doit contenir "Groupe X" (A, B, C ou D).
+
+        SOURCE À TRAITER :
+        "${rawText || "N/A"}"
+        NOM DE LA PATHOLOGIE : "${pathologyName}"
 
         Langue : Français.`;
 
