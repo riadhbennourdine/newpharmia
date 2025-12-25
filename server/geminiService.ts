@@ -373,9 +373,10 @@ export const getCoachResponse = async (chatHistory: {role: string, text: string}
         while (attempts < 5) {
             const key = getApiKey();
             try {
-                // Optimization: Always prefer 'flash' for speed in chat
+                // Optimization: Use dynamic model selection
+                const modelName = await getValidModel(key);
                 const genAI = new GoogleGenerativeAI(key);
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const model = genAI.getGenerativeModel({ model: modelName });
                 
                 const coachPrompt = `Tu es "Coach PharmIA", un mentor expert en pharmacie.
 TON : Dynamique, bienveillant, et surtout **FLUIDE**.
@@ -619,8 +620,9 @@ export const getDermoPatientResponse = async (chatHistory: {role: string, text: 
         while (attempts < 5) {
             const key = getApiKey();
             try {
+                const modelName = await getValidModel(key);
                 const genAI = new GoogleGenerativeAI(key);
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const model = genAI.getGenerativeModel({ model: modelName });
                 
                 const patientPrompt = `Tu es un PATIENT qui vient à la pharmacie pour un problème de peau.
 TON : Un peu inquiet, utilise des mots simples, ne connais pas le vocabulaire médical de pointe.

@@ -968,12 +968,13 @@ app.post('/api/gemini/dermo-patient', authenticateToken, async (req, res) => {
     try {
         const { message, history = [], fiche } = req.body;
         if (!fiche) {
+            console.error('[DermoPatient] Missing fiche in request body');
             return res.status(400).json({ message: 'Fiche content is required.' });
         }
         const response = await getDermoPatientResponse(history, fiche, message);
         res.json({ message: response });
     } catch (error: any) {
-        console.error('Dermo patient simulation error:', error);
+        console.error('CRITICAL: Dermo patient simulation error:', error);
         res.status(500).json({ message: error.message });
     }
 });
