@@ -19,6 +19,7 @@ const DermoGuideApp: React.FC = () => {
                 const response = await fetch('/api/memofiches?theme=Dermatologie&limit=100');
                 if (!response.ok) throw new Error("Fetch failed");
                 const data = await response.json();
+                console.log(`[DermoGuide] Fetched ${data.data?.length} fiches with theme Dermatologie`);
                 setFiches(data.data || []);
             } catch (error) {
                 console.error("Error fetching dermo fiches:", error);
@@ -37,9 +38,20 @@ const DermoGuideApp: React.FC = () => {
     ];
 
     const getFichesByGroup = (groupId: string) => {
-        // Match fiches that have "Groupe [A/B/C/D]" in their system field
-        return fiches.filter(f => f.system?.includes(`Groupe ${groupId}`));
+        // Match fiches that have "Groupe [A/B/C/D]" in their system field (case insensitive)
+        const regex = new RegExp(`Groupe ${groupId}`, 'i');
+        return fiches.filter(f => f.system && regex.test(f.system));
     };
+
+    const getOtherFiches = () => {
+        // Find fiches that don't match any of the standard groups
+        return fiches.filter(f => !groups.some(g => {
+            const regex = new RegExp(`Groupe ${g.id}`, 'i');
+            return f.system && regex.test(f.system);
+        }));
+    };
+
+    const otherFiches = getOtherFiches();
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
@@ -93,6 +105,23 @@ const DermoGuideApp: React.FC = () => {
                                 </section>
                             );
                         })}
+
+                        {otherFiches.length > 0 && (
+                            <section className="animate-fade-in">
+                                <div className="flex items-center mb-8">
+                                    <div className="h-10 w-1.5 bg-slate-400 rounded-full mr-4"></div>
+                                    <h2 className="text-2xl font-bold text-slate-800">Autres cas Dermatologiques</h2>
+                                    <span className="ml-4 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 uppercase">
+                                        {otherFiches.length} {otherFiches.length > 1 ? 'Fiches' : 'Fiche'}
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {otherFiches.map(fiche => (
+                                        <DermoFicheCard key={fiche._id} fiche={fiche} user={user} />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
