@@ -25,7 +25,13 @@ const AdminPanel: React.FC = () => {
               onClick={() => setActiveTab('crm')}
               className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'crm' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              CRM / Abonnés
+              CRM
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'users' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              Utilisateurs
             </button>
             {isAdmin && (
               <>
@@ -65,6 +71,7 @@ const AdminPanel: React.FC = () => {
 
       <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-md min-h-[400px]">
         {activeTab === 'crm' && <CRMDashboard />}
+        {activeTab === 'users' && <SubscriberManager />}
         {activeTab === 'newsletter' && isAdmin && <Newsletter />}
         {activeTab === 'groups' && isAdmin && <GroupManagementPage />}
       </div>
