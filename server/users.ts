@@ -692,4 +692,35 @@ router.put('/:userId/credits', authenticateToken, checkRole([UserRole.ADMIN]), a
     }
 });
 
+router.put('/:userId/profile', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { firstName, lastName } = req.body;
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { firstName, lastName } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+        res.json({ message: 'User profile updated successfully.', user: updatedUser });
+
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la mise à jour du profil.' });
+    }
+});
+
 export default router;

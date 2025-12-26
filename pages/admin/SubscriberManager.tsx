@@ -7,6 +7,8 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
     const [subscriptionEndDate, setSubscriptionEndDate] = useState(user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : '');
     const [planName, setPlanName] = useState(user.planName || '');
     const [credits, setCredits] = useState<number>(user.masterClassCredits || 0);
+    const [firstName, setFirstName] = useState(user.firstName || '');
+    const [lastName, setLastName] = useState(user.lastName || '');
 
     const handleSave = async () => {
         try {
@@ -15,6 +17,17 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             };
 
+            // Update Profile (Name)
+            const profileResponse = await fetch(`/api/users/${user._id}/profile`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify({ firstName, lastName }),
+            });
+
+            if (!profileResponse.ok) {
+                throw new Error('Failed to update profile');
+            }
+            
             // Update Subscription
             const subResponse = await fetch(`/api/users/${user._id}/subscription`, {
                 method: 'PUT',
@@ -27,6 +40,11 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
             }
             
             let updatedUser = await subResponse.json();
+            
+            // Merge profile updates since subscription endpoint might return old profile data if parallel requests were an issue, 
+            // but here we are serial. However, the subscription endpoint might not return the *very* latest if it doesn't fetch fresh.
+            // Safe to merge manually.
+            updatedUser = { ...updatedUser, firstName, lastName };
 
             // Update Credits if changed
             if (credits !== (user.masterClassCredits || 0)) {
@@ -39,8 +57,6 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
                 if (!creditResponse.ok) {
                     throw new Error('Failed to update credits');
                 }
-                // Manually update the user object locally since the subscription endpoint returns the user
-                // but we want the combined result. Or simply trust the updated state.
                 updatedUser = { ...updatedUser, masterClassCredits: credits };
             }
 
@@ -55,8 +71,30 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
             <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-2xl font-bold mb-4 text-gray-800">Modifier l'abonnement de {user.email}</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-800">Modifier l'utilisateur {user.email}</h3>
                 <div className="mt-6">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">Prénom</label>
+                            <input
+                                type="text"
+                                id="firstName"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Nom</label>
+                            <input
+                                type="text"
+                                id="lastName"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
                     <div className="mb-4">
                         <label htmlFor="planName" className="block text-sm font-medium text-gray-700">Nom du plan</label>
                         <input
