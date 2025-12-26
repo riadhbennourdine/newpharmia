@@ -115,6 +115,7 @@ const SubscriberManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -122,9 +123,10 @@ const SubscriberManager: React.FC = () => {
         setLoading(true);
         try {
              const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-            const response = await fetch('/api/users/subscribers', { headers });
+            // Fetch all users to allow filtering by role
+            const response = await fetch('/api/users', { headers });
             if (!response.ok) {
-                throw new Error('Failed to fetch subscribers');
+                throw new Error('Failed to fetch users');
             }
             const data = await response.json();
             setSubscribers(data);
@@ -140,16 +142,19 @@ const SubscriberManager: React.FC = () => {
   const filteredSubscribers = useMemo(() => {
     return subscribers
       .filter(subscriber => 
-        searchTerm === '' || subscriber.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (searchTerm === '' || subscriber.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
+         (subscriber.firstName && subscriber.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+         (subscriber.lastName && subscriber.lastName.toLowerCase().includes(searchTerm.toLowerCase()))) &&
+        (selectedRole === '' || subscriber.role === selectedRole)
       );
-  }, [subscribers, searchTerm]);
+  }, [subscribers, searchTerm, selectedRole]);
 
   const handleUpdateUser = (updatedUser: User) => {
       setSubscribers(subscribers.map(user => user._id === updatedUser._id ? updatedUser : user));
   };
 
   if (loading) {
-    return <div>Chargement des abonnés...</div>;
+    return <div>Chargement des utilisateurs...</div>;
   }
 
   if (error) {
@@ -158,16 +163,26 @@ const SubscriberManager: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Gestion des Abonnés</h2>
+      <h2 className="text-2xl font-bold mb-4">Gestion des Utilisateurs</h2>
       
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input
           type="text"
-          placeholder="Rechercher par email..."
+          placeholder="Rechercher par email, nom..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
         />
+        <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+        >
+            <option value="">Tous les rôles</option>
+            {Object.values(UserRole).map((role) => (
+                <option key={role} value={role}>{role}</option>
+            ))}
+        </select>
       </div>
 
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
@@ -176,6 +191,7 @@ const SubscriberManager: React.FC = () => {
             <tr>
                 <th className="py-2 px-4 border-b text-left">Email</th>
                 <th className="py-2 px-4 border-b text-left">Nom</th>
+                <th className="py-2 px-4 border-b text-left">Rôle</th>
                 <th className="py-2 px-4 border-b text-left">Crédits MC</th>
                 <th className="py-2 px-4 border-b text-left">Valide jusqu'au</th>
                 <th className="py-2 px-4 border-b text-left">Actions</th>
@@ -187,6 +203,7 @@ const SubscriberManager: React.FC = () => {
                 <tr key={subscriber._id}>
                 <td className="py-2 px-4 border-b">{subscriber.email}</td>
                 <td className="py-2 px-4 border-b">{subscriber.firstName} {subscriber.lastName}</td>
+                <td className="py-2 px-4 border-b"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{subscriber.role}</span></td>
                 <td className="py-2 px-4 border-b font-bold text-teal-600">{subscriber.masterClassCredits || 0}</td>
                 <td className="py-2 px-4 border-b">{subscriber.subscriptionEndDate ? new Date(subscriber.subscriptionEndDate).toLocaleDateString() : 'N/A'}</td>
                 <td className="py-2 px-4 border-b">
@@ -198,8 +215,8 @@ const SubscriberManager: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="py-4 px-4 border-b text-center text-gray-500">
-                  Aucun abonné ne correspond aux filtres actuels.
+                <td colSpan={6} className="py-4 px-4 border-b text-center text-gray-500">
+                  Aucun utilisateur ne correspond aux filtres actuels.
                 </td>
               </tr>
             )}
