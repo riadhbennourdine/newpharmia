@@ -723,4 +723,29 @@ router.put('/:userId/profile', authenticateToken, checkRole([UserRole.ADMIN]), a
     }
 });
 
+router.delete('/:userId', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const { ObjectId } = await import('mongodb');
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid userId.' });
+        }
+
+        const { usersCollection } = await getCollections();
+
+        const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({ message: 'User deleted successfully.' });
+
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la suppression de l\'utilisateur.' });
+    }
+});
+
 export default router;

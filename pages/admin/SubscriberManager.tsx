@@ -191,6 +191,27 @@ const SubscriberManager: React.FC = () => {
       setSubscribers(subscribers.map(user => user._id === updatedUser._id ? updatedUser : user));
   };
 
+  const handleDeleteUser = async (userId: string) => {
+      if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')) {
+          try {
+              const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+              const response = await fetch(`/api/users/${userId}`, {
+                  method: 'DELETE',
+                  headers
+              });
+
+              if (!response.ok) {
+                  throw new Error('Failed to delete user');
+              }
+
+              setSubscribers(subscribers.filter(user => user._id !== userId));
+          } catch (error) {
+              console.error(error);
+              alert('Erreur lors de la suppression de l\'utilisateur');
+          }
+      }
+  };
+
   if (loading) {
     return <div>Chargement des utilisateurs...</div>;
   }
@@ -244,9 +265,12 @@ const SubscriberManager: React.FC = () => {
                 <td className="py-2 px-4 border-b"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{subscriber.role}</span></td>
                 <td className="py-2 px-4 border-b font-bold text-teal-600">{subscriber.masterClassCredits || 0}</td>
                 <td className="py-2 px-4 border-b">{subscriber.subscriptionEndDate ? new Date(subscriber.subscriptionEndDate).toLocaleDateString() : 'N/A'}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-2 px-4 border-b flex space-x-2">
                   <button onClick={() => setSelectedUser(subscriber)} className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">
                     Modifier
+                  </button>
+                  <button onClick={() => handleDeleteUser(subscriber._id as string)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Supprimer
                   </button>
                 </td>
                 </tr>
