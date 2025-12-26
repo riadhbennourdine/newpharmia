@@ -64,6 +64,43 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
         ? user.simulationHistory[user.simulationHistory.length - 1] 
         : null;
 
+    // Sauvegarde silencieuse d'un message sur le serveur
+    const saveMessageToLog = async (role: 'user' | 'model', text: string, currentTopic: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            await fetch('/api/simulation/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ role, text, topic: currentTopic })
+            });
+        } catch (error) {
+            console.error("Erreur de sauvegarde log:", error);
+        }
+    };
+
+    // Restauration d'une session active au montage du composant
+    useEffect(() => {
+        const restoreSession = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/simulation/active', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.messages && data.messages.length > 0) {
+                        setTopic(data.topic);
+                        setMessages(data.messages);
+                        setIsTopicSelected(true);
+                    }
+                }
+            } catch (err) {
+                console.error("Erreur restauration session:", err);
+            }
+        };
+        restoreSession();
+    }, []);
+
     useEffect(() => {
         if (isTopicSelected && messages.length === 0) {
             // Trigger the first AI message automatically by calling the coach service
@@ -85,6 +122,9 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
                     const data = await response.json();
                     setIsTyping(true);
                     setMessages([{ role: 'model', text: data.message }]);
+                    
+                    // Sauvegarde du premier message
+                    await saveMessageToLog('model', data.message, topic);
                 } catch (err) {
                     console.error(err);
                     setMessages([{ role: 'model', text: "Erreur lors du lancement de la simulation." }]);
@@ -132,6 +172,12 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
             if (!response.ok) throw new Error('Erreur API');
             const data = await response.json();
             setEvaluationResult(data);
+
+            // Nettoyage de la simulation active car terminée
+            await fetch('/api/simulation/active', {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
         } catch (err: any) {
             console.error(err);
             setMessages(prev => [...prev, { role: 'model', text: "Désolé, je n'ai pas pu générer l'évaluation." }]);
@@ -148,6 +194,9 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
         setMessages(prev => [...prev, newUserMessage]);
         setInputValue('');
         setIsLoading(true);
+
+        // Sauvegarde immédiate du message utilisateur (silencieux)
+        saveMessageToLog('user', trimmedInput, topic);
 
         try {
             const token = localStorage.getItem('token');
@@ -167,8 +216,13 @@ const CompagnonIA: React.FC<Props> = ({ user, onClose }) => {
             }
             
             const data = await response.json();
+            const aiText = data.message;
+
             setIsTyping(true);
-            setMessages(prev => [...prev, { role: 'model', text: data.message }]);
+            setMessages(prev => [...prev, { role: 'model', text: aiText }]);
+
+            // Sauvegarde du message de l'IA (silencieux)
+            saveMessageToLog('model', aiText, topic);
         } catch (err: any) {
             console.error('Chat Error:', err);
             setMessages(prev => [...prev, { role: 'model', text: err.message || "Une erreur est survenue." }]);

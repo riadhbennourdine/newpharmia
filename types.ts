@@ -56,6 +56,11 @@ export interface User {
   readFiches?: { ficheId: string; readAt: Date; }[];
   quizHistory?: any[];
   simulationHistory?: SimulationResult[];
+  activeSimulation?: {
+    topic: string;
+    messages: { role: string; text: string; timestamp: Date }[];
+    lastUpdated: Date;
+  };
   viewedMediaIds?: string[];
   phoneNumber?: string;
   status?: ClientStatus;

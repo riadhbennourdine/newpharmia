@@ -327,6 +327,7 @@ import imageThemesRouter from './server/imageThemes.js';
 import ftpRouter from './server/ftp.js'; // Import the new FTP router
 import debugRouter from './server/debug.js'; // Import the debug router
 import profileRoutes from './server/profile.js';
+import simulationRouter from './server/simulation.js';
 
 // ===============================================
 // API ROUTES
@@ -354,6 +355,7 @@ app.use('/api/image-themes', imageThemesRouter);
 app.use('/api/ftp', ftpRouter); // Register the new FTP routes
 app.use('/api/debug', debugRouter); // Register the debug routes
 app.use('/api/profile', profileRoutes);
+app.use('/api/simulation', simulationRouter);
 
 // ===============================================
 // ADMIN FILE SEARCH API
