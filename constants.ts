@@ -1,8 +1,6 @@
-
 export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars
-export const MASTER_CLASS_PRICE = 48.481; // Price in TND for Master Class Unit (39.9 HT + 19% TVA + 1 DT)
+export const MASTER_CLASS_PRICE = 475.810; // Price in TND for 1 Master Class TTC (399.000 HT + 19% TVA + 1 DT)
 
-// This is a dummy comment to force rebuild of this file.
 export const TAX_RATES = {
     TVA: 0.19,
     TIMBRE: 1.000
@@ -11,43 +9,35 @@ export const TAX_RATES = {
 export const MASTER_CLASS_PACKS = [
     {
         id: 'MC_UNIT',
-        name: 'Ticket Unitaire',
-        description: 'Accès à 1 Master Class',
-        credits: 1,
-        priceHT: 39.900,
+        name: '1 Master Class',
+        description: 'Accès au cycle complet de 3 sessions sur un thème.',
+        credits: 3,
+        priceHT: 399.000,
         badge: 'Standard'
     },
     {
-        id: 'MC10',
-        name: 'Pack Découverte (10)',
-        description: 'Idéal pour découvrir le format. 10 Master Class.',
-        credits: 10,
-        priceHT: 350.000, 
+        id: 'MC_PACK_3',
+        name: 'Pack 3 MC',
+        description: 'Choisissez 3 thèmes majeurs (-16% de remise).',
+        credits: 9,
+        priceHT: 999.000, 
         badge: 'Populaire'
     },
     {
-        id: 'MC25',
-        name: 'Pack Engagé (25)',
-        description: 'Pour une formation régulière. 25 Master Class.',
-        credits: 25,
-        priceHT: 750.000, 
-        badge: 'Meilleure Valeur'
+        id: 'MC_PACK_6',
+        name: 'Pack 6 MC',
+        description: 'Un semestre de formation complet (-33% de remise).',
+        credits: 18,
+        priceHT: 1599.000, 
+        badge: 'Avancé'
     },
     {
-        id: 'MC50',
-        name: 'Pack Expert (50)',
-        description: 'Devenez une référence. 50 Master Class.',
-        credits: 50,
-        priceHT: 1250.000, 
-        badge: '-37% de remise'
-    },
-    {
-        id: 'MC100',
-        name: 'Pack Institution (100)',
-        description: 'Formation continue complète. 100 Master Class.',
-        credits: 100,
-        priceHT: 1999.000, 
-        badge: 'Prix Choc (-50%)'
+        id: 'MC_FULL',
+        name: 'Pack Intégral (10)',
+        description: 'TOUTES les Master Class 2026 (-50% de remise).',
+        credits: 30,
+        priceHT: 1995.000, 
+        badge: 'Meilleure Offre'
     }
 ];
 

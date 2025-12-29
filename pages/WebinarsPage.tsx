@@ -32,7 +32,7 @@ const WebinarsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [masterClassDescription, setMasterClassDescription] = useState<string>('');
-    const [activePricingTab, setActivePricingTab] = useState<string>('MC25'); // Default to popular pack
+    const [activePricingTab, setActivePricingTab] = useState<string>('MC_PACK_3'); // Default to popular pack
 
     useEffect(() => {
         fetch('/content/master_class_description.md')
@@ -586,15 +586,16 @@ const WebinarsPage: React.FC = () => {
                                         if (pack.id !== activePricingTab) return null;
                                         
                                         const priceHT = pack.priceHT;
-                                        const unitPriceHT = priceHT / pack.credits;
+                                        // For Master Class packs, 1 MC = 3 credits. So we calculate unit price per MC, not per credit.
+                                        const numberOfMasterClasses = pack.credits / 3;
+                                        const unitPriceHT = priceHT / numberOfMasterClasses;
                                         
                                         // Feature list logic
                                         let features: string[] = [];
-                                        if (pack.id === 'MC_UNIT') features = ["Accès à 1 wébinaire en direct au choix", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour tester le format"];
-                                        else if (pack.id === 'MC10') features = ["Accès à 10 wébinaires au choix", "Économie de ~12% sur le tarif unitaire", "Support de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
-                                        else if (pack.id === 'MC25') features = ["Accès à 25 wébinaires au choix", "Économie de ~25% (Meilleure Valeur)", "Support de cours PDF inclus", "Replay illimité", "Certificat de participation avancé", "Accès prioritaire aux questions/réponses"];
-                                        else if (pack.id === 'MC50') features = ["Accès à 50 wébinaires (Programme Expert)", "Économie massive de ~37%", "Bibliothèque complète de ressources", "Replay illimité", "Certificat d'Expertise Officine", "Support prioritaire"];
-                                        else if (pack.id === 'MC100') features = ["Accès INTÉGRAL à tous les wébinaires", "Tarif imbattable (-50%)", "Toutes les ressources pédagogiques incluses", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
+                                        if (pack.id === 'MC_UNIT') features = ["Accès au cycle complet (3 sessions)", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour se former sur un sujet précis"];
+                                        else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~16% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
+                                        else if (pack.id === 'MC_PACK_6') features = ["Accès à 6 Master Classes complètes", "Économie de ~33% (Formation Semestrielle)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
+                                        else if (pack.id === 'MC_FULL') features = ["Accès INTÉGRAL aux 10 Master Classes", "Tarif imbattable (-50%)", "Bibliothèque complète de ressources", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
 
                                         return (
                                             <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
@@ -610,7 +611,7 @@ const WebinarsPage: React.FC = () => {
                                                             <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
                                                         </div>
                                                         <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
-                                                            Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / séance
+                                                            Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Master Class
                                                         </div>
                                                         <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
                                                     </div>
