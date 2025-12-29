@@ -5,9 +5,6 @@ const parseMarkdown = (text: string) => {
   if (!text) return '';
 
   let html = text
-    // Encode HTML to prevent injection, except for our specific tags
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
     // Bold: **text** or __text__
     .replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>')
     // Italics: *text* or _text_
