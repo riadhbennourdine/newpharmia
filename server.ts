@@ -448,10 +448,18 @@ app.get('/api/memofiches', async (req, res) => {
 
         if (userId && ObjectId.isValid(userId)) {
             user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-            if (user && user.groupId) {
-                group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-                if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
-                    pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
+            if (user) {
+                // Check for group
+                if (user.groupId) {
+                    group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
+                    if (group && group.pharmacistIds && group.pharmacistIds.length > 0) {
+                        pharmacist = await usersCollection.findOne({ _id: new ObjectId(group.pharmacistIds[0]) });
+                    }
+                }
+                
+                // Fallback: Check for direct pharmacist link if not found via group
+                if (!pharmacist && user.pharmacistId) {
+                     pharmacist = await usersCollection.findOne({ _id: new ObjectId(user.pharmacistId) });
                 }
             }
         }
@@ -512,14 +520,23 @@ app.get('/api/memofiches', async (req, res) => {
                 if(user.role === UserRole.ADMIN || user.role === UserRole.FORMATEUR) {
                     hasAccess = true;
                 } else {
-                const createdAt = new Date(user.createdAt);
-                const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
+                    const createdAt = new Date(user.createdAt);
+                    const trialExpiresAt = user.trialExpiresAt ? new Date(user.trialExpiresAt) : (createdAt ? new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null);
 
-                const subscriber = user.role === UserRole.PHARMACIEN ? user : pharmacist;
+                    // Check personal subscription first
+                    const hasPersonalSubscription = user.hasActiveSubscription && user.subscriptionEndDate && new Date(user.subscriptionEndDate) > new Date();
 
-                if ((subscriber && subscriber.hasActiveSubscription) || (trialExpiresAt && new Date(trialExpiresAt) > new Date())) {
-                    hasAccess = true;
-                }
+                    // Check linked pharmacist subscription
+                    const subscriber = pharmacist;
+                    const hasPharmacistSubscription = subscriber && subscriber.hasActiveSubscription && subscriber.subscriptionEndDate && new Date(subscriber.subscriptionEndDate) > new Date();
+                    
+                    // Check trial
+                    const isInTrial = trialExpiresAt && new Date(trialExpiresAt) > new Date();
+
+                    if (hasPersonalSubscription || hasPharmacistSubscription || isInTrial || user.role === UserRole.PHARMACIEN && user.hasActiveSubscription) {
+                        hasAccess = true;
+                    }
+
                     if (!hasAccess && group && group.assignedFiches.some(f => f.ficheId === fiche._id.toString())) {
                         hasAccess = true;
                     }
