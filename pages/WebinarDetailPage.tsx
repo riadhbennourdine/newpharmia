@@ -33,7 +33,7 @@ const getUserDisplayName = (user: Partial<User>): string => {
 const getGroupLogo = (group: WebinarGroup): string => {
     switch (group) {
         case WebinarGroup.CROP_TUNIS:
-            return 'https://pharmaconseilbmb.com/photos/site/cropt/crop-tunis.png';
+            return '/api/ftp/view?filePath=%2Fpharmia%2Fcropt%2Fcrop-tunis.jpg';
         case WebinarGroup.PHARMIA:
             return '/assets/logo-pharmia.png';
         default:
