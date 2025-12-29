@@ -333,6 +333,80 @@ const WebinarsPage: React.FC = () => {
         </div>
     );
 
+    const renderMasterClassList = (webinars: Webinar[]) => {
+        // Group by Master Class Title (e.g., "MC1: Dermatologie")
+        const grouped = webinars.reduce((acc, w) => {
+            const match = w.title.match(/^(MC\d+:\s*[^-\n]+)/);
+            const groupTitle = match ? match[1].trim() : "Autres Sessions";
+            
+            if (!acc[groupTitle]) acc[groupTitle] = [];
+            acc[groupTitle].push(w);
+            return acc;
+        }, {} as Record<string, Webinar[]>);
+
+        // Sort Groups Numerically (MC1, MC2...)
+        const sortedGroupKeys = Object.keys(grouped).sort((a, b) => {
+            const numA = parseInt(a.match(/MC(\d+)/)?.[1] || '999');
+            const numB = parseInt(b.match(/MC(\d+)/)?.[1] || '999');
+            return numA - numB;
+        });
+
+        if (sortedGroupKeys.length === 0) {
+             return (
+                <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                    <h3 className="text-xl font-semibold text-slate-700">Aucune Master Class disponible</h3>
+                    <p className="text-slate-500 mt-2">Le programme sera bientôt en ligne.</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-16 max-w-7xl mx-auto">
+                {sortedGroupKeys.map(groupTitle => {
+                    const sessions = grouped[groupTitle].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    const firstSession = sessions[0];
+                    const isPast = sessions.every(s => s.calculatedStatus === WebinarStatus.PAST);
+                    
+                    return (
+                        <div key={groupTitle} className={`rounded-2xl border transition-all duration-300 ${isPast ? 'border-slate-200 bg-slate-50/50 opacity-80' : 'border-teal-100 bg-white shadow-lg shadow-teal-900/5'}`}>
+                            {/* Header of the MC Group */}
+                            <div className={`px-8 py-6 border-b rounded-t-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${isPast ? 'border-slate-200 bg-slate-100/50' : 'border-teal-100 bg-gradient-to-r from-teal-50/50 to-white'}`}>
+                                <div>
+                                    <h3 className={`text-2xl font-extrabold tracking-tight ${isPast ? 'text-slate-600' : 'text-slate-800'}`}>{groupTitle}</h3>
+                                    <p className="text-slate-500 text-sm mt-1 font-medium flex items-center gap-2">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-teal-400"></span>
+                                        Cycle de 3 sessions • Début le {new Date(firstSession.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    </p>
+                                </div>
+                                {isPast && <span className="px-4 py-1.5 bg-slate-200 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wide">Terminé</span>}
+                            </div>
+
+                            {/* Timeline Connector (Visual only, subtle) */}
+                            <div className="relative p-8">
+                                <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-slate-100 hidden xl:block"></div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                                    {sessions.map((webinar, idx) => (
+                                        <div key={webinar._id.toString()} className="relative">
+                                            {/* Timeline dot for desktop */}
+                                            <div className="absolute -left-[33px] top-8 w-3 h-3 rounded-full border-2 border-white ring-2 ring-teal-100 bg-teal-400 hidden xl:block z-10"></div>
+                                            <WebinarCard 
+                                                webinar={webinar} 
+                                                onResourceClick={handleResourceClick} 
+                                                onManageResources={handleOpenResourcesModal} 
+                                                userCredits={user?.masterClassCredits} 
+                                                onUseCredit={handleUseCredit}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
     const renderWebinarList = (webinarsToRender: Webinar[], isMyList: boolean = false) => {
         if (webinarsToRender.length === 0) {
             return (
@@ -595,6 +669,8 @@ const WebinarsPage: React.FC = () => {
                             <p className="text-slate-500 mt-2">Découvrez nos prochaines sessions CROP Tunis et inscrivez-vous !</p>
                         </div>
                     )
+                ) : activeTab === WebinarGroup.MASTER_CLASS ? (
+                    renderMasterClassList(allWebinars.filter(w => w.group === WebinarGroup.MASTER_CLASS))
                 ) : (
                     renderWebinarList(allWebinars.filter(w => w.group === activeTab))
                 )}
