@@ -11,6 +11,7 @@ import Loader from '../components/Loader';
 import { Spinner, UploadIcon, ChevronDownIcon } from '../components/Icons';
 import MediaViewerModal from '../components/MediaViewerModal';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
+import MasterClassProgramModal from '../components/MasterClassProgramModal';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import {
     fetchWebinars,
@@ -52,6 +53,7 @@ const WebinarsPage: React.FC = () => {
     const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
     const [isResourcesModalOpen, setIsResourcesModalOpen] = useState(false);
     const [selectedWebinarForResources, setSelectedWebinarForResources] = useState<Webinar | null>(null);
+    const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -444,11 +446,22 @@ const WebinarsPage: React.FC = () => {
                 {activeTab === WebinarGroup.MASTER_CLASS && (
                     <div className="mb-16">
                         <div className="text-center mb-12">
-                            <h2 className="text-4xl font-extrabold text-slate-900 sm:text-5xl">
+                            <h2 className="text-4xl font-extrabold text-slate-900 sm:text-5xl mb-6">
                                 Master Class Officine 2026
                             </h2>
-                            <div className="mt-4 text-xl text-slate-600 max-w-2xl mx-auto">
+                            <div className="mt-4 text-xl text-slate-600 max-w-3xl mx-auto">
                                 <MarkdownRenderer content={masterClassDescription} />
+                            </div>
+
+                            {/* Program Button */}
+                            <div className="mt-8 flex justify-center">
+                                <button
+                                    onClick={() => setIsProgramModalOpen(true)}
+                                    className="flex items-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                                >
+                                    <span className="text-2xl">📅</span>
+                                    <span>Voir le Programme & Calendrier Complet</span>
+                                </button>
                             </div>
                         </div>
 
@@ -600,6 +613,9 @@ const WebinarsPage: React.FC = () => {
                     onClose={handleCloseResourcesModal}
                     onSave={handleSaveResources}
                 />
+            )}
+            {isProgramModalOpen && (
+                <MasterClassProgramModal onClose={() => setIsProgramModalOpen(false)} />
             )}
         </div>
     );
