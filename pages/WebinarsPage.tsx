@@ -374,7 +374,6 @@ const WebinarsPage: React.FC = () => {
                                 <div>
                                     <h3 className={`text-2xl font-extrabold tracking-tight ${isPast ? 'text-slate-600' : 'text-slate-800'}`}>{groupTitle}</h3>
                                     <p className="text-slate-500 text-sm mt-1 font-medium flex items-center gap-2">
-                                        <span className="inline-block w-2 h-2 rounded-full bg-teal-400"></span>
                                         Cycle de 3 sessions • Début le {new Date(firstSession.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                                     </p>
                                 </div>
@@ -383,12 +382,9 @@ const WebinarsPage: React.FC = () => {
 
                             {/* Timeline Connector (Visual only, subtle) */}
                             <div className="relative p-8">
-                                <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-slate-100 hidden xl:block"></div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                                     {sessions.map((webinar, idx) => (
                                         <div key={webinar._id.toString()} className="relative">
-                                            {/* Timeline dot for desktop */}
-                                            <div className="absolute -left-[33px] top-8 w-3 h-3 rounded-full border-2 border-white ring-2 ring-teal-100 bg-teal-400 hidden xl:block z-10"></div>
                                             <WebinarCard 
                                                 webinar={webinar} 
                                                 onResourceClick={handleResourceClick} 
