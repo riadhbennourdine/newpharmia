@@ -9,6 +9,8 @@ import { Spinner, EyeIcon } from './Icons'; // Assuming Spinner is available
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
 
+import TeamBriefingPlayer from './TeamBriefingPlayer';
+
 const PharmacienDashboard: React.FC = () => {
     const { user, token } = useAuth();
     const [group, setGroup] = useState<Group | null>(null);
@@ -166,6 +168,9 @@ const PharmacienDashboard: React.FC = () => {
             {selectedMenu === 'parcours' && <LearnerDashboard initialGroup={group} />}
             {selectedMenu === 'equipe' && (
                 <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                    {/* New Audio Briefing Feature */}
+                    <TeamBriefingPlayer />
+
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne de l'équipe</h2>
                         <p className="text-slate-700 font-semibold text-base">{group?.instruction || 'Aucune consigne pour le moment.'}</p>

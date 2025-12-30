@@ -131,6 +131,7 @@ import profileRoutes from './server/profile.js';
 import simulationRouter from './server/simulation.js';
 import authRouter from './server/routes/auth.js';
 import memofichesRouter from './server/routes/memofiches.js';
+import briefingRouter from './server/briefing.js';
 
 // ===============================================
 // API ROUTES
@@ -159,6 +160,7 @@ app.use('/api/ftp', ftpRouter); // Register the new FTP routes
 app.use('/api/debug', debugRouter); // Register the debug routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/simulation', simulationRouter);
+app.use('/api/briefing', briefingRouter);
 
 // ===============================================
 // ADMIN FILE SEARCH API

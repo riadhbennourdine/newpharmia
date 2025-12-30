@@ -8,6 +8,7 @@ import { Group, CaseStudy } from '../types';
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
 import SkillHeatmap from './SkillHeatmap';
+import TeamBriefingPlayer from './TeamBriefingPlayer';
 
 interface Props {
     initialGroup?: Group | null; // Make prop optional
@@ -198,6 +199,7 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
 
     return (
         <>
+            <TeamBriefingPlayer />
             {group?.instruction && (
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne du Pharmacien</h2>

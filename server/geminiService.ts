@@ -686,4 +686,52 @@ Message du pharmacien : ${userMessage}`;
     });
 };
 
+
+export const generateBriefingScript = async (context: {
+    groupName: string;
+    instruction: string;
+    webinars: string[];
+    tip?: string;
+}): Promise<string> => {
+    return globalQueue.add(async () => {
+        let attempts = 0;
+        const maxAttempts = 3;
+        while (attempts < maxAttempts) {
+            const key = getApiKey();
+            try {
+                const modelName = await getValidModel(key);
+                const genAI = new GoogleGenerativeAI(key);
+                const model = genAI.getGenerativeModel({ model: modelName });
+
+                const prompt = `Tu es un animateur radio/coach énergique et bienveillant pour une équipe de pharmacie.
+TON RÔLE : Faire le "Flash Info Matinal" pour l'équipe "${context.groupName}".
+DURÉE CIBLE : 1 minute à l'oral (environ 150 mots).
+STYLE : Dynamique, professionnel mais chaleureux, motivant. Pas de "Bonjour à tous" robotique, sois naturel.
+
+INFORMATIONS À TRANSMETTRE :
+1. LA CONSIGNE DU JOUR (C'est le plus important) : "${context.instruction || "Aucune consigne spécifique aujourd'hui, restons vigilants et à l'écoute des patients."}"
+2. LES RENDEZ-VOUS (Webinaires) : ${context.webinars.length > 0 ? context.webinars.join(", ") : "Pas de webinaire prévu prochainement."}
+${context.tip ? `3. L'ASTUCE CLINIQUE DU JOUR : ${context.tip}` : ""}
+
+STRUCTURE DU SCRIPT :
+- Accroche énergique.
+- Le cœur du message (la consigne).
+- Rappel formation (webinaires).
+- Petite phrase de motivation pour la journée.
+
+Génère UNIQUEMENT le texte du script, prêt à être lu à voix haute. Pas de didascalies comme "(Musique d'intro)".`;
+
+                const result = await model.generateContent(prompt);
+                return result.response.text().trim();
+            } catch (error: any) {
+                if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+                attempts++;
+                if (attempts >= maxAttempts) throw new Error(`Briefing generation failed: ${error.message}`);
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+        return "Désolé, impossible de générer le briefing pour le moment.";
+    });
+};
+
 export const listModels = async (): Promise<{name: string}[]> => { return [{ name: "auto-discovered" }]; };

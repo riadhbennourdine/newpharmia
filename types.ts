@@ -103,6 +103,10 @@ export interface Group {
   instructionDate?: Date;
   primaryMemoFicheId?: ObjectId | string;
   instructionFiches?: (ObjectId | string)[];
+  dailyBriefing?: {
+    script: string;
+    date: Date;
+  };
 }
 
 export interface Client extends User {
