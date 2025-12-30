@@ -29,8 +29,21 @@ export interface SimulationResult {
     score: number;
     feedback: string;
     topic: string;
-    conversationHistory: { role: string; text: string; }[];
+    conversationHistory: ChatHistoryMessage[];
     recommendedFiches?: { _id: string; title: string; }[];
+}
+
+export interface QuizHistoryEntry {
+  quizId: string;
+  score: number;
+  date: Date;
+  answers?: any[]; // Detailed answers could be typed later if needed
+}
+
+export interface ChatHistoryMessage {
+  role: 'user' | 'model' | 'system';
+  text: string;
+  timestamp?: Date;
 }
 
 export interface User {
@@ -54,11 +67,11 @@ export interface User {
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   readFiches?: { ficheId: string; readAt: Date; }[];
-  quizHistory?: any[];
+  quizHistory?: QuizHistoryEntry[];
   simulationHistory?: SimulationResult[];
   activeSimulation?: {
     topic: string;
-    messages: { role: string; text: string; timestamp: Date }[];
+    messages: ChatHistoryMessage[];
     lastUpdated: Date;
   };
   viewedMediaIds?: string[];

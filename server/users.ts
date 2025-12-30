@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const users = await usersCollection.find({}).toArray();
+        const users = await usersCollection.find({}, { projection: { passwordHash: 0 } }).toArray();
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -19,10 +19,13 @@ router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res)
     }
 });
 
-router.get('/pharmacists', async (req, res) => {
+router.get('/pharmacists', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const pharmacists = await usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } }).toArray();
+        const pharmacists = await usersCollection.find(
+            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } },
+            { projection: { passwordHash: 0 } }
+        ).toArray();
         res.json(pharmacists);
     } catch (error) {
         console.error('Error fetching pharmacists:', error);
@@ -30,10 +33,13 @@ router.get('/pharmacists', async (req, res) => {
     }
 });
 
-router.get('/preparateurs', async (req, res) => {
+router.get('/preparateurs', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const preparateurs = await usersCollection.find({ role: UserRole.PREPARATEUR }).toArray();
+        const preparateurs = await usersCollection.find(
+            { role: UserRole.PREPARATEUR },
+            { projection: { passwordHash: 0 } }
+        ).toArray();
         res.json(preparateurs);
     } catch (error) {
         console.error('Error fetching preparateurs:', error);
@@ -41,12 +47,13 @@ router.get('/preparateurs', async (req, res) => {
     }
 });
 
-router.get('/subscribers', async (req, res) => {
+router.get('/subscribers', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
-        const subscribers = await usersCollection.find({
-            role: UserRole.PHARMACIEN
-        }).toArray();
+        const subscribers = await usersCollection.find(
+            { role: UserRole.PHARMACIEN },
+            { projection: { passwordHash: 0 } }
+        ).toArray();
         res.json(subscribers);
     } catch (error) {
         console.error('Error fetching subscribers:', error);
@@ -64,10 +71,13 @@ async function getCollections() {
 }
 
 // Get all managers (admins and formateurs)
-router.get('/managers', async (req, res) => {
+router.get('/managers', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
   try {
     const { usersCollection } = await getCollections();
-    const managers = await usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray();
+    const managers = await usersCollection.find(
+        { role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } },
+        { projection: { passwordHash: 0 } }
+    ).toArray();
     res.json(managers);
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des gestionnaires.", error });
@@ -75,10 +85,21 @@ router.get('/managers', async (req, res) => {
 });
 
 // Get preparateurs for a group
-router.get('/groups/:id/preparateurs', async (req, res) => {
+router.get('/groups/:id/preparateurs', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+        const user = req.user!;
+        const { id } = req.params;
+
+        // Security check: must be admin OR part of the group
+        if (user.role !== UserRole.ADMIN && user.groupId?.toString() !== id) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
+
         const { usersCollection } = await getCollections();
-        const preparateurs = await usersCollection.find({ groupId: new ObjectId(req.params.id), role: UserRole.PREPARATEUR }).toArray();
+        const preparateurs = await usersCollection.find(
+            { groupId: new ObjectId(id), role: UserRole.PREPARATEUR },
+            { projection: { passwordHash: 0 } }
+        ).toArray();
         res.json(preparateurs);
     } catch (error) {
         res.status(500).json({ message: "Erreur lors de la récupération des préparateurs.", error });
@@ -86,10 +107,13 @@ router.get('/groups/:id/preparateurs', async (req, res) => {
 });
 
 // Get user by email
-router.get('/by-email/:email', async (req, res) => {
+router.get('/by-email/:email', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
   try {
     const { usersCollection } = await getCollections();
-    const user = await usersCollection.findOne({ email: req.params.email });
+    const user = await usersCollection.findOne(
+        { email: req.params.email },
+        { projection: { passwordHash: 0 } }
+    );
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
@@ -100,7 +124,7 @@ router.get('/by-email/:email', async (req, res) => {
 });
 
 // New endpoint to get user by name
-router.get('/by-name', async (req, res) => {
+router.get('/by-name', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
     try {
         const { firstName, lastName } = req.query;
 
@@ -114,15 +138,13 @@ router.get('/by-name', async (req, res) => {
         const user = await usersCollection.findOne({
             firstName: { $regex: new RegExp(firstName as string, 'i') },
             lastName: { $regex: new RegExp(lastName as string, 'i') }
-        });
+        }, { projection: { passwordHash: 0 } });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        // Exclude sensitive information like passwordHash
-        const { passwordHash, ...userWithoutHash } = user;
-        res.json(userWithoutHash);
+        res.json(user);
 
     } catch (error) {
         console.error('Error fetching user by name:', error);
@@ -294,24 +316,24 @@ router.get('/:userId/learning-journey', authenticateToken, checkRole([UserRole.A
     }
 });
 
-router.get('/:userId/quiz-history', async (req, res) => {
-    console.log('Attempting to reach /api/users/:userId/quiz-history. Params:', req.params);
+router.get('/:userId/quiz-history', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { userId } = req.params;
-        console.log('Inside /api/users/:userId/quiz-history. userId:', userId);
+        const authUser = req.user!;
+
+        if (authUser.role !== UserRole.ADMIN && authUser._id.toString() !== userId) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(userId)) {
-            console.log('Invalid ObjectId for quiz-history. userId:', userId);
             return res.status(400).json({ message: 'Invalid userId.' });
         }
 
         const { usersCollection } = await getCollections();
-
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
-            console.log('User not found for quiz-history. userId:', userId);
             return res.status(404).json({ message: 'User not found.' });
         }
 
@@ -323,9 +345,16 @@ router.get('/:userId/quiz-history', async (req, res) => {
     }
 });
 
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { userId } = req.params;
+        const authUser = req.user!;
+
+        // Security check: Self OR Admin OR Group Pharmacist
+        if (authUser.role !== UserRole.ADMIN && authUser._id.toString() !== userId) {
+             // If it's not self/admin, we could check group membership here if needed
+             return res.status(403).json({ message: 'Accès refusé.' });
+        }
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(userId)) {
@@ -333,8 +362,10 @@ router.get('/:userId', async (req, res) => {
         }
 
         const { usersCollection } = await getCollections();
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const user = await usersCollection.findOne(
+            { _id: new ObjectId(userId) },
+            { projection: { passwordHash: 0 } }
+        );
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
@@ -348,25 +379,32 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-router.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) => {
+router.put('/preparateurs/:preparateurId/assign-pharmacist', authenticateToken, checkRole([UserRole.ADMIN, UserRole.PHARMACIEN]), async (req: AuthenticatedRequest, res) => {
     try {
         const { preparateurId } = req.params;
         const { pharmacistId } = req.body;
+        const authUser = req.user!;
+
+        // If pharmacist, can only assign to self
+        let effectivePharmacistId = pharmacistId;
+        if (authUser.role === UserRole.PHARMACIEN) {
+            effectivePharmacistId = authUser._id.toString();
+        }
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(preparateurId)) {
             return res.status(400).json({ message: 'Invalid preparateurId.' });
         }
 
-        if (pharmacistId && !ObjectId.isValid(pharmacistId)) {
+        if (effectivePharmacistId && !ObjectId.isValid(effectivePharmacistId)) {
             return res.status(400).json({ message: 'Invalid pharmacistId.' });
         }
 
         const { usersCollection } = await getCollections();
 
         const result = await usersCollection.updateOne(
-            { _id: new ObjectId(preparateurId) as any },
-            { $set: { pharmacistId: pharmacistId ? new ObjectId(pharmacistId) : undefined } }
+            { _id: new ObjectId(preparateurId) },
+            { $set: { pharmacistId: effectivePharmacistId ? new ObjectId(effectivePharmacistId) : undefined } }
         );
 
         if (result.matchedCount === 0) {
@@ -380,9 +418,15 @@ router.put('/preparateurs/:preparateurId/assign-pharmacist', async (req, res) =>
     }
 });
 
-router.get('/pharmacists/:pharmacistId/team', async (req, res) => {
+router.get('/pharmacists/:pharmacistId/team', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { pharmacistId } = req.params;
+        const authUser = req.user!;
+
+        if (authUser.role !== UserRole.ADMIN && authUser._id.toString() !== pharmacistId) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
+
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(pharmacistId)) {
             return res.status(400).json({ message: 'Invalid pharmacistId.' });
@@ -390,7 +434,10 @@ router.get('/pharmacists/:pharmacistId/team', async (req, res) => {
 
         const { usersCollection } = await getCollections();
 
-        const team = await usersCollection.find({ role: UserRole.PREPARATEUR, pharmacistId: new ObjectId(pharmacistId) as any }).toArray();
+        const team = await usersCollection.find(
+            { role: UserRole.PREPARATEUR, pharmacistId: new ObjectId(pharmacistId) },
+            { projection: { passwordHash: 0 } }
+        ).toArray();
         res.json(team);
     } catch (error) {
         console.error('Error fetching pharmacist team:', error);
@@ -398,7 +445,7 @@ router.get('/pharmacists/:pharmacistId/team', async (req, res) => {
     }
 });
 
-router.put('/:userId/subscription', async (req, res) => {
+router.put('/:userId/subscription', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { userId } = req.params;
         const { subscriptionEndDate, planName } = req.body;
@@ -418,7 +465,7 @@ router.put('/:userId/subscription', async (req, res) => {
         const hasActiveSubscription = newSubscriptionEndDate > new Date();
 
         const result = await usersCollection.updateOne(
-            { _id: new ObjectId(userId) as any },
+            { _id: new ObjectId(userId) },
             { 
                 $set: { 
                     subscriptionEndDate: newSubscriptionEndDate,
@@ -432,7 +479,7 @@ router.put('/:userId/subscription', async (req, res) => {
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) }, { projection: { passwordHash: 0 } });
         res.json(updatedUser);
 
     } catch (error) {
@@ -441,10 +488,14 @@ router.put('/:userId/subscription', async (req, res) => {
     }
 });
 
-router.get('/:userId/read-fiches', async (req, res) => {
-    console.log('Received request for /api/users/:userId/read-fiches. User ID:', req.params.userId);
+router.get('/:userId/read-fiches', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { userId } = req.params;
+        const authUser = req.user!;
+
+        if (authUser.role !== UserRole.ADMIN && authUser._id.toString() !== userId) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
 
         const { ObjectId } = await import('mongodb');
         if (!ObjectId.isValid(userId)) {
@@ -452,7 +503,6 @@ router.get('/:userId/read-fiches', async (req, res) => {
         }
 
         const { usersCollection } = await getCollections();
-
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
@@ -467,70 +517,15 @@ router.get('/:userId/read-fiches', async (req, res) => {
     }
 });
 
-router.get('/:userId/quiz-history', async (req, res) => {
-    console.log('Attempting to reach /api/users/:userId/quiz-history. Params:', req.params);
+router.post('/:userId/read-fiches', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
-        const { userId } = req.params;
-        console.log('Inside /api/users/:userId/quiz-history. userId:', userId);
-
-        const { ObjectId } = await import('mongodb');
-        if (!ObjectId.isValid(userId)) {
-            console.log('Invalid ObjectId for quiz-history. userId:', userId);
-            return res.status(400).json({ message: 'Invalid userId.' });
-        }
-
-        const { usersCollection } = await getCollections();
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-        if (!user) {
-            console.log('User not found for quiz-history. userId:', userId);
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        res.json({ quizHistory: user.quizHistory || [] });
-
-    } catch (error) {
-        console.error('Error fetching quiz history:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
-
-// New endpoint to get user by name
-router.get('/by-name', async (req, res) => {
-    try {
-        const { firstName, lastName } = req.query;
-
-        if (!firstName || !lastName) {
-            return res.status(400).json({ message: 'First name and last name are required.' });
-        }
-
-        const { usersCollection } = await getCollections();
-
-        // Perform a case-insensitive search
-        const user = await usersCollection.findOne({
-            firstName: { $regex: new RegExp(firstName as string, 'i') },
-            lastName: { $regex: new RegExp(lastName as string, 'i') }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        // Exclude sensitive information like passwordHash
-        const { passwordHash, ...userWithoutHash } = user;
-        res.json(userWithoutHash);
-
-    } catch (error) {
-        console.error('Error fetching user by name:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
-
-router.post('/:userId/read-fiches', async (req, res) => {
-    console.log('Attempting to reach /api/users/:userId/read-fiches (POST). Params:', req.params);    try {
         const { userId } = req.params;
         const { ficheId } = req.body;
+        const authUser = req.user!;
+
+        if (authUser._id.toString() !== userId) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
 
         if (!ficheId) {
             return res.status(400).json({ message: 'ficheId is required.' });
@@ -549,12 +544,7 @@ router.post('/:userId/read-fiches', async (req, res) => {
             { $push: { readFiches: { ficheId: ficheId, readAt: new Date() } } as any }
         );
 
-        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
-        
-        if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found after update.' });
-        }
-
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) }, { projection: { passwordHash: 0 } });
         res.json(updatedUser);
 
     } catch (error) {
@@ -563,11 +553,15 @@ router.post('/:userId/read-fiches', async (req, res) => {
     }
 });
 
-router.post('/:userId/quiz-history', async (req, res) => {
-    console.log('Attempting to reach /api/users/:userId/quiz-history (POST). Params:', req.params);
+router.post('/:userId/quiz-history', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { userId } = req.params;
         const { quizId, score, completedAt } = req.body;
+        const authUser = req.user!;
+
+        if (authUser._id.toString() !== userId) {
+            return res.status(403).json({ message: 'Accès refusé.' });
+        }
 
         if (quizId === undefined || score === undefined || completedAt === undefined) {
             return res.status(400).json({ message: 'quizId, score, and completedAt are required.' });
@@ -579,20 +573,14 @@ router.post('/:userId/quiz-history', async (req, res) => {
         }
 
         const { usersCollection } = await getCollections();
-
         const quizResult = { quizId, score, completedAt: new Date(completedAt) };
 
         await usersCollection.updateOne(
-            { _id: new ObjectId(userId) as any },
+            { _id: new ObjectId(userId) },
             { $push: { quizHistory: quizResult } as any }
         );
 
-        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) as any });
-        
-        if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found after update.' });
-        }
-
+        const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) }, { projection: { passwordHash: 0 } });
         res.json(updatedUser);
 
     } catch (error) {

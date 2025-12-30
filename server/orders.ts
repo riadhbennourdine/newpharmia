@@ -237,24 +237,48 @@ router.post('/:orderId/submit-payment', authenticateToken, async (req: Authentic
         );
 
         // Now, register the user for each webinar in the order
-        const bulkUpdateOps = order.items.map(item => {
-            const newAttendee = {
-                userId: new ObjectId(userId),
-                status: 'PAYMENT_SUBMITTED' as const,
-                proofUrl: proofUrl,
-                registeredAt: new Date(),
-                timeSlots: item.slots, // Use the slots from the order item
-            };
-            return {
-                updateOne: {
-                    filter: { _id: new ObjectId(item.webinarId) },
-                    update: { $push: { attendees: newAttendee } }
-                }
-            };
-        });
+        // Use a loop to check for existing attendees to avoid duplicates
+        for (const item of order.items) {
+            if (item.webinarId) {
+                const webinarId = new ObjectId(item.webinarId);
+                const webinar = await webinarsCollection.findOne({ _id: webinarId });
+                
+                const alreadyRegistered = webinar?.attendees.some(att => 
+                    (typeof att.userId === 'string' ? att.userId : att.userId.toString()) === userId.toString()
+                );
 
-        if (bulkUpdateOps.length > 0) {
-            await webinarsCollection.bulkWrite(bulkUpdateOps);
+                if (!alreadyRegistered) {
+                    await webinarsCollection.updateOne(
+                        { _id: webinarId },
+                        { 
+                            $push: { 
+                                attendees: {
+                                    userId: new ObjectId(userId),
+                                    status: 'PAYMENT_SUBMITTED' as const,
+                                    proofUrl: proofUrl,
+                                    registeredAt: new Date(),
+                                    timeSlots: item.slots,
+                                } 
+                            } 
+                        }
+                    );
+                } else {
+                    // Update existing pending registration with new proof
+                    await webinarsCollection.updateOne(
+                        { 
+                            _id: webinarId, 
+                            "attendees.userId": new ObjectId(userId),
+                            "attendees.status": { $ne: 'CONFIRMED' } // Don't overwrite confirmed status
+                        },
+                        { 
+                            $set: { 
+                                "attendees.$.proofUrl": proofUrl,
+                                "attendees.$.status": 'PAYMENT_SUBMITTED'
+                            } 
+                        }
+                    );
+                }
+            }
         }
 
         res.json({ message: 'Payment proof submitted and registrations are pending confirmation.' });

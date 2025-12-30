@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType, ObjectSchema, ArraySchema } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, Part, Content, SchemaType, ObjectSchema, ArraySchema, GenerativeModel } from "@google/generative-ai";
 import { GoogleAIFileManager, GoogleAICacheManager, FileState } from "@google/generative-ai/server";
-import { CaseStudy, MemoFicheStatus } from "../types.js";
+import { CaseStudy, MemoFicheStatus, ChatHistoryMessage, SimulationResult } from "../types.js";
 import fetch from 'node-fetch';
 
 // --- Rate Limiting Queue ---
@@ -131,7 +131,7 @@ const cleanJson = (text: string): string => {
 };
 
 // Helper for executing Gemini calls with retry logic
-const executeGeminiCall = async <T>(task: (model: any) => Promise<T>): Promise<T> => {
+const executeGeminiCall = async <T>(task: (model: GenerativeModel) => Promise<T>): Promise<T> => {
     return globalQueue.add(async () => {
         let attempts = 0;
         const maxAttempts = 5;
@@ -367,7 +367,7 @@ import { searchMemoFiches, extractTextFromMemoFiche } from "./algoliaService.js"
 import clientPromise from "./mongo.js";
 import { ObjectId } from "mongodb";
 
-export const getCoachResponse = async (chatHistory: {role: string, text: string}[], context: string, userMessage: string): Promise<string> => {
+export const getCoachResponse = async (chatHistory: ChatHistoryMessage[], context: string, userMessage: string): Promise<string> => {
     return globalQueue.add(async () => {
         let attempts = 0;
         while (attempts < 5) {
@@ -402,7 +402,7 @@ TEXTE BRUT.
 Sujet : ${context || "Général"}
 Message de l'apprenant : ${userMessage}`;
 
-                let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                let safeHistory: Content[] = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 
                 if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
                     safeHistory = [
@@ -427,7 +427,7 @@ Message de l'apprenant : ${userMessage}`;
 
 
 
-export const getChatResponse = async (chatHistory: {role: string, text: string}[], context: string, question: string, title: string): Promise<string> => {
+export const getChatResponse = async (chatHistory: ChatHistoryMessage[], context: string, question: string, title: string): Promise<string> => {
     return globalQueue.add(async () => {
         let attempts = 0;
         while (attempts < 5) {
@@ -436,7 +436,7 @@ export const getChatResponse = async (chatHistory: {role: string, text: string}[
                 const modelName = await getValidModel(key);
                 const genAI = new GoogleGenerativeAI(key);
                 const model = genAI.getGenerativeModel({ model: modelName });
-                const history = chatHistory.map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                const history: Content[] = chatHistory.map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 const chat = model.startChat({ history });
                 const result = await chat.sendMessage(`Tu es PharmIA assistant. Réponds en texte brut. Contexte: ${context}. Question: ${question}`);
                 return result.response.text().trim();
@@ -456,7 +456,7 @@ let currentCacheName: string | null = null;
 export const isCacheReady = () => !!currentCacheName;
 export const refreshKnowledgeBaseCache = async (filePath: string) => { return null; };
 
-export const evaluateSimulation = async (chatHistory: {role: string, text: string}[], topic: string): Promise<any> => {
+export const evaluateSimulation = async (chatHistory: ChatHistoryMessage[], topic: string): Promise<SimulationResult & { searchKeywords: string[] }> => {
     const evaluationSchema: ObjectSchema = {
         type: SchemaType.OBJECT,
         properties: {
@@ -489,14 +489,31 @@ export const evaluateSimulation = async (chatHistory: {role: string, text: strin
     try {
         const result = await model.generateContent(prompt);
         const jsonText = result.response.text();
-        return { ...JSON.parse(jsonText), recommendedFiches: [] };
+        const parsed = JSON.parse(jsonText);
+        return { 
+            ...parsed, 
+            date: new Date(),
+            topic,
+            conversationHistory: chatHistory,
+            recommendedFiches: [] 
+        };
     } catch (error) { 
         console.error("[Gemini] Evaluation failed:", error);
-        return { score: 0, feedback: "Évaluation indisponible momentanément.", recommendedFiches: [] }; 
+        return { 
+            score: 0, 
+            feedback: "Évaluation indisponible momentanément.", 
+            searchKeywords: [], 
+            recommendedFiches: [],
+            date: new Date(),
+            topic,
+            conversationHistory: chatHistory
+        }; 
     }
 };
 
 export const generateDermoFicheJSON = async (pathologyName: string, rawText: string): Promise<Partial<CaseStudy>> => {
+// ... (rest of the function remains the same but ensure data usage is typed)
+
     return globalQueue.add(async () => {
         const key = getApiKey();
         const modelName = await getValidModel(key);
@@ -618,7 +635,7 @@ export const generateDermoFicheJSON = async (pathologyName: string, rawText: str
     });
 };
 
-export const getDermoPatientResponse = async (chatHistory: {role: string, text: string}[], fiche: CaseStudy, userMessage: string): Promise<string> => {
+export const getDermoPatientResponse = async (chatHistory: ChatHistoryMessage[], fiche: CaseStudy, userMessage: string): Promise<string> => {
     return globalQueue.add(async () => {
         let attempts = 0;
         while (attempts < 5) {
@@ -646,7 +663,7 @@ CONSIGNES :
 
 Message du pharmacien : ${userMessage}`;
 
-                let safeHistory = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+                let safeHistory: Content[] = chatHistory.slice(-10).map(msg => ({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
                 
                 if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
                     safeHistory = [
@@ -669,4 +686,4 @@ Message du pharmacien : ${userMessage}`;
     });
 };
 
-export const listModels = async (): Promise<any[]> => { return [{ name: "auto-discovered" }]; };
+export const listModels = async (): Promise<{name: string}[]> => { return [{ name: "auto-discovered" }]; };
