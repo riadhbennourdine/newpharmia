@@ -825,16 +825,9 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
 
         // Authorization Logic
         const userRole = req.user?.role;
-        const webinarStatus = getWebinarCalculatedStatus(webinar.date);
 
         if (userRole !== UserRole.ADMIN) {
-            if (userRole === UserRole.ADMIN_WEBINAR) {
-                if (webinarStatus === WebinarStatus.PAST) {
-                    return res.status(403).json({ message: 'Webinar admins cannot edit resources for past webinars.' });
-                }
-            } else {
-                return res.status(403).json({ message: 'You do not have permission to perform this action.' });
-            }
+             return res.status(403).json({ message: 'You do not have permission to perform this action.' });
         }
 
         // The rest of the logic remains the same
