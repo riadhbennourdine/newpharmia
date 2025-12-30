@@ -168,8 +168,6 @@ const WebinarManagement: React.FC = () => {
             const webinarToEdit = [...(soonestWebinar ? [soonestWebinar] : []), ...otherWebinars, ...pastWebinars].find(w => w._id.toString() === location.state.editWebinarId);
             if (webinarToEdit) {
                 handleOpenModal(webinarToEdit);
-                // Clear state to prevent reopening on re-renders (optional but good practice, though location state persists)
-                 window.history.replaceState({}, document.title)
             }
         }
     }, [location.state, isLoading, soonestWebinar, otherWebinars, pastWebinars, isModalOpen]);
@@ -246,6 +244,9 @@ const WebinarManagement: React.FC = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setCurrentWebinar(null);
+        if (location.state?.editWebinarId) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
     };
 
     const handleOpenMatcher = (attendee: any, webinarId: string) => {
