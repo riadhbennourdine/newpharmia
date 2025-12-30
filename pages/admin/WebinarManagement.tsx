@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent, useMemo, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Webinar, UserRole, WebinarGroup, User, WebinarStatus, WebinarResource } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { Spinner, TrashIcon, PencilIcon, ShareIcon, MediaIcon } from '../../components/Icons';
@@ -124,42 +124,55 @@ const WebinarManagement: React.FC = () => {
         
         
             const fetchWebinars = useCallback(async () => {
-                if (!token) return;
-                try {
-                    setIsLoading(true);
-                    const response = await fetch('/api/webinars', { 
-                        headers: { 'Authorization': `Bearer ${token}` },
-                    });
-                    if (!response.ok) throw new Error('Failed to fetch webinars');
-                    const data: Webinar[] = await response.json();
-        
-                    let allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-                    
-                    // Filter by group if selected
-                    if (filterGroup !== 'ALL') {
-                        allWebinars = allWebinars.filter(w => w.group === filterGroup);
-                    }
+        if (!token) return;
+        try {
+            setIsLoading(true);
+            const response = await fetch('/api/webinars', { 
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Failed to fetch webinars');
+            const data: Webinar[] = await response.json();
 
-                    const now = new Date();
-                    
-                    const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
-                    const past = allWebinars.filter(w => new Date(w.date) < now);
-        
-                    setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-                    
-                    if (upcoming.length > 0) {
-                        setSoonestWebinar(upcoming[0]);
-                        setOtherWebinars(upcoming.slice(1));
-                    } else {
-                        setSoonestWebinar(null);
-                        setOtherWebinars([]);
-                    }
-                } catch (err: any) {
-                    setError(err.message);
-                } finally {
-                    setIsLoading(false);
-                }
-            }, [token, filterGroup]);
+            let allWebinars = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            
+            // Filter by group if selected
+            if (filterGroup !== 'ALL') {
+                allWebinars = allWebinars.filter(w => w.group === filterGroup);
+            }
+
+            const now = new Date();
+            
+            const upcoming = allWebinars.filter(w => new Date(w.date) >= now);
+            const past = allWebinars.filter(w => new Date(w.date) < now);
+
+            setPastWebinars(past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+            
+            if (upcoming.length > 0) {
+                setSoonestWebinar(upcoming[0]);
+                setOtherWebinars(upcoming.slice(1));
+            } else {
+                setSoonestWebinar(null);
+                setOtherWebinars([]);
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token, filterGroup]);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.editWebinarId && !isLoading && !isModalOpen) {
+            const webinarToEdit = [...(soonestWebinar ? [soonestWebinar] : []), ...otherWebinars, ...pastWebinars].find(w => w._id.toString() === location.state.editWebinarId);
+            if (webinarToEdit) {
+                handleOpenModal(webinarToEdit);
+                // Clear state to prevent reopening on re-renders (optional but good practice, though location state persists)
+                 window.history.replaceState({}, document.title)
+            }
+        }
+    }, [location.state, isLoading, soonestWebinar, otherWebinars, pastWebinars, isModalOpen]);
         
     useEffect(() => {
         if (token) {
