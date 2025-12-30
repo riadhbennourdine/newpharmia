@@ -2,7 +2,7 @@ import express from 'express';
 import { User, UserRole } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
-import { authenticateToken, checkRole } from './authMiddleware.js';
+import { authenticateToken, checkRole, AuthenticatedRequest } from './authMiddleware.js';
 
 console.log('server/users.ts: Initializing users router.');
 

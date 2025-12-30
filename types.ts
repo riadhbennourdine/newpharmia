@@ -36,7 +36,7 @@ export interface SimulationResult {
 export interface QuizHistoryEntry {
   quizId: string;
   score: number;
-  date: Date;
+  completedAt: Date;
   answers?: any[]; // Detailed answers could be typed later if needed
 }
 
