@@ -59,15 +59,28 @@ const PharmacienDashboard: React.FC = () => {
     }, [user]);
 
     const fetchPreparators = useCallback(async () => {
-        if (!group) return;
+        if (!group || !token) return;
         try {
-            const response = await fetch(`/api/users/groups/${group._id}/preparateurs`);
-            const data = await response.json();
-            setPreparators(data);
+            const response = await fetch(`/api/users/groups/${group._id}/preparateurs`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    setPreparators(data);
+                } else {
+                    console.error('Expected array of preparators, got:', data);
+                    setPreparators([]);
+                }
+            } else {
+                console.error('Failed to fetch preparators:', response.status);
+            }
         } catch (error) {
             console.error('Error fetching preparators:', error);
         }
-    }, [group]);
+    }, [group, token]);
 
     useEffect(() => {
         if (selectedMenu === 'equipe' && group) {
