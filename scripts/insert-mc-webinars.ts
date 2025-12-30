@@ -54,7 +54,7 @@ const insertMasterClasses = async () => {
     try {
         console.log('Connecting to MongoDB...');
         client = await MongoClient.connect(MONGO_URL);
-        const db = client.db();
+        const db = client.db('pharmia');
         const webinarsCollection = db.collection('webinars');
 
         console.log(`Attempting to insert ${masterClassData.length} MasterClasses...`);

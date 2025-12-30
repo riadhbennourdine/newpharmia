@@ -22,6 +22,8 @@ export const ICONS = {
     'kahoot': 'icons8-kahoot-48.png',
     'glossary': '12.png',
     'media': '13.png',
+    'diaporama': '13.png',
+    'video-explainer': '13.png',
 };
 
 export function getIconUrl(iconName: keyof typeof ICONS): string {

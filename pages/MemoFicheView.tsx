@@ -12,7 +12,6 @@ import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import EmbeddableViewer from '../components/EmbeddableViewer';
-import { getFtpViewUrl } from '../utils/ftp';
 
 const ComparisonCard: React.FC<{ title: string; description: string }> = ({ title, description }) => {
     const navigate = useNavigate();
@@ -530,26 +529,26 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                     items.push({
                         id: 'video-explainer' as TabName,
                         label: 'Vidéo',
-                        icon: <img src={getFtpViewUrl("media.png")} className="h-8 w-8" alt="Vidéo" />
+                        icon: <img src={getAbsoluteImageUrl(getIconUrl('video-explainer'))} className="h-8 w-8" alt="Vidéo" />
                     });    }
     if (caseStudy.pdfSlideshowUrl) {
         items.push({
             id: 'diaporama' as TabName,
             label: 'Présentation',
-            icon: <img src={getFtpViewUrl("diaporama.png")} className="h-8 w-8" alt="Diaporama" />
+            icon: <img src={getAbsoluteImageUrl(getIconUrl('diaporama'))} className="h-8 w-8" alt="Diaporama" />
         });
     }
 
     // Add other learning tool tabs only if not in "le-medicament" manual state or if they have content
         if (!isLeMedicamentManual) {
             if (hasMemoContent) {
-                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src={getFtpViewUrl("memo.png")} className="h-8 w-8" alt="Mémo" /> });
+                items.push({ id: 'memo' as TabName, label: 'Mémo', icon: <img src={getAbsoluteImageUrl(getIconUrl('memo'))} className="h-8 w-8" alt="Mémo" /> });
             }
             if (hasFlashcards) {
-                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src={getFtpViewUrl("flashcards.png")} className="h-8 w-8" alt="Flashcards" /> });
+                items.push({ id: 'flashcards' as TabName, label: 'Flashcards', icon: <img src={getAbsoluteImageUrl(getIconUrl('flashcards'))} className="h-8 w-8" alt="Flashcards" /> });
             }
             if (!isPreview && hasQuiz) {
-                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src={getFtpViewUrl("quiz.png")} className="h-8 w-8" alt="Quiz" /> });
+                items.push({ id: 'quiz' as TabName, label: 'Quiz', icon: <img src={getAbsoluteImageUrl(getIconUrl('quiz'))} className="h-8 w-8" alt="Quiz" /> });
             }
             if (!isPreview && caseStudy.kahootUrl) {
                 items.push({ id: 'kahoot' as TabName, label: 'Kahoot', icon: <img src={getAbsoluteImageUrl(getIconUrl('kahoot'))} className="h-8 w-8" alt="Kahoot" /> });
@@ -558,7 +557,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 items.push({ id: 'glossary' as TabName, label: 'Glossaire', icon: <img src={getAbsoluteImageUrl(getIconUrl('glossary'))} className="h-8 w-8" alt="Glossaire" /> });
             }
             if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
-                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getFtpViewUrl("media.png")} className="h-8 w-8" alt="Média" /> });
+                items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getAbsoluteImageUrl(getIconUrl('media'))} className="h-8 w-8" alt="Média" /> });
             }
         }    
     return items;

@@ -4,7 +4,6 @@ import { Webinar, UserRole, WebinarGroup, WebinarStatus, WebinarResource } from 
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import { Spinner, SparklesIcon, ShoppingCartIcon, CheckCircleIcon, PlayIcon, DocumentTextIcon, PhotoIcon, BookOpenIcon, VideoCameraIcon } from './Icons'; // Assuming Icons.tsx exists
-import { getFtpViewUrl } from '../utils/ftp';
 
 const formatUrl = (url: string | undefined): string => {
     if (!url) return '#';
