@@ -14,7 +14,7 @@ interface Props {
 }
 
 const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
-    const { user, isLoading: isLoadingUser } = useAuth();
+    const { user, token, isLoading: isLoadingUser } = useAuth();
     const { fiches, isLoading: fichesLoading } = useData();
 
     const [group, setGroup] = useState<Group | null>(initialGroup || null);
@@ -64,7 +64,11 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
             setIsLoadingGroup(true);
             setGroupError(null);
             try {
-                const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const response = await fetch('/api/groups', { headers });
                 if (response.ok) {
                     const data = await response.json();
                     setGroup(data);
@@ -130,9 +134,14 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
             if (ficheIdsToFetch.length === 0) return;
 
             try {
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
                 const responses = await Promise.all(
                     ficheIdsToFetch.map(ficheId => 
-                        fetch(`/api/memofiches/${ficheId}`, { headers: { 'x-user-id': user._id as string } })
+                        fetch(`/api/memofiches/${ficheId}`, { headers })
                     )
                 );
 

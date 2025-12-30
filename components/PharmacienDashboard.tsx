@@ -10,7 +10,7 @@ import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
 
 const PharmacienDashboard: React.FC = () => {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const [group, setGroup] = useState<Group | null>(null);
     const [isLoadingGroup, setIsLoadingGroup] = useState(true);
     const [groupError, setGroupError] = useState<string | null>(null);
@@ -34,7 +34,11 @@ const PharmacienDashboard: React.FC = () => {
             setIsLoadingGroup(true);
             setGroupError(null);
             try {
-                const response = await fetch('/api/groups', { headers: { 'x-user-id': user._id as string } });
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const response = await fetch('/api/groups', { headers });
                 if (response.ok) {
                     const data = await response.json();
                     setGroup(data);

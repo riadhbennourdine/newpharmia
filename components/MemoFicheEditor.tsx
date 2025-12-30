@@ -10,6 +10,12 @@ import { buildAIPrompt } from '../utils/aiPromptBuilder'; // Import AI prompt bu
 import { generateCaseStudyDraft, generateLearningTools } from '../services/geminiService'; // Import AI services
 
 import { TOPIC_CATEGORIES } from '../constants';
+import { FormSection, Label, Input, Textarea, Select } from './MemoFicheEditor/UI';
+import { RichContentSectionEditor, SectionWrapper } from './MemoFicheEditor/SectionEditors';
+import { GeneralInfoSection } from './MemoFicheEditor/GeneralInfoSection';
+import { MediaSection } from './MemoFicheEditor/MediaSection';
+import { FlashcardsEditor, QuizEditor } from './MemoFicheEditor/FlashcardsQuizEditor';
+import { AIGeneratorModal } from './MemoFicheEditor/AIGeneratorModal';
 
 interface MemoFicheEditorProps {
   initialCaseStudy?: CaseStudy;
@@ -196,130 +202,6 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
 };
 
 type ListName = 'quiz' | 'flashcards' | 'glossary';
-
-const FormSection: React.FC <{title: string, children: React.ReactNode}> = ({ title, children }) => (
-    <div className="border p-4 rounded-lg bg-white shadow-sm">
-      <h3 className="text-xl font-semibold text-slate-800 mb-4">{title}</h3>
-      <div className="space-y-4">{children}</div>
-    </div>
-);
-
-const Label: React.FC <{htmlFor: string, children: React.ReactNode}> = ({ htmlFor, children }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">{children}</label>
-);
-
-const Input: React.FC <any> = (props) => (
-  <input {...props} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-);
-
-const Textarea: React.FC <any> = (props) => (
-  <textarea {...props} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-);
-
-interface RichContentSectionEditorProps {
-  section: MemoFicheSection;
-  onChange: (section: MemoFicheSection) => void;
-  showTitle?: boolean;
-  onRemove?: () => void;
-  openImageModal: (callback: (url: string) => void) => void;
-}
-
-const RichContentSectionEditor: React.FC<RichContentSectionEditorProps> = ({ section, onChange, showTitle = true, onRemove, openImageModal }) => {
-
-  const handleContentChange = (index: number, value: string) => {
-    const newContent = [...(section.content || [])];
-    newContent[index] = { ...newContent[index], value };
-    onChange({ ...section, content: newContent });
-  };
-
-  const addContentBlock = (type: 'text' | 'image' | 'video') => {
-    const newContent = [...(section.content || []), { type, value: '' }];
-    onChange({ ...section, content: newContent });
-  };
-
-  const removeContentBlock = (index: number) => {
-    const newContent = [...(section.content || [])];
-    newContent.splice(index, 1);
-    onChange({ ...section, content: newContent });
-  };
-
-  return (
-    <div className="border p-3 rounded-md bg-slate-50 relative">
-      {showTitle && (
-        <div className="flex items-start gap-2 mb-2">
-          <div className="flex-grow">
-            <label htmlFor={`custom_title_${section.id}`}>Titre de la section</label>
-            <Input type="text" id={`custom_title_${section.id}`} value={section.title} onChange={e => onChange({ ...section, title: e.target.value })} />
-          </div>
-          {onRemove && <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>}
-        </div>
-      )}
-      <div className="space-y-2">
-        {(section.content || []).map((item, index) => (
-          <div key={index} className="flex items-center gap-2">
-            {item.type === 'text' && <Textarea value={item.value} onChange={e => handleContentChange(index, e.target.value)} rows={3} className="flex-grow" />}
-            {item.type === 'image' && (
-              <div className="flex-grow flex items-center gap-2">
-                <Input type="text" value={getAbsoluteImageUrl(item.value)} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de l'image" className="flex-grow" />
-                <button type="button" onClick={() => openImageModal(url => handleContentChange(index, url))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
-                  <ImageIcon className="h-5 w-5 text-slate-600" />
-                </button>
-              </div>
-            )}
-            {item.type === 'video' && <Input type="text" value={item.value} onChange={e => handleContentChange(index, e.target.value)} placeholder="URL de la vidéo YouTube" className="flex-grow" />}
-            <button type="button" onClick={() => removeContentBlock(index)} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center gap-2 mt-2">
-        <button type="button" onClick={() => addContentBlock('text')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-          <PlusCircleIcon className="h-5 w-5 mr-2" />
-          Texte
-        </button>
-        <button type="button" onClick={() => addContentBlock('image')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-          <PlusCircleIcon className="h-5 w-5 mr-2" />
-          Image
-        </button>
-        <button type="button" onClick={() => addContentBlock('video')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200">
-          <PlusCircleIcon className="h-5 w-5 mr-2" />
-          Vidéo
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Section: React.FC <{
-    title: string;
-    children: React.ReactNode;
-    onMoveUp: () => void;
-    onMoveDown: () => void;
-    isFirst: boolean;
-    isLast: boolean;
-    onRemove?: () => void;
-}> = ({ title, children, onMoveUp, onMoveDown, isFirst, isLast, onRemove }) => {
-    return (
-        <div className="border p-4 rounded-lg bg-white shadow-sm relative">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-slate-800">{title}</h3>
-                <div className="flex items-center gap-2">
-                    <button type="button" onClick={onMoveUp} disabled={isFirst} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ChevronUpIcon className="h-5 w-5" />
-                    </button>
-                    <button type="button" onClick={onMoveDown} disabled={isLast} className="text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <ChevronDownIcon className="h-5 w-5" />
-                    </button>
-                    {onRemove && (
-                        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700">
-                            <TrashIcon className="h-5 w-5" />
-                        </button>
-                    )}
-                </div>
-            </div>
-            <div className="space-y-4">{children}</div>
-        </div>
-    );
-};
 
 const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onSave, onCancel }) => {
   const [caseStudy, setCaseStudy] = useState<CaseStudy>(createSafeCaseStudy(initialCaseStudy));
@@ -557,6 +439,16 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
     setCaseStudy(prev => ({ ...prev, customSections: newCustomSections }));
   };
 
+  const removeCustomSection = (id: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette section personnalisée ?")) {
+      setCaseStudy(prev => {
+        const newCustomSections = prev.customSections?.filter(s => s.id !== id) || [];
+        const newSectionOrder = prev.sectionOrder?.filter(sectionId => sectionId !== id) || [];
+        return { ...prev, customSections: newCustomSections, sectionOrder: newSectionOrder };
+      });
+    }
+  };
+
   const addCustomSection = () => {
     setCaseStudy(prev => {
       const newId = `custom-${Date.now()}`;
@@ -628,131 +520,29 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
         onClose={() => setImageModalOpen(false)}
         onSelectImage={imageCallback}
       />
-      <h2 className="text-3xl font-bold text-slate-800 mb-6">{initialCaseStudy?._id ? 'Modifier la Mémofiche' : 'Créer une Nouvelle Mémofiche'}</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      
+      <h2 className="text-3xl font-bold text-slate-800 mb-6">
+        {initialCaseStudy?._id ? 'Modifier la Mémofiche' : 'Créer une Nouvelle Mémofiche'}
+      </h2>
 
-        <FormSection title="Informations Générales">
-          <div>
-            <Label htmlFor="type">Type de mémofiche</Label>
-            <select name="type" id="type" value={caseStudy.type} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <option value="maladie">Maladie</option>
-                <option value="pharmacologie">Pharmacologie</option>
-                <option value="dermocosmetique">Dermocosmétique</option>
-                <option value="dispositifs-medicaux">Dispositifs Médicaux</option>
-                <option value="ordonnances">Ordonnances</option>
-                <option value="communication">Communication</option>
-                <option value="savoir">Savoir</option>
-                <option value="le-medicament">Le médicament</option>
-            </select>
-          </div>
-          <div>
-            <Label htmlFor="title">Titre</Label>
-            <Input type="text" name="title" id="title" value={caseStudy.title} onChange={handleChange} />
-          </div>
-          <div>
-            <Label htmlFor="shortDescription">Description Courte</Label>
-            <Textarea name="shortDescription" id="shortDescription" rows={3} value={caseStudy.shortDescription} onChange={handleChange} />
-          </div>
-          {canEditStatus && (
-            <div>
-              <Label htmlFor="status">Statut</Label>
-              <select name="status" id="status" value={caseStudy.status} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                  {Object.values(MemoFicheStatus).map(status => (
-                      <option key={status} value={status}>{status}</option>
-                  ))}
-              </select>
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="theme">Thème Pédagogique</Label>
-              <select name="theme" id="theme" value={caseStudy.theme} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <option value="">Sélectionner un thème</option>
-                {TOPIC_CATEGORIES[0].topics.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            {caseStudy.type !== 'communication' && (
-            <div>
-              <Label htmlFor="system">Système/Organe</Label>
-              <Input type="text" name="system" id="system" value={caseStudy.system} onChange={handleChange} />
-            </div>
-            )}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <Label htmlFor="level">Niveau de difficulté</Label>
-                <select name="level" id="level" value={caseStudy.level} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <option>Facile</option>
-                    <option>Moyen</option>
-                    <option>Difficile</option>
-                </select>
-            </div>
-            <div className="flex items-center pt-6">
-                <input type="checkbox" name="isFree" id="isFree" checked={caseStudy.isFree} onChange={handleChange} className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500" />
-                <label htmlFor="isFree" className="ml-2 block text-sm text-gray-900">Contenu gratuit</label>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="coverImageUrl">Image de couverture</Label>
-            <div className="mt-1 flex items-center gap-2">
-                <Input type="text" name="coverImageUrl" id="coverImageUrl" value={getAbsoluteImageUrl(caseStudy.coverImageUrl)} onChange={handleChange} className="flex-grow" />
-                <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, coverImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
-                    <ImageIcon className="h-5 w-5 text-slate-600" />
-                </button>
-            </div>
-          </div>
-          {caseStudy.coverImageUrl && (
-            <div>
-              <Label htmlFor="coverImagePosition">Position de l\'image de couverture</Label>
-              <select name="coverImagePosition" id="coverImagePosition" value={caseStudy.coverImagePosition || 'middle'} onChange={handleChange} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <option value="top">Haut</option>
-                <option value="middle">Milieu</option>
-                    <option value="bottom">Bas</option>
-                </select>
-            </div>
-          )}
-          <div>
-            <Label>Liens Vidéo YouTube</Label>
-            {caseStudy.youtubeLinks?.map((link, index) => (
-                <div key={index} className="flex items-center space-x-2 mb-2">
-                    <Input type="text" placeholder="Titre de la vidéo" value={link.title} onChange={(e) => handleYoutubeLinkChange(index, 'title', e.target.value)} />
-                    <Input type="text" placeholder="URL de la vidéo" value={link.url} onChange={(e) => handleYoutubeLinkChange(index, 'url', e.target.value)} />
-                    <button type="button" onClick={() => removeYoutubeLink(index)} className="text-red-500 hover:text-red-700">
-                        <TrashIcon className="h-5 w-5" />
-                    </button>
-                </div>
-            ))}
-            {(caseStudy.youtubeLinks?.length || 0) < 3 && (
-                <button type="button" onClick={addYoutubeLink} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
-                    <PlusCircleIcon className="h-5 w-5 mr-2" />
-                    Ajouter un lien YouTube
-                </button>
-            )}
-          </div>
-        </FormSection>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <GeneralInfoSection 
+            caseStudy={caseStudy}
+            handleChange={handleChange}
+            canEditStatus={!!canEditStatus}
+            openImageModal={openImageModal}
+            setCaseStudy={setCaseStudy}
+            handleYoutubeLinkChange={handleYoutubeLinkChange}
+            addYoutubeLink={addYoutubeLink}
+            removeYoutubeLink={removeYoutubeLink}
+        />
         
-        <FormSection title="Médias et Présentations">
-            <div>
-                <Label htmlFor="youtubeExplainerUrl">URL Vidéo YouTube Explicative</Label>
-                <Input type="text" name="youtubeExplainerUrl" id="youtubeExplainerUrl" value={caseStudy.youtubeExplainerUrl || ''} onChange={handleChange} />
-            </div>
-            <div>
-                <Label htmlFor="infographicImageUrl">URL ou Télécharger Infographie</Label>
-                <div className="mt-1 flex items-center gap-2">
-                    <Input type="text" name="infographicImageUrl" id="infographicImageUrl" value={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} onChange={handleChange} className="flex-grow" />
-                    <button type="button" onClick={() => openImageModal(url => setCaseStudy(prev => ({ ...prev, infographicImageUrl: url })))} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
-                        <ImageIcon className="h-5 w-5 text-slate-600" />
-                    </button>
-                </div>
-            </div>
-            <div>
-                <Label htmlFor="pdfSlideshowUrl">Présentation (URL ou code d\'intégration)</Label>
-                <Textarea name="pdfSlideshowUrl" id="pdfSlideshowUrl" value={caseStudy.pdfSlideshowUrl || ''} onChange={handleChange} rows={3} />
-                <p className="mt-1 text-xs text-slate-500">
-                  Accepte les URL de PDF, les liens de partage Canva, ou le code d\'intégration HTML (iframe).
-                </p>
-            </div>
-        </FormSection>
+        <MediaSection 
+            caseStudy={caseStudy}
+            handleChange={handleChange}
+            openImageModal={openImageModal}
+            setCaseStudy={setCaseStudy}
+        />
 
         {displayedSections.map((sectionInfo, index) => {
             let content;
@@ -760,20 +550,34 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             if (sectionInfo.isCustom) {
                 const customSectionIndex = caseStudy.customSections.findIndex(cs => cs.id === sectionInfo.id);
                 if (customSectionIndex > -1) {
-                    content = <RichContentSectionEditor section={caseStudy.customSections[customSectionIndex]} onChange={(newSection) => {
-                        const newCustomSections = [...caseStudy.customSections];
-                        newCustomSections[customSectionIndex] = newSection;
-                        handleCustomSectionChange(newCustomSections);
-                    }} onRemove={() => removeCustomSection(sectionInfo.id)} openImageModal={openImageModal} />;
+                    content = (
+                        <RichContentSectionEditor 
+                            section={caseStudy.customSections[customSectionIndex]} 
+                            onChange={(newSection) => {
+                                const newCustomSections = [...caseStudy.customSections];
+                                newCustomSections[customSectionIndex] = newSection;
+                                handleCustomSectionChange(newCustomSections);
+                            }} 
+                            onRemove={() => removeCustomSection(sectionInfo.id)} 
+                            openImageModal={openImageModal} 
+                        />
+                    );
                 }
             } else if (sectionInfo.isMemoSection) {
                 const memoSectionIndex = caseStudy.memoSections.findIndex(ms => ms.id === sectionInfo.id);
                 if (memoSectionIndex > -1) {
-                    content = <RichContentSectionEditor section={caseStudy.memoSections[memoSectionIndex]} onChange={(newSection) => {
-                        const newMemoSections = [...caseStudy.memoSections];
-                        newMemoSections[memoSectionIndex] = newSection;
-                        setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
-                    }} showTitle={true} openImageModal={openImageModal} />;
+                    content = (
+                        <RichContentSectionEditor 
+                            section={caseStudy.memoSections[memoSectionIndex]} 
+                            onChange={(newSection) => {
+                                const newMemoSections = [...caseStudy.memoSections];
+                                newMemoSections[memoSectionIndex] = newSection;
+                                setCaseStudy(prev => ({ ...prev, memoSections: newMemoSections }));
+                            }} 
+                            showTitle={true} 
+                            openImageModal={openImageModal} 
+                        />
+                    );
                 }
             } else {
                 switch (sectionInfo.id) {
@@ -803,7 +607,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     case 'dietaryAdvice':
                     case 'keyPoints':
                     case 'references':
-                        content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id, e.target.value)} />;
+                        content = <Textarea rows={5} value={(caseStudy[sectionInfo.id] as string[] || []).join('\n')} onChange={(e) => handleArrayChange(sectionInfo.id as keyof CaseStudy, e.target.value)} />;
                         break;
                     case 'conseilsTraitement':
                         content = (
@@ -811,7 +615,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                                 {(caseStudy.conseilsTraitement as { medicament: string; conseils: string[] }[] || []).map((item, itemIndex) => (
                                     <div key={itemIndex} className="p-3 border rounded-md bg-slate-50 space-y-2">
                                         <div className="flex justify-between items-center">
-                                            <Label htmlFor={`medicament-${itemIndex}`}>Médicament</Label>
+                                            <Label>Médicament</Label>
                                             <button type="button" onClick={() => {
                                                 setCaseStudy(prev => {
                                                     const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
@@ -820,15 +624,15 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                                                 });
                                             }} className="text-red-500 hover:text-red-700"><TrashIcon className="h-5 w-5" /></button>
                                         </div>
-                                        <Input id={`medicament-${itemIndex}`} type="text" value={item.medicament} onChange={(e) => {
+                                        <Input type="text" value={item.medicament} onChange={(e) => {
                                             setCaseStudy(prev => {
                                                 const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
                                                 newConseils[itemIndex] = { ...newConseils[itemIndex], medicament: e.target.value };
                                                 return { ...prev, conseilsTraitement: newConseils };
                                             });
                                         }} />
-                                        <Label htmlFor={`conseils-${itemIndex}`}>Conseils (une ligne par conseil)</Label>
-                                        <Textarea id={`conseils-${itemIndex}`} rows={5} value={item.conseils.join('\n')} onChange={(e) => {
+                                        <Label>Conseils (une ligne par conseil)</Label>
+                                        <Textarea rows={5} value={item.conseils.join('\n')} onChange={(e) => {
                                             setCaseStudy(prev => {
                                                 const newConseils = [...(prev.conseilsTraitement as { medicament: string; conseils: string[] }[] || [])];
                                                 newConseils[itemIndex] = { ...newConseils[itemIndex], conseils: e.target.value.split('\n').filter(c => c.trim() !== '') };
@@ -878,7 +682,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
 
 
             return (
-                <Section
+                <SectionWrapper
                     key={sectionInfo.id}
                     title={sectionInfo.isMemoSection ? '' : sectionInfo.title}
                     onMoveUp={() => moveSection(index, 'up')}
@@ -888,7 +692,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
                     onRemove={() => sectionInfo.isCustom ? removeCustomSection(sectionInfo.id) : removeMainSection(sectionInfo.id)}
                 >
                     {content}
-                </Section>
+                </SectionWrapper>
             );
         })}
 
@@ -904,78 +708,20 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
             Ajouter une section personnalisée
         </button>
 
-        <FormSection title="Flashcards">
-          {caseStudy.flashcards.map((flashcard, index) => (
-            <div key={index} className="p-3 border rounded-md bg-slate-50 space-y-2">
-              <div className="flex justify-between items-center">
-                <p className="font-semibold">Flashcard {index + 1}</p>
-                <button type="button" onClick={() => handleRemoveItem('flashcards', index)} className="text-red-500 hover:text-red-700">
-                  <TrashIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div>
-                <Label htmlFor={`flashcard-q-${index}`}>Question</Label>
-                <Input id={`flashcard-q-${index}`} type="text" value={flashcard.question} onChange={(e) => handleItemChange('flashcards', index, 'question', e.target.value)} />
-              </div>
-              <div>
-                <Label htmlFor={`flashcard-a-${index}`}>Réponse</Label>
-                <Textarea id={`flashcard-a-${index}`} rows={2} value={flashcard.answer} onChange={(e) => handleItemChange('flashcards', index, 'answer', e.target.value)} />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={() => handleAddItem('flashcards')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
-            <PlusCircleIcon className="h-5 w-5 mr-2" />
-            Ajouter une Flashcard
-          </button>
-        </FormSection>
+        <FlashcardsEditor 
+            caseStudy={caseStudy}
+            handleItemChange={handleItemChange}
+            handleAddItem={handleAddItem}
+            handleRemoveItem={handleRemoveItem}
+        />
 
-        <FormSection title="Quiz">
-          {caseStudy.quiz?.map((question, qIndex) => (
-            <div key={qIndex} className="p-3 border rounded-md bg-slate-50 space-y-3">
-              <div className="flex justify-between items-center">
-                <p className="font-semibold">Question {qIndex + 1}</p>
-                <button type="button" onClick={() => handleRemoveItem('quiz', qIndex)} className="text-red-500 hover:text-red-700">
-                  <TrashIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div>
-                <Label htmlFor={`quiz-q-${qIndex}`}>Question</Label>
-                <Input id={`quiz-q-${qIndex}`} type="text" value={question.question} onChange={(e) => handleItemChange('quiz', qIndex, 'question', e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Options et bonne réponse</Label>
-                {question.options.map((option, oIndex) => (
-                  <div key={oIndex} className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      id={`quiz-q${qIndex}-o${oIndex}-radio`}
-                      name={`quiz-correct-${qIndex}`}
-                      checked={question.correctAnswerIndex === oIndex}
-                      onChange={() => handleItemChange('quiz', qIndex, 'correctAnswerIndex', oIndex)}
-                      className="h-5 w-5 text-teal-600 border-gray-300 focus:ring-teal-500 cursor-pointer"
-                    />
-                    <Input
-                      id={`quiz-q${qIndex}-o${oIndex}`}
-                      placeholder={`Option ${oIndex + 1}`}
-                      type="text"
-                      value={option}
-                      onChange={(e) => handleQuizOptionChange(qIndex, oIndex, e.target.value)}
-                      className="flex-grow"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div>
-                <Label htmlFor={`quiz-exp-${qIndex}`}>Explication</Label>
-                <Textarea id={`quiz-exp-${qIndex}`} rows={2} value={question.explanation} onChange={(e) => handleItemChange('quiz', qIndex, 'explanation', e.target.value)} />
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={() => handleAddItem('quiz')} className="flex items-center px-3 py-1 bg-teal-100 text-teal-800 text-sm font-semibold rounded-md hover:bg-teal-200 mt-2">
-            <PlusCircleIcon className="h-5 w-5 mr-2" />
-            Ajouter une Question
-          </button>
-        </FormSection>
+        <QuizEditor 
+            caseStudy={caseStudy}
+            handleItemChange={handleItemChange}
+            handleAddItem={handleAddItem}
+            handleRemoveItem={handleRemoveItem}
+            handleQuizOptionChange={handleQuizOptionChange}
+        />
 
         <div className="flex justify-between items-center">
           <div>
@@ -998,41 +744,15 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({ initialCaseStudy, onS
           </div>
         </div>
 
-        {/* AI Generation Modal */}
-        {isGenModalOpen && (
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50 animate-fade-in">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Générer le contenu par IA</h3>
-                    {aiGenerationError && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative mb-4" role="alert">
-                            <strong className="font-bold">Erreur : </strong>
-                            <span className="block sm:inline">{aiGenerationError}</span>
-                        </div>
-                    )}
-                    <textarea
-                        className="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        rows={5}
-                        placeholder="Décrivez ce que l\'IA doit générer (ex: 'un résumé détaillé du mécanisme d\'action de l\'insuline')."
-                        value={aiPromptInput}
-                        onChange={(e) => setAiPromptInput(e.target.value)}
-                        disabled={isGeneratingAI}
-                    ></textarea>
-                    <div className="flex justify-end space-x-4">
-                        <button type="button" onClick={() => { setIsGenModalOpen(false); setAiPromptInput(''); setAiGenerationError(null); }} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" disabled={isGeneratingAI}>Annuler</button>
-                        <button type="button" onClick={handleGenerateAI} className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400" disabled={isGeneratingAI}>
-                            {isGeneratingAI ? (
-                                <>
-                                    <Spinner className="-ml-1 mr-2 h-4 w-4 text-white" />
-                                    <span>Génération...</span>
-                                </>
-                            ) : (
-                                <span>Générer</span>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
+        <AIGeneratorModal 
+            isOpen={isGenModalOpen}
+            onClose={() => { setIsGenModalOpen(false); setAiPromptInput(''); setAiGenerationError(null); }}
+            onGenerate={handleGenerateAI}
+            aiPromptInput={aiPromptInput}
+            setAiPromptInput={setAiPromptInput}
+            isGeneratingAI={isGeneratingAI}
+            aiGenerationError={aiGenerationError}
+        />
 
         {showQRCode && canGenerateQRCode && (
           <div className="mt-6 flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-md border animate-fade-in">

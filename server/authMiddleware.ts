@@ -20,7 +20,7 @@ export const softAuthenticateToken = async (req: AuthenticatedRequest, res: Resp
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_default_secret') as { id: string };
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');
@@ -53,7 +53,7 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_default_secret') as { id: string };
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
         const client = await clientPromise;
         const db = client.db('pharmia');
         const usersCollection = db.collection<User>('users');

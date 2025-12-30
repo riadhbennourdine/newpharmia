@@ -50,8 +50,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (params.status) queryParams.append('selectedStatus', params.status);
 
       const headers: HeadersInit = {};
-      if (user) {
-        headers['x-user-id'] = user._id;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
       const response = await fetch(`/api/memofiches?${queryParams.toString()}`, { headers });

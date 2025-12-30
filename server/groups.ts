@@ -3,6 +3,7 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { Group, User, UserRole } from '../types.js';
+import { authenticateToken, AuthenticatedRequest } from './authMiddleware.js';
 
 const adminRouter = express.Router();
 const nonAdminRouter = express.Router();
@@ -20,18 +21,14 @@ async function getCollections() {
 // NON-ADMIN ROUTES
 
 // Get group for the current user
-nonAdminRouter.get('/', async (req, res) => {
+nonAdminRouter.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
     console.log('GET /api/groups hit for non-admin user');
-    const userId = req.headers['x-user-id'] as string;
-    if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+    const user = req.user!; // Authenticated user is guaranteed
 
     try {
         const { usersCollection, groupsCollection } = await getCollections();
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-        if (!user || !user.groupId) {
+        
+        if (!user.groupId) {
             return res.status(404).json({ message: 'Group not found for this user.' });
         }
 

@@ -8,7 +8,7 @@ import getAbsoluteImageUrl from '../utils/image';
 
 const ReadFichesPage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, token } = useAuth();
     const [readFiches, setReadFiches] = useState<(CaseStudy & { readAt: Date; })[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -44,8 +44,8 @@ const ReadFichesPage: React.FC = () => {
                     const fichesPromises = userReadFiches.map(async (readInfo: { ficheId: string; readAt: Date; }) => {
                         try {
                             const headers: HeadersInit = {};
-                            if (authUser) {
-                                headers['x-user-id'] = authUser._id as string;
+                            if (token) {
+                                headers['Authorization'] = `Bearer ${token}`;
                             }
                             const ficheResponse = await fetch(`/api/memofiches/${readInfo.ficheId}`, { headers });
                             if (ficheResponse.ok) {
