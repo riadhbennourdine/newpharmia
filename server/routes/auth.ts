@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
                 }
 
                 // Passwords match, generate a real JWT
-                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '24h' });
+                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
                 res.json({ token, user });
             } else {
                 // Passwords do not match

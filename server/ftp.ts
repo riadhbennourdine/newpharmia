@@ -195,11 +195,24 @@ router.get('/view', async (req, res) => {
 
     try {
         console.log(`[FTP VIEW SPY] Request for filePath: "${fullPath}" received from page: "${req.headers.referer}"`);
-        ftpClient = await getFtpClient();
-        console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
-        await fs.mkdir(tempDir, { recursive: true });
-        await ftpClient.downloadTo(tempFilePath, fullPath);
-        console.log(`[FTP View Debug] Fichier ${fullPath} téléchargé avec succès vers ${tempFilePath}`);
+        
+        let fileExists = false;
+        try {
+            await fs.access(tempFilePath);
+            fileExists = true;
+        } catch {
+            fileExists = false;
+        }
+
+        if (!fileExists) {
+            ftpClient = await getFtpClient();
+            console.log(`[FTP View Debug] Téléchargement du fichier FTP: ${fullPath} vers ${tempFilePath}`);
+            await fs.mkdir(tempDir, { recursive: true });
+            await ftpClient.downloadTo(tempFilePath, fullPath);
+            console.log(`[FTP View Debug] Fichier ${fullPath} téléchargé avec succès vers ${tempFilePath}`);
+        } else {
+             console.log(`[FTP View Debug] Serving cached file: ${tempFilePath}`);
+        }
 
         // Stream the file back to the client
         res.sendFile(tempFilePath, {}, async (err) => {
@@ -208,15 +221,13 @@ router.get('/view', async (req, res) => {
                 if (!res.headersSent) {
                     res.status(500).json({ message: 'Failed to send file.' });
                 }
+                // Only clean up on error if we suspect corruption, or just leave it.
+                // For now, let's leave it to avoid complexity, or maybe unlink if sending failed?
+                // Safest to leave it or maybe try to unlink only on error.
             } else {
                 console.log(`[FTP View Debug] Fichier ${tempFilePath} envoyé avec succès.`);
             }
-            // Clean up temporary file after sending or on error
-            try {
-                await fs.unlink(tempFilePath);
-            } catch (cleanupErr) {
-                // Silently ignore cleanup errors
-            }
+            // CACHING ENABLED: Do NOT delete the file after sending.
         });
     } catch (err) {
         console.error('FTP download/view error:', err);
