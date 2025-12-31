@@ -70,7 +70,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/users/pharmacists/${pharmacistId}/team`);
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const response = await fetch(`/api/users/pharmacists/${pharmacistId}/team`, { headers });
       if (!response.ok) throw new Error('Échec de la récupération de l\'équipe.');
       const data = await response.json();
       setTeam(data);
@@ -79,7 +83,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [token]);
 
 
   const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
@@ -106,16 +110,21 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       return undefined;
     }
-  }, [user, navigate]);
+  }, [user, navigate, token, isAuthenticated]);
 
   const saveCaseStudy = async (caseStudy: CaseStudy): Promise<CaseStudy> => {
     const isNew = !caseStudy._id;
     const url = isNew ? '/api/memofiches' : `/api/memofiches/${caseStudy._id}`;
     const method = isNew ? 'POST' : 'PUT';
 
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(caseStudy),
     });
 
@@ -131,7 +140,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const deleteCaseStudy = async (id: string): Promise<void> => {
-    const response = await fetch(`/api/memofiches/${id}`, { method: 'DELETE' });
+    const headers: HeadersInit = {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`/api/memofiches/${id}`, { method: 'DELETE', headers });
     if (!response.ok) throw new Error('Échec de la suppression de la mémofiche.');
     
     // Refresh the list after deleting
