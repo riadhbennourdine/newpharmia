@@ -69,18 +69,8 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
         const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
         
         // 0. Check if already generated today
-        if (group && group.dailyBriefing) {
-            const briefingDate = new Date(group.dailyBriefing.date);
-            const today = new Date();
-            if (briefingDate.toDateString() === today.toDateString()) {
-                // If force-regenerate flag isn't set (future feature), return existing
-                return res.json({ 
-                    script: group.dailyBriefing.script, 
-                    actions: group.dailyBriefing.actions || [],
-                    alreadyExists: true 
-                });
-            }
-        }
+        // Removed to allow regeneration
+
 
         // 1. Get Group Info
         let groupName = "PharmIA";

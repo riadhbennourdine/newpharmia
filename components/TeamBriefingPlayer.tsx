@@ -90,12 +90,29 @@ const TeamBriefingPlayer: React.FC = () => {
         }
 
         if (isPlaying) {
+            // User wants to PAUSE
             synthRef.current.pause();
+            // Clear keep-alive interval immediately
+            if (intervalRef.current) clearInterval(intervalRef.current);
             setIsPlaying(false);
         } else {
+            // User wants to PLAY (or RESUME)
             if (synthRef.current.paused && synthRef.current.speaking) {
+                // Resume logic
                 synthRef.current.resume();
+                setIsPlaying(true);
+                
+                // Restart keep-alive
+                if (intervalRef.current) clearInterval(intervalRef.current);
+                intervalRef.current = setInterval(() => {
+                    if (synthRef.current?.speaking && !synthRef.current?.paused) {
+                        synthRef.current.pause();
+                        synthRef.current.resume();
+                    }
+                }, 10000);
+
             } else {
+                // Start new speech
                 synthRef.current.cancel(); 
                 
                 const utterance = new SpeechSynthesisUtterance(script);
@@ -115,13 +132,18 @@ const TeamBriefingPlayer: React.FC = () => {
                     if (intervalRef.current) clearInterval(intervalRef.current);
                 };
                 
+                utterance.onpause = () => setIsPlaying(false);
+                utterance.onresume = () => setIsPlaying(true);
+                
                 utterance.onerror = (e) => {
                     console.error("Speech error:", e);
                     setIsPlaying(false);
+                    if (intervalRef.current) clearInterval(intervalRef.current);
                 };
 
                 utteranceRef.current = utterance;
                 synthRef.current.speak(utterance);
+                setIsPlaying(true);
                 
                 if (intervalRef.current) clearInterval(intervalRef.current);
                 intervalRef.current = setInterval(() => {
@@ -131,7 +153,6 @@ const TeamBriefingPlayer: React.FC = () => {
                     }
                 }, 10000);
             }
-            setIsPlaying(true);
         }
     };
 
