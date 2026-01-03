@@ -742,27 +742,17 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                     onClick={() => setInfographicModalOpen(true)}
                 >
                     {caseStudy.infographicImageUrl.includes('canva.com') ? (
-                        <div className="relative w-full h-full">
-                            {caseStudy.coverImageUrl ? (
-                                <>
-                                    <img 
-                                        src={getAbsoluteImageUrl(caseStudy.coverImageUrl)} 
-                                        alt="Infographie background" 
-                                        className="w-full h-full object-cover blur-[2px] scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center text-center p-4">
-                                        <span className="text-6xl mb-2 block drop-shadow-sm">🎨</span>
-                                        <span className="text-slate-800 font-bold text-lg drop-shadow-sm">Infographie Synthétique</span>
-                                        <p className="text-sm text-slate-700 font-medium mt-1">Cliquez pour interagir</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-center p-4 flex flex-col items-center justify-center h-full">
-                                    <span className="text-6xl mb-4 block">🎨</span>
-                                    <span className="text-slate-700 font-bold text-lg">Infographie Synthétique</span>
-                                    <p className="text-sm text-slate-500 mt-2">Cliquez pour interagir</p>
-                                </div>
-                            )}
+                        <div className="relative w-full h-full bg-slate-800">
+                            <img 
+                                src="/api/ftp/view?filePath=%2Finfographie-vaccin.png" 
+                                alt="Infographie background" 
+                                className="w-full h-full object-cover blur-[1px] opacity-50"
+                            />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                                <span className="text-6xl mb-2 block drop-shadow-lg">🎨</span>
+                                <span className="text-white font-bold text-lg drop-shadow-md">Infographie Synthétique</span>
+                                <p className="text-sm text-white/90 font-medium mt-1 drop-shadow-sm">Cliquez pour interagir</p>
+                            </div>
                         </div>
                     ) : (
                         <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
