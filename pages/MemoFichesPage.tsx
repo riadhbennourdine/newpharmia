@@ -9,12 +9,19 @@ import { TOPIC_CATEGORIES } from '../constants';
 import AssignFicheToGroupModal from '../components/AssignFicheToGroupModal';
 
 // This is the full-featured card, kept for the main memo fiches page
-const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: CaseStudy) => void }> = ({ caseStudy, onAssign }) => {
+const MemoFicheCard: React.FC<{ 
+    caseStudy: CaseStudy, 
+    onAssign: (caseStudy: CaseStudy) => void,
+    isAllowed?: boolean,
+    isPlanningRestricted?: boolean
+}> = ({ caseStudy, onAssign, isAllowed = true, isPlanningRestricted = false }) => {
     const { user } = useAuth();
     const { editCaseStudy, deleteCaseStudy } = useData();
     const navigate = useNavigate();
     
-    const canAccess = !caseStudy.isLocked;
+    // A fiche is accessible if it's not system-locked AND (planning is not restricted OR it's specifically allowed)
+    const canAccess = !caseStudy.isLocked && (!isPlanningRestricted || isAllowed);
+    
     const isAdmin = user?.role === UserRole.ADMIN;
     const isFormateur = user?.role === UserRole.FORMATEUR;
 
@@ -33,14 +40,17 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
     const handleNavigate = () => {
         if (canAccess) {
             navigate(`/memofiche/${caseStudy._id}`);
-        } else {
+        } else if (caseStudy.isLocked) {
             navigate('/tarifs');
+        } else {
+            // Case where it's locked by pharmacist
+            alert("Cette fiche n'est pas encore ouverte dans votre parcours d'apprentissage par votre pharmacien.");
         }
     };
 
     return (
-        <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-            <div onClick={handleNavigate} className="cursor-pointer">
+        <div className={`group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col ${!canAccess ? 'opacity-75 grayscale-[0.5]' : ''}`}>
+            <div onClick={handleNavigate} className="cursor-pointer relative">
                 <div className="relative">
                     <img 
                         src={getAbsoluteImageUrl(caseStudy.coverImageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop')} 
@@ -49,8 +59,11 @@ const MemoFicheCard: React.FC<{ caseStudy: CaseStudy, onAssign: (caseStudy: Case
                         style={{ objectPosition: caseStudy.coverImagePosition || 'center' }}
                     />
                     {!canAccess && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <LockClosedIcon className="h-10 w-10 text-white" />
+                        <div className="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center p-4 text-center">
+                            <LockClosedIcon className="h-10 w-10 text-white mb-2" />
+                            <p className="text-white text-xs font-bold uppercase tracking-widest">
+                                {caseStudy.isLocked ? "Premium" : "Verrouillé par le Pharmacien"}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -115,7 +128,7 @@ const Pagination: React.FC<{
 };
 
 const MemoFichesPage: React.FC = () => {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const { fiches, pagination, isLoading, fetchFiches } = useData();
     const navigate = useNavigate();
     
@@ -126,6 +139,54 @@ const MemoFichesPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [selectedFiche, setSelectedFiche] = useState<CaseStudy | undefined>(undefined);
+
+    // Planning restriction state
+    const [allowedFicheIds, setAllowedFicheIds] = useState<Set<string>>(new Set());
+    const [isPlanningRestricted, setIsPlanningRestricted] = useState(false);
+
+    useEffect(() => {
+        const fetchPlanning = async () => {
+            if (!user || user.role !== UserRole.PREPARATEUR) return;
+            try {
+                const response = await fetch('/api/groups', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const group = await response.json();
+                    if (group.isPlanningEnabled && group.planning && group.planning.length > 0) {
+                        const now = new Date();
+                        const allowed = new Set<string>();
+                        let hasActivePlanning = false;
+
+                        group.planning.forEach((item: any) => {
+                            if (!item.active) return;
+                            const start = new Date(item.startDate);
+                            const end = item.endDate ? new Date(item.endDate) : null;
+                            
+                            // A fiche is allowed if it's active and start date is past
+                            // If end date exists, must be future
+                            if (start <= now && (!end || end >= now)) {
+                                allowed.add(item.ficheId);
+                                hasActivePlanning = true;
+                            }
+                        });
+
+                        // Only restrict if the pharmacist has actually enabled planning AND set up active items
+                        if (hasActivePlanning) {
+                            setAllowedFicheIds(allowed);
+                            setIsPlanningRestricted(true);
+                        }
+                    } else {
+                        // Planning disabled or empty
+                        setIsPlanningRestricted(false);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch group planning:", error);
+            }
+        };
+        fetchPlanning();
+    }, [user, token]);
 
     useEffect(() => {
         fetchFiches({ 
@@ -231,7 +292,13 @@ const MemoFichesPage: React.FC = () => {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {fiches.map(cs => (
-                            <MemoFicheCard key={cs._id} caseStudy={cs} onAssign={handleOpenAssignModal} />
+                            <MemoFicheCard 
+                                key={cs._id} 
+                                caseStudy={cs} 
+                                onAssign={handleOpenAssignModal} 
+                                isAllowed={allowedFicheIds.has(cs._id.toString())}
+                                isPlanningRestricted={isPlanningRestricted}
+                            />
                         ))}
                     </div>
                     {pagination && (

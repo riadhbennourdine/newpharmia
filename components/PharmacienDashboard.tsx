@@ -10,6 +10,7 @@ import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
 
 import TeamBriefingPlayer from './TeamBriefingPlayer';
+import TeamPlanning from './TeamPlanning';
 
 const PharmacienDashboard: React.FC = () => {
     const { user, token } = useAuth();
@@ -27,38 +28,38 @@ const PharmacienDashboard: React.FC = () => {
     const [viewingPreparator, setViewingPreparator] = useState<{id: string, name: string} | null>(null);
     const [showCompagnon, setShowCompagnon] = useState(false);
 
-    useEffect(() => {
-        const fetchGroup = async () => {
-            if (!user) {
-                setIsLoadingGroup(false);
-                return;
+    const fetchGroup = useCallback(async () => {
+        if (!user) {
+            setIsLoadingGroup(false);
+            return;
+        }
+        setIsLoadingGroup(true);
+        setGroupError(null);
+        try {
+            const headers: HeadersInit = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
             }
-            setIsLoadingGroup(true);
-            setGroupError(null);
-            try {
-                const headers: HeadersInit = {};
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                const response = await fetch('/api/groups', { headers });
-                if (response.ok) {
-                    const data = await response.json();
-                    setGroup(data);
-                } else if (response.status === 404) {
-                    setGroup(null); // User might not be part of a group
-                } else {
-                    throw new Error('Failed to fetch group');
-                }
-            } catch (error: any) {
-                console.error('Error fetching group:', error);
-                setGroupError(error.message || 'Erreur lors du chargement du groupe.');
-            } finally {
-                setIsLoadingGroup(false);
+            const response = await fetch('/api/groups', { headers });
+            if (response.ok) {
+                const data = await response.json();
+                setGroup(data);
+            } else if (response.status === 404) {
+                setGroup(null); // User might not be part of a group
+            } else {
+                throw new Error('Failed to fetch group');
             }
-        };
+        } catch (error: any) {
+            console.error('Error fetching group:', error);
+            setGroupError(error.message || 'Erreur lors du chargement du groupe.');
+        } finally {
+            setIsLoadingGroup(false);
+        }
+    }, [user, token]);
 
+    useEffect(() => {
         fetchGroup();
-    }, [user]);
+    }, [fetchGroup]);
 
     const fetchPreparators = useCallback(async () => {
         if (!group || !token) return;
@@ -170,6 +171,9 @@ const PharmacienDashboard: React.FC = () => {
                 <div className="container mx-auto p-4 sm:p-6 lg:p-8">
                     {/* New Audio Briefing Feature */}
                     <TeamBriefingPlayer />
+
+                    {/* Team Planning Feature */}
+                    <TeamPlanning group={group} onUpdate={fetchGroup} />
 
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne de l'équipe</h2>

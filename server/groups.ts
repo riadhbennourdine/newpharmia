@@ -40,6 +40,57 @@ nonAdminRouter.get('/', authenticateToken, async (req: AuthenticatedRequest, res
 });
 
 
+// Update planning for a group
+nonAdminRouter.put('/:id/planning', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+        const { planning, isPlanningEnabled } = req.body;
+        const groupId = req.params.id;
+        const user = req.user!;
+        const { groupsCollection } = await getCollections();
+
+        // 1. Verify Permission
+        const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
+        if (!group) return res.status(404).json({ message: "Groupe non trouvé." });
+
+        const isPharmacistInGroup = group.pharmacistIds.some(id => id.toString() === user._id.toString());
+        const isManager = group.managedBy && group.managedBy.toString() === user._id.toString();
+        const isAdmin = user.role === UserRole.ADMIN || user.role === UserRole.ADMIN_WEBINAR;
+
+        if (!isPharmacistInGroup && !isManager && !isAdmin) {
+             return res.status(403).json({ message: "Non autorisé à modifier le planning de ce groupe." });
+        }
+
+        // 2. Validate & Sanitize Planning Data
+        const updateData: any = {};
+        
+        if (planning !== undefined) {
+            if (!Array.isArray(planning)) return res.status(400).json({ message: "Format de planning invalide." });
+            updateData.planning = planning.map((item: any) => ({
+                ficheId: item.ficheId,
+                startDate: new Date(item.startDate),
+                endDate: item.endDate ? new Date(item.endDate) : undefined,
+                active: item.active !== false
+            }));
+        }
+
+        if (isPlanningEnabled !== undefined) {
+            updateData.isPlanningEnabled = !!isPlanningEnabled;
+        }
+
+        // 3. Update Database
+        await groupsCollection.updateOne(
+            { _id: new ObjectId(groupId) },
+            { $set: updateData }
+        );
+
+        res.status(200).json({ message: "Planning mis à jour avec succès.", ...updateData });
+
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour du planning:", error);
+        res.status(500).json({ message: "Erreur lors de la mise à jour du planning.", error });
+    }
+});
+
 // Update instruction for a group
 nonAdminRouter.put('/:id/instruction', async (req, res) => {
     try {

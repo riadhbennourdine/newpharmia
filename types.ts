@@ -108,6 +108,15 @@ export interface Group {
     date: Date;
     actions?: { label: string; url: string; }[];
   };
+  planning?: GroupAssignment[];
+  isPlanningEnabled?: boolean;
+}
+
+export interface GroupAssignment {
+  ficheId: string;
+  startDate: Date;
+  endDate?: Date;
+  active: boolean;
 }
 
 export interface Client extends User {

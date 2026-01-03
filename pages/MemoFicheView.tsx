@@ -792,43 +792,74 @@ const MemoFichePage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { getCaseStudyById, startQuiz, editCaseStudy, deleteCaseStudy } = useData();
-    const { markFicheAsRead, logout } = useAuth(); // Get logout function
+    const { markFicheAsRead, logout, user, token } = useAuth(); // Get logout function
     const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null); // New state for error messages
 
     useEffect(() => {
-        if (id) {
+        const checkAccessAndFetch = async () => {
+            if (!id) return;
             setLoading(true);
-            setErrorMessage(null); // Clear previous errors
-            getCaseStudyById(id).then(data => {
-                if (data) {
-                    setCaseStudy(data);
-                } else {
+            setErrorMessage(null);
+
+            try {
+                // 1. Fetch Case Study
+                const data = await getCaseStudyById(id);
+                if (!data) {
                     setErrorMessage('Mémofiche non trouvée.');
+                    setLoading(false);
+                    return;
                 }
-                setLoading(false);
-            }).catch(err => {
+
+                // 2. Planning Access Control (only for Preparateurs)
+                if (user?.role === UserRole.PREPARATEUR) {
+                    const groupRes = await fetch('/api/groups', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (groupRes.ok) {
+                        const group = await groupRes.json();
+                        if (group.isPlanningEnabled && group.planning && group.planning.length > 0) {
+                            const now = new Date();
+                            const allowedIds = new Set<string>();
+                            let hasActivePlanning = false;
+
+                            group.planning.forEach((item: any) => {
+                                if (!item.active) return;
+                                const start = new Date(item.startDate);
+                                const end = item.endDate ? new Date(item.endDate) : null;
+                                if (start <= now && (!end || end >= now)) {
+                                    allowedIds.add(item.ficheId);
+                                    hasActivePlanning = true;
+                                }
+                            });
+
+                            if (hasActivePlanning && !allowedIds.has(id)) {
+                                setErrorMessage("Votre pharmacien a activé un parcours guidé. Cette fiche n'est pas encore ouverte pour vous.");
+                                setLoading(false);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                setCaseStudy(data);
+                markFicheAsRead(id);
+            } catch (err: any) {
                 console.error("Error fetching case study:", err);
                 if (err.message === 'Unauthorized') {
-                    logout(); // Log out the user
-                    navigate('/login', { replace: true }); // Redirect to login
-                } else if (err.message === 'Mémofiche non trouvée.') {
-                    setErrorMessage('La mémofiche demandée n\'existe pas.');
+                    logout();
+                    navigate('/login', { replace: true });
                 } else {
                     setErrorMessage('Une erreur est survenue lors du chargement de la mémofiche.');
                 }
+            } finally {
                 setLoading(false);
-            });
-        }
-    }, [id, getCaseStudyById, logout, navigate]);
+            }
+        };
 
-    // Effect to mark the fiche as read
-    useEffect(() => {
-        if (id) {
-            markFicheAsRead(id);
-        }
-    }, [id, markFicheAsRead]);
+        checkAccessAndFetch();
+    }, [id, user, token]);
 
     const handleDeleteAndRedirect = async () => {
         if(caseStudy) {

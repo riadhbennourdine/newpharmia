@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../context/DataContext';
-import { Spinner, ArrowRightIcon } from './Icons';
+import { Spinner, ArrowRightIcon, CalendarIcon, LockClosedIcon, CheckCircleIcon } from './Icons';
 import MemoFichePreviewCard from './MemoFichePreviewCard';
-import { Group, CaseStudy } from '../types';
+import { Group, CaseStudy, GroupAssignment } from '../types';
 import PreparateurLearningJourneyPopup from './PreparateurLearningJourneyPopup';
 import CompagnonIA from './CompagnonIA';
 import SkillHeatmap from './SkillHeatmap';
@@ -28,6 +28,9 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     const [showJourneyPopup, setShowJourneyPopup] = useState(false);
     const [showCompagnon, setShowCompagnon] = useState(false);
     const [skills, setSkills] = useState<any[]>([]);
+    
+    // Planning State
+    const [planningDetails, setPlanningDetails] = useState<{ active: (GroupAssignment & { title: string })[], upcoming: (GroupAssignment & { title: string })[] }>({ active: [], upcoming: [] });
 
     useEffect(() => {
         const fetchLearningJourney = async () => {
@@ -88,6 +91,49 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
 
         fetchGroup();
     }, [user, initialGroup, isLoadingUser]);
+
+    // Process Planning
+    useEffect(() => {
+        if (!group?.planning || group.planning.length === 0) return;
+
+        const processPlanning = async () => {
+            const now = new Date();
+            const activeItems: (GroupAssignment & { title: string })[] = [];
+            const upcomingItems: (GroupAssignment & { title: string })[] = [];
+
+            const idsToFetch = group.planning!.map(p => p.ficheId);
+            
+            // Fetch titles
+            const titles: Record<string, string> = {};
+            await Promise.all(idsToFetch.map(async (id) => {
+                try {
+                    const res = await fetch(`/api/memofiches/${id}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        titles[id] = data.title;
+                    }
+                } catch (e) { console.error(e); }
+            }));
+
+            group.planning!.forEach(item => {
+                const startDate = new Date(item.startDate);
+                const endDate = item.endDate ? new Date(item.endDate) : null;
+                const title = titles[item.ficheId] || "Chargement...";
+
+                if (!item.active) return;
+
+                if (startDate > now) {
+                    upcomingItems.push({ ...item, title });
+                } else if (!endDate || endDate >= now) {
+                    activeItems.push({ ...item, title });
+                }
+            });
+
+            setPlanningDetails({ active: activeItems, upcoming: upcomingItems });
+        };
+
+        processPlanning();
+    }, [group]);
 
     useEffect(() => {
         const validateReadFiches = async () => {
@@ -200,6 +246,76 @@ const LearnerDashboard: React.FC<Props> = ({ initialGroup }) => {
     return (
         <>
             <TeamBriefingPlayer />
+
+            {/* Planning Section */}
+            {(planningDetails.active.length > 0 || planningDetails.upcoming.length > 0) && (
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-teal-500">
+                    <h2 className="text-2xl font-bold text-teal-600 mb-4 flex items-center gap-2">
+                        <CalendarIcon className="h-6 w-6" />
+                        Planning de la semaine
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Active Fiches */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                À étudier maintenant
+                            </h3>
+                            {planningDetails.active.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {planningDetails.active.map((item, idx) => (
+                                        <li key={idx}>
+                                            <Link 
+                                                to={`/memofiche/${item.ficheId}`}
+                                                className="block p-3 bg-teal-50 rounded-lg border border-teal-100 hover:shadow-md transition-all group"
+                                            >
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-bold text-teal-800 group-hover:text-teal-600">{item.title}</span>
+                                                    <ArrowRightIcon className="h-4 w-4 text-teal-400 group-hover:translate-x-1 transition-transform" />
+                                                </div>
+                                                {item.endDate && (
+                                                    <p className="text-xs text-teal-600 mt-1">
+                                                        Jusqu'au {new Date(item.endDate).toLocaleDateString('fr-FR')}
+                                                    </p>
+                                                )}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-slate-500 italic">Rien de prévu pour le moment.</p>
+                            )}
+                        </div>
+
+                        {/* Upcoming Fiches */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-orange-400"></span>
+                                Bientôt disponible
+                            </h3>
+                            {planningDetails.upcoming.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {planningDetails.upcoming.map((item, idx) => (
+                                        <li key={idx} className="block p-3 bg-slate-50 rounded-lg border border-slate-200 opacity-75">
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-bold text-slate-600">{item.title}</span>
+                                                <LockClosedIcon className="h-4 w-4 text-slate-400" />
+                                            </div>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Disponible le {new Date(item.startDate).toLocaleDateString('fr-FR')}
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-slate-500 italic">Pas de fiche à venir.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {group?.instruction && (
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center mb-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                     <h2 className="text-2xl font-bold text-teal-600 mb-4">Consigne du Pharmacien</h2>
