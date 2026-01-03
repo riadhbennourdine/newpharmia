@@ -106,6 +106,7 @@ export interface Group {
   dailyBriefing?: {
     script: string;
     date: Date;
+    actions?: { label: string; url: string; }[];
   };
 }
 

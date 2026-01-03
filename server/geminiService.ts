@@ -690,7 +690,9 @@ Message du pharmacien : ${userMessage}`;
 export const generateBriefingScript = async (context: {
     groupName: string;
     instruction: string;
-    webinars: string[];
+    nextPreparatorWebinar?: string;
+    nextPharmacistWebinar?: string;
+    weekendProgram?: string;
     tip?: string;
 }): Promise<string> => {
     return globalQueue.add(async () => {
@@ -714,7 +716,11 @@ TON STYLE :
 STRUCTURE DU SCRIPT (environ 150 mots) :
 1. L'ACCROCHE : Un mot d'enthousiasme pour l'équipe "${context.groupName}".
 2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || "On reste soudés et on donne le meilleur pour nos patients !"}"
-3. LE RAPPEL FORMATION : ${context.webinars.length > 0 ? "On n'oublie pas nos prochains rendez-vous : " + context.webinars.join(", ") : "Pas de webinaire aujourd'hui, on reste focus sur le comptoir."}
+3. LES RENDEZ-VOUS DU MOMENT :
+   ${context.nextPreparatorWebinar ? `- Pour les préparateurs (CROP) : ${context.nextPreparatorWebinar}` : ""}
+   ${context.nextPharmacistWebinar ? `- Pour les pharmaciens (MasterClass) : ${context.nextPharmacistWebinar}` : ""}
+   ${context.weekendProgram ? `- Ce week-end : ${context.weekendProgram}` : ""}
+   (Si rien n'est indiqué ci-dessus, dis simplement "Pas de formation spécifique, on reste focus sur le comptoir.")
 4. L'ASTUCE CLINIQUE : ${context.tip ? "Le petit plus pour vos conseils : " + context.tip : "Soyez attentifs aux petits détails qui font la différence."}
 5. LE MOT DE LA FIN : Une phrase punchy pour lancer la journée.
 

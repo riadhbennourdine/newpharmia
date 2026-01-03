@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { authenticateToken, AuthenticatedRequest } from './authMiddleware.js';
 import { generateBriefingScript } from './geminiService.js';
-import { User, UserRole, Group, Webinar, WebinarStatus } from '../types.js';
+import { User, UserRole, Group, Webinar, WebinarStatus, WebinarGroup } from '../types.js';
 
 const router = express.Router();
 
@@ -38,11 +38,12 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
             return res.json({ 
                 script: group.dailyBriefing.script, 
                 date: group.dailyBriefing.date,
+                actions: group.dailyBriefing.actions || [],
                 isToday: isToday
             });
         }
 
-        res.json({ script: null });
+        res.json({ script: null, actions: [] });
 
     } catch (error) {
         console.error('Error fetching briefing:', error);
@@ -73,7 +74,11 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             const today = new Date();
             if (briefingDate.toDateString() === today.toDateString()) {
                 // If force-regenerate flag isn't set (future feature), return existing
-                return res.json({ script: group.dailyBriefing.script, alreadyExists: true });
+                return res.json({ 
+                    script: group.dailyBriefing.script, 
+                    actions: group.dailyBriefing.actions || [],
+                    alreadyExists: true 
+                });
             }
         }
 
@@ -86,18 +91,59 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             instruction = group.instruction || "";
         }
 
-        // 2. Get Upcoming Webinars (Next 7 days)
+        // 2. Get Upcoming Specific Webinars
         const now = new Date();
-        const nextWeek = new Date();
-        nextWeek.setDate(now.getDate() + 7);
-
-        const upcomingWebinars = await webinarsCollection.find({
-            date: { $gte: now, $lte: nextWeek }
-        }).sort({ date: 1 }).limit(2).toArray();
-
-        const webinarTexts = upcomingWebinars.map(w => 
-            `${w.title} le ${new Date(w.date).toLocaleDateString('fr-FR', { weekday: 'long' })}`
+        const actions: { label: string; url: string; }[] = [];
+        
+        // A. Next Preparator Webinar (CROP)
+        const nextCrop = await webinarsCollection.findOne(
+            { date: { $gte: now }, group: WebinarGroup.CROP_TUNIS },
+            { sort: { date: 1 } }
         );
+        
+        // B. Next Pharmacist Webinar (Master Class)
+        const nextMasterClass = await webinarsCollection.findOne(
+            { date: { $gte: now }, group: WebinarGroup.MASTER_CLASS },
+            { sort: { date: 1 } }
+        );
+
+        // C. Upcoming Weekend Seminars (Friday - Sunday of the *next* weekend relative to now)
+        // Calculate next Friday
+        const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+        const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7; // If today is Friday, find next Friday (7 days)
+        const nextFriday = new Date(now);
+        nextFriday.setDate(now.getDate() + daysUntilFriday);
+        nextFriday.setHours(0, 0, 0, 0);
+
+        const nextSunday = new Date(nextFriday);
+        nextSunday.setDate(nextFriday.getDate() + 2); // Friday + 2 days = Sunday
+        nextSunday.setHours(23, 59, 59, 999);
+
+        const weekendSeminars = await webinarsCollection.find({
+            date: { $gte: nextFriday, $lte: nextSunday }
+        }).sort({ date: 1 }).toArray();
+
+
+        // Format strings for Gemini & Actions
+        let cropText = undefined;
+        if (nextCrop) {
+            cropText = `${nextCrop.title} le ${new Date(nextCrop.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+            actions.push({ label: `📅 CROP : ${nextCrop.title}`, url: `/webinars/${nextCrop._id}` });
+        }
+
+        let mcText = undefined;
+        if (nextMasterClass) {
+            mcText = `${nextMasterClass.title} le ${new Date(nextMasterClass.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+            actions.push({ label: `🎓 MasterClass : ${nextMasterClass.title}`, url: `/webinars/${nextMasterClass._id}` });
+        }
+
+        let weekendText = undefined;
+        if (weekendSeminars.length > 0) {
+            weekendText = weekendSeminars.map(w => `${w.title} (${new Date(w.date).toLocaleDateString('fr-FR', { weekday: 'long' })})`).join(", ");
+            weekendSeminars.forEach(w => {
+                 actions.push({ label: `🗓️ ${w.title}`, url: `/webinars/${w._id}` });
+            });
+        }
 
         // 3. Get a Random Clinical Tip (from a random MemoFiche)
         const randomFiche = await memofichesCollection.aggregate([
@@ -115,17 +161,19 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
         const script = await generateBriefingScript({
             groupName,
             instruction,
-            webinars: webinarTexts,
+            nextPreparatorWebinar: cropText,
+            nextPharmacistWebinar: mcText,
+            weekendProgram: weekendText,
             tip
         });
 
         // 5. Save to Group
         await groupsCollection.updateOne(
             { _id: new ObjectId(user.groupId) },
-            { $set: { dailyBriefing: { script, date: new Date() } } }
+            { $set: { dailyBriefing: { script, date: new Date(), actions } } }
         );
 
-        res.json({ script });
+        res.json({ script, actions });
 
     } catch (error) {
         console.error('Error generating briefing:', error);

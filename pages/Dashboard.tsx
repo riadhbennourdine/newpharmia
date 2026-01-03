@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import AlgoliaSearch from '../components/AlgoliaSearch';
+import TeamBriefingPlayer from '../components/TeamBriefingPlayer';
 import { BookOpenIcon, VideoCameraIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { UserRole } from '../types';
 
@@ -17,6 +18,10 @@ const Dashboard: React.FC = () => {
                 <p className="mt-4 text-lg text-slate-600 max-w-2xl">
                     Que souhaitez-vous apprendre aujourd'hui ?
                 </p>
+
+                <div className="w-full max-w-2xl mt-8 mb-4 text-left">
+                    <TeamBriefingPlayer />
+                </div>
 
                 <AlgoliaSearch />
 

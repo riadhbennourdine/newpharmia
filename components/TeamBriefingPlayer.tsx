@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { SparklesIcon } from './Icons';
+import { SparklesIcon, CalendarIcon } from './Icons';
 import { UserRole } from '../types';
+import { Link } from 'react-router-dom';
 
 const PlayIcon = ({ className }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -18,6 +19,7 @@ const PauseIcon = ({ className }: { className?: string }) => (
 const TeamBriefingPlayer: React.FC = () => {
     const { token, user } = useAuth();
     const [script, setScript] = useState<string | null>(null);
+    const [actions, setActions] = useState<{ label: string; url: string; }[]>([]);
     const [isScriptToday, setIsScriptToday] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -37,6 +39,7 @@ const TeamBriefingPlayer: React.FC = () => {
                 const data = await response.json();
                 if (data.script) {
                     setScript(data.script);
+                    setActions(data.actions || []);
                     setIsScriptToday(data.isToday);
                 }
             } catch (error) {
@@ -65,11 +68,11 @@ const TeamBriefingPlayer: React.FC = () => {
             const data = await response.json();
             
             if (data.script) {
-                // If it already exists (same day), simulate generation delay for UX "magic" effect
                 if (data.alreadyExists) {
                     await new Promise(resolve => setTimeout(resolve, 2500));
                 }
                 setScript(data.script);
+                setActions(data.actions || []);
                 setIsScriptToday(true);
             }
         } catch (error) {
@@ -82,30 +85,24 @@ const TeamBriefingPlayer: React.FC = () => {
     const togglePlay = () => {
         if (!synthRef.current || !script) return;
 
-        // Initialize synth if needed (some browsers clear it)
         if (!synthRef.current) {
              synthRef.current = window.speechSynthesis;
         }
 
         if (isPlaying) {
-            // User wants to PAUSE
             synthRef.current.pause();
             setIsPlaying(false);
         } else {
-            // User wants to PLAY (or RESUME)
             if (synthRef.current.paused && synthRef.current.speaking) {
-                // Resume logic
                 synthRef.current.resume();
             } else {
-                // Start new speech
-                synthRef.current.cancel(); // Safety clear
+                synthRef.current.cancel(); 
                 
                 const utterance = new SpeechSynthesisUtterance(script);
                 utterance.lang = 'fr-FR';
-                utterance.rate = 1.0; // Slightly more natural speed
+                utterance.rate = 1.0; 
                 utterance.pitch = 1.0;
                 
-                // Try to get a high quality voice
                 const voices = synthRef.current.getVoices();
                 const bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
                                || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
@@ -115,7 +112,6 @@ const TeamBriefingPlayer: React.FC = () => {
 
                 utterance.onend = () => {
                     setIsPlaying(false);
-                    // Clear the keep-alive interval
                     if (intervalRef.current) clearInterval(intervalRef.current);
                 };
                 
@@ -127,7 +123,6 @@ const TeamBriefingPlayer: React.FC = () => {
                 utteranceRef.current = utterance;
                 synthRef.current.speak(utterance);
                 
-                // Chrome Bug Fix: SpeechSynthesis stops after ~15 seconds if not "poked"
                 if (intervalRef.current) clearInterval(intervalRef.current);
                 intervalRef.current = setInterval(() => {
                     if (synthRef.current?.speaking && !synthRef.current?.paused) {
@@ -152,11 +147,10 @@ const TeamBriefingPlayer: React.FC = () => {
         };
     }, []);
 
-    // Load voices immediately to be ready
+    // Load voices
     useEffect(() => {
         const loadVoices = () => {
             if (typeof window !== 'undefined') {
-                 // Force load voices
                  window.speechSynthesis.getVoices();
             }
         };
@@ -171,19 +165,18 @@ const TeamBriefingPlayer: React.FC = () => {
     const canGenerate = user?.role === UserRole.PHARMACIEN || user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
     return (
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8 relative overflow-hidden border-l-4 border-teal-500">
             
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 
                 <div className="flex-1 text-center md:text-left">
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                        <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Flash Info</span>
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                        <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Flash Info</span>
+                        <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
                              Briefing PharmIA 🎙️
                         </h2>
                     </div>
-                    <p className="text-indigo-100 text-sm max-w-lg">
+                    <p className="text-slate-500 text-sm max-w-lg">
                         {!script 
                             ? "Générez le briefing quotidien : consigne, actus et motivation."
                             : isScriptToday 
@@ -198,10 +191,10 @@ const TeamBriefingPlayer: React.FC = () => {
                         <button 
                             onClick={generateBriefing}
                             disabled={isLoading}
-                            className={`group flex items-center gap-2 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed ${script ? 'bg-indigo-400 text-white' : 'bg-white text-indigo-600'}`}
+                            className={`group flex items-center gap-2 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed ${script ? 'bg-teal-500 text-white' : 'bg-white text-teal-600 border border-teal-200'}`}
                         >
                             {isLoading ? (
-                                <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                                <span className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"></span>
                             ) : (
                                 <SparklesIcon className="h-5 w-5" />
                             )}
@@ -210,23 +203,23 @@ const TeamBriefingPlayer: React.FC = () => {
                     )}
 
                     {script && (
-                        <div className="flex items-center gap-4 bg-black/20 p-2 pr-6 rounded-full backdrop-blur-sm animate-fadeIn">
+                        <div className="flex items-center gap-4 bg-slate-100 p-2 pr-6 rounded-full animate-fadeIn">
                             <button 
                                 onClick={togglePlay}
-                                className="w-12 h-12 flex items-center justify-center bg-white text-indigo-600 rounded-full shadow-md hover:scale-110 transition-transform"
+                                className="w-12 h-12 flex items-center justify-center bg-teal-600 text-white rounded-full shadow-md hover:scale-110 transition-transform"
                             >
                                 {isPlaying ? <PauseIcon className="h-6 w-6" /> : <PlayIcon className="h-6 w-6 ml-1" />}
                             </button>
                             
                             <div className="flex flex-col">
-                                <span className="text-xs font-medium opacity-70 uppercase">{isScriptToday ? "Aujourd'hui" : "Ancien"}</span>
+                                <span className="text-xs font-medium text-slate-500 uppercase">{isScriptToday ? "Aujourd'hui" : "Ancien"}</span>
                                 <div className="flex items-center gap-1 h-4">
                                     {isPlaying ? (
                                         [...Array(5)].map((_, i) => (
-                                            <div key={i} className="w-1 bg-white rounded-full animate-pulse" style={{ height: `${Math.random() * 100}%`, animationDuration: `${0.5 + Math.random()}s` }}></div>
+                                            <div key={i} className="w-1 bg-teal-500 rounded-full animate-pulse" style={{ height: `${Math.random() * 100}%`, animationDuration: `${0.5 + Math.random()}s` }}></div>
                                         ))
                                     ) : (
-                                        <span className="text-sm font-bold">Écouter</span>
+                                        <span className="text-sm font-bold text-slate-700">Écouter</span>
                                     )}
                                 </div>
                             </div>
@@ -235,16 +228,36 @@ const TeamBriefingPlayer: React.FC = () => {
                 </div>
             </div>
 
+            {/* Script and Actions Section */}
             {script && (
-                <div className="mt-6 pt-4 border-t border-white/10">
-                    <button 
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="text-xs text-indigo-200 hover:text-white flex items-center gap-1"
-                    >
-                        {isExpanded ? "Masquer le texte" : "Lire le texte"}
-                    </button>
+                <div className="mt-6 pt-4 border-t border-slate-100">
+                     <div className="flex flex-wrap items-center gap-4 justify-between">
+                        <button 
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-xs text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1"
+                        >
+                            {isExpanded ? "Masquer le texte" : "Lire le texte"}
+                        </button>
+                        
+                        {/* Action Buttons */}
+                        {actions.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {actions.map((action, idx) => (
+                                    <Link 
+                                        key={idx} 
+                                        to={action.url}
+                                        className="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-3 py-1.5 rounded-full hover:bg-teal-100 transition-colors flex items-center gap-1"
+                                    >
+                                        {action.label} 
+                                        <CalendarIcon className="h-4 w-4 ml-1" />
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     {isExpanded && (
-                        <div className="mt-3 p-4 bg-black/20 rounded-lg text-sm leading-relaxed text-indigo-50 font-mono whitespace-pre-wrap animate-fadeIn">
+                        <div className="mt-3 p-4 bg-slate-50 border border-slate-100 rounded-lg text-sm leading-relaxed text-slate-700 font-mono whitespace-pre-wrap animate-fadeIn">
                             {script}
                         </div>
                     )}
