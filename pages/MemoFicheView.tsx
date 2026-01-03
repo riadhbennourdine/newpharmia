@@ -742,13 +742,14 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                     onClick={() => setInfographicModalOpen(true)}
                 >
                     {caseStudy.infographicImageUrl.includes('canva.com') ? (
-                        <div className="relative w-full h-full bg-slate-800">
-                            <img 
-                                src="/api/ftp/view?filePath=%2Finfographie-vaccin.png" 
-                                alt="Infographie background" 
-                                className="w-full h-full object-cover blur-[1px] opacity-50"
+                        <div className="relative w-full h-full bg-slate-800 overflow-hidden">
+                            <iframe 
+                                src={`${caseStudy.infographicImageUrl}?embed`}
+                                title="Infographie background" 
+                                className="w-full h-[150%] -mt-[25%] object-cover opacity-60 pointer-events-none scale-150 blur-[1px]"
+                                tabIndex={-1}
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
                                 <span className="text-6xl mb-2 block drop-shadow-lg">🎨</span>
                                 <span className="text-white font-bold text-lg drop-shadow-md">Infographie Synthétique</span>
                                 <p className="text-sm text-white/90 font-medium mt-1 drop-shadow-sm">Cliquez pour interagir</p>
