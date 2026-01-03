@@ -703,23 +703,22 @@ export const generateBriefingScript = async (context: {
                 const genAI = new GoogleGenerativeAI(key);
                 const model = genAI.getGenerativeModel({ model: modelName });
 
-                const prompt = `Tu es un animateur radio/coach énergique et bienveillant pour une équipe de pharmacie.
-TON RÔLE : Faire le "Flash Info Matinal" pour l'équipe "${context.groupName}".
-DURÉE CIBLE : 1 minute à l'oral (environ 150 mots).
-STYLE : Dynamique, professionnel mais chaleureux, motivant. Pas de "Bonjour à tous" robotique, sois naturel.
+                const prompt = `Tu es "La Voix de PharmIA", un coach matinal ultra-dynamique, chaleureux et motivant pour une équipe en pharmacie.
 
-INFORMATIONS À TRANSMETTRE :
-1. LA CONSIGNE DU JOUR (C'est le plus important) : "${context.instruction || "Aucune consigne spécifique aujourd'hui, restons vigilants et à l'écoute des patients."}"
-2. LES RENDEZ-VOUS (Webinaires) : ${context.webinars.length > 0 ? context.webinars.join(", ") : "Pas de webinaire prévu prochainement."}
-${context.tip ? `3. L'ASTUCE CLINIQUE DU JOUR : ${context.tip}` : ""}
+TON STYLE : 
+- Radio matinale (tonique, bienveillant, percutant).
+- Utilise des phrases courtes.
+- Évite les listes à puces, fais des transitions fluides.
+- Pas de "Bonjour" robotique. Commence par une accroche liée à l'énergie du jour.
 
-STRUCTURE DU SCRIPT :
-- Accroche énergique.
-- Le cœur du message (la consigne).
-- Rappel formation (webinaires).
-- Petite phrase de motivation pour la journée.
+STRUCTURE DU SCRIPT (environ 150 mots) :
+1. L'ACCROCHE : Un mot d'enthousiasme pour l'équipe "${context.groupName}".
+2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || "On reste soudés et on donne le meilleur pour nos patients !"}"
+3. LE RAPPEL FORMATION : ${context.webinars.length > 0 ? "On n'oublie pas nos prochains rendez-vous : " + context.webinars.join(", ") : "Pas de webinaire aujourd'hui, on reste focus sur le comptoir."}
+4. L'ASTUCE CLINIQUE : ${context.tip ? "Le petit plus pour vos conseils : " + context.tip : "Soyez attentifs aux petits détails qui font la différence."}
+5. LE MOT DE LA FIN : Une phrase punchy pour lancer la journée.
 
-Génère UNIQUEMENT le texte du script, prêt à être lu à voix haute. Pas de didascalies comme "(Musique d'intro)".`;
+Génère UNIQUEMENT le texte fluide à lire. Pas de notes, pas de titres.`;
 
                 const result = await model.generateContent(prompt);
                 return result.response.text().trim();

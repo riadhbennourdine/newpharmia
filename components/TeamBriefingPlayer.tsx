@@ -82,33 +82,91 @@ const TeamBriefingPlayer: React.FC = () => {
     const togglePlay = () => {
         if (!synthRef.current || !script) return;
 
+        // Initialize synth if needed (some browsers clear it)
+        if (!synthRef.current) {
+             synthRef.current = window.speechSynthesis;
+        }
+
         if (isPlaying) {
+            // User wants to PAUSE
             synthRef.current.pause();
             setIsPlaying(false);
         } else {
-            if (synthRef.current.paused && utteranceRef.current) {
+            // User wants to PLAY (or RESUME)
+            if (synthRef.current.paused && synthRef.current.speaking) {
+                // Resume logic
                 synthRef.current.resume();
             } else {
-                synthRef.current.cancel(); // Stop any current speech
+                // Start new speech
+                synthRef.current.cancel(); // Safety clear
+                
                 const utterance = new SpeechSynthesisUtterance(script);
                 utterance.lang = 'fr-FR';
-                utterance.rate = 1.05; 
-                utterance.pitch = 1.05; 
+                utterance.rate = 1.0; // Slightly more natural speed
+                utterance.pitch = 1.0;
                 
+                // Try to get a high quality voice
                 const voices = synthRef.current.getVoices();
-                const frenchVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
-                                 || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
-                                 || voices.find(v => v.lang.includes('fr'));
+                const bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
+                               || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
+                               || voices.find(v => v.lang.includes('fr'));
                 
-                if (frenchVoice) utterance.voice = frenchVoice;
+                if (bestVoice) utterance.voice = bestVoice;
 
-                utterance.onend = () => setIsPlaying(false);
+                utterance.onend = () => {
+                    setIsPlaying(false);
+                    // Clear the keep-alive interval
+                    if (intervalRef.current) clearInterval(intervalRef.current);
+                };
+                
+                utterance.onerror = (e) => {
+                    console.error("Speech error:", e);
+                    setIsPlaying(false);
+                };
+
                 utteranceRef.current = utterance;
                 synthRef.current.speak(utterance);
+                
+                // Chrome Bug Fix: SpeechSynthesis stops after ~15 seconds if not "poked"
+                if (intervalRef.current) clearInterval(intervalRef.current);
+                intervalRef.current = setInterval(() => {
+                    if (synthRef.current?.speaking && !synthRef.current?.paused) {
+                        synthRef.current.pause();
+                        synthRef.current.resume();
+                    }
+                }, 10000);
             }
             setIsPlaying(true);
         }
     };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (synthRef.current) {
+                synthRef.current.cancel();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, []);
+
+    // Load voices immediately to be ready
+    useEffect(() => {
+        const loadVoices = () => {
+            if (typeof window !== 'undefined') {
+                 // Force load voices
+                 window.speechSynthesis.getVoices();
+            }
+        };
+        loadVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+    }, []);
+
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const canGenerate = user?.role === UserRole.PHARMACIEN || user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
 
