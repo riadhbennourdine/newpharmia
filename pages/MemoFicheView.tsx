@@ -243,6 +243,22 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const [showQRCode, setShowQRCode] = useState(false);
   const [isInfographicModalOpen, setInfographicModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setInfographicModalOpen(false);
+      }
+    };
+
+    if (isInfographicModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isInfographicModalOpen]);
   
   const handleDelete = () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette mémofiche ? Cette action est irréversible.")) {
@@ -735,10 +751,10 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
               )}
           </div>
           {caseStudy.infographicImageUrl && (
-            <div className="lg:col-span-1 z-10 mt-16">
+            <div className="lg:col-span-1 z-10 mt-8">
                 <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
                 <div 
-                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 h-96 flex items-center justify-center"
+                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center"
                     onClick={() => setInfographicModalOpen(true)}
                 >
                     {caseStudy.infographicImageUrl.includes('canva.com') ? (
@@ -746,20 +762,19 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                             <iframe 
                                 src={`${caseStudy.infographicImageUrl}?embed`}
                                 title="Infographie background" 
-                                className="w-full h-[150%] -mt-[25%] object-cover opacity-60 pointer-events-none scale-150 blur-[1px]"
+                                className="w-full h-full object-cover opacity-80 pointer-events-none"
                                 tabIndex={-1}
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
-                                <span className="text-6xl mb-2 block drop-shadow-lg">🎨</span>
-                                <span className="text-white font-bold text-lg drop-shadow-md">Infographie Synthétique</span>
-                                <p className="text-sm text-white/90 font-medium mt-1 drop-shadow-sm">Cliquez pour interagir</p>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10 bg-black/30 group-hover:bg-black/40 transition-colors">
+                                <span className="text-white font-bold text-lg drop-shadow-md mb-2">Infographie Synthétique</span>
+                                <span className="text-xs text-white/90 font-medium bg-black/50 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">Cliquez pour voir plein écran</span>
                             </div>
                         </div>
                     ) : (
                         <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
                     )}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
-                        <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none">
+                        <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg" />
                     </div>
                 </div>
             </div>
@@ -767,29 +782,31 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
       </div>
 
       {isInfographicModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" onClick={() => setInfographicModalOpen(false)}>
-            <div className="w-full max-w-[95vw] max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-4" onClick={() => setInfographicModalOpen(false)}>
+            <div className="w-full max-w-[95vw] h-[90vh] flex items-center justify-center relative" onClick={(e) => e.stopPropagation()}>
                 {caseStudy.infographicImageUrl && caseStudy.infographicImageUrl.includes('canva.com') ? (
-                     <div className="w-full max-w-5xl">
+                     <div className="w-full h-full">
                         <EmbeddableViewer source={caseStudy.infographicImageUrl} />
                      </div>
                 ) : (
                     <img 
                         src={getAbsoluteImageUrl(caseStudy.infographicImageUrl || '')} 
                         alt="Infographie en plein écran" 
-                        className="max-w-full max-h-[90vh] object-contain rounded-md" 
+                        className="max-w-full max-h-full object-contain rounded-md shadow-2xl" 
                     />
                 )}
+                
+                {/* Close Button Inside Container for better mobile UX, but absolute to screen for desktop */}
+                <button 
+                    onClick={() => setInfographicModalOpen(false)}
+                    className="absolute -top-12 right-0 md:-right-12 text-white hover:text-gray-300 transition-colors p-2"
+                    aria-label="Fermer"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <button 
-                onClick={() => setInfographicModalOpen(false)}
-                className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
-                aria-label="Fermer"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
         </div>
       )}
     </div>
