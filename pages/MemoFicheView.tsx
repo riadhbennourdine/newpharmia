@@ -243,22 +243,30 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
 
   const [showQRCode, setShowQRCode] = useState(false);
   const [isInfographicModalOpen, setInfographicModalOpen] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   useEffect(() => {
+    // Expose zoom function globally for HTML-injected images
+    (window as any).zoomMemoImage = (url: string) => {
+      setZoomedImage(url);
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setInfographicModalOpen(false);
+        setZoomedImage(null);
       }
     };
 
-    if (isInfographicModalOpen) {
+    if (isInfographicModalOpen || zoomedImage) {
       window.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      delete (window as any).zoomMemoImage;
     };
-  }, [isInfographicModalOpen]);
+  }, [isInfographicModalOpen, zoomedImage]);
   
   const handleDelete = () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette mémofiche ? Cette action est irréversible.")) {
@@ -298,7 +306,16 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     if (isMemoFicheSectionContentArray(content)) {
       textContent = content.map(item => {
         if (item.type === 'image') {
-          return `<img src="${getAbsoluteImageUrl(item.value)}" alt="Image de la mémofiche" class="w-full h-auto rounded-md my-4" />`;
+          const imgUrl = getAbsoluteImageUrl(item.value);
+          // Use window.zoomMemoImage defined in useEffect
+          return `<div class="my-4 flex justify-center bg-slate-50 rounded-lg overflow-hidden border border-slate-100">
+                    <img 
+                        src="${imgUrl}" 
+                        alt="Illustration" 
+                        class="w-auto max-w-full max-h-[500px] object-contain cursor-zoom-in hover:scale-[1.02] transition-transform duration-300" 
+                        onclick="window.zoomMemoImage('${imgUrl}')" 
+                    />
+                  </div>`;
         }
         if (item.type === 'video') {
           const embedUrl = getYoutubeEmbedUrl(item.value);
@@ -799,6 +816,28 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 {/* Close Button Inside Container for better mobile UX, but absolute to screen for desktop */}
                 <button 
                     onClick={() => setInfographicModalOpen(false)}
+                    className="absolute -top-12 right-0 md:-right-12 text-white hover:text-gray-300 transition-colors p-2"
+                    aria-label="Fermer"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+      )}
+
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-4" onClick={() => setZoomedImage(null)}>
+            <div className="relative max-w-full max-h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                <img 
+                    src={zoomedImage} 
+                    alt="Zoom" 
+                    className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl" 
+                />
+                <button 
+                    onClick={() => setZoomedImage(null)}
                     className="absolute -top-12 right-0 md:-right-12 text-white hover:text-gray-300 transition-colors p-2"
                     aria-label="Fermer"
                 >
