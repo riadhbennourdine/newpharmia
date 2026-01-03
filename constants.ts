@@ -61,6 +61,7 @@ export const TOPIC_CATEGORIES = [
             "Cardiovasculaire",
             "ORL & Respiration",
             "Digestion",
+            "Bucco-dentaire",
             "Endocrinien",
             "Nerveux",
             "Santé Féminine",

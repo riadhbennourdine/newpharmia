@@ -70,7 +70,10 @@ export const GeneralInfoSection: React.FC<GeneralInfoSectionProps> = ({
             {caseStudy.type !== 'communication' && (
             <div>
               <Label htmlFor="system">Système/Organe</Label>
-              <Input type="text" name="system" id="system" value={caseStudy.system} onChange={handleChange} />
+              <Select name="system" id="system" value={caseStudy.system} onChange={handleChange}>
+                <option value="">Sélectionner un système/organe</option>
+                {TOPIC_CATEGORIES[1].topics.map(t => <option key={t} value={t}>{t}</option>)}
+              </Select>
             </div>
             )}
           </div>
