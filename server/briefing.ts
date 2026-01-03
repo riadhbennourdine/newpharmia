@@ -39,11 +39,12 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
                 script: group.dailyBriefing.script, 
                 date: group.dailyBriefing.date,
                 actions: group.dailyBriefing.actions || [],
+                instruction: group.instruction,
                 isToday: isToday
             });
         }
 
-        res.json({ script: null, actions: [] });
+        res.json({ script: null, actions: [], instruction: group.instruction });
 
     } catch (error) {
         console.error('Error fetching briefing:', error);

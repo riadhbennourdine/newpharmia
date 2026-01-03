@@ -20,6 +20,7 @@ const TeamBriefingPlayer: React.FC = () => {
     const { token, user } = useAuth();
     const [script, setScript] = useState<string | null>(null);
     const [actions, setActions] = useState<{ label: string; url: string; }[]>([]);
+    const [instruction, setInstruction] = useState<string | null>(null);
     const [isScriptToday, setIsScriptToday] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -37,9 +38,10 @@ const TeamBriefingPlayer: React.FC = () => {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                if (data.script) {
-                    setScript(data.script);
+                if (data.script || data.instruction) {
+                    setScript(data.script || null);
                     setActions(data.actions || []);
+                    setInstruction(data.instruction || null);
                     setIsScriptToday(data.isToday);
                 }
             } catch (error) {
@@ -68,9 +70,6 @@ const TeamBriefingPlayer: React.FC = () => {
             const data = await response.json();
             
             if (data.script) {
-                if (data.alreadyExists) {
-                    await new Promise(resolve => setTimeout(resolve, 2500));
-                }
                 setScript(data.script);
                 setActions(data.actions || []);
                 setIsScriptToday(true);
@@ -81,6 +80,8 @@ const TeamBriefingPlayer: React.FC = () => {
             setIsLoading(false);
         }
     };
+    
+    // ... existing togglePlay and cleanup code remains same ...
 
     const togglePlay = () => {
         if (!synthRef.current || !script) return;
@@ -199,11 +200,20 @@ const TeamBriefingPlayer: React.FC = () => {
                     </div>
                     <p className="text-slate-500 text-sm max-w-lg">
                         {!script 
-                            ? "Générez le briefing quotidien : consigne, actus et motivation."
+                            ? (user?.role === UserRole.PREPARATEUR 
+                                ? "Écoutez le briefing quotidien : consigne, actus et motivation." 
+                                : "Générez le briefing quotidien : consigne, actus et motivation.")
                             : isScriptToday 
                                 ? "Le briefing de votre équipe est prêt pour aujourd'hui !"
                                 : "Un ancien briefing est disponible. Votre pharmacien peut le mettre à jour."}
                     </p>
+
+                    {instruction && (
+                        <div className="mt-4 p-3 bg-teal-50 border border-teal-100 rounded-lg">
+                            <p className="text-xs font-bold text-teal-800 uppercase tracking-tight mb-1">Consigne du Titulaire :</p>
+                            <p className="text-sm text-teal-700 font-medium italic">"{instruction}"</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4">
