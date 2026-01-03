@@ -308,14 +308,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
         if (item.type === 'image') {
           const imgUrl = getAbsoluteImageUrl(item.value);
           // Use window.zoomMemoImage defined in useEffect
-          return `<div class="my-4 flex justify-center bg-slate-50 rounded-lg overflow-hidden border border-slate-100">
-                    <img 
-                        src="${imgUrl}" 
-                        alt="Illustration" 
-                        class="w-auto max-w-full max-h-[500px] object-contain cursor-zoom-in hover:scale-[1.02] transition-transform duration-300" 
-                        onclick="window.zoomMemoImage('${imgUrl}')" 
-                    />
-                  </div>`;
+          return `<div class="my-4 flex justify-center bg-slate-50 rounded-lg overflow-hidden border border-slate-100"><img src="${imgUrl}" alt="Illustration" class="w-auto max-w-full max-h-[500px] object-contain cursor-zoom-in hover:scale-[1.02] transition-transform duration-300" onclick="window.zoomMemoImage('${imgUrl}')" /></div>`;
         }
         if (item.type === 'video') {
           const embedUrl = getYoutubeEmbedUrl(item.value);
