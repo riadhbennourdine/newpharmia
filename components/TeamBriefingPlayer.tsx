@@ -186,8 +186,8 @@ const TeamBriefingPlayer: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {/* Only show Generate button if no script OR if script is old AND user can generate */}
-                    {(!script || (!isScriptToday && canGenerate)) && (
+                    {/* Always show Generate/Update button for authorized users */}
+                    {canGenerate && (
                         <button 
                             onClick={generateBriefing}
                             disabled={isLoading}
@@ -198,7 +198,7 @@ const TeamBriefingPlayer: React.FC = () => {
                             ) : (
                                 <SparklesIcon className="h-5 w-5" />
                             )}
-                            {isLoading ? "Préparation..." : script ? "Mettre à jour" : "Générer"}
+                            {isLoading ? "Préparation..." : (script && isScriptToday) ? "Régénérer" : script ? "Mettre à jour" : "Générer"}
                         </button>
                     )}
 

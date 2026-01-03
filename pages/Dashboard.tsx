@@ -19,11 +19,11 @@ const Dashboard: React.FC = () => {
                     Que souhaitez-vous apprendre aujourd'hui ?
                 </p>
 
+                <AlgoliaSearch />
+
                 <div className="w-full max-w-2xl mt-8 mb-4 text-left">
                     <TeamBriefingPlayer />
                 </div>
-
-                <AlgoliaSearch />
 
                 <div className="mt-8 flex items-center justify-center space-x-6">
                     <Link to="/memofiches" className="group flex items-center text-slate-600 hover:text-teal-700 transition-colors duration-300">
