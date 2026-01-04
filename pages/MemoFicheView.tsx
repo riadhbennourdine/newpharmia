@@ -855,7 +855,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
               )}
           </div>
           {(caseStudy.infographicImageUrl || premiumCampaign) && (
-            <div className="lg:col-span-1 z-10 mt-8 space-y-8">
+            <div className="lg:col-span-1 z-10 mt-8 lg:mt-32 space-y-8">
                 {caseStudy.infographicImageUrl && (
                     <div>
                         <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
