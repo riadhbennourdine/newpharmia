@@ -611,7 +611,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
     );
 
     return content;
-  }, [caseStudy]);
+  }, [caseStudy, activeCampaigns]);
 
   const menuItems: { id: TabName; label: string; icon: React.ReactNode }[] = useMemo(() => {
     const hasYoutubeLinks = caseStudy.youtubeLinks && caseStudy.youtubeLinks.length > 0;
