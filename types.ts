@@ -381,3 +381,17 @@ export interface Rating {
   createdAt: Date;
   newsletterId?: ObjectId | string; // Optional: Link to the newsletter that prompted the survey
 }
+
+export interface AdCampaign {
+  _id?: ObjectId | string;
+  id: string; // internal string id like 'doliprane-focus'
+  keywords: string[];
+  sponsorName: string;
+  productName: string;
+  description: string;
+  imageUrl?: string;
+  link: string;
+  active: boolean;
+  impressions?: number;
+  clicks?: number;
+}

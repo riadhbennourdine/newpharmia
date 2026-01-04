@@ -21,6 +21,22 @@ import { MASTER_CLASS_PACKS } from './constants.js';
 
 import clientPromise from './server/mongo.js';
 
+import crmRoutes from './server/crm.js';
+import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
+import usersRoutes from './server/users.js';
+import webinarsRouter from './server/webinars.js';
+import ordersRouter from './server/orders.js';
+import uploadRouter from './server/upload.js';
+import imageThemesRouter from './server/imageThemes.js';
+import ftpRouter from './server/ftp.js';
+import debugRouter from './server/debug.js';
+import profileRoutes from './server/profile.js';
+import simulationRouter from './server/simulation.js';
+import authRouter from './server/routes/auth.js';
+import memofichesRouter from './server/routes/memofiches.js';
+import briefingRouter from './server/briefing.js';
+import campaignsRouter from './server/routes/campaigns.js';
+
 // FIX: Define __filename and __dirname for ES module scope
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -118,22 +134,6 @@ app.use('/api/auth', authRouter);
 // ===============================================
 
 
-
-import crmRoutes from './server/crm.js';
-import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
-import usersRoutes from './server/users.js';
-import webinarsRouter from './server/webinars.js';
-import ordersRouter from './server/orders.js';
-import uploadRouter from './server/upload.js';
-import imageThemesRouter from './server/imageThemes.js';
-import ftpRouter from './server/ftp.js'; // Import the new FTP router
-import debugRouter from './server/debug.js'; // Import the debug router
-import profileRoutes from './server/profile.js';
-import simulationRouter from './server/simulation.js';
-import authRouter from './server/routes/auth.js';
-import memofichesRouter from './server/routes/memofiches.js';
-import briefingRouter from './server/briefing.js';
-
 // ===============================================
 // API ROUTES
 // ===============================================
@@ -162,10 +162,9 @@ app.use('/api/debug', debugRouter); // Register the debug routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/simulation', simulationRouter);
 app.use('/api/briefing', briefingRouter);
+app.use('/api/campaigns', campaignsRouter);
 
-// ===============================================
-// ADMIN FILE SEARCH API
-// ===============================================
+// --- Routes ---
 const fileSearchUpload = multer({ dest: 'tmp/filesearch/' });
 // Ensure the upload directory exists
 if (!fs.existsSync('tmp/filesearch/')) {

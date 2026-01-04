@@ -14,6 +14,8 @@ import FlashcardDeck from '../components/FlashcardDeck';
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import SponsoredProductCard from '../components/SponsoredProductCard';
 import { findCampaignForText } from '../utils/campaigns';
+import { campaignService } from '../services/campaignService';
+import { AdCampaign } from '../types';
 
 const ComparisonCard: React.FC<{ title: string; description: string }> = ({ title, description }) => {
     const navigate = useNavigate();
@@ -246,6 +248,19 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
   const [showQRCode, setShowQRCode] = useState(false);
   const [isInfographicModalOpen, setInfographicModalOpen] = useState(false);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [activeCampaigns, setActiveCampaigns] = useState<AdCampaign[]>([]);
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+        try {
+            const campaigns = await campaignService.getActiveCampaigns();
+            setActiveCampaigns(campaigns);
+        } catch (error) {
+            console.error('Failed to load campaigns:', error);
+        }
+    };
+    fetchCampaigns();
+  }, []);
 
   useEffect(() => {
     // Expose zoom function globally for HTML-injected images
@@ -403,7 +418,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
             const renderedLine = <div key={`line-${index}`} dangerouslySetInnerHTML={{ __html: renderMarkdown(line, isRedKeywordSection) }} />;
             
             // Check for campaign match
-            const campaign = findCampaignForText(line);
+            const campaign = findCampaignForText(line, activeCampaigns);
 
             if (campaign) {
             return (

@@ -4,6 +4,7 @@ import SubscriberManager from './admin/SubscriberManager';
 import Newsletter from './admin/Newsletter';
 import CRMDashboard from './admin/crm/CRMDashboard';
 import GroupManagementPage from './admin/GroupManagement';
+import CampaignsManager from './admin/CampaignsManager';
 import AssignmentManager from './admin/AssignmentManager'; // Import the new component
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types';
@@ -20,7 +21,7 @@ const AdminPanel: React.FC = () => {
 
       <div className="mb-6">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-2 sm:space-x-4 justify-center" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-2 sm:space-x-4 justify-center flex-wrap" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('crm')}
               className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'crm' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
@@ -46,6 +47,12 @@ const AdminPanel: React.FC = () => {
                   className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'groups' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   Groupes
+                </button>
+                <button
+                  onClick={() => setActiveTab('campaigns')}
+                  className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'campaigns' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Pubs
                 </button>
                 <NavLink
                   to="/admin/orders"
@@ -74,6 +81,7 @@ const AdminPanel: React.FC = () => {
         {activeTab === 'users' && <SubscriberManager />}
         {activeTab === 'newsletter' && isAdmin && <Newsletter />}
         {activeTab === 'groups' && isAdmin && <GroupManagementPage />}
+        {activeTab === 'campaigns' && isAdmin && <CampaignsManager />}
       </div>
     </div>
   );
