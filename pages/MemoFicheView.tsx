@@ -13,6 +13,7 @@ import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import SponsoredProductCard from '../components/SponsoredProductCard';
+import PremiumSponsorBlock from '../components/PremiumSponsorBlock';
 import { findCampaignForText } from '../utils/campaigns';
 import { campaignService } from '../services/campaignService';
 import { AdCampaign } from '../types';
@@ -261,6 +262,23 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     };
     fetchCampaigns();
   }, []);
+
+  const premiumCampaign = useMemo(() => {
+    if (!activeCampaigns.length) return null;
+    
+    // Construct a large text blob to search against to find the most relevant campaign for the page
+    // We prioritize Title and Treatment sections
+    const searchableText = [
+        caseStudy.title,
+        typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : '',
+        ensureArray(caseStudy.mainTreatment).join(' '),
+        ensureArray(caseStudy.associatedProducts).join(' ')
+    ].join(' ');
+
+    // Only consider campaigns marked as premium for the sidebar slot
+    const premiumCampaigns = activeCampaigns.filter(c => c.isPremium);
+    return findCampaignForText(searchableText, premiumCampaigns);
+  }, [caseStudy, activeCampaigns]);
 
   useEffect(() => {
     // Expose zoom function globally for HTML-injected images
@@ -836,33 +854,39 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 </div>
               )}
           </div>
-          {caseStudy.infographicImageUrl && (
-            <div className="lg:col-span-1 z-10 mt-8">
-                <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
-                <div 
-                    className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center"
-                    onClick={() => setInfographicModalOpen(true)}
-                >
-                    {caseStudy.infographicImageUrl.includes('canva.com') ? (
-                        <div className="relative w-full h-full bg-slate-800 overflow-hidden">
-                            <iframe 
-                                src={`${caseStudy.infographicImageUrl}?embed`}
-                                title="Infographie background" 
-                                className="w-full h-full object-cover opacity-80 pointer-events-none"
-                                tabIndex={-1}
-                            />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10 bg-black/30 group-hover:bg-black/40 transition-colors">
-                                <span className="text-white font-bold text-lg drop-shadow-md mb-2">Infographie Synthétique</span>
-                                <span className="text-xs text-white/90 font-medium bg-black/50 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">Cliquez pour voir plein écran</span>
+          {(caseStudy.infographicImageUrl || premiumCampaign) && (
+            <div className="lg:col-span-1 z-10 mt-8 space-y-8">
+                {caseStudy.infographicImageUrl && (
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4">Infographie</h3>
+                        <div 
+                            className="relative group cursor-pointer rounded-lg overflow-hidden shadow-lg border border-slate-200 bg-slate-100 aspect-video flex items-center justify-center"
+                            onClick={() => setInfographicModalOpen(true)}
+                        >
+                            {caseStudy.infographicImageUrl.includes('canva.com') ? (
+                                <div className="relative w-full h-full bg-slate-800 overflow-hidden">
+                                    <iframe 
+                                        src={`${caseStudy.infographicImageUrl}?embed`}
+                                        title="Infographie background" 
+                                        className="w-full h-full object-cover opacity-80 pointer-events-none"
+                                        tabIndex={-1}
+                                    />
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10 bg-black/30 group-hover:bg-black/40 transition-colors">
+                                        <span className="text-white font-bold text-lg drop-shadow-md mb-2">Infographie Synthétique</span>
+                                        <span className="text-xs text-white/90 font-medium bg-black/50 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm">Cliquez pour voir plein écran</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
+                            )}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none">
+                                <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg" />
                             </div>
                         </div>
-                    ) : (
-                        <img src={getAbsoluteImageUrl(caseStudy.infographicImageUrl)} alt="Infographie" className="w-full h-full object-contain" />
-                    )}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none">
-                        <MagnifyingGlassPlusIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg" />
                     </div>
-                </div>
+                )}
+                
+                {premiumCampaign && <PremiumSponsorBlock campaign={premiumCampaign} />}
             </div>
           )}
       </div>

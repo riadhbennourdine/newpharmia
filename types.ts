@@ -392,6 +392,7 @@ export interface AdCampaign {
   imageUrl?: string;
   link: string;
   active: boolean;
+  isPremium?: boolean;
   impressions?: number;
   clicks?: number;
 }

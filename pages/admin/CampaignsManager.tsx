@@ -226,14 +226,25 @@ const CampaignsManager: React.FC = () => {
                                 />
                             </div>
 
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={currentCampaign.active || false}
-                                    onChange={(e) => setCurrentCampaign({ ...currentCampaign, active: e.target.checked })}
-                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                />
-                                <label className="ml-2 block text-sm text-gray-900">Campagne active</label>
+                            <div className="flex items-center space-x-6">
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentCampaign.active || false}
+                                        onChange={(e) => setCurrentCampaign({ ...currentCampaign, active: e.target.checked })}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    />
+                                    <label className="ml-2 block text-sm text-gray-900">Campagne active</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentCampaign.isPremium || false}
+                                        onChange={(e) => setCurrentCampaign({ ...currentCampaign, isPremium: e.target.checked })}
+                                        className="h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                                    />
+                                    <label className="ml-2 block text-sm text-gray-900 font-bold text-yellow-600">Sponsor Premium (Sidebar)</label>
+                                </div>
                             </div>
                         </div>
 
