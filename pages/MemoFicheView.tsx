@@ -12,6 +12,8 @@ import { MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
 import CustomChatBot from '../components/CustomChatBot';
 import FlashcardDeck from '../components/FlashcardDeck';
 import EmbeddableViewer from '../components/EmbeddableViewer';
+import SponsoredProductCard from '../components/SponsoredProductCard';
+import { findCampaignForText } from '../utils/campaigns';
 
 const ComparisonCard: React.FC<{ title: string; description: string }> = ({ title, description }) => {
     const navigate = useNavigate();
@@ -373,6 +375,57 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     return <div dangerouslySetInnerHTML={{ __html: renderMarkdown(textContent, isRedKeywordSection) }} />;
   };
 
+  const renderSponsoredSection = (
+    content: string | string[] | MemoFicheSectionContent[] | undefined,
+    isRedKeywordSection: boolean = false
+  ) => {
+    if (!content) return null;
+
+    // 1. If it's complex content (images/videos), fallback to default
+    if (isMemoFicheSectionContentArray(content)) {
+      return renderContentWithKeywords(content, isRedKeywordSection);
+    }
+
+    // 2. Normalize to array of strings
+    let lines: string[] = [];
+    if (Array.isArray(content)) {
+      lines = content;
+    } else {
+      lines = String(content).split('\n');
+    }
+
+    // 3. Render each line with potential ad injection
+    return (
+      <div className="space-y-2">
+        {lines.map((line, index) => {
+            if (!line) return null;
+            // Render the line content normally (markdown)
+            const renderedLine = <div key={`line-${index}`} dangerouslySetInnerHTML={{ __html: renderMarkdown(line, isRedKeywordSection) }} />;
+            
+            // Check for campaign match
+            const campaign = findCampaignForText(line);
+
+            if (campaign) {
+            return (
+                <React.Fragment key={`group-${index}`}>
+                {renderedLine}
+                <SponsoredProductCard
+                    sponsorName={campaign.sponsorName}
+                    productName={campaign.productName}
+                    description={campaign.description}
+                    imageUrl={campaign.imageUrl}
+                    link={campaign.link}
+                />
+                </React.Fragment>
+            );
+            }
+            
+            return renderedLine;
+        })}
+      </div>
+    );
+  };
+
   const renderMarkdown = (text: string, isRedKeywordSection: boolean = false) => {
     let html = typeof text === 'string' ? text : String(text || '');
 
@@ -521,11 +574,19 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
     const content = orderedSections.map(section => {
         const shouldStartOpen = isFirstSection;
         isFirstSection = false;
+
+        let renderedContent;
+        if (['mainTreatment', 'associatedProducts'].includes(section.id)) {
+             renderedContent = renderSponsoredSection(section.data, section.isAlert);
+        } else {
+             renderedContent = renderContentWithKeywords(section.data, section.isAlert);
+        }
+
         return {
             id: section.id,
             title: section.title,
             icon: section.icon,
-            content: renderContentWithKeywords(section.data, section.isAlert),
+            content: renderedContent,
             startOpen: shouldStartOpen,
         };
     });
