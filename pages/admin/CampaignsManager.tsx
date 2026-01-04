@@ -9,6 +9,7 @@ const CampaignsManager: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentCampaign, setCurrentCampaign] = useState<Partial<AdCampaign>>({});
+    const [keywordsInput, setKeywordsInput] = useState('');
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
@@ -28,10 +29,15 @@ const CampaignsManager: React.FC = () => {
 
     const handleSave = async () => {
         try {
-            if (isEditing && currentCampaign._id) {
-                await campaignService.updateCampaign(currentCampaign._id as string, currentCampaign);
+            const campaignToSave = {
+                ...currentCampaign,
+                keywords: keywordsInput.split(',').map(k => k.trim()).filter(k => k)
+            };
+
+            if (isEditing && campaignToSave._id) {
+                await campaignService.updateCampaign(campaignToSave._id as string, campaignToSave);
             } else {
-                await campaignService.createCampaign(currentCampaign as any);
+                await campaignService.createCampaign(campaignToSave as any);
             }
             setIsModalOpen(false);
             fetchCampaigns();
@@ -64,6 +70,7 @@ const CampaignsManager: React.FC = () => {
     const openModal = (campaign?: AdCampaign) => {
         if (campaign) {
             setCurrentCampaign(campaign);
+            setKeywordsInput(campaign.keywords.join(', '));
             setIsEditing(true);
         } else {
             setCurrentCampaign({
@@ -75,6 +82,7 @@ const CampaignsManager: React.FC = () => {
                 link: '',
                 imageUrl: ''
             });
+            setKeywordsInput('');
             setIsEditing(false);
         }
         setIsModalOpen(true);
@@ -191,8 +199,8 @@ const CampaignsManager: React.FC = () => {
                                 <label className="block text-sm font-medium text-gray-700">Mots-clés (séparés par des virgules)</label>
                                 <input
                                     type="text"
-                                    value={currentCampaign.keywords?.join(', ') || ''}
-                                    onChange={(e) => setCurrentCampaign({ ...currentCampaign, keywords: e.target.value.split(',').map(k => k.trim()).filter(k => k) })}
+                                    value={keywordsInput}
+                                    onChange={(e) => setKeywordsInput(e.target.value)}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                                     placeholder="Ex: rhume, nez bouché, fièvre"
                                 />
