@@ -88,7 +88,7 @@ const AlgoliaSearch = () => {
       </div>
 
       {hits.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden z-10">
+        <div className="relative mt-4 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden z-10">
           <ul className="divide-y divide-slate-200">
             {hits.map(hit => (
               <li key={hit.objectID}>

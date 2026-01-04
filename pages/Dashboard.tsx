@@ -15,15 +15,16 @@ const Dashboard: React.FC = () => {
                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
                     Bonjour, <span className="text-teal-600">{user?.firstName || 'cher utilisateur'}</span> !
                 </h1>
+
+                <div className="w-full max-w-2xl mt-8 mb-4 text-left">
+                    <TeamBriefingPlayer />
+                </div>
+
                 <p className="mt-4 text-lg text-slate-600 max-w-2xl">
                     Que souhaitez-vous apprendre aujourd'hui ?
                 </p>
 
                 <AlgoliaSearch />
-
-                <div className="w-full max-w-2xl mt-8 mb-4 text-left">
-                    <TeamBriefingPlayer />
-                </div>
 
                 <div className="mt-8 flex items-center justify-center space-x-6">
                     <Link to="/memofiches" className="group flex items-center text-slate-600 hover:text-teal-700 transition-colors duration-300">
