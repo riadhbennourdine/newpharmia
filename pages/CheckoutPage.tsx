@@ -22,6 +22,15 @@ const CheckoutPage: React.FC = () => {
     const [isKonnectLoading, setIsKonnectLoading] = useState(false);
     const [isGpgLoading, setIsGpgLoading] = useState(false);
 
+    // Check for CROP Tunis webinars to restrict payment to Transfer only
+    const hasCropTunis = webinarsInOrder.some(w => w.group === WebinarGroup.CROP_TUNIS);
+
+    useEffect(() => {
+        if (hasCropTunis) {
+            setPaymentMethod('transfer');
+        }
+    }, [hasCropTunis]);
+
     useEffect(() => {
         const fetchOrder = async () => {
             if (!orderId || !token) {
@@ -404,15 +413,6 @@ const CheckoutPage: React.FC = () => {
 
     // Determine if Konnect (card) payment should be available (only for MasterClass items)
     const containsMasterClassItems = hasPacks || hasMasterClassWebinars;
-
-    // Check for CROP Tunis webinars to restrict payment to Transfer only
-    const hasCropTunis = webinarsInOrder.some(w => w.group === WebinarGroup.CROP_TUNIS);
-
-    useEffect(() => {
-        if (hasCropTunis) {
-            setPaymentMethod('transfer');
-        }
-    }, [hasCropTunis]);
 
     return (
         <div className="bg-slate-100 min-h-screen py-12">
