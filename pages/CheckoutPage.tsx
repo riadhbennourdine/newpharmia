@@ -405,6 +405,15 @@ const CheckoutPage: React.FC = () => {
     // Determine if Konnect (card) payment should be available (only for MasterClass items)
     const containsMasterClassItems = hasPacks || hasMasterClassWebinars;
 
+    // Check for CROP Tunis webinars to restrict payment to Transfer only
+    const hasCropTunis = webinarsInOrder.some(w => w.group === WebinarGroup.CROP_TUNIS);
+
+    useEffect(() => {
+        if (hasCropTunis) {
+            setPaymentMethod('transfer');
+        }
+    }, [hasCropTunis]);
+
     return (
         <div className="bg-slate-100 min-h-screen py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -528,7 +537,7 @@ const CheckoutPage: React.FC = () => {
                     </div>
 
                     {/* Payment Method Selection */}
-                    {!paymentMethod ? (
+                    {!paymentMethod && !hasCropTunis ? (
                         <div className="mt-8">
                             <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Choisissez votre mode de paiement</h3>
                             <div className={`grid gap-6 grid-cols-1 md:grid-cols-2`}>
@@ -566,15 +575,17 @@ const CheckoutPage: React.FC = () => {
                         </div>
                     ) : (
                         <div className="mt-8 animate-fadeIn">
-                            <button 
-                                onClick={() => setPaymentMethod(null)}
-                                className="mb-6 flex items-center text-sm text-slate-500 hover:text-slate-800 transition-colors"
-                            >
-                                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Changer de méthode
-                            </button>
+                            {!hasCropTunis && (
+                                <button 
+                                    onClick={() => setPaymentMethod(null)}
+                                    className="mb-6 flex items-center text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                                >
+                                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                    Changer de méthode
+                                </button>
+                            )}
 
                             {paymentMethod === 'card' && (
                                 <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
