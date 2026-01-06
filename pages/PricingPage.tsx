@@ -28,7 +28,7 @@ const PricingPage: React.FC = () => {
       name: 'Solo',
       description: 'Licence unique Pharmacien',
       monthly: 29.900,
-      quarterly: 89.700, // 29.900 * 3
+      quarterly: 79.900, // Discounted from 89.700
       annual: 269.100, // 29.900 * 9
       features: [
         'Accès complet aux mémofiches',
@@ -41,7 +41,7 @@ const PricingPage: React.FC = () => {
       name: 'Starter',
       description: 'Pharmacien + 5 licences Préparateurs',
       monthly: 79.900,
-      quarterly: 239.700, // 79.900 * 3
+      quarterly: 214.900, // Discounted from 239.700
       annual: 719.100, // 79.900 * 9
       features: [
         'Toutes les fonctionnalités Solo',
@@ -55,7 +55,7 @@ const PricingPage: React.FC = () => {
       name: 'Gold',
       description: 'Pharmacien + 10 licences Préparateurs',
       monthly: 108.900,
-      quarterly: 326.700, // 108.900 * 3
+      quarterly: 294.900, // Discounted from 326.700
       annual: 980.100, // 108.900 * 9
       features: [
         'Toutes les fonctionnalités Starter',
@@ -166,7 +166,7 @@ const PricingPage: React.FC = () => {
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${billingCycle === 'quarterly' ? 'bg-teal-600 text-white shadow' : 'text-gray-700 hover:bg-gray-300'}`}
             onClick={() => setBillingCycle('quarterly')}
           >
-            Trimestriel
+            Trimestriel (-10%)
           </button>
           <button
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${billingCycle === 'annual' ? 'bg-teal-600 text-white shadow' : 'text-gray-700 hover:bg-gray-300'}`}
