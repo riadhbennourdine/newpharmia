@@ -25,7 +25,7 @@ const WebinarsPage: React.FC = () => {
     const { user, token } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.PHARMIA);
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
     const [isPricingOpen, setIsPricingOpen] = useState(false);
     const [allWebinars, setAllWebinars] = useState<Webinar[]>([]);
     const [myRegisteredWebinars, setMyRegisteredWebinars] = useState<Webinar[]>([]);
