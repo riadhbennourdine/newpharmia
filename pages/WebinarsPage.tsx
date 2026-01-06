@@ -25,7 +25,7 @@ const WebinarsPage: React.FC = () => {
     const { user, token } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.CROP_TUNIS);
+    const [activeTab, setActiveTab] = useState<string>(WebinarGroup.PHARMIA);
     const [isPricingOpen, setIsPricingOpen] = useState(false);
     const [allWebinars, setAllWebinars] = useState<Webinar[]>([]);
     const [myRegisteredWebinars, setMyRegisteredWebinars] = useState<Webinar[]>([]);
@@ -288,6 +288,16 @@ const WebinarsPage: React.FC = () => {
         <div className="mb-8 border-b border-slate-200">
             <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                 <button
+                    onClick={() => setActiveTab(WebinarGroup.PHARMIA)}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === WebinarGroup.PHARMIA
+                            ? 'border-teal-500 text-teal-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                >
+                    {WebinarGroup.PHARMIA}
+                </button>
+                <button
                     onClick={() => setActiveTab(WebinarGroup.CROP_TUNIS)}
                     className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                         activeTab === WebinarGroup.CROP_TUNIS
@@ -491,6 +501,27 @@ const WebinarsPage: React.FC = () => {
             </Helmet>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {renderTabs()}
+
+                {activeTab === WebinarGroup.PHARMIA && (
+                    <div className="mb-8">
+                        <div className="flex flex-col md:flex-row items-center gap-8 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                            <img
+                                src="/assets/logo-pharmia.png"
+                                alt="PharmIA Logo"
+                                className="h-32 w-auto object-contain"
+                            />
+                            <div>
+                                <h2 className="text-3xl font-extrabold text-slate-900 mb-4">
+                                    Wébinaires PharmIA
+                                </h2>
+                                <p className="text-lg text-slate-600 max-w-2xl">
+                                    Découvrez nos sessions de formation interactive animées par des experts. 
+                                    Renforcez vos compétences officinales avec les outils et la méthodologie PharmIA.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {activeTab === WebinarGroup.CROP_TUNIS && (
                     <div className="mb-8">
