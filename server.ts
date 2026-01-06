@@ -658,9 +658,9 @@ app.get('/api/konnect/webhook', async (req, res) => {
 // GPG PAYMENT ROUTES
 app.post('/api/gpg/initiate-payment', async (req, res) => {
     try {
-        const { amount, planName, isAnnual, firstName, lastName, email, phoneNumber, orderId: clientOrderId, city, country, zip } = req.body;
+        const { amount, planName, isAnnual, firstName, lastName, email, phoneNumber, orderId, city, country, zip, description } = req.body;
 
-        if (!amount || !planName || !email) {
+        if (!amount || !email) {
             return res.status(400).json({ message: 'Missing required payment details.' });
         }
 
@@ -678,12 +678,12 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             return res.status(500).json({ message: errorMessage });
         }
 
-        const orderID = `PHARMIA-${Date.now()}`;
+        const transactionId = orderId ? `PHARMIA-${orderId}` : `PHARMIA-${Date.now()}`;
         const formattedAmount = Math.round(amount * 1000); // Convert to millimes
         const currency = 'TND';
 
         // Create signature
-        const signatureClear = GPG_NUM_SITE + GPG_PASSWORD + orderID + formattedAmount + currency;
+        const signatureClear = GPG_NUM_SITE + GPG_PASSWORD + transactionId + formattedAmount + currency;
         const signature = crypto.createHash('sha256').update(signatureClear).digest('hex');
 
         // Create MD5 password for the form
@@ -693,17 +693,19 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             ? 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php' 
             : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
 
+        const productDescription = description || `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`;
+
         const paymentData = {
             paymentUrl,
             NumSite: GPG_NUM_SITE,
             Password: md5Password,
-            orderID,
+            orderID: transactionId,
             Amount: formattedAmount.toString(),
             Currency: currency,
             Language: 'fr',
             EMAIL: email,
-            CustLastName: lastName,
-            CustFirstName: firstName,
+            CustLastName: lastName || '',
+            CustFirstName: firstName || '',
             CustAddress: 'N/A', // Or get from user profile
             CustZIP: zip || '0000',
             CustCity: city || 'N/A',
@@ -713,7 +715,7 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             signature,
             vad: GPG_VAD,
             Terminal: GPG_TERMINAL,
-            orderProducts: `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`,
+            orderProducts: productDescription,
         };
 
         res.json(paymentData);

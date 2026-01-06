@@ -20,6 +20,7 @@ const CheckoutPage: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer' | null>(null);
     const [isKonnectLoading, setIsKonnectLoading] = useState(false);
+    const [isGpgLoading, setIsGpgLoading] = useState(false);
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -170,6 +171,100 @@ const CheckoutPage: React.FC = () => {
             alert(`Erreur: ${err.message}`);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleGPGPayment = async () => {
+        if (!order || !token) return;
+        setIsGpgLoading(true);
+        setError(null);
+
+        try {
+            // Calculate total amount exactly as displayed
+            let totalAmount = 0;
+            let calculatedTotalHT = 0;
+            let calculatedTotalTVA = 0;
+            const calculatedStampDuty = TAX_RATES.TIMBRE;
+            let cropWebinarsTTC = 0;
+
+            order.items.forEach(item => {
+                const isPack = item.type === ProductType.PACK || !!item.packId;
+                if (isPack && item.packId) {
+                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    if (pack) {
+                        calculatedTotalHT += pack.priceHT;
+                        calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
+                    }
+                } else {
+                    const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
+                    if (webinarDetails) {
+                        if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                            const webinarBasePrice = webinarDetails.price || 0;
+                            calculatedTotalHT += webinarBasePrice;
+                            calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                        } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                            cropWebinarsTTC += (webinarDetails.price || 80.000);
+                        } else {
+                            // Fallback standard PharmIA webinar
+                            const webinarBasePrice = webinarDetails.price || WEBINAR_PRICE;
+                             calculatedTotalHT += webinarBasePrice;
+                             calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                        }
+                    }
+                }
+            });
+            const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
+            totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
+
+
+            const response = await fetch('/api/gpg/initiate-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    amount: totalAmount,
+                    orderId: order._id,
+                    firstName: user?.firstName,
+                    lastName: user?.lastName,
+                    email: user?.email,
+                    phoneNumber: user?.phone || user?.phoneNumber,
+                    city: user?.city,
+                    zip: user?.zipCode,
+                    description: `Commande PharmIA #${order._id}`
+                })
+            });
+
+            const paymentData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(paymentData.message || 'Failed to initiate GPG payment.');
+            }
+
+            // Dynamically create and submit a form to redirect to GPG
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = paymentData.paymentUrl;
+
+            Object.keys(paymentData).forEach(key => {
+                if (key !== 'paymentUrl') {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = paymentData[key];
+                    form.appendChild(input);
+                }
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+
+        } catch (err: any) {
+            console.error('Error initiating GPG payment:', err);
+            setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement.');
+        } finally {
+            setIsGpgLoading(false);
         }
     };
 
@@ -436,26 +531,27 @@ const CheckoutPage: React.FC = () => {
                     {!paymentMethod ? (
                         <div className="mt-8">
                             <h3 className="text-xl font-bold text-slate-800 mb-6 text-center">Choisissez votre mode de paiement</h3>
-                            <div className={`grid gap-6 ${containsMasterClassItems ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-1'}`}>
-                                {containsMasterClassItems && (
-                                    <button
-                                        onClick={() => setPaymentMethod('card')}
-                                        className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all group"
-                                    >
-                                        <div className="h-16 w-16 bg-teal-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
-                                            <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                            </svg>
-                                        </div>
-                                        <h4 className="text-lg font-bold text-slate-800">Paiement par Carte</h4>
-                                        <p className="text-sm text-slate-500 text-center mt-2">Paiement sécurisé via Konnect (Bancaire ou E-Dinar)</p>
-                                        <span className="mt-4 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-lg group-hover:bg-teal-700">Choisir</span>
-                                    </button>
-                                )}
+                            <div className={`grid gap-6 grid-cols-1 md:grid-cols-2`}>
+                                <button
+                                    onClick={() => setPaymentMethod('card')}
+                                    className="flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all group"
+                                >
+                                    <div className="h-16 w-16 bg-teal-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-100 transition-colors">
+                                        <svg className="w-8 h-8 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="text-lg font-bold text-slate-800">Paiement par Carte</h4>
+                                    <p className="text-sm text-slate-500 text-center mt-2">
+                                        {containsMasterClassItems ? 'Paiement sécurisé via Konnect' : 'Paiement sécurisé via GPG'}
+                                    </p>
+                                    <span className="mt-4 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded-lg group-hover:bg-teal-700">Choisir</span>
+                                </button>
+                                
                                 {/* Always show transfer payment */}
                                 <button
                                     onClick={() => setPaymentMethod('transfer')}
-                                    className={`flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all group ${!containsMasterClassItems ? 'col-span-full' : ''}`}
+                                    className={`flex flex-col items-center justify-center p-8 bg-white border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all group`}
                                 >
                                     <div className="h-16 w-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
                                         <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -490,15 +586,18 @@ const CheckoutPage: React.FC = () => {
                                         </div>
                                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Paiement en ligne</h3>
                                         <p className="text-slate-600 max-w-md mx-auto">
-                                            Vous allez être redirigé vers notre plateforme de paiement sécurisée Konnect pour finaliser votre transaction.
+                                            {containsMasterClassItems 
+                                                ? 'Vous allez être redirigé vers notre plateforme de paiement sécurisée Konnect pour finaliser votre transaction.'
+                                                : 'Vous allez être redirigé vers notre plateforme de paiement sécurisée GPG pour finaliser votre transaction.'
+                                            }
                                         </p>
                                     </div>
                                     <button
-                                        onClick={handleKonnectPayment}
-                                        disabled={isKonnectLoading}
+                                        onClick={containsMasterClassItems ? handleKonnectPayment : handleGPGPayment}
+                                        disabled={isKonnectLoading || isGpgLoading}
                                         className="w-full max-w-md mx-auto bg-teal-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:bg-teal-700 transition-all transform hover:-translate-y-1 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center"
                                     >
-                                        {isKonnectLoading ? (
+                                        {isKonnectLoading || isGpgLoading ? (
                                             <>
                                                 <Spinner className="h-5 w-5 mr-3" />
                                                 Initialisation...
