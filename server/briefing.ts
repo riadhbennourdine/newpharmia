@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { authenticateToken, AuthenticatedRequest } from './authMiddleware.js';
 import { generateBriefingScript } from './geminiService.js';
+import { generateSpeech } from './ttsService.js';
 import { User, UserRole, Group, Webinar, WebinarStatus, WebinarGroup } from '../types.js';
 
 const router = express.Router();
@@ -35,16 +36,19 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
             const today = new Date();
             const isToday = briefingDate.toDateString() === today.toDateString();
             
+            // Return audioUrl if it exists (for server-side TTS)
             return res.json({ 
                 script: group.dailyBriefing.script, 
                 date: group.dailyBriefing.date,
                 actions: group.dailyBriefing.actions || [],
                 instruction: group.instruction,
+                language: group.dailyBriefing.language || 'fr',
+                audioUrl: (group.dailyBriefing as any).audioUrl, // Cast as any because audioUrl might not be in type definition yet
                 isToday: isToday
             });
         }
 
-        res.json({ script: null, actions: [], instruction: group.instruction });
+        res.json({ script: null, actions: [], instruction: group?.instruction });
 
     } catch (error) {
         console.error('Error fetching briefing:', error);
@@ -69,10 +73,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
 
         const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
         
-        // 0. Check if already generated today
-        // Removed to allow regeneration
-
-
         // 1. Get Group Info
         let groupName = "PharmIA";
         let instruction = "";
@@ -99,15 +99,14 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
         );
 
         // C. Upcoming Weekend Seminars (Friday - Sunday of the *next* weekend relative to now)
-        // Calculate next Friday
-        const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
-        const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7; // If today is Friday, find next Friday (7 days)
+        const dayOfWeek = now.getDay(); 
+        const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7; 
         const nextFriday = new Date(now);
         nextFriday.setDate(now.getDate() + daysUntilFriday);
         nextFriday.setHours(0, 0, 0, 0);
 
         const nextSunday = new Date(nextFriday);
-        nextSunday.setDate(nextFriday.getDate() + 2); // Friday + 2 days = Sunday
+        nextSunday.setDate(nextFriday.getDate() + 2);
         nextSunday.setHours(23, 59, 59, 999);
 
         const weekendSeminars = await webinarsCollection.find({
@@ -136,7 +135,7 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             });
         }
 
-        // 3. Get a Random Clinical Tip (from a random MemoFiche)
+        // 3. Get a Random Clinical Tip
         const randomFiche = await memofichesCollection.aggregate([
             { $sample: { size: 1 } },
             { $project: { title: 1, keyPoints: 1 } }
@@ -144,7 +143,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
 
         let tip = "";
         if (randomFiche.length > 0 && randomFiche[0].keyPoints && randomFiche[0].keyPoints.length > 0) {
-            // Take the first key point
             tip = `Sur le sujet "${randomFiche[0].title}" : ${randomFiche[0].keyPoints[0]}`;
         }
 
@@ -159,7 +157,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             const memberIds = [...(group.pharmacistIds || []), ...(group.preparatorIds || [])].map(id => new ObjectId(id));
             const { usersCollection } = await getCollections();
             
-            // Fetch users with their quiz history
             const groupUsers = await usersCollection.find(
                 { _id: { $in: memberIds } },
                 { projection: { firstName: 1, lastName: 1, quizHistory: 1 } }
@@ -167,7 +164,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
 
             let totalScore = 0;
             let totalQuizzes = 0;
-            const scoresByTopic: Record<string, { total: number, count: number }> = {};
             let bestPerformerName = "";
             let bestPerformerScore = -1;
 
@@ -176,7 +172,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
 
             groupUsers.forEach(u => {
                 if (u.quizHistory && u.quizHistory.length > 0) {
-                    // Weekly Performance Check
                     const weeklyQuizzes = u.quizHistory.filter((q: any) => new Date(q.completedAt) >= oneWeekAgo);
                     const weeklyTotal = weeklyQuizzes.reduce((sum: number, q: any) => sum + (q.score || 0), 0);
                     
@@ -185,16 +180,9 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
                         bestPerformerName = `${u.firstName} ${u.lastName}`;
                     }
 
-                    // Global Stats
                     u.quizHistory.forEach((q: any) => {
                         totalScore += (q.score || 0);
                         totalQuizzes++;
-                        
-                        // We need the topic name, but quizHistory might only have ID. 
-                        // Simplified: Using ID if title not available, or skipped if complex mapping needed.
-                        // Assuming q.quizId is available. ideally we need to map it to a title.
-                        // For now, we will skip detailed gap analysis by topic title to avoid extra DB calls in this iteration 
-                        // unless we fetch memofiches. Let's do a quick fetch of memofiches if we have IDs.
                     });
                 }
             });
@@ -221,13 +209,17 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             language: language as 'fr' | 'ar'
         });
 
-        // 6. Save to Group
+        // 6. Generate Audio (Server-Side TTS) - Optional, needs OPENAI_API_KEY
+        // This will return null if key is missing, which is fine (client falls back to browser TTS)
+        const audioUrl = await generateSpeech(script, language as 'fr' | 'ar');
+
+        // 7. Save to Group
         await groupsCollection.updateOne(
             { _id: new ObjectId(user.groupId) },
-            { $set: { dailyBriefing: { script, date: new Date(), actions, language } } }
+            { $set: { dailyBriefing: { script, date: new Date(), actions, language, audioUrl } } }
         );
 
-        res.json({ script, actions, language });
+        res.json({ script, actions, language, audioUrl });
 
     } catch (error) {
         console.error('Error generating briefing:', error);

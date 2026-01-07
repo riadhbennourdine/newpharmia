@@ -108,6 +108,7 @@ export interface Group {
     date: Date;
     actions?: { label: string; url: string; }[];
     language?: 'fr' | 'ar';
+    audioUrl?: string;
   };
   planning?: GroupAssignment[];
   isPlanningEnabled?: boolean;

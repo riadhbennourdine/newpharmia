@@ -25,9 +25,13 @@ const TeamBriefingPlayer: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
     
     const synthRef = useRef<SpeechSynthesis | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Initial Fetch
     useEffect(() => {
@@ -44,6 +48,7 @@ const TeamBriefingPlayer: React.FC = () => {
                     setInstruction(data.instruction || null);
                     setIsScriptToday(data.isToday);
                     if (data.language) setLanguage(data.language);
+                    if (data.audioUrl) setAudioUrl(data.audioUrl);
                 }
             } catch (error) {
                 console.error("Error fetching briefing:", error);
@@ -55,15 +60,25 @@ const TeamBriefingPlayer: React.FC = () => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             synthRef.current = window.speechSynthesis;
+            audioRef.current = new Audio();
         }
         return () => {
             if (synthRef.current) synthRef.current.cancel();
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.src = "";
+            }
         };
     }, []);
 
     const generateBriefing = async () => {
         setIsLoading(true);
         setErrorMessage(null);
+        // Stop any current playback
+        if (audioRef.current) audioRef.current.pause();
+        if (synthRef.current) synthRef.current.cancel();
+        setIsPlaying(false);
+
         try {
             const response = await fetch('/api/briefing/generate', {
                 method: 'POST',
@@ -79,6 +94,7 @@ const TeamBriefingPlayer: React.FC = () => {
                 setScript(data.script);
                 setActions(data.actions || []);
                 setIsScriptToday(true);
+                setAudioUrl(data.audioUrl || null);
             }
         } catch (error) {
             console.error("Failed to generate briefing", error);
@@ -90,9 +106,35 @@ const TeamBriefingPlayer: React.FC = () => {
     // ... existing togglePlay and cleanup code remains same ...
 
     const togglePlay = () => {
-        if (!synthRef.current || !script) return;
+        if (!script) return;
         setErrorMessage(null);
 
+        // Priority 1: Server-Side Audio (MP3)
+        if (audioUrl && audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+                setIsPlaying(false);
+            } else {
+                // If source not set or changed
+                if (!audioRef.current.src || !audioRef.current.src.endsWith(audioUrl)) {
+                    audioRef.current.src = audioUrl;
+                }
+                
+                audioRef.current.play()
+                    .then(() => setIsPlaying(true))
+                    .catch(e => {
+                        console.error("Audio playback error:", e);
+                        setErrorMessage("Erreur lors de la lecture du fichier audio.");
+                        setIsPlaying(false);
+                    });
+                
+                audioRef.current.onended = () => setIsPlaying(false);
+                audioRef.current.onpause = () => setIsPlaying(false);
+            }
+            return;
+        }
+
+        // Priority 2: Browser TTS (Fallback)
         if (!synthRef.current) {
              synthRef.current = window.speechSynthesis;
         }
