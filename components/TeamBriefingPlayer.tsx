@@ -32,6 +32,7 @@ const TeamBriefingPlayer: React.FC = () => {
     const synthRef = useRef<SpeechSynthesis | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const isPlayingRef = useRef(false);
 
     // Initial Fetch
     useEffect(() => {
@@ -118,8 +119,11 @@ const TeamBriefingPlayer: React.FC = () => {
     };
 
     const speakChunks = (chunks: string[], index: number) => {
+        if (!isPlayingRef.current) return;
+
         if (index >= chunks.length) {
             setIsPlaying(false);
+            isPlayingRef.current = false;
             if (intervalRef.current) clearInterval(intervalRef.current);
             return;
         }
@@ -133,7 +137,9 @@ const TeamBriefingPlayer: React.FC = () => {
         }
 
         const utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.rate = 1.0; 
+        
+        // Slower rate for Arabic to improve intelligibility of robotic voices
+        utterance.rate = language === 'ar' ? 0.85 : 1.0; 
         utterance.pitch = 1.0;
 
         const voices = synthRef.current.getVoices();
@@ -161,13 +167,17 @@ const TeamBriefingPlayer: React.FC = () => {
         if (bestVoice) utterance.voice = bestVoice;
 
         utterance.onend = () => {
-            speakChunks(chunks, index + 1);
+            if (isPlayingRef.current) {
+                speakChunks(chunks, index + 1);
+            }
         };
 
         utterance.onerror = (e) => {
             console.error("Chunk error:", e);
             // Try to continue to next chunk even if one fails
-            speakChunks(chunks, index + 1);
+            if (isPlayingRef.current) {
+                speakChunks(chunks, index + 1);
+            }
         };
 
         utteranceRef.current = utterance;
@@ -180,23 +190,35 @@ const TeamBriefingPlayer: React.FC = () => {
 
         // Priority 1: Server-Side Audio (MP3)
         if (audioUrl && audioRef.current) {
-            // ... (keep existing MP3 logic)
             if (isPlaying) {
                 audioRef.current.pause();
                 setIsPlaying(false);
+                isPlayingRef.current = false;
             } else {
                 if (!audioRef.current.src || !audioRef.current.src.endsWith(audioUrl)) {
                     audioRef.current.src = audioUrl;
                 }
                 audioRef.current.play()
-                    .then(() => setIsPlaying(true))
+                    .then(() => {
+                        setIsPlaying(true);
+                        isPlayingRef.current = true;
+                    })
                     .catch(e => {
                         console.error("Audio playback error:", e);
                         setErrorMessage("Erreur lors de la lecture du fichier audio.");
                         setIsPlaying(false);
+                        isPlayingRef.current = false;
                     });
-                audioRef.current.onended = () => setIsPlaying(false);
-                audioRef.current.onpause = () => setIsPlaying(false);
+                audioRef.current.onended = () => {
+                    setIsPlaying(false);
+                    isPlayingRef.current = false;
+                };
+                audioRef.current.onpause = () => {
+                    // Only update state if we didn't initiate the pause (external pause)
+                    // But here we simplify
+                    setIsPlaying(false);
+                    isPlayingRef.current = false;
+                };
             }
             return;
         }
@@ -208,19 +230,21 @@ const TeamBriefingPlayer: React.FC = () => {
 
         if (isPlaying) {
             // PAUSE/STOP
+            setIsPlaying(false);
+            isPlayingRef.current = false;
+            
             synthRef.current.cancel(); // Cancel clears the queue
             if (intervalRef.current) clearInterval(intervalRef.current);
-            setIsPlaying(false);
         } else {
             // PLAY
             synthRef.current.cancel(); 
             
             const cleanedText = cleanTextForSpeech(script);
-            // Split by punctuation but keep it attached if possible, or just split by regex
-            // Simple split by newline or dot/punc
             const chunks = cleanedText.match(/[^.!?\n]+[.!?\n]+/g) || [cleanedText];
             
             setIsPlaying(true);
+            isPlayingRef.current = true;
+            
             speakChunks(chunks, 0);
             
             // Keep-alive interval (Chrome bug workaround)
