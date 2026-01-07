@@ -317,23 +317,6 @@ const TeamBriefingPlayer: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col items-end gap-3">
-                    {canGenerate && (
-                        <div className="flex bg-slate-100 rounded-lg p-1">
-                            <button 
-                                onClick={() => setLanguage('fr')} 
-                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${language === 'fr' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                🇫🇷 FR
-                            </button>
-                            <button 
-                                onClick={() => setLanguage('ar')} 
-                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${language === 'ar' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                🇸🇦 AR
-                            </button>
-                        </div>
-                    )}
-
                     <div className="flex items-center gap-4">
                         {/* Always show Generate/Update button for authorized users */}
                         {canGenerate && (
