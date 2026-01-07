@@ -24,8 +24,7 @@ const TeamBriefingPlayer: React.FC = () => {
     const [isScriptToday, setIsScriptToday] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     
     const synthRef = useRef<SpeechSynthesis | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -64,6 +63,7 @@ const TeamBriefingPlayer: React.FC = () => {
 
     const generateBriefing = async () => {
         setIsLoading(true);
+        setErrorMessage(null);
         try {
             const response = await fetch('/api/briefing/generate', {
                 method: 'POST',
@@ -91,6 +91,7 @@ const TeamBriefingPlayer: React.FC = () => {
 
     const togglePlay = () => {
         if (!synthRef.current || !script) return;
+        setErrorMessage(null);
 
         if (!synthRef.current) {
              synthRef.current = window.speechSynthesis;
@@ -127,11 +128,13 @@ const TeamBriefingPlayer: React.FC = () => {
                 utterance.pitch = 1.0;
                 
                 const voices = synthRef.current.getVoices();
-                let bestVoice;
+                let bestVoice = null;
 
                 if (language === 'ar') {
-                    utterance.lang = 'ar-SA'; // Standard Arabic often works best for broad compatibility
-                    bestVoice = voices.find(v => v.lang.includes('ar'));
+                    // Try to find an Arabic voice
+                    bestVoice = voices.find(v => v.lang.includes('ar') || v.lang.includes('AR'));
+                    utterance.lang = bestVoice ? bestVoice.lang : 'ar-SA';
+                    console.log("Selected Arabic Voice:", bestVoice?.name || "Default (ar-SA)");
                 } else {
                     utterance.lang = 'fr-FR';
                     bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
@@ -153,6 +156,12 @@ const TeamBriefingPlayer: React.FC = () => {
                     console.error("Speech error:", e);
                     setIsPlaying(false);
                     if (intervalRef.current) clearInterval(intervalRef.current);
+                    
+                    if (language === 'ar') {
+                         setErrorMessage("Impossible de lire l'audio : Aucune voix arabe détectée sur cet appareil.");
+                    } else {
+                         setErrorMessage("Erreur de lecture audio.");
+                    }
                 };
 
                 utteranceRef.current = utterance;
@@ -290,6 +299,15 @@ const TeamBriefingPlayer: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {errorMessage && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errorMessage}
+                </div>
+            )}
 
             {/* Script and Actions Section */}
             {script && (
