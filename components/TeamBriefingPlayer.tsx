@@ -105,21 +105,89 @@ const TeamBriefingPlayer: React.FC = () => {
     
     // ... existing togglePlay and cleanup code remains same ...
 
+    // Helper to clean text
+    const cleanTextForSpeech = (text: string) => {
+        return text
+            .replace(/\*\*/g, '')       // Remove bold **
+            .replace(/\*/g, '')         // Remove italics *
+            .replace(/#{1,6}\s?/g, '')  // Remove headers #
+            .replace(/-\s/g, '')        // Remove list bullets
+            .replace(/`/g, '')          // Remove code blocks
+            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Keep link text, remove URL
+            .trim();
+    };
+
+    const speakChunks = (chunks: string[], index: number) => {
+        if (index >= chunks.length) {
+            setIsPlaying(false);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            return;
+        }
+
+        if (!synthRef.current) return;
+
+        const chunk = chunks[index].trim();
+        if (!chunk) {
+            speakChunks(chunks, index + 1);
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(chunk);
+        utterance.rate = 1.0; 
+        utterance.pitch = 1.0;
+
+        const voices = synthRef.current.getVoices();
+        let bestVoice = null;
+
+        if (language === 'ar') {
+            const arabicVoices = voices.filter(v => 
+                (v.lang.includes('ar') || v.lang.includes('AR')) &&
+                !v.name.toLowerCase().includes('recognition') && 
+                !v.name.toLowerCase().includes('reconnaissance')
+            );
+            bestVoice = arabicVoices.find(v => v.name.includes('Google')) 
+                     || arabicVoices.find(v => v.name.includes('Microsoft'))
+                     || arabicVoices[0]
+                     || voices.find(v => v.lang.includes('ar') || v.lang.includes('AR')); // Fallback to any arabic
+
+            utterance.lang = bestVoice ? bestVoice.lang : 'ar-SA';
+        } else {
+            utterance.lang = 'fr-FR';
+            bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
+                           || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
+                           || voices.find(v => v.lang.includes('fr'));
+        }
+        
+        if (bestVoice) utterance.voice = bestVoice;
+
+        utterance.onend = () => {
+            speakChunks(chunks, index + 1);
+        };
+
+        utterance.onerror = (e) => {
+            console.error("Chunk error:", e);
+            // Try to continue to next chunk even if one fails
+            speakChunks(chunks, index + 1);
+        };
+
+        utteranceRef.current = utterance;
+        synthRef.current.speak(utterance);
+    };
+
     const togglePlay = () => {
         if (!script) return;
         setErrorMessage(null);
 
         // Priority 1: Server-Side Audio (MP3)
         if (audioUrl && audioRef.current) {
+            // ... (keep existing MP3 logic)
             if (isPlaying) {
                 audioRef.current.pause();
                 setIsPlaying(false);
             } else {
-                // If source not set or changed
                 if (!audioRef.current.src || !audioRef.current.src.endsWith(audioUrl)) {
                     audioRef.current.src = audioUrl;
                 }
-                
                 audioRef.current.play()
                     .then(() => setIsPlaying(true))
                     .catch(e => {
@@ -127,140 +195,42 @@ const TeamBriefingPlayer: React.FC = () => {
                         setErrorMessage("Erreur lors de la lecture du fichier audio.");
                         setIsPlaying(false);
                     });
-                
                 audioRef.current.onended = () => setIsPlaying(false);
                 audioRef.current.onpause = () => setIsPlaying(false);
             }
             return;
         }
 
-        // Priority 2: Browser TTS (Fallback)
+        // Priority 2: Browser TTS (Fallback) - Chunked
         if (!synthRef.current) {
              synthRef.current = window.speechSynthesis;
         }
 
         if (isPlaying) {
-            // User wants to PAUSE
-            synthRef.current.pause();
-            // Clear keep-alive interval immediately
+            // PAUSE/STOP
+            synthRef.current.cancel(); // Cancel clears the queue
             if (intervalRef.current) clearInterval(intervalRef.current);
             setIsPlaying(false);
         } else {
-            // User wants to PLAY (or RESUME)
-            if (synthRef.current.paused && synthRef.current.speaking) {
-                // Resume logic
-                synthRef.current.resume();
-                setIsPlaying(true);
-                
-                // Restart keep-alive
-                if (intervalRef.current) clearInterval(intervalRef.current);
-                intervalRef.current = setInterval(() => {
-                    if (synthRef.current?.speaking && !synthRef.current?.paused) {
-                        synthRef.current.pause();
-                        synthRef.current.resume();
-                    }
-                }, 10000);
-
-            } else {
-                // Start new speech
-                synthRef.current.cancel(); 
-                
-                const utterance = new SpeechSynthesisUtterance(script);
-                utterance.rate = 1.0; 
-                utterance.pitch = 1.0;
-                
-                const voices = synthRef.current.getVoices();
-                let bestVoice = null;
-
-                if (language === 'ar') {
-                    // Filter out "Recognition" voices which are often input-only and cause errors
-                    const arabicVoices = voices.filter(v => 
-                        (v.lang.includes('ar') || v.lang.includes('AR')) &&
-                        !v.name.toLowerCase().includes('recognition') && 
-                        !v.name.toLowerCase().includes('reconnaissance')
-                    );
-                    
-                    // Priority: Google, then Microsoft, then any
-                    bestVoice = arabicVoices.find(v => v.name.includes('Google')) 
-                             || arabicVoices.find(v => v.name.includes('Microsoft'))
-                             || arabicVoices[0];
-                             
-                    // Fallback to "bad" voices if nothing else, but prefer others
-                    if (!bestVoice) {
-                         bestVoice = voices.find(v => v.lang.includes('ar') || v.lang.includes('AR'));
-                    }
-
-                    utterance.lang = bestVoice ? bestVoice.lang : 'ar-SA';
-                    console.log("Selected Arabic Voice:", bestVoice?.name || "Default (ar-SA)");
-                } else {
-                    utterance.lang = 'fr-FR';
-                    bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
-                                   || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
-                                   || voices.find(v => v.lang.includes('fr'));
+            // PLAY
+            synthRef.current.cancel(); 
+            
+            const cleanedText = cleanTextForSpeech(script);
+            // Split by punctuation but keep it attached if possible, or just split by regex
+            // Simple split by newline or dot/punc
+            const chunks = cleanedText.match(/[^.!?\n]+[.!?\n]+/g) || [cleanedText];
+            
+            setIsPlaying(true);
+            speakChunks(chunks, 0);
+            
+            // Keep-alive interval (Chrome bug workaround)
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(() => {
+                if (synthRef.current?.speaking && !synthRef.current?.paused) {
+                    synthRef.current.pause();
+                    synthRef.current.resume();
                 }
-                
-                if (bestVoice) utterance.voice = bestVoice;
-
-                utterance.onend = () => {
-                    setIsPlaying(false);
-                    if (intervalRef.current) clearInterval(intervalRef.current);
-                };
-                
-                utterance.onpause = () => setIsPlaying(false);
-                utterance.onresume = () => setIsPlaying(true);
-                
-                utterance.onerror = (e) => {
-                    console.error("Speech error:", e);
-                    
-                    // Retry logic: If we forced a voice and it failed, try again with system default for the language
-                    if (utterance.voice) {
-                        console.log("Retrying with system default voice for language...");
-                        const retryUtterance = new SpeechSynthesisUtterance(script);
-                        retryUtterance.lang = language === 'ar' ? 'ar-SA' : 'fr-FR';
-                        // Do not set .voice
-                        
-                        retryUtterance.onend = () => { setIsPlaying(false); if (intervalRef.current) clearInterval(intervalRef.current); };
-                        retryUtterance.onerror = (ev) => {
-                            console.error("Retry failed:", ev);
-                            setIsPlaying(false);
-                            if (intervalRef.current) clearInterval(intervalRef.current);
-                            if (language === 'ar') {
-                                setErrorMessage("Impossible de lire l'audio : Aucune voix arabe fonctionnelle détectée.");
-                            } else {
-                                setErrorMessage("Erreur de lecture audio.");
-                            }
-                        };
-                        
-                        if (synthRef.current) {
-                            synthRef.current.cancel();
-                            utteranceRef.current = retryUtterance;
-                            synthRef.current.speak(retryUtterance);
-                            return; // Keep playing state true
-                        }
-                    }
-
-                    setIsPlaying(false);
-                    if (intervalRef.current) clearInterval(intervalRef.current);
-                    
-                    if (language === 'ar') {
-                         setErrorMessage("Impossible de lire l'audio : Aucune voix arabe détectée sur cet appareil.");
-                    } else {
-                         setErrorMessage("Erreur de lecture audio.");
-                    }
-                };
-
-                utteranceRef.current = utterance;
-                synthRef.current.speak(utterance);
-                setIsPlaying(true);
-                
-                if (intervalRef.current) clearInterval(intervalRef.current);
-                intervalRef.current = setInterval(() => {
-                    if (synthRef.current?.speaking && !synthRef.current?.paused) {
-                        synthRef.current.pause();
-                        synthRef.current.resume();
-                    }
-                }, 10000);
-            }
+            }, 10000);
         }
     };
 
