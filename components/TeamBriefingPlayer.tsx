@@ -25,6 +25,7 @@ const TeamBriefingPlayer: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
     
     const synthRef = useRef<SpeechSynthesis | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -43,6 +44,7 @@ const TeamBriefingPlayer: React.FC = () => {
                     setActions(data.actions || []);
                     setInstruction(data.instruction || null);
                     setIsScriptToday(data.isToday);
+                    if (data.language) setLanguage(data.language);
                 }
             } catch (error) {
                 console.error("Error fetching briefing:", error);
@@ -65,7 +67,11 @@ const TeamBriefingPlayer: React.FC = () => {
         try {
             const response = await fetch('/api/briefing/generate', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ language })
             });
             const data = await response.json();
             
@@ -117,14 +123,21 @@ const TeamBriefingPlayer: React.FC = () => {
                 synthRef.current.cancel(); 
                 
                 const utterance = new SpeechSynthesisUtterance(script);
-                utterance.lang = 'fr-FR';
                 utterance.rate = 1.0; 
                 utterance.pitch = 1.0;
                 
                 const voices = synthRef.current.getVoices();
-                const bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
-                               || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
-                               || voices.find(v => v.lang.includes('fr'));
+                let bestVoice;
+
+                if (language === 'ar') {
+                    utterance.lang = 'ar-SA'; // Standard Arabic often works best for broad compatibility
+                    bestVoice = voices.find(v => v.lang.includes('ar'));
+                } else {
+                    utterance.lang = 'fr-FR';
+                    bestVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('fr')) 
+                                   || voices.find(v => v.name.includes('Thomas') && v.lang.includes('fr'))
+                                   || voices.find(v => v.lang.includes('fr'));
+                }
                 
                 if (bestVoice) utterance.voice = bestVoice;
 
@@ -216,46 +229,65 @@ const TeamBriefingPlayer: React.FC = () => {
                     )}
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {/* Always show Generate/Update button for authorized users */}
+                <div className="flex flex-col items-end gap-3">
                     {canGenerate && (
-                        <button 
-                            onClick={generateBriefing}
-                            disabled={isLoading}
-                            className={`group flex items-center gap-2 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed ${script ? 'bg-teal-500 text-white' : 'bg-white text-teal-600 border border-teal-200'}`}
-                        >
-                            {isLoading ? (
-                                <span className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"></span>
-                            ) : (
-                                <SparklesIcon className="h-5 w-5" />
-                            )}
-                            {isLoading ? "Préparation..." : (script && isScriptToday) ? "Régénérer" : script ? "Mettre à jour" : "Générer"}
-                        </button>
-                    )}
-
-                    {script && (
-                        <div className="flex items-center gap-4 bg-slate-100 p-2 pr-6 rounded-full animate-fadeIn">
+                        <div className="flex bg-slate-100 rounded-lg p-1">
                             <button 
-                                onClick={togglePlay}
-                                className="w-12 h-12 flex items-center justify-center bg-teal-600 text-white rounded-full shadow-md hover:scale-110 transition-transform"
+                                onClick={() => setLanguage('fr')} 
+                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${language === 'fr' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                {isPlaying ? <PauseIcon className="h-6 w-6" /> : <PlayIcon className="h-6 w-6 ml-1" />}
+                                🇫🇷 FR
                             </button>
-                            
-                            <div className="flex flex-col">
-                                <span className="text-xs font-medium text-slate-500 uppercase">{isScriptToday ? "Aujourd'hui" : "Ancien"}</span>
-                                <div className="flex items-center gap-1 h-4">
-                                    {isPlaying ? (
-                                        [...Array(5)].map((_, i) => (
-                                            <div key={i} className="w-1 bg-teal-500 rounded-full animate-pulse" style={{ height: `${Math.random() * 100}%`, animationDuration: `${0.5 + Math.random()}s` }}></div>
-                                        ))
-                                    ) : (
-                                        <span className="text-sm font-bold text-slate-700">Écouter</span>
-                                    )}
-                                </div>
-                            </div>
+                            <button 
+                                onClick={() => setLanguage('ar')} 
+                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${language === 'ar' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                🇹🇳 TN
+                            </button>
                         </div>
                     )}
+
+                    <div className="flex items-center gap-4">
+                        {/* Always show Generate/Update button for authorized users */}
+                        {canGenerate && (
+                            <button 
+                                onClick={generateBriefing}
+                                disabled={isLoading}
+                                className={`group flex items-center gap-2 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed ${script ? 'bg-teal-500 text-white' : 'bg-white text-teal-600 border border-teal-200'}`}
+                            >
+                                {isLoading ? (
+                                    <span className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"></span>
+                                ) : (
+                                    <SparklesIcon className="h-5 w-5" />
+                                )}
+                                {isLoading ? "Préparation..." : (script && isScriptToday) ? "Régénérer" : script ? "Mettre à jour" : "Générer"}
+                            </button>
+                        )}
+
+                        {script && (
+                            <div className="flex items-center gap-4 bg-slate-100 p-2 pr-6 rounded-full animate-fadeIn">
+                                <button 
+                                    onClick={togglePlay}
+                                    className="w-12 h-12 flex items-center justify-center bg-teal-600 text-white rounded-full shadow-md hover:scale-110 transition-transform"
+                                >
+                                    {isPlaying ? <PauseIcon className="h-6 w-6" /> : <PlayIcon className="h-6 w-6 ml-1" />}
+                                </button>
+                                
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-medium text-slate-500 uppercase">{isScriptToday ? "Aujourd'hui" : "Ancien"}</span>
+                                    <div className="flex items-center gap-1 h-4">
+                                        {isPlaying ? (
+                                            [...Array(5)].map((_, i) => (
+                                                <div key={i} className="w-1 bg-teal-500 rounded-full animate-pulse" style={{ height: `${Math.random() * 100}%`, animationDuration: `${0.5 + Math.random()}s` }}></div>
+                                            ))
+                                        ) : (
+                                            <span className="text-sm font-bold text-slate-700">Écouter</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

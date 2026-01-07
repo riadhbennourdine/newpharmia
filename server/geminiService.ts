@@ -696,9 +696,10 @@ export const generateBriefingScript = async (context: {
     tip?: string;
     learningStats?: {
         averageScore: number;
-        gaps: string[]; // Topics with low scores
-        topPerformer?: string; // Name of the best performer
+        gaps: string[];
+        topPerformer?: string;
     };
+    language?: 'fr' | 'ar';
 }): Promise<string> => {
     return globalQueue.add(async () => {
         let attempts = 0;
@@ -710,27 +711,34 @@ export const generateBriefingScript = async (context: {
                 const genAI = new GoogleGenerativeAI(key);
                 const model = genAI.getGenerativeModel({ model: modelName });
 
+                const isArabic = context.language === 'ar';
+                
+                const styleInstruction = isArabic 
+                    ? `Langue : Arabe Tunisien (Derja) professionnel, mélangé avec des termes médicaux en français (code-switching naturel en pharmacie).
+TON : Radio matinale tunisienne (très chaleureux, "Yaaichkom", "Sbeh lkhir", dynamique).`
+                    : `Langue : Français.
+TON : Radio matinale (tonique, bienveillant, percutant).`;
+
                 const prompt = `Tu es "La Voix de PharmIA", un coach matinal ultra-dynamique, chaleureux et motivant pour une équipe en pharmacie.
 
-TON STYLE : 
-- Radio matinale (tonique, bienveillant, percutant).
+${styleInstruction}
 - Utilise des phrases courtes.
 - Évite les listes à puces, fais des transitions fluides.
 - Pas de "Bonjour" robotique. Commence par une accroche liée à l'énergie du jour.
 
 STRUCTURE DU SCRIPT (environ 200 mots) :
 1. L'ACCROCHE : Un mot d'enthousiasme pour l'équipe "${context.groupName}".
-2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || "On reste soudés et on donne le meilleur pour nos patients !"}"
+2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || (isArabic ? "Nkhalliw l'esprit d'équipe w na3tiw le maximum lil les patients mte3na !" : "On reste soudés et on donne le meilleur pour nos patients !")}"
 3. LE POULS DE LA FORMATION (Bilan Rapide) :
-   - Niveau global de l'équipe : ${context.learningStats?.averageScore ? context.learningStats.averageScore + "/100" : "Pas encore de données significatives"}.
-   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${context.learningStats.gaps.join(", ")}. On se remet à niveau là-dessus !` : ""}
-   ${context.learningStats?.topPerformer ? `- 🏆 Bravo à notre champion de la semaine : ${context.learningStats.topPerformer} ! Continue comme ça !` : ""}
+   - Niveau global de l'équipe : ${context.learningStats?.averageScore ? context.learningStats.averageScore + "/100" : (isArabic ? "Mezelna bdiechi les stats" : "Pas encore de données significatives")}.
+   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${context.learningStats.gaps.join(", ")}. ${isArabic ? "Lazim nraj3ouhom !" : "On se remet à niveau là-dessus !"}` : ""}
+   ${context.learningStats?.topPerformer ? `- 🏆 Bravo à notre champion de la semaine : ${context.learningStats.topPerformer} ! ${isArabic ? "Yaatik essaha, kamil haka !" : "Continue comme ça !"}` : ""}
 4. LES RENDEZ-VOUS DU MOMENT :
    ${context.nextPreparatorWebinar ? `- Pour les préparateurs (CROP) : ${context.nextPreparatorWebinar}` : ""}
    ${context.nextPharmacistWebinar ? `- Pour les pharmaciens (MasterClass) : ${context.nextPharmacistWebinar}` : ""}
    ${context.weekendProgram ? `- Ce week-end : ${context.weekendProgram}` : ""}
    (Si rien n'est indiqué ci-dessus pour les rendez-vous, ne dis rien).
-5. L'ASTUCE CLINIQUE : ${context.tip ? "Le petit plus pour vos conseils : " + context.tip : "Soyez attentifs aux petits détails qui font la différence."}
+5. L'ASTUCE CLINIQUE : ${context.tip ? (isArabic ? "Astuce sghira : " : "Le petit plus pour vos conseils : ") + context.tip : (isArabic ? "Raddou belkom aal détails sghar." : "Soyez attentifs aux petits détails qui font la différence.")}
 6. LE MOT DE LA FIN : Une phrase punchy pour lancer la journée.
 
 Génère UNIQUEMENT le texte fluide à lire. Pas de notes, pas de titres.`;

@@ -207,6 +207,8 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             }
         }
 
+        const { language = 'fr' } = req.body;
+
         // 5. Generate Script with Gemini
         const script = await generateBriefingScript({
             groupName,
@@ -215,16 +217,17 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             nextPharmacistWebinar: mcText,
             weekendProgram: weekendText,
             tip,
-            learningStats
+            learningStats,
+            language: language as 'fr' | 'ar'
         });
 
         // 6. Save to Group
         await groupsCollection.updateOne(
             { _id: new ObjectId(user.groupId) },
-            { $set: { dailyBriefing: { script, date: new Date(), actions } } }
+            { $set: { dailyBriefing: { script, date: new Date(), actions, language } } }
         );
 
-        res.json({ script, actions });
+        res.json({ script, actions, language });
 
     } catch (error) {
         console.error('Error generating briefing:', error);

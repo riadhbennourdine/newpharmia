@@ -107,6 +107,7 @@ export interface Group {
     script: string;
     date: Date;
     actions?: { label: string; url: string; }[];
+    language?: 'fr' | 'ar';
   };
   planning?: GroupAssignment[];
   isPlanningEnabled?: boolean;
