@@ -173,8 +173,23 @@ const TeamBriefingPlayer: React.FC = () => {
                 let bestVoice = null;
 
                 if (language === 'ar') {
-                    // Try to find an Arabic voice
-                    bestVoice = voices.find(v => v.lang.includes('ar') || v.lang.includes('AR'));
+                    // Filter out "Recognition" voices which are often input-only and cause errors
+                    const arabicVoices = voices.filter(v => 
+                        (v.lang.includes('ar') || v.lang.includes('AR')) &&
+                        !v.name.toLowerCase().includes('recognition') && 
+                        !v.name.toLowerCase().includes('reconnaissance')
+                    );
+                    
+                    // Priority: Google, then Microsoft, then any
+                    bestVoice = arabicVoices.find(v => v.name.includes('Google')) 
+                             || arabicVoices.find(v => v.name.includes('Microsoft'))
+                             || arabicVoices[0];
+                             
+                    // Fallback to "bad" voices if nothing else, but prefer others
+                    if (!bestVoice) {
+                         bestVoice = voices.find(v => v.lang.includes('ar') || v.lang.includes('AR'));
+                    }
+
                     utterance.lang = bestVoice ? bestVoice.lang : 'ar-SA';
                     console.log("Selected Arabic Voice:", bestVoice?.name || "Default (ar-SA)");
                 } else {
@@ -196,6 +211,34 @@ const TeamBriefingPlayer: React.FC = () => {
                 
                 utterance.onerror = (e) => {
                     console.error("Speech error:", e);
+                    
+                    // Retry logic: If we forced a voice and it failed, try again with system default for the language
+                    if (utterance.voice) {
+                        console.log("Retrying with system default voice for language...");
+                        const retryUtterance = new SpeechSynthesisUtterance(script);
+                        retryUtterance.lang = language === 'ar' ? 'ar-SA' : 'fr-FR';
+                        // Do not set .voice
+                        
+                        retryUtterance.onend = () => { setIsPlaying(false); if (intervalRef.current) clearInterval(intervalRef.current); };
+                        retryUtterance.onerror = (ev) => {
+                            console.error("Retry failed:", ev);
+                            setIsPlaying(false);
+                            if (intervalRef.current) clearInterval(intervalRef.current);
+                            if (language === 'ar') {
+                                setErrorMessage("Impossible de lire l'audio : Aucune voix arabe fonctionnelle détectée.");
+                            } else {
+                                setErrorMessage("Erreur de lecture audio.");
+                            }
+                        };
+                        
+                        if (synthRef.current) {
+                            synthRef.current.cancel();
+                            utteranceRef.current = retryUtterance;
+                            synthRef.current.speak(retryUtterance);
+                            return; // Keep playing state true
+                        }
+                    }
+
                     setIsPlaying(false);
                     if (intervalRef.current) clearInterval(intervalRef.current);
                     
