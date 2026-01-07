@@ -42,7 +42,7 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
                 date: group.dailyBriefing.date,
                 actions: group.dailyBriefing.actions || [],
                 instruction: group.instruction,
-                language: group.dailyBriefing.language || 'fr',
+
                 audioUrl: (group.dailyBriefing as any).audioUrl, // Cast as any because audioUrl might not be in type definition yet
                 isToday: isToday
             });
