@@ -148,17 +148,77 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             tip = `Sur le sujet "${randomFiche[0].title}" : ${randomFiche[0].keyPoints[0]}`;
         }
 
-        // 4. Generate Script with Gemini
+        // 4. Calculate Learning Stats (Pulse)
+        let learningStats = {
+            averageScore: 0,
+            gaps: [] as string[],
+            topPerformer: undefined as string | undefined
+        };
+
+        if (group) {
+            const memberIds = [...(group.pharmacistIds || []), ...(group.preparatorIds || [])].map(id => new ObjectId(id));
+            const { usersCollection } = await getCollections();
+            
+            // Fetch users with their quiz history
+            const groupUsers = await usersCollection.find(
+                { _id: { $in: memberIds } },
+                { projection: { firstName: 1, lastName: 1, quizHistory: 1 } }
+            ).toArray();
+
+            let totalScore = 0;
+            let totalQuizzes = 0;
+            const scoresByTopic: Record<string, { total: number, count: number }> = {};
+            let bestPerformerName = "";
+            let bestPerformerScore = -1;
+
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+            groupUsers.forEach(u => {
+                if (u.quizHistory && u.quizHistory.length > 0) {
+                    // Weekly Performance Check
+                    const weeklyQuizzes = u.quizHistory.filter((q: any) => new Date(q.completedAt) >= oneWeekAgo);
+                    const weeklyTotal = weeklyQuizzes.reduce((sum: number, q: any) => sum + (q.score || 0), 0);
+                    
+                    if (weeklyTotal > bestPerformerScore && weeklyQuizzes.length > 0) {
+                        bestPerformerScore = weeklyTotal;
+                        bestPerformerName = `${u.firstName} ${u.lastName}`;
+                    }
+
+                    // Global Stats
+                    u.quizHistory.forEach((q: any) => {
+                        totalScore += (q.score || 0);
+                        totalQuizzes++;
+                        
+                        // We need the topic name, but quizHistory might only have ID. 
+                        // Simplified: Using ID if title not available, or skipped if complex mapping needed.
+                        // Assuming q.quizId is available. ideally we need to map it to a title.
+                        // For now, we will skip detailed gap analysis by topic title to avoid extra DB calls in this iteration 
+                        // unless we fetch memofiches. Let's do a quick fetch of memofiches if we have IDs.
+                    });
+                }
+            });
+
+            if (totalQuizzes > 0) {
+                learningStats.averageScore = Math.round(totalScore / totalQuizzes);
+                if (bestPerformerScore > 0) {
+                    learningStats.topPerformer = bestPerformerName;
+                }
+            }
+        }
+
+        // 5. Generate Script with Gemini
         const script = await generateBriefingScript({
             groupName,
             instruction,
             nextPreparatorWebinar: cropText,
             nextPharmacistWebinar: mcText,
             weekendProgram: weekendText,
-            tip
+            tip,
+            learningStats
         });
 
-        // 5. Save to Group
+        // 6. Save to Group
         await groupsCollection.updateOne(
             { _id: new ObjectId(user.groupId) },
             { $set: { dailyBriefing: { script, date: new Date(), actions } } }
