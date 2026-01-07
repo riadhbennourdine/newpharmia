@@ -138,8 +138,8 @@ const TeamBriefingPlayer: React.FC = () => {
 
         const utterance = new SpeechSynthesisUtterance(chunk);
         
-        // Slower rate for Arabic to improve intelligibility of robotic voices
-        utterance.rate = language === 'ar' ? 0.85 : 1.0; 
+        // Rate adjustment: Slower for Arabic to help robotic voices, normal for French
+        utterance.rate = language === 'ar' ? 0.9 : 1.0; 
         utterance.pitch = 1.0;
 
         const voices = synthRef.current.getVoices();
@@ -154,7 +154,7 @@ const TeamBriefingPlayer: React.FC = () => {
             bestVoice = arabicVoices.find(v => v.name.includes('Google')) 
                      || arabicVoices.find(v => v.name.includes('Microsoft'))
                      || arabicVoices[0]
-                     || voices.find(v => v.lang.includes('ar') || v.lang.includes('AR')); // Fallback to any arabic
+                     || voices.find(v => v.lang.includes('ar'));
 
             utterance.lang = bestVoice ? bestVoice.lang : 'ar-SA';
         } else {
@@ -174,7 +174,6 @@ const TeamBriefingPlayer: React.FC = () => {
 
         utterance.onerror = (e) => {
             console.error("Chunk error:", e);
-            // Try to continue to next chunk even if one fails
             if (isPlayingRef.current) {
                 speakChunks(chunks, index + 1);
             }
@@ -330,7 +329,7 @@ const TeamBriefingPlayer: React.FC = () => {
                                 onClick={() => setLanguage('ar')} 
                                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${language === 'ar' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                🇹🇳 TN
+                                🇸🇦 AR
                             </button>
                         </div>
                     )}

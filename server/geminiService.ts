@@ -714,8 +714,9 @@ export const generateBriefingScript = async (context: {
                 const isArabic = context.language === 'ar';
                 
                 const styleInstruction = isArabic 
-                    ? `Langue : Arabe Tunisien (Derja) professionnel, mélangé avec des termes médicaux en français (code-switching naturel en pharmacie).
-TON : Radio matinale tunisienne (très chaleureux, "Yaaichkom", "Sbeh lkhir", dynamique).`
+                    ? `Langue : Arabe Littéraire (Fusha) moderne, clair et professionnel.
+TON : Radio matinale dynamique, motivante et chaleureuse.
+IMPORTANT : Écris un texte optimisé pour la synthèse vocale (TTS). Évite les abréviations complexes.`
                     : `Langue : Français.
 TON : Radio matinale (tonique, bienveillant, percutant).`;
 
@@ -728,17 +729,17 @@ ${styleInstruction}
 
 STRUCTURE DU SCRIPT (environ 200 mots) :
 1. L'ACCROCHE : Un mot d'enthousiasme pour l'équipe "${context.groupName}".
-2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || (isArabic ? "Nkhalliw l'esprit d'équipe w na3tiw le maximum lil les patients mte3na !" : "On reste soudés et on donne le meilleur pour nos patients !")}"
+2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || (isArabic ? "لنبقى متحدين ولنقدم أفضل ما لدينا لمرضانا!" : "On reste soudés et on donne le meilleur pour nos patients !")}"
 3. LE POULS DE LA FORMATION (Bilan Rapide) :
-   - Niveau global de l'équipe : ${context.learningStats?.averageScore ? context.learningStats.averageScore + "/100" : (isArabic ? "Mezelna bdiechi les stats" : "Pas encore de données significatives")}.
-   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${context.learningStats.gaps.join(", ")}. ${isArabic ? "Lazim nraj3ouhom !" : "On se remet à niveau là-dessus !"}` : ""}
-   ${context.learningStats?.topPerformer ? `- 🏆 Bravo à notre champion de la semaine : ${context.learningStats.topPerformer} ! ${isArabic ? "Yaatik essaha, kamil haka !" : "Continue comme ça !"}` : ""}
+   - Niveau global de l'équipe : ${context.learningStats?.averageScore ? context.learningStats.averageScore + "/100" : (isArabic ? "لا توجد بيانات كافية بعد" : "Pas encore de données significatives")}.
+   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${context.learningStats.gaps.join(", ")}. ${isArabic ? "لنراجع هذه النقاط معًا!" : "On se remet à niveau là-dessus !"}` : ""}
+   ${context.learningStats?.topPerformer ? `- 🏆 Bravo à notre champion de la semaine : ${context.learningStats.topPerformer} ! ${isArabic ? "أحسنت، استمر على هذا المنوال!" : "Continue comme ça !"}` : ""}
 4. LES RENDEZ-VOUS DU MOMENT :
    ${context.nextPreparatorWebinar ? `- Pour les préparateurs (CROP) : ${context.nextPreparatorWebinar}` : ""}
    ${context.nextPharmacistWebinar ? `- Pour les pharmaciens (MasterClass) : ${context.nextPharmacistWebinar}` : ""}
    ${context.weekendProgram ? `- Ce week-end : ${context.weekendProgram}` : ""}
    (Si rien n'est indiqué ci-dessus pour les rendez-vous, ne dis rien).
-5. L'ASTUCE CLINIQUE : ${context.tip ? (isArabic ? "Astuce sghira : " : "Le petit plus pour vos conseils : ") + context.tip : (isArabic ? "Raddou belkom aal détails sghar." : "Soyez attentifs aux petits détails qui font la différence.")}
+5. L'ASTUCE CLINIQUE : ${context.tip ? (isArabic ? "نصيحة سريرية : " : "Le petit plus pour vos conseils : ") + context.tip : (isArabic ? "انتبهوا للتفاصيل الصغيرة التي تصنع الفرق." : "Soyez attentifs aux petits détails qui font la différence.")}
 6. LE MOT DE LA FIN : Une phrase punchy pour lancer la journée.
 
 Génère UNIQUEMENT le texte fluide à lire. Pas de notes, pas de titres.`;
