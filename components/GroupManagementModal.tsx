@@ -9,7 +9,7 @@ interface GroupManagementModalProps {
 }
 
 const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onClose, fetchGroups }) => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, token } = useAuth();
   const [name, setName] = useState(group?.name || '');
   const [pharmacistIds, setPharmacistIds] = useState<string[]>(group?.pharmacistIds?.map(id => id.toString()) || []);
   const [preparatorIds, setPreparatorIds] = useState<string[]>(group?.preparatorIds?.map(id => id.toString()) || []);
@@ -29,53 +29,95 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
   // No formatDateForInput, subscriptionEndDate state, or useEffects related to subscriptionEndDate input
 
   useEffect(() => {
-    fetchPharmacists();
-    fetchPreparators();
-    fetchManagers();
-    fetchAllMemofiches();
+    if (token) {
+        fetchPharmacists();
+        fetchPreparators();
+        fetchManagers();
+        fetchAllMemofiches();
+    }
 
     // Initialize memo fiche states from group prop
     if (group) {
         setPrimaryMemoFicheId(group.primaryMemoFicheId);
         setInstructionFiches(group.instructionFiches || []);
     }
-  }, [group]);
+  }, [group, token]);
 
 
   const fetchAllMemofiches = async () => {
     try {
-      const response = await fetch('/api/memofiches/all');
-      setAllMemofiches(await response.json());
+      const response = await fetch('/api/memofiches/all', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        setAllMemofiches(await response.json());
+      } else {
+        console.error('Failed to fetch memofiches');
+        setAllMemofiches([]);
+      }
     } catch (error) {
       console.error('Error fetching all memofiches:', error);
+      setAllMemofiches([]);
     }
   };
 
 
   const fetchPharmacists = async () => {
     try {
-      const response = await fetch('/api/users/pharmacists');
-      setAllPharmacists(await response.json());
+      const response = await fetch('/api/users/pharmacists', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        setAllPharmacists(await response.json());
+      } else {
+        console.error('Failed to fetch pharmacists');
+        setAllPharmacists([]);
+      }
     } catch (error) {
       console.error('Error fetching pharmacists:', error);
+      setAllPharmacists([]);
     }
   };
 
   const fetchPreparators = async () => {
     try {
-      const response = await fetch('/api/users/preparateurs');
-      setAllPreparators(await response.json());
+      const response = await fetch('/api/users/preparateurs', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        setAllPreparators(await response.json());
+      } else {
+        console.error('Failed to fetch preparators');
+        setAllPreparators([]);
+      }
     } catch (error) {
       console.error('Error fetching preparators:', error);
+      setAllPreparators([]);
     }
   };
 
   const fetchManagers = async () => {
     try {
-      const response = await fetch('/api/users/managers');
-      setAllManagers(await response.json());
+      const response = await fetch('/api/users/managers', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        setAllManagers(await response.json());
+      } else {
+        console.error('Failed to fetch managers');
+        setAllManagers([]);
+      }
     } catch (error) {
       console.error('Error fetching managers:', error);
+      setAllManagers([]);
     }
   };
 
@@ -110,7 +152,10 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({ group, onCl
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(groupData),
       });
 
