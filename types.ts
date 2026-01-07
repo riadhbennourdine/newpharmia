@@ -107,7 +107,6 @@ export interface Group {
     script: string;
     date: Date;
     actions?: { label: string; url: string; }[];
-    language?: 'fr' | 'ar';
     audioUrl?: string;
   };
   planning?: GroupAssignment[];

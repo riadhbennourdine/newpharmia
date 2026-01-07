@@ -195,8 +195,6 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             }
         }
 
-        const { language = 'fr' } = req.body;
-
         // 5. Generate Script with Gemini
         const script = await generateBriefingScript({
             groupName,
@@ -205,21 +203,20 @@ router.post('/generate', authenticateToken, async (req: AuthenticatedRequest, re
             nextPharmacistWebinar: mcText,
             weekendProgram: weekendText,
             tip,
-            learningStats,
-            language: language as 'fr' | 'ar'
+            learningStats
         });
 
         // 6. Generate Audio (Server-Side TTS) - Optional, needs OPENAI_API_KEY
         // This will return null if key is missing, which is fine (client falls back to browser TTS)
-        const audioUrl = await generateSpeech(script, language as 'fr' | 'ar');
+        const audioUrl = await generateSpeech(script, 'fr');
 
         // 7. Save to Group
         await groupsCollection.updateOne(
             { _id: new ObjectId(user.groupId) },
-            { $set: { dailyBriefing: { script, date: new Date(), actions, language, audioUrl } } }
+            { $set: { dailyBriefing: { script, date: new Date(), actions, audioUrl } } }
         );
 
-        res.json({ script, actions, language, audioUrl });
+        res.json({ script, actions, audioUrl });
 
     } catch (error) {
         console.error('Error generating briefing:', error);
