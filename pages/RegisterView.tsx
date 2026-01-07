@@ -25,7 +25,7 @@ const RegisterView: React.FC = () => {
           const fetchPharmacists = async () => {
             try {
               // This is a public endpoint, no auth needed.
-              const response = await fetch('/api/users/pharmacists');
+              const response = await fetch('/api/users/public/pharmacists');
               if (!response.ok) {
                 throw new Error('Failed to fetch pharmacists');
               }

@@ -8,6 +8,21 @@ console.log('server/users.ts: Initializing users router.');
 
 const router = express.Router();
 
+// Public route to get pharmacists for registration (no auth required)
+router.get('/public/pharmacists', async (req, res) => {
+    try {
+        const { usersCollection } = await getCollections();
+        const pharmacists = await usersCollection.find(
+            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } },
+            { projection: { _id: 1, firstName: 1, lastName: 1, city: 1, email: 1 } }
+        ).toArray();
+        res.json(pharmacists);
+    } catch (error) {
+        console.error('Error fetching pharmacists for registration:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la récupération des pharmaciens.' });
+    }
+});
+
 router.get('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
