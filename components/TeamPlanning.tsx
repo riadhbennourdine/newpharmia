@@ -47,10 +47,12 @@ const TeamPlanning: React.FC<Props> = ({ group, onUpdate }) => {
                      if (res.ok) {
                          const data = await res.json();
                          newDetails[id] = data.title;
+                     } else {
+                         newDetails[id] = `Fiche introuvable (${res.status})`;
                      }
                  } catch (e) {
                      console.error(e);
-                     newDetails[id] = "Fiche inconnue";
+                     newDetails[id] = "Erreur chargement";
                  }
              }));
              setFicheDetails(newDetails);
