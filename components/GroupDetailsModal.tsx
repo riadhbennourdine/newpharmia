@@ -128,14 +128,18 @@ const PreparatorItem: React.FC<{ preparatorId: string, onSelect: (prep: { id: st
     React.useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem('token');
+                
                 // Fetch user details
-                const userResponse = await fetch(`/api/users/${preparatorId}`);
+                const userResponse = await fetch(`/api/users/${preparatorId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const userData = await userResponse.json();
                 setUser(userData);
 
                 // Fetch learning journey data including average quiz score
-                const token = localStorage.getItem('token');
-                
                 // Construct query parameters
                 const params = new URLSearchParams();
                 if (startDate) params.append('startDate', startDate);
