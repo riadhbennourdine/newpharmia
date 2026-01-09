@@ -43,7 +43,12 @@ const TeamPlanning: React.FC<Props> = ({ group, onUpdate }) => {
              const newDetails = { ...ficheDetails };
              await Promise.all(idsToFetch.map(async (id) => {
                  try {
-                     const res = await fetch(`/api/memofiches/${id}`);
+                     const token = localStorage.getItem('token');
+                     const res = await fetch(`/api/memofiches/${id}`, {
+                         headers: {
+                             'Authorization': `Bearer ${token}`
+                         }
+                     });
                      if (res.ok) {
                          const data = await res.json();
                          newDetails[id] = data.title;
