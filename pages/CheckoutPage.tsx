@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS, WEBINAR_PRICE, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS, WEBINAR_PRICE, PHARMIA_WEBINAR_PRICE_HT, PHARMACONSEIL_BANK_DETAILS } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -413,12 +413,20 @@ const CheckoutPage: React.FC = () => {
     // Determine Bank Details based on Order Content
     const hasPacks = order?.items.some(i => i.type === ProductType.PACK || !!i.packId || (i.productId && i.productId.startsWith('MC')));
     const hasMasterClassWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.MASTER_CLASS);
+    const hasPharmIAWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.PHARMIA);
     const useSkillSeed = hasPacks || hasMasterClassWebinars;
     
     // Fallback object to prevent crash if import fails
     const defaultBank = { holder: 'N/A', bank: 'N/A', branch: '', rib: 'N/A', imageUrl: '' };
     
-    const bankDetails = (useSkillSeed ? SKILL_SEED_BANK_DETAILS : CROPT_BANK_DETAILS) || defaultBank;
+    let bankDetails = defaultBank;
+    if (useSkillSeed) {
+        bankDetails = SKILL_SEED_BANK_DETAILS;
+    } else if (hasPharmIAWebinars) {
+        bankDetails = PHARMACONSEIL_BANK_DETAILS;
+    } else {
+        bankDetails = CROPT_BANK_DETAILS;
+    }
 
     const isPdfRib = bankDetails.imageUrl ? bankDetails.imageUrl.toLowerCase().includes('.pdf') : false;
 

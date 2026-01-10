@@ -117,3 +117,11 @@ export const SKILL_SEED_BANK_DETAILS = {
     branch: 'Hammam Lif',
     imageUrl: '/api/ftp/view?filePath=%2Frib-skill-seed.pdf'
 };
+
+export const PHARMACONSEIL_BANK_DETAILS = {
+    holder: 'PHARMACONSEIL BMB',
+    rib: '03 027 1570115004362 83',
+    bank: 'Banque Nationale Agricole (BNA)',
+    branch: 'BOUMHEL ELBASSATINE',
+    imageUrl: 'https://pharmaconseilbmb.com/photos/site/rib-bna.png'
+};
