@@ -5,7 +5,7 @@ import clientPromise from './mongo.js';
 import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType } from '../types.js';
-import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, TAX_RATES } from '../constants.js';
+import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
 
 const router = express.Router();
 
@@ -33,6 +33,7 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
 
         let totalAmount = 0;
         const processedItems: any[] = [];
+        let hasTaxableItems = false;
 
         // Process Webinar Items
         const webinarItems = items.filter(i => !i.type || i.type === ProductType.WEBINAR || i.webinarId);
@@ -44,17 +45,29 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
                 return res.status(404).json({ message: 'One or more webinars not found.' });
             }
 
-            const webinarsTotal = webinars.reduce((sum, webinar) => {
-                if (webinar.price !== undefined) {
-                    return sum + webinar.price;
-                }
+            for (const webinar of webinars) {
+                let price = 0;
                 if (webinar.group === WebinarGroup.MASTER_CLASS) {
-                    return sum + MASTER_CLASS_PRICE;
+                    hasTaxableItems = true;
+                    // If price is in DB, assume HT. Else derive from constant (TTC) minus Stamp.
+                    if (webinar.price !== undefined) {
+                        price = webinar.price * (1 + TAX_RATES.TVA);
+                    } else {
+                        price = MASTER_CLASS_PRICE - TAX_RATES.TIMBRE;
+                    }
+                } else if (webinar.group === WebinarGroup.PHARMIA) {
+                    hasTaxableItems = true;
+                    const priceHT = webinar.price !== undefined ? webinar.price : PHARMIA_WEBINAR_PRICE_HT;
+                    price = priceHT * (1 + TAX_RATES.TVA);
+                } else if (webinar.group === WebinarGroup.CROP_TUNIS) {
+                    price = webinar.price !== undefined ? webinar.price : WEBINAR_PRICE;
+                } else {
+                    // Fallback to CROP/Standard price (80.000)
+                    price = webinar.price !== undefined ? webinar.price : WEBINAR_PRICE;
                 }
-                return sum + WEBINAR_PRICE;
-            }, 0);
+                totalAmount += price;
+            }
             
-            totalAmount += webinarsTotal;
             processedItems.push(...webinarItems.map(item => ({
                 type: ProductType.WEBINAR,
                 webinarId: new ObjectId(item.webinarId!),
@@ -69,15 +82,20 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
             if (!packDef) {
                 return res.status(400).json({ message: `Invalid pack ID: ${item.packId}` });
             }
-            // Calculate Pack Price TTC: (HT * (1 + TVA)) + Timbre
-            const priceTTC = (packDef.priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
-            totalAmount += priceTTC;
+            hasTaxableItems = true;
+            // Calculate Pack Price TTC excluding Timbre (added once at end)
+            const priceTTCNoStamp = (packDef.priceHT * (1 + TAX_RATES.TVA));
+            totalAmount += priceTTCNoStamp;
             
             processedItems.push({
                 type: ProductType.PACK,
                 packId: item.packId,
                 productId: item.packId // Unified ID access
             });
+        }
+
+        if (hasTaxableItems) {
+            totalAmount += TAX_RATES.TIMBRE;
         }
 
         const newOrder: Omit<Order, '_id'> = {

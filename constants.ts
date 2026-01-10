@@ -1,4 +1,5 @@
-export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars
+export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars (TTC)
+export const PHARMIA_WEBINAR_PRICE_HT = 39.900; // Price in TND for PharmIA webinars (HT)
 export const MASTER_CLASS_PRICE = 475.810; // Price in TND for 1 Master Class TTC (399.000 HT + 19% TVA + 1 DT)
 
 export const TAX_RATES = {

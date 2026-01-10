@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Order, Webinar, WebinarGroup, ProductType } from '../types';
 import { Spinner, UploadIcon } from '../components/Icons';
-import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS, WEBINAR_PRICE } from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, CROPT_BANK_DETAILS, SKILL_SEED_BANK_DETAILS, WEBINAR_PRICE, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
 
 const CheckoutPage: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -213,6 +213,10 @@ const CheckoutPage: React.FC = () => {
                             calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                         } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                             cropWebinarsTTC += (webinarDetails.price || 80.000);
+                        } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                            const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                            calculatedTotalHT += webinarBasePrice;
+                            calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                         } else {
                             // Fallback standard PharmIA webinar
                             const webinarBasePrice = webinarDetails.price || WEBINAR_PRICE;
@@ -306,6 +310,10 @@ const CheckoutPage: React.FC = () => {
                         calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                     } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                         cropWebinarsTTC += (webinarDetails.price || 80.000);
+                    } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                        const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                        calculatedTotalHT += webinarBasePrice;
+                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                     }
                 }
             }
@@ -373,6 +381,9 @@ const CheckoutPage: React.FC = () => {
                         itemDisplayPrice = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
                     } else if (w.group === WebinarGroup.CROP_TUNIS) {
                         itemDisplayPrice = WEBINAR_PRICE; // Fixed 80.000 TTC
+                    } else if (w.group === WebinarGroup.PHARMIA) {
+                        const priceHT = w.price || PHARMIA_WEBINAR_PRICE_HT;
+                        itemDisplayPrice = (priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
                     } else { // Fallback for other webinar types, if any
                         itemDisplayPrice = (webinarBasePrice * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
                     }
@@ -454,6 +465,10 @@ const CheckoutPage: React.FC = () => {
                                                 calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                                             } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                                                 cropWebinarsTTC += (webinarDetails.price || 80.000); // CROP prices are considered TTC (e.g. 80.000 DT)
+                                            } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                                                const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                                                calculatedTotalHT += webinarBasePrice;
+                                                calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                                             }
                                         }
                                     }
@@ -523,6 +538,10 @@ const CheckoutPage: React.FC = () => {
                                                         calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                                                     } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                                                         cropWebinarsTTC += (webinarDetails.price || 80.000); // CROP prices are considered TTC
+                                                    } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                                                        const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                                                        calculatedTotalHT += webinarBasePrice;
+                                                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
                                                     }
                                                 }
                                             }

@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
 import { Webinar, ProductType, WebinarGroup } from '../types';
 import { Spinner, TrashIcon, EditIcon } from '../components/Icons';
-import { WEBINAR_PRICE, MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
+import { WEBINAR_PRICE, MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
 
 const CartPage: React.FC = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
@@ -87,6 +87,10 @@ const CartPage: React.FC = () => {
                     return total + (mcBasePrice * (1 + TAX_RATES.TVA));
                 } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                     return total + WEBINAR_PRICE; // CROP prices are 80.000 TTC
+                } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                    hasTaxableItems = true;
+                    const priceHT = item.price || webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                    return total + (priceHT * (1 + TAX_RATES.TVA));
                 }
             } else {
                 console.warn('Webinar details not found for item:', item.id);
@@ -230,7 +234,9 @@ const CartPage: React.FC = () => {
                                     <p className="font-bold text-lg text-teal-600 mb-2">
                                         {webinar.group === WebinarGroup.MASTER_CLASS
                                             ? ((item.price || webinar.price || 0) * (1 + TAX_RATES.TVA)).toFixed(3)
-                                            : WEBINAR_PRICE.toFixed(3) // CROP Tunis is fixed WEBINAR_PRICE
+                                            : webinar.group === WebinarGroup.PHARMIA
+                                                ? ((item.price || webinar.price || PHARMIA_WEBINAR_PRICE_HT) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)
+                                                : WEBINAR_PRICE.toFixed(3) // CROP Tunis is fixed WEBINAR_PRICE
                                         } TND <span className="text-sm">(TTC)</span>
                                     </p>
                                 )}
