@@ -167,7 +167,7 @@ router.get('/by-name', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FO
     }
 });
 
-router.get('/latest', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res) => {
+router.get('/latest', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const latestUsers = await usersCollection.find({ role: UserRole.PHARMACIEN })
