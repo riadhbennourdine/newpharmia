@@ -361,7 +361,9 @@ const Newsletter: React.FC = () => {
         setPharmacists(pharmacistOptions);
 
         // Fetch webinars
-        const webinarsResponse = await fetch('/api/webinars');
+        const webinarsResponse = await fetch('/api/webinars', {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         if (!webinarsResponse.ok) {
             throw new Error('Failed to fetch webinars');
         }
