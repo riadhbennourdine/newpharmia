@@ -67,7 +67,7 @@ const LatestRegistrations: React.FC = () => {
 const CRMDashboard = () => {
   const location = useLocation();
   const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  const isAuthorized = user?.role === 'ADMIN' || user?.role === 'FORMATEUR';
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 font-medium text-sm rounded-md ${
@@ -85,7 +85,7 @@ const CRMDashboard = () => {
           <NavLink to="/admin/crm" end className={navLinkClass}>
             Dernières Inscriptions
           </NavLink>
-          {isAdmin && (
+          {isAuthorized && (
             <>
               <NavLink to="/admin/crm/clients" className={navLinkClass}>
                 Clients

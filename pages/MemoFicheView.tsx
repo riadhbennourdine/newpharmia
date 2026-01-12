@@ -543,7 +543,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
           startOpen: index === 0,
         }));
         content.push(
-          { id: "references", title: "Référence bibliographiques", icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
+          { id: "references", title: "Références bibliographiques", icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
         );
         return content;
       } else if (caseStudy.type === 'ordonnances') {
@@ -625,7 +625,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
     });
 
     content.push(
-      { id: "references", title: "Référence bibliographiques", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/22.png")} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
+      { id: "references", title: "Références bibliographiques", icon: <img src={getAbsoluteImageUrl("https://pharmaconseilbmb.com/photos/site/icone/22.png")} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
     );
 
     return content;

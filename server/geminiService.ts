@@ -294,7 +294,7 @@ export const generateLearningTools = async (memoContent: Partial<CaseStudy>): Pr
         },
         quiz: {
           type: SchemaType.ARRAY,
-          description: "Quiz de 5 questions pour tester la compréhension.",
+          description: "Quiz de 10 questions pour tester la compréhension.",
           items: {
             type: SchemaType.OBJECT,
             properties: {
