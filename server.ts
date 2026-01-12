@@ -801,11 +801,11 @@ app.post('/api/newsletter/send', authenticateToken, checkRole([UserRole.ADMIN]),
             }
 
             const confirmedAttendeeUserIds = fetchedWebinar.attendees
-                .filter(att => att.status === 'CONFIRMED')
-                .map(att => new ObjectId(att.userId));
+                .filter(att => ['CONFIRMED', 'PENDING', 'PAYMENT_SUBMITTED'].includes(att.status))
+                .map(att => new ObjectId(att.userId.toString()));
 
             if (confirmedAttendeeUserIds.length === 0) {
-                return res.status(404).json({ message: 'No confirmed attendees found for this webinar.' });
+                return res.status(404).json({ message: 'No attendees found for this webinar.' });
             }
 
             recipients = await usersCollection.find({ _id: { $in: confirmedAttendeeUserIds } })
