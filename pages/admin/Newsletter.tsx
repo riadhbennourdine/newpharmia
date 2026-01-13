@@ -341,7 +341,9 @@ const Newsletter: React.FC = () => {
         setStatuses(statuses);
 
         // Fetch formal groups
-        const formalGroupsResponse = await fetch('/api/admin/groups');
+        const formalGroupsResponse = await fetch('/api/admin/groups', {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         if (!formalGroupsResponse.ok) {
           throw new Error('Failed to fetch formal groups');
         }
@@ -349,7 +351,9 @@ const Newsletter: React.FC = () => {
         setFormalGroups(formalGroupsData);
 
         // Fetch pharmacists for test email field
-        const pharmacistsResponse = await fetch('/api/users/pharmacists');
+        const pharmacistsResponse = await fetch('/api/users/pharmacists', {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         if (!pharmacistsResponse.ok) {
             throw new Error('Failed to fetch pharmacists');
         }
@@ -380,8 +384,10 @@ const Newsletter: React.FC = () => {
         console.error(err);
       }
     };
-    fetchInitialData();
-  }, []);
+    if (token) {
+        fetchInitialData();
+    }
+  }, [token]);
 
   const handleRoleToggle = (role: string) => {
     setSelectedRoles(prev => 
