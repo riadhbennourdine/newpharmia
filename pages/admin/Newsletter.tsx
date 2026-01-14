@@ -3,6 +3,7 @@ import { User } from '../../types';
 import Select from 'react-select';
 import { AuthContext } from '../../context/AuthContext';
 import { GroupBase, OptionsOrGroups } from 'react-select/dist/declarations/src/types';
+import ImageGalleryModal from '../../components/ImageGalleryModal';
 
 // Définir les types pour les templates
 interface Template {
@@ -317,6 +318,14 @@ const Newsletter: React.FC = () => {
   const [selectedWebinar, setSelectedWebinar] = useState<{ value: string; label: string; googleMeetLink?: string; description?: string; } | null>(null);
   const [expiredTrialUsers, setExpiredTrialUsers] = useState<User[]>([]);
   const [sendToExpired, setSendToExpired] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+  const handleSelectImage = (url: string) => {
+      // Ensure the URL is absolute for email clients
+      const fullUrl = url.startsWith('/') ? `${window.location.origin}${url}` : url;
+      setImageUrl(fullUrl);
+      setIsGalleryOpen(false);
+  };
 
   const templates: Template[] = [
       { id: 'simple', name: 'Simple', component: SimpleTemplate },
@@ -679,8 +688,16 @@ const Newsletter: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">URL de l\'image (Optionnel)</label>
-            <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="https://example.com/image.jpg" />
+            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">URL de l'image (Optionnel)</label>
+            <div className="flex gap-2">
+                <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="https://example.com/image.jpg" />
+                <button 
+                    onClick={() => setIsGalleryOpen(true)}
+                    className="mt-1 bg-teal-600 text-white px-3 py-2 rounded-md hover:bg-teal-700 whitespace-nowrap"
+                >
+                    Choisir
+                </button>
+            </div>
           </div>
 
           <div className="mb-4 p-4 border border-gray-200 rounded-lg">
@@ -717,6 +734,12 @@ const Newsletter: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      <ImageGalleryModal 
+        isOpen={isGalleryOpen} 
+        onClose={() => setIsGalleryOpen(false)} 
+        onSelectImage={handleSelectImage} 
+      />
     </div>
   );
 };
