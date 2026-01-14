@@ -153,7 +153,8 @@ const WebinarsPage: React.FC = () => {
 
                 if (user && token) {
                     const myW = await fetchMyWebinars(token);
-                    const filteredMyW = myW.filter(w => w.group === WebinarGroup.CROP_TUNIS);
+                    // Include both CROP Tunis and PharmIA
+                    const filteredMyW = myW.filter(w => w.group === WebinarGroup.CROP_TUNIS || w.group === WebinarGroup.PHARMIA);
                     setMyRegisteredWebinars(processWebinars(filteredMyW));
                 } else {
                     setMyRegisteredWebinars([]);
@@ -218,7 +219,7 @@ const WebinarsPage: React.FC = () => {
     };
 
     useEffect(() => {
-        if (allWebinars.length === 0 && activeTab !== 'MY_WEBINARS') {
+        if (allWebinars.length === 0 && !activeTab.startsWith('MY_WEBINARS')) {
             setLiveWebinars([]);
             setCurrentMonthWebinars([]);
             setFutureMonthsWebinars({});
@@ -227,9 +228,15 @@ const WebinarsPage: React.FC = () => {
             return;
         }
 
-        const tabSpecificWebinars = activeTab === 'MY_WEBINARS'
-            ? myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS)
-            : allWebinars.filter(w => w.group === activeTab);
+        let tabSpecificWebinars: Webinar[] = [];
+
+        if (activeTab === 'MY_WEBINARS_CROP') {
+            tabSpecificWebinars = myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS);
+        } else if (activeTab === 'MY_WEBINARS_PHARMIA') {
+             tabSpecificWebinars = myRegisteredWebinars.filter(w => w.group === WebinarGroup.PHARMIA);
+        } else {
+            tabSpecificWebinars = allWebinars.filter(w => w.group === activeTab);
+        }
 
         const processedTabWebinars = processWebinars(tabSpecificWebinars);
 
@@ -283,20 +290,23 @@ const WebinarsPage: React.FC = () => {
 
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
     const isSuperAdmin = user?.role === UserRole.ADMIN;
+    const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
 
     const renderTabs = () => (
         <div className="mb-8 border-b border-slate-200">
-            <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-                <button
-                    onClick={() => setActiveTab(WebinarGroup.PHARMIA)}
-                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === WebinarGroup.PHARMIA
-                            ? 'border-teal-500 text-teal-600'
-                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                    }`}
-                >
-                    {WebinarGroup.PHARMIA}
-                </button>
+            <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
+                {!isWebinarAdmin && (
+                    <button
+                        onClick={() => setActiveTab(WebinarGroup.PHARMIA)}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === WebinarGroup.PHARMIA
+                                ? 'border-teal-500 text-teal-600'
+                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        }`}
+                    >
+                        {WebinarGroup.PHARMIA}
+                    </button>
+                )}
                 <button
                     onClick={() => setActiveTab(WebinarGroup.CROP_TUNIS)}
                     className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
@@ -309,14 +319,26 @@ const WebinarsPage: React.FC = () => {
                 </button>
                 {user && (
                     <button
-                        onClick={() => setActiveTab('MY_WEBINARS')}
+                        onClick={() => setActiveTab('MY_WEBINARS_CROP')}
                         className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                            activeTab === 'MY_WEBINARS'
+                            activeTab === 'MY_WEBINARS_CROP'
                                 ? 'border-teal-500 text-teal-600'
                                 : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                         }`}
                     >
                         Mes wébinaires CROP Tunis
+                    </button>
+                )}
+                {user && !isWebinarAdmin && (
+                    <button
+                        onClick={() => setActiveTab('MY_WEBINARS_PHARMIA')}
+                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === 'MY_WEBINARS_PHARMIA'
+                                ? 'border-teal-500 text-teal-600'
+                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                        }`}
+                    >
+                        Mes wébinaires PharmIA
                     </button>
                 )}
                 {isSuperAdmin && (
@@ -685,16 +707,28 @@ const WebinarsPage: React.FC = () => {
                         <h3 className="text-xl font-semibold">Erreur de chargement</h3>
                         <p className="mt-2">{error}</p>
                     </div>
-                ) : activeTab === 'MY_WEBINARS' ? (
-                    myRegisteredWebinars.length > 0 ? (
+                ) : activeTab === 'MY_WEBINARS_CROP' ? (
+                    myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS).length > 0 ? (
                         <div className="space-y-12">
-                            <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes Webinaire CROP Tunis</h2>
-                            {renderWebinarList(myRegisteredWebinars, true)}
+                            <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes wébinaires CROP Tunis</h2>
+                            {renderWebinarList(myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS), true)}
                         </div>
                     ) : (
                         <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                             <h3 className="text-xl font-semibold text-slate-700">Vous n'êtes inscrit à aucun wébinaire CROP Tunis pour le moment</h3>
                             <p className="text-slate-500 mt-2">Découvrez nos prochaines sessions CROP Tunis et inscrivez-vous !</p>
+                        </div>
+                    )
+                ) : activeTab === 'MY_WEBINARS_PHARMIA' ? (
+                    myRegisteredWebinars.filter(w => w.group === WebinarGroup.PHARMIA).length > 0 ? (
+                        <div className="space-y-12">
+                            <h2 className="text-3xl font-bold text-slate-800 mb-4">Mes wébinaires PharmIA</h2>
+                            {renderWebinarList(myRegisteredWebinars.filter(w => w.group === WebinarGroup.PHARMIA), true)}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                            <h3 className="text-xl font-semibold text-slate-700">Vous n'êtes inscrit à aucun wébinaire PharmIA pour le moment</h3>
+                            <p className="text-slate-500 mt-2">Découvrez nos prochaines sessions PharmIA et inscrivez-vous !</p>
                         </div>
                     )
                 ) : activeTab === WebinarGroup.MASTER_CLASS ? (

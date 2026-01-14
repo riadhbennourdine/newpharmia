@@ -201,19 +201,33 @@ const WebinarActionButtons: React.FC<{
                                 // Default for other groups (e.g. CROP Tunis)
                                 return [WebinarTimeSlot.MORNING, WebinarTimeSlot.AFTERNOON, WebinarTimeSlot.EVENING].includes(slot);
                             })
-                            .map((slot) => (
-                            <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name="timeSlot"
-                                    value={slot}
-                                    checked={selectedSlots.includes(slot)}
-                                    onChange={() => handleCheckboxChange(slot)}
-                                    className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-                                />
-                                <span className="ml-3 font-medium text-slate-700">{slot}</span>
-                            </label>
-                        ))}
+                            .map((slot) => {
+                                let label = slot as string;
+                                if (webinar.group === WebinarGroup.PHARMIA) {
+                                    const webinarDate = new Date(webinar.date);
+                                    if (slot === WebinarTimeSlot.PHARMIA_TUESDAY) {
+                                        label = `${slot} - ${webinarDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
+                                    } else if (slot === WebinarTimeSlot.PHARMIA_FRIDAY) {
+                                        const fridayDate = new Date(webinarDate);
+                                        fridayDate.setDate(webinarDate.getDate() + 3);
+                                        label = `${slot} - ${fridayDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
+                                    }
+                                }
+
+                                return (
+                                    <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            name="timeSlot"
+                                            value={slot}
+                                            checked={selectedSlots.includes(slot)}
+                                            onChange={() => handleCheckboxChange(slot)}
+                                            className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                                        />
+                                        <span className="ml-3 font-medium text-slate-700">{label}</span>
+                                    </label>
+                                );
+                            })}
                     </div>
                 </>
             )}
