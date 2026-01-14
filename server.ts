@@ -700,9 +700,9 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
         // Create MD5 password for the form
         const md5Password = crypto.createHash('md5').update(GPG_PASSWORD).digest('hex');
 
-        const paymentUrl = process.env.NODE_ENV === 'production' 
-            ? 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php' 
-            : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
+        const paymentUrl = (process.env.GPG_MODE === 'test' || process.env.NODE_ENV !== 'production')
+            ? 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php'
+            : 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php';
 
         console.log(`[GPG Init] Selected Payment URL: ${paymentUrl}`);
         console.log(`[GPG Init] Final TransactionID: ${transactionId}`);
