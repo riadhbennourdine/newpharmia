@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
 import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
-import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType } from '../types.js';
+import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType, UserRole } from '../types.js';
 import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
 
 const router = express.Router();
@@ -98,21 +98,65 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
             totalAmount += TAX_RATES.TIMBRE;
         }
 
+        const isAdmin = req.user?.role === 'ADMIN';
+        const initialStatus = isAdmin ? OrderStatus.CONFIRMED : OrderStatus.PENDING_PAYMENT;
+
         const newOrder: Omit<Order, '_id'> = {
             userId: new ObjectId(userId),
             items: processedItems,
             totalAmount, // Rounded to 3 decimals implicitly by JS number, but good to handle on frontend
-            status: OrderStatus.PENDING_PAYMENT,
+            status: initialStatus,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
         const result = await ordersCollection.insertOne(newOrder as Order);
 
+        // AUTO-CONFIRM LOGIC FOR ADMINS
+        if (isAdmin) {
+            // 1. Register for Webinars
+            const webinarItems = processedItems.filter(i => i.type === ProductType.WEBINAR && i.webinarId);
+            for (const item of webinarItems) {
+                await webinarsCollection.updateOne(
+                    { _id: item.webinarId },
+                    { 
+                        $push: { 
+                            attendees: {
+                                userId: new ObjectId(userId),
+                                status: 'CONFIRMED',
+                                registeredAt: new Date(),
+                                timeSlots: item.slots,
+                                proofUrl: 'ADMIN_AUTO_CONFIRM' // Marker for auto-confirmation
+                            } 
+                        } 
+                    }
+                );
+            }
+
+            // 2. Grant Credits for Packs
+            const packItems = processedItems.filter(i => i.type === ProductType.PACK && i.packId);
+            let creditsToAdd = 0;
+            for (const item of packItems) {
+                const packDef = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                if (packDef) {
+                    creditsToAdd += packDef.credits;
+                }
+            }
+
+            if (creditsToAdd > 0) {
+                const usersCollection = db.collection('users');
+                await usersCollection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $inc: { masterClassCredits: creditsToAdd } }
+                );
+            }
+        }
+
         res.status(201).json({
-            message: 'Order created successfully.',
+            message: isAdmin ? 'Order automatically confirmed (Admin).' : 'Order created successfully.',
             orderId: result.insertedId,
             totalAmount: totalAmount,
+            status: initialStatus
         });
 
     } catch (error) {
