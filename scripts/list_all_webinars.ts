@@ -8,9 +8,9 @@ const MONGO_URL = process.env.MONGO_URL;
 const listAll = async () => {
     if (!MONGO_URL) return;
     const client = await MongoClient.connect(MONGO_URL);
-    const db = client.db();
-    const results = await db.collection('webinars').find({}).project({ title: 1, group: 1, date: 1 }).toArray();
-    console.log(JSON.stringify(results, null, 2));
+    const db = client.db('pharmia');
+    const results = await db.collection('webinars').find({}).toArray();
+    console.log(JSON.stringify(results.map(r => ({ _id: r._id, title: r.title, group: r.group, date: r.date })), null, 2));
     await client.close();
 };
 
