@@ -664,7 +664,10 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             return res.status(400).json({ message: 'Missing required payment details.' });
         }
 
-        const { GPG_NUM_SITE, GPG_PASSWORD, GPG_VAD, GPG_TERMINAL } = process.env;
+        const GPG_NUM_SITE = (process.env.GPG_NUM_SITE || '').trim();
+        const GPG_PASSWORD = (process.env.GPG_PASSWORD || '').trim();
+        const GPG_VAD = (process.env.GPG_VAD || '').trim();
+        const GPG_TERMINAL = (process.env.GPG_TERMINAL || '').trim();
 
         // DEBUG: Log GPG Configuration being used
         console.log(`[GPG Init] NODE_ENV: ${process.env.NODE_ENV}`);
@@ -685,7 +688,8 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             return res.status(500).json({ message: errorMessage });
         }
 
-        const transactionId = orderId ? `PHARMIA-${orderId}` : `PHARMIA-${Date.now()}`;
+        // Use a simpler transaction ID (64 chars max, avoid special characters)
+        const transactionId = orderId ? orderId.toString().replace(/[^a-zA-Z0-9]/g, '') : Date.now().toString();
         const formattedAmount = Math.round(amount * 1000); // Convert to millimes
         const currency = 'TND';
 
@@ -701,6 +705,7 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
 
         console.log(`[GPG Init] Selected Payment URL: ${paymentUrl}`);
+        console.log(`[GPG Init] Final TransactionID: ${transactionId}`);
 
         const productDescription = description || `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`;
 
@@ -712,10 +717,11 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             Amount: formattedAmount.toString(),
             Currency: currency,
             Language: 'fr',
+            Langue: 'fr', // Added as per some GPG docs
             EMAIL: email,
             CustLastName: lastName || '',
             CustFirstName: firstName || '',
-            CustAddress: 'N/A', // Or get from user profile
+            CustAddress: 'N/A', 
             CustZIP: zip || '0000',
             CustCity: city || 'N/A',
             CustCountry: country || 'Tunisie',
