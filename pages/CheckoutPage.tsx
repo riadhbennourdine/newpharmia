@@ -183,8 +183,84 @@ const CheckoutPage: React.FC = () => {
         }
     };
 
-    const handleGPGPayment = async () => {
+    const handleKonnectPayment = async () => {
         if (!order || !token) return;
+        setIsKonnectLoading(true);
+        setError(null);
+
+        // Calculate total amount
+        let totalAmount = 0;
+        let calculatedTotalHT = 0;
+        let calculatedTotalTVA = 0;
+        const calculatedStampDuty = TAX_RATES.TIMBRE;
+        let cropWebinarsTTC = 0;
+
+        order.items.forEach(item => {
+            const isPack = item.type === ProductType.PACK || !!item.packId;
+            if (isPack && item.packId) {
+                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                if (pack) {
+                    calculatedTotalHT += pack.priceHT;
+                    calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
+                }
+            } else {
+                const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
+                if (webinarDetails) {
+                    if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
+                        const webinarBasePrice = webinarDetails.price || 0;
+                        calculatedTotalHT += webinarBasePrice;
+                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                    } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
+                        cropWebinarsTTC += (webinarDetails.price || 80.000);
+                    } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
+                        const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                        calculatedTotalHT += webinarBasePrice;
+                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
+                    }
+                }
+            }
+        });
+        const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
+        totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
+
+        try {
+            const response = await fetch('/api/konnect/initiate-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    amount: totalAmount,
+                    orderId: order._id,
+                    firstName: user?.firstName,
+                    lastName: user?.lastName,
+                    email: user?.email,
+                    phoneNumber: user?.phone
+                })
+            });
+            
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || 'Erreur lors de l\'initialisation du paiement');
+            }
+
+            const data = await response.json();
+            if (data.payUrl) {
+                window.location.href = data.payUrl;
+            } else {
+                throw new Error('URL de paiement non reçue');
+            }
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || 'Erreur de paiement');
+        } finally {
+            setIsKonnectLoading(false);
+        }
+    };
+
+    const handleGPGPayment = async () => {
         setIsGpgLoading(true);
         setError(null);
 
@@ -278,83 +354,6 @@ const CheckoutPage: React.FC = () => {
             setError(err.message || 'Une erreur est survenue lors de l\'initialisation du paiement.');
         } finally {
             setIsGpgLoading(false);
-        }
-    };
-
-    const handleKonnectPayment = async () => {
-        if (!order || !token) return;
-        setIsKonnectLoading(true);
-        setError(null);
-
-        // Calculate total amount
-        let totalAmount = 0;
-        let calculatedTotalHT = 0;
-        let calculatedTotalTVA = 0;
-        const calculatedStampDuty = TAX_RATES.TIMBRE;
-        let cropWebinarsTTC = 0;
-
-        order.items.forEach(item => {
-            const isPack = item.type === ProductType.PACK || !!item.packId;
-            if (isPack && item.packId) {
-                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                if (pack) {
-                    calculatedTotalHT += pack.priceHT;
-                    calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
-                }
-            } else {
-                const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
-                if (webinarDetails) {
-                    if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
-                        const webinarBasePrice = webinarDetails.price || 0;
-                        calculatedTotalHT += webinarBasePrice;
-                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                    } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
-                        cropWebinarsTTC += (webinarDetails.price || 80.000);
-                    } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
-                        const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
-                        calculatedTotalHT += webinarBasePrice;
-                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                    }
-                }
-            }
-        });
-        const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
-        totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
-
-        try {
-            const response = await fetch('/api/konnect/initiate-payment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    amount: totalAmount,
-                    orderId: order._id,
-                    firstName: user?.firstName,
-                    lastName: user?.lastName,
-                    email: user?.email,
-                    phoneNumber: user?.phone
-                })
-            });
-            
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.message || 'Erreur lors de l\'initialisation du paiement');
-            }
-
-            const data = await response.json();
-            if (data.payUrl) {
-                window.location.href = data.payUrl;
-            } else {
-                throw new Error('URL de paiement non reçue');
-            }
-
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message || 'Erreur de paiement');
-        } finally {
-            setIsKonnectLoading(false);
         }
     };
 
