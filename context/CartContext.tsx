@@ -70,7 +70,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (type === ProductType.WEBINAR && webinar) {
         const now = new Date();
         const webinarDateTime = new Date(webinar.date);
-        if (webinarDateTime < now) {
+        
+        let isPast = webinarDateTime < now;
+
+        // Special logic for PHARMIA group: extended validity (Tuesday to Friday)
+        if (webinar.group === WebinarGroup.PHARMIA) {
+             const fridayDate = new Date(webinarDateTime);
+             fridayDate.setDate(webinarDateTime.getDate() + 3);
+             fridayDate.setHours(23, 59, 59, 999); // End of Friday
+             isPast = fridayDate < now;
+        }
+
+        if (isPast) {
             console.warn(`Cannot add past webinar "${webinar.title}" to cart.`);
             return;
         }
