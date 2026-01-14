@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Spinner } from './Icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Spinner, UploadIcon } from './Icons';
 import { getFtpViewUrl } from '../utils/ftp';
 
 interface FtpFile {
@@ -19,6 +19,8 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
     const [items, setItems] = useState<FtpFile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPath, setCurrentPath] = useState('/');
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -47,6 +49,46 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
         }
     };
 
+    const handleUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('destinationPath', currentPath);
+
+        try {
+            const response = await fetch('/api/ftp/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Upload failed');
+            }
+
+            // Refresh list after upload
+            await fetchItems(currentPath);
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Erreur lors du téléversement de l\'image.');
+        } finally {
+            setIsUploading(false);
+            // Reset input value to allow uploading the same file again if needed
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
     if (!isOpen) return null;
 
     const handleItemClick = (item: FtpFile) => {
@@ -54,12 +96,6 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
             const newPath = currentPath === '/' ? `/${item.name}` : `${currentPath}/${item.name}`;
             setCurrentPath(newPath);
         } else {
-            // Construct full path for the file
-            // Note: getFtpViewUrl usually expects a full path if it's not in root, or we need to pass it correctly.
-            // Looking at previous implementation, it took just 'name'. 
-            // If getFtpViewUrl handles full paths, we should pass the full path.
-            // Let's verify getFtpViewUrl implementation or assume we pass the relative path for the API to handle.
-            // The API /api/ftp/view takes filePath query param.
             const fullPath = currentPath === '/' ? `/${item.name}` : `${currentPath}/${item.name}`;
             const url = `/api/ftp/view?filePath=${encodeURIComponent(fullPath)}`;
             onSelectImage(url);
@@ -78,7 +114,24 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
             <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-4 border-b">
                     <h2 className="text-2xl font-bold text-slate-800">Galerie d'images</h2>
-                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800 text-2xl">&times;</button>
+                    <div className="flex items-center gap-2">
+                         <button 
+                            onClick={handleUploadClick}
+                            disabled={isUploading}
+                            className="flex items-center gap-1 bg-teal-600 text-white px-3 py-1.5 rounded hover:bg-teal-700 disabled:opacity-50 text-sm font-medium"
+                        >
+                            {isUploading ? <Spinner className="w-4 h-4 text-white" /> : <UploadIcon className="w-4 h-4" />}
+                            <span>Importer ici</span>
+                        </button>
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            style={{ display: 'none' }} 
+                            accept="image/*"
+                        />
+                        <button onClick={onClose} className="text-slate-500 hover:text-slate-800 text-2xl leading-none ml-2">&times;</button>
+                    </div>
                 </div>
 
                 <div className="p-2 bg-slate-100 border-b flex items-center gap-2">
