@@ -4,7 +4,7 @@ import { Webinar, User, UserRole, WebinarTimeSlot, WebinarGroup, ProductType } f
 import { useAuth } from '../hooks/useAuth';
 import { useCart, CartItem } from '../context/CartContext';
 import { Spinner, CalendarIcon, UserIcon, ClockIcon, UploadIcon } from '../components/Icons';
-import { BANK_DETAILS } from '../constants';
+import { BANK_DETAILS, PHARMIA_WEBINAR_PRICE_HT, TAX_RATES } from '../constants';
 
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
@@ -514,6 +514,16 @@ const WebinarDetailPage: React.FC = () => {
                         <div className="text-right mb-4">
                             <p className="text-xl font-bold text-teal-600">
                                 Prix du Master Class {webinar.price ? `en Hors taxes : ${webinar.price.toFixed(3)} DT` : ': Crédits Master Class'}
+                            </p>
+                        </div>
+                    )}
+                    {webinar.group === WebinarGroup.PHARMIA && (
+                        <div className="text-right mb-4">
+                            <p className="text-xl font-bold text-teal-600">
+                                Prix : {PHARMIA_WEBINAR_PRICE_HT.toFixed(3)} DT HT
+                            </p>
+                            <p className="text-sm text-slate-500 font-medium">
+                                Soit {(PHARMIA_WEBINAR_PRICE_HT * (1 + TAX_RATES.TVA)).toFixed(3)} DT TTC
                             </p>
                         </div>
                     )}

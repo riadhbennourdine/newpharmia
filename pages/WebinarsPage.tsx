@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType } from '../types';
-import { MASTER_CLASS_PACKS, TAX_RATES } from '../constants';
+import { MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import WebinarCard from '../components/WebinarCard';
@@ -559,6 +559,14 @@ const WebinarsPage: React.FC = () => {
                                     Découvrez nos sessions de formation interactive animées par des experts. 
                                     Renforcez vos compétences officinales avec les outils et la méthodologie PharmIA.
                                 </p>
+                                <div className="mt-4 flex flex-col items-start">
+                                    <p className="text-2xl font-extrabold text-teal-600">
+                                        Prix unitaire : {PHARMIA_WEBINAR_PRICE_HT.toFixed(3)} DT HT
+                                    </p>
+                                    <p className="text-sm text-slate-500 font-medium">
+                                        Soit {(PHARMIA_WEBINAR_PRICE_HT * (1 + TAX_RATES.TVA)).toFixed(3)} DT TTC
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
