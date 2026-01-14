@@ -190,7 +190,18 @@ const WebinarActionButtons: React.FC<{
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
                     <p className="text-sm text-slate-500 mb-3">Vous pouvez sélectionner un ou plusieurs créneaux.</p>
                     <div className="space-y-2">
-                        {Object.values(WebinarTimeSlot).map((slot) => (
+                        {Object.values(WebinarTimeSlot)
+                            .filter(slot => {
+                                if (webinar.group === WebinarGroup.PHARMIA) {
+                                    return [WebinarTimeSlot.PHARMIA_TUESDAY, WebinarTimeSlot.PHARMIA_FRIDAY].includes(slot);
+                                }
+                                if (webinar.group === WebinarGroup.MASTER_CLASS) {
+                                    return slot === WebinarTimeSlot.MORNING;
+                                }
+                                // Default for other groups (e.g. CROP Tunis)
+                                return [WebinarTimeSlot.MORNING, WebinarTimeSlot.AFTERNOON, WebinarTimeSlot.EVENING].includes(slot);
+                            })
+                            .map((slot) => (
                             <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
                                 <input
                                     type="checkbox"

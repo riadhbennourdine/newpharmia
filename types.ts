@@ -267,8 +267,11 @@ export interface ImageTheme {
 
 export enum WebinarTimeSlot {
     MORNING = '09:00',
+    LATE_MORNING = '11:00',
     AFTERNOON = '13:30',
     EVENING = '15:30',
+    PHARMIA_TUESDAY = 'Mardi 11:00',
+    PHARMIA_FRIDAY = 'Vendredi 13:30 (Replay)',
 }
 
 export enum WebinarStatus {

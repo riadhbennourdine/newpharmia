@@ -90,7 +90,7 @@ const WebinarsPage: React.FC = () => {
         if (!window.confirm("Voulez-vous utiliser 1 crédit Master Class pour vous inscrire ?")) return;
 
         try {
-            await registerForWebinar(webinarId, ['15:30'], token, true);
+            await registerForWebinar(webinarId, [WebinarTimeSlot.MORNING], token, true);
             
             // Refresh data
             const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
