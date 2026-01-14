@@ -123,7 +123,7 @@ const AccordionSection: React.FC<{
 const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
     const renderList = (items: string[] | undefined) => {
         if (!items || items.length === 0) return null;
-        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        const keywordClass = 'font-bold text-teal-800';
         return (
             <ul>
                 {items.map((item, index) => (
@@ -160,7 +160,7 @@ const VentesAdditionnellesSection: React.FC<{ ventes: any }> = ({ ventes }) => {
 const ConseilsTraitementSection: React.FC<{ conseils: any }> = ({ conseils }) => {
     const renderList = (items: string[] | undefined) => {
         if (!items || items.length === 0) return null;
-        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        const keywordClass = 'font-bold text-teal-800';
         return (
             <ul>
                 {items.map((item, index) => (
@@ -191,7 +191,7 @@ const ConseilsAlimentairesSection: React.FC<{ conseils: string[] }> = ({ conseil
 
     const renderList = (items: string[] | undefined) => {
         if (!items || items.length === 0) return null;
-        const keywordClass = 'font-bold text-slate-800 hover:text-teal-500 transition-colors duration-300';
+        const keywordClass = 'font-bold text-teal-800';
         return (
             <ul>
                 {items.map((item, index) => (
@@ -474,7 +474,7 @@ export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ ca
     }
 
     // Keywords (bold)
-    const keywordClass = isRedKeywordSection ? 'font-bold text-slate-800 hover:text-red-600 transition-colors duration-300' : 'font-bold text-slate-800 hover:text-teal-600 transition-colors duration-300';
+    const keywordClass = isRedKeywordSection ? 'font-bold text-red-700' : 'font-bold text-teal-800';
     html = html.replace(/\*\*(.*?)\*\*/g, `<span class="${keywordClass}">$1</span>`);
 
     // Headings (e.g., # H1, ## H2, ### H3)
@@ -774,7 +774,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
       {caseStudy.keyPoints && caseStudy.keyPoints.length > 0 && (
           <div className="mb-8 p-6 bg-teal-50 border-l-4 border-teal-500 rounded-r-lg shadow-sm">
               <h3 className="text-xl font-bold text-teal-800 mb-3 flex items-center"><KeyIcon className="h-6 w-6 mr-3" />Points Clés à Retenir</h3>
-              <ul className="space-y-2 pl-5 list-disc text-teal-900">{caseStudy.keyPoints.map((point, i) => <li key={i} className="text-base">{point}</li>)}</ul>
+              <ul className="space-y-2 pl-5 list-disc text-teal-900">{caseStudy.keyPoints.map((point, i) => <li key={i} className="text-base" dangerouslySetInnerHTML={{ __html: renderMarkdown(point) }}></li>)}</ul>
           </div>
       )}
       

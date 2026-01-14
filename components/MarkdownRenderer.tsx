@@ -6,7 +6,7 @@ const parseMarkdown = (text: string) => {
 
   let html = text
     // Bold: **text** or __text__
-    .replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>')
+    .replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong class="text-teal-800">$1$2</strong>')
     // Italics: *text* or _text_
     .replace(/\*(.*?)\*|_(.*?)_/g, '<em>$1$2</em>');
 
