@@ -666,6 +666,13 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
 
         const { GPG_NUM_SITE, GPG_PASSWORD, GPG_VAD, GPG_TERMINAL } = process.env;
 
+        // DEBUG: Log GPG Configuration being used
+        console.log(`[GPG Init] NODE_ENV: ${process.env.NODE_ENV}`);
+        console.log(`[GPG Init] NumSite: '${GPG_NUM_SITE}'`);
+        console.log(`[GPG Init] VAD: '${GPG_VAD}'`);
+        console.log(`[GPG Init] Terminal: '${GPG_TERMINAL}'`);
+        console.log(`[GPG Init] Password Length: ${GPG_PASSWORD ? GPG_PASSWORD.length : 0}`);
+        
         const missingVars = [];
         if (!GPG_NUM_SITE) missingVars.push('GPG_NUM_SITE');
         if (!GPG_PASSWORD) missingVars.push('GPG_PASSWORD');
@@ -692,6 +699,8 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
         const paymentUrl = process.env.NODE_ENV === 'production' 
             ? 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php' 
             : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
+
+        console.log(`[GPG Init] Selected Payment URL: ${paymentUrl}`);
 
         const productDescription = description || `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`;
 
