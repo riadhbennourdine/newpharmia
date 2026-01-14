@@ -664,26 +664,19 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
             return res.status(400).json({ message: 'Missing required payment details.' });
         }
 
-        // GPG Configuration
-        const gpgConfig = {
-            production: {
-                GPG_NUM_SITE: 'MAR981',
-                GPG_PASSWORD: 'hu_tbX19',
-                GPG_VAD: '234800003',
-                GPG_TERMINAL: '001',
-                PAYMENT_URL: 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php'
-            },
-            development: {
-                GPG_NUM_SITE: 'MAR1023',
-                GPG_PASSWORD: 'oz@joT81',
-                GPG_VAD: '759600004',
-                GPG_TERMINAL: '001',
-                PAYMENT_URL: 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php'
-            }
-        };
+        const { GPG_NUM_SITE, GPG_PASSWORD, GPG_VAD, GPG_TERMINAL } = process.env;
 
-        const activeConfig = process.env.NODE_ENV === 'production' ? gpgConfig.production : gpgConfig.development;
-        const { GPG_NUM_SITE, GPG_PASSWORD, GPG_VAD, GPG_TERMINAL, PAYMENT_URL } = activeConfig;
+        const missingVars = [];
+        if (!GPG_NUM_SITE) missingVars.push('GPG_NUM_SITE');
+        if (!GPG_PASSWORD) missingVars.push('GPG_PASSWORD');
+        if (!GPG_VAD) missingVars.push('GPG_VAD');
+        if (!GPG_TERMINAL) missingVars.push('GPG_TERMINAL');
+
+        if (missingVars.length > 0) {
+            const errorMessage = `GPG payment not configured. Missing environment variables: ${missingVars.join(', ')}`;
+            console.error(errorMessage);
+            return res.status(500).json({ message: errorMessage });
+        }
 
         const transactionId = orderId ? `PHARMIA-${orderId}` : `PHARMIA-${Date.now()}`;
         const formattedAmount = Math.round(amount * 1000); // Convert to millimes
@@ -696,7 +689,9 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
         // Create MD5 password for the form
         const md5Password = crypto.createHash('md5').update(GPG_PASSWORD).digest('hex');
 
-        const paymentUrl = PAYMENT_URL;
+        const paymentUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php' 
+            : 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php';
 
         const productDescription = description || `Abonnement ${planName} (${isAnnual ? 'Annuel' : 'Mensuel'})`;
 
@@ -744,19 +739,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
         console.log("GPG Webhook received:", req.body);
 
         const { TransStatus, PAYID, Signature } = req.body;
-        
-        // GPG Configuration
-        const gpgConfig = {
-            production: {
-                GPG_PASSWORD: 'hu_tbX19'
-            },
-            development: {
-                GPG_PASSWORD: 'oz@joT81'
-            }
-        };
-
-        const activeConfig = process.env.NODE_ENV === 'production' ? gpgConfig.production : gpgConfig.development;
-        const { GPG_PASSWORD } = activeConfig;
+        const { GPG_PASSWORD } = process.env;
 
         if (!TransStatus || !PAYID || !Signature || !GPG_PASSWORD) {
             console.error('GPG Webhook: Missing required parameters.');
