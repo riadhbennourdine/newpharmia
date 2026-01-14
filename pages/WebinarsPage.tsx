@@ -35,6 +35,13 @@ const WebinarsPage: React.FC = () => {
     const [activePricingTab, setActivePricingTab] = useState<string>('MC_PACK_3'); // Default to popular pack
 
     useEffect(() => {
+        // Redirect ADMIN_WEBINAR to CROP Tunis by default as they don't have access to PharmIA
+        if (user?.role === UserRole.ADMIN_WEBINAR && activeTab === WebinarGroup.PHARMIA) {
+            setActiveTab(WebinarGroup.CROP_TUNIS);
+        }
+    }, [user, activeTab]);
+
+    useEffect(() => {
         fetch('/content/master_class_description.md')
             .then(res => res.text())
             .then(text => setMasterClassDescription(text))
