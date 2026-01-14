@@ -722,20 +722,10 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
         case 'quiz': return <div className="text-center bg-white p-8 rounded-lg shadow-md"><h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances !</h3><button onClick={onStartQuiz} className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700"><CheckCircleIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz</button></div>;
         case 'kahoot': return caseStudy.kahootUrl ? <div className="bg-white p-4 rounded-lg shadow-md"><h4 className="font-bold text-slate-800 mb-4">Jeu Kahoot!</h4><iframe src={caseStudy.kahootUrl} title="Kahoot! Game" frameBorder="0" allowFullScreen className="w-full rounded-md" style={{ height: '80vh' }}></iframe></div> : <div className="text-center text-slate-600">Aucun lien Kahoot! disponible.</div>;
         case 'video-explainer':
-            const explainerEmbedUrl = getYoutubeEmbedUrl(caseStudy.youtubeExplainerUrl);
-            return explainerEmbedUrl ? (
+            return caseStudy.youtubeExplainerUrl ? (
                 <div className="bg-white p-4 rounded-lg shadow-md">
                     <h4 className="font-bold text-slate-800 mb-4">Vidéo Explicative</h4>
-                    <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
-                        <iframe
-                            src={explainerEmbedUrl}
-                            title="Vidéo Explicative"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="absolute top-0 left-0 w-full h-full rounded-md"
-                        ></iframe>
-                    </div>
+                    <EmbeddableViewer source={caseStudy.youtubeExplainerUrl} />
                 </div>
             ) : <div className="text-center text-slate-500">Aucune vidéo explicative disponible.</div>;
         case 'diaporama':
