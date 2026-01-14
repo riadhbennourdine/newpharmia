@@ -116,7 +116,15 @@ const WebinarActionButtons: React.FC<{
     // Check if the webinar date has passed
     const now = new Date();
     const webinarDateTime = new Date(webinar.date);
-    const isPastWebinar = webinarDateTime < now;
+    let isPastWebinar = webinarDateTime < now;
+
+    if (webinar.group === WebinarGroup.PHARMIA) {
+        const fridayDate = new Date(webinarDateTime);
+        fridayDate.setDate(webinarDateTime.getDate() + 3);
+        // Extend validity until the end of the Friday replay day
+        fridayDate.setHours(23, 59, 59, 999);
+        isPastWebinar = fridayDate < now;
+    }
 
     const handleCheckboxChange = (slot: WebinarTimeSlot) => {
         setSelectedSlots(prev => {
@@ -203,10 +211,16 @@ const WebinarActionButtons: React.FC<{
                             })
                             .map((slot) => {
                                 let label = slot as string;
+                                let isDisabled = false;
+
                                 if (webinar.group === WebinarGroup.PHARMIA) {
                                     const webinarDate = new Date(webinar.date);
                                     if (slot === WebinarTimeSlot.PHARMIA_TUESDAY) {
                                         label = `${slot} - ${webinarDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
+                                        if (webinarDate < new Date()) {
+                                            isDisabled = true;
+                                            label += " (Passé)";
+                                        }
                                     } else if (slot === WebinarTimeSlot.PHARMIA_FRIDAY) {
                                         const fridayDate = new Date(webinarDate);
                                         fridayDate.setDate(webinarDate.getDate() + 3);
@@ -215,16 +229,17 @@ const WebinarActionButtons: React.FC<{
                                 }
 
                                 return (
-                                    <label key={slot} className="flex items-center p-3 border rounded-lg has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 transition-colors cursor-pointer">
+                                    <label key={slot} className={`flex items-center p-3 border rounded-lg transition-colors cursor-pointer ${isDisabled ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-60' : 'has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500'}`}>
                                         <input
                                             type="checkbox"
                                             name="timeSlot"
                                             value={slot}
                                             checked={selectedSlots.includes(slot)}
-                                            onChange={() => handleCheckboxChange(slot)}
-                                            className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                                            onChange={() => !isDisabled && handleCheckboxChange(slot)}
+                                            disabled={isDisabled}
+                                            className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 disabled:text-gray-400"
                                         />
-                                        <span className="ml-3 font-medium text-slate-700">{label}</span>
+                                        <span className={`ml-3 font-medium ${isDisabled ? 'text-gray-500' : 'text-slate-700'}`}>{label}</span>
                                     </label>
                                 );
                             })}

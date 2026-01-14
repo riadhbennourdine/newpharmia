@@ -109,10 +109,17 @@ const WebinarsPage: React.FC = () => {
         }
     };
 
-    const calculateStatus = useCallback((date: string, duration: number = 90): WebinarStatus => {
+    const calculateStatus = useCallback((date: string, duration: number = 90, group?: string): WebinarStatus => {
         const now = new Date();
         const startDate = new Date(date);
-        const effectiveDuration = duration || 90;
+        let effectiveDuration = duration || 90;
+        
+        // Extended duration for PharmIA (until Friday Replay)
+        // Adding 3 days (approx 4320 mins) to cover until Friday
+        if (group === WebinarGroup.PHARMIA) {
+             effectiveDuration += (3 * 24 * 60); 
+        }
+
         const endDate = new Date(startDate.getTime() + effectiveDuration * 60000);
 
         if (now > endDate) {
@@ -120,8 +127,13 @@ const WebinarsPage: React.FC = () => {
         } else if (now >= startDate && now <= endDate) {
             return WebinarStatus.LIVE;
         } else {
+            // For PharmIA, allow registration even if "started" (Tuesday passed) but before Friday end
+            if (group === WebinarGroup.PHARMIA && now > startDate) {
+                 return WebinarStatus.LIVE; // or UPCOMING? LIVE keeps it active.
+            }
+
             const registrationDeadline = new Date(startDate.getTime() - 60 * 60000);
-            if (now > registrationDeadline) {
+            if (now > registrationDeadline && group !== WebinarGroup.PHARMIA) {
                 return WebinarStatus.REGISTRATION_CLOSED;
             }
             return WebinarStatus.UPCOMING;
@@ -131,7 +143,7 @@ const WebinarsPage: React.FC = () => {
     const processWebinars = useCallback((webinars: Webinar[]): Webinar[] => {
         return webinars.map(w => ({
             ...w,
-            calculatedStatus: calculateStatus(w.date, w.duration),
+            calculatedStatus: calculateStatus(w.date, w.duration, w.group),
         }));
     }, [calculateStatus]);
 

@@ -11,27 +11,38 @@ const router = express.Router();
 
 const REGISTRATION_CUTOFF_HOUR = 16; // 4 PM
 
-function getWebinarCalculatedStatus(webinarDate: Date): WebinarStatus {
+function getWebinarCalculatedStatus(webinar: Partial<Webinar>): WebinarStatus {
+    if (!webinar.date) return WebinarStatus.PAST; // Should not happen
+
     const now = new Date();
-    const webinarStart = new Date(webinarDate);
-    
+    const webinarStart = new Date(webinar.date);
+    let effectiveEndDate = new Date(webinarStart);
+
+    // For PharmIA, the "event" technically lasts until the Replay session (Friday)
+    if (webinar.group === WebinarGroup.PHARMIA) {
+        // Add 3 days to cover until Friday
+        effectiveEndDate.setDate(effectiveEndDate.getDate() + 3);
+    }
+
     // Normalize dates to compare only the day
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const webinarDay = new Date(webinarStart.getFullYear(), webinarStart.getMonth(), webinarStart.getDate());
+    const eventDay = new Date(effectiveEndDate.getFullYear(), effectiveEndDate.getMonth(), effectiveEndDate.getDate());
 
-    if (webinarDay.getTime() === today.getTime()) {
+    if (eventDay.getTime() === today.getTime()) {
         const registrationCutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), REGISTRATION_CUTOFF_HOUR, 0, 0);
 
         if (now < registrationCutoffTime) {
             return WebinarStatus.UPCOMING;
         } else {
-            if (now >= webinarStart) {
-                return WebinarStatus.LIVE;
+            // For PharmIA, we might want to be more specific, but reusing LIVE/REGISTRATION_CLOSED logic is okay for now.
+            // If it's Friday afternoon (after cutoff), it's closed.
+            if (now >= effectiveEndDate) { // Roughly check time
+                 return WebinarStatus.LIVE; // Or PAST?
             } else {
-                return WebinarStatus.REGISTRATION_CLOSED;
+                 return WebinarStatus.REGISTRATION_CLOSED;
             }
         }
-    } else if (webinarDay < today) {
+    } else if (eventDay < today) {
         return WebinarStatus.PAST;
     } else {
         return WebinarStatus.UPCOMING;
@@ -70,7 +81,7 @@ router.get('/', softAuthenticateToken, async (req, res) => {
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
-            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
+            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar);
 
             if (isAdmin) {
                 // Admins can see everything, so we don't delete anything.
@@ -152,7 +163,7 @@ router.get('/my-webinars', authenticateToken, async (req: AuthenticatedRequest, 
 
         const webinarsWithStatus = webinars.map(webinar => {
             const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
-            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
+            webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar);
 
             const attendee = webinar.attendees.find(
                 att => att.userId.toString() === userId.toString()
@@ -200,7 +211,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
 
         console.log('[Webinar Debug] Entering GET /:id handler.');
         const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
-        webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar.date);
+        webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar);
 
         const authReq = req as AuthenticatedRequest;
         
