@@ -708,25 +708,13 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
         case 'flashcards': return <FlashcardDeck flashcards={caseStudy.flashcards} memoFicheId={caseStudy._id as string} />;
         case 'glossary': return <div className="bg-white p-6 rounded-lg shadow-md space-y-4">{caseStudy.glossary.map((item, i) => <div key={i} className="border-b border-slate-200 pb-2"><h4 className="font-bold text-slate-800">{item.term}</h4><p className="text-slate-600">{item.definition}</p></div>)}</div>;
         case 'media':
-            const youtubeEmbedUrls = (caseStudy.youtubeLinks || [])
-                .map(link => ({ ...link, embedUrl: getYoutubeEmbedUrl(link.url) }))
-                .filter(link => link.embedUrl);
-
-            return youtubeEmbedUrls.length > 0 ? (
+            const mediaLinks = caseStudy.youtubeLinks || [];
+            return mediaLinks.length > 0 ? (
                 <div className="space-y-6">
-                    {youtubeEmbedUrls.map((link, index) => (
+                    {mediaLinks.map((link, index) => (
                         <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-                            <h4 className="font-bold text-slate-800 mb-4">{link.title || 'Vidéo YouTube'}</h4>
-                            <div className="w-full" style={{ paddingBottom: '56.25%', position: 'relative', height: 0 }}>
-                                <iframe
-                                    src={link.embedUrl!}
-                                    title={link.title || 'YouTube video player'}
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="absolute top-0 left-0 w-full h-full rounded-md"
-                                ></iframe>
-                            </div>
+                            <h4 className="font-bold text-slate-800 mb-4">{link.title || 'Média'}</h4>
+                            <EmbeddableViewer source={link.url} />
                         </div>
                     ))}
                 </div>
