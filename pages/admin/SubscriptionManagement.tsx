@@ -1,338 +1,174 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { User, UserRole, PharmacistWithCollaborators } from '../../types';
-import { PencilIcon } from '../../components/Icons';
+import { Spinner, CheckCircleIcon, XCircleIcon, UploadIcon } from '../../components/Icons';
 
-interface CollaboratorModalProps {
-  collaborators: User[];
-  onClose: () => void;
+interface Subscriber {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    planName: string;
+    subscriptionStartDate?: string;
+    subscriptionEndDate?: string;
+    latestOrder?: {
+        _id: string;
+        status: string;
+        paymentProofUrl?: string;
+        totalAmount: number;
+    } | null;
 }
 
-const CollaboratorDetailsModal: React.FC<CollaboratorModalProps> = ({ collaborators, onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-11/12 max-w-4xl">
-        <h3 className="text-xl font-bold mb-4">Détails des Collaborateurs</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Abonné</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin Abonnement</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {collaborators.map((collab) => (
-                <tr key={collab._id?.toString()}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{collab.firstName} {collab.lastName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{collab.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{collab.hasActiveSubscription ? 'Oui' : 'Non'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{collab.planName || 'N/A'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {collab.subscriptionEndDate ? new Date(collab.subscriptionEndDate).toLocaleDateString() : 'N/A'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Fermer
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const SubscriptionManagement: React.FC = () => {
-  const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<PharmacistWithCollaborators[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showGrantModal, setShowGrantModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [durationInDays, setDurationInDays] = useState<string>('30');
-  const [planName, setPlanName] = useState<string>('Free Trial');
-  const [quantity, setQuantity] = useState<number>(1);
-  const [showCollaboratorModal, setShowCollaboratorModal] = useState(false);
-  const [currentCollaborators, setCurrentCollaborators] = useState<User[]>([]);
+    const { token } = useAuth();
+    const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [uploadingId, setUploadingId] = useState<string | null>(null);
 
-  const pricing = {
-    solo: {
-      name: 'Solo',
-      monthly: 29.900,
-      annual: 269.100,
-    },
-    starter: {
-      name: 'Starter',
-      monthly: 79.900,
-      annual: 719.100,
-    },
-    gold: {
-      name: 'Gold',
-      monthly: 108.900,
-      annual: 980.100,
-    }
-  };
+    const fetchSubscribers = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/admin/subscriptions', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setSubscribers(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch subscribers:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  const calculateTotal = () => {
-    if (planName === 'Free Trial') return 0;
+    useEffect(() => {
+        fetchSubscribers();
+    }, [token]);
 
-    const planInfo = planName.split(' ');
-    const planKey = planInfo[0].toLowerCase() as keyof typeof pricing;
-    const isAnnual = planInfo.includes('année');
+    const handleFileUpload = async (userId: string, file: File) => {
+        setUploadingId(userId);
+        const formData = new FormData();
+        formData.append('file', file);
 
-    if (pricing[planKey]) {
-      const price = isAnnual ? pricing[planKey].annual : pricing[planKey].monthly;
-      return (price * quantity).toFixed(3);
-    }
-    return 0;
-  };
+        try {
+            const response = await fetch(`/api/admin/subscriptions/${userId}/upload-proof`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-        console.log("Fetching users (mock)");
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-        // FIX: Removed `id` and `name` properties to match the User and PharmacistWithCollaborators types.
-        const mockPharmacists: PharmacistWithCollaborators[] = [
-            { _id: 'p1', firstName: 'John', lastName: 'Doe', email: 'john.doe@pharmacy.com', role: UserRole.PHARMACIEN, hasActiveSubscription: true, planName: 'Gold', subscriptionEndDate: new Date(new Date().setDate(new Date().getDate() + 300)), createdAt: new Date(),
-                collaborators: [
-                    { _id: 'c1', firstName: 'Alice', lastName: 'Smith', email: 'alice.smith@pharmacy.com', role: UserRole.PREPARATEUR, hasActiveSubscription: true, planName: 'Gold', subscriptionEndDate: new Date(new Date().setDate(new Date().getDate() + 300)) }
-                ]
-            },
-            { _id: 'p2', firstName: 'Jane', lastName: 'Roe', email: 'jane.roe@pharmacy.com', role: UserRole.PHARMACIEN, hasActiveSubscription: false, createdAt: new Date(), collaborators: [] }
-        ];
-        setUsers(mockPharmacists);
-    } catch (err: any) {
-      console.error('Error fetching users with collaborators:', err);
-      setError(err.message || 'Failed to load users and collaborators.');
-    } finally {
-      setLoading(false);
-    }
-  };
+            if (response.ok) {
+                alert('Justificatif téléchargé avec succès !');
+                fetchSubscribers(); // Refresh list
+            } else {
+                alert('Erreur lors du téléchargement.');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Erreur lors du téléchargement.');
+        } finally {
+            setUploadingId(null);
+        }
+    };
 
-  useEffect(() => {
-    if (currentUser?.role === UserRole.ADMIN) {
-      fetchUsers();
-    }
-  }, [currentUser]);
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return '-';
+        return new Date(dateString).toLocaleDateString('fr-FR');
+    };
 
-  const handleGrantSubscription = async () => {
-    if (!selectedUser || !durationInDays || !planName) return;
+    if (isLoading) return <div className="flex justify-center p-10"><Spinner className="h-10 w-10 text-teal-600" /></div>;
 
-    try {
-        console.log('Granting subscription (mock):', { 
-            userId: selectedUser._id, 
-            durationInDays, 
-            planName, 
-            quantity, 
-            total: calculateTotal(),
-            grantedBy: currentUser?.email 
-        });
-        await new Promise(resolve => setTimeout(resolve, 500));
-        alert('Abonnement octroyé avec succès ! (simulation)');
-        setShowGrantModal(false);
-        fetchUsers(); // Refresh list
-    } catch (err: any) {
-      console.error('Error granting subscription:', err);
-      alert(`Erreur: ${err.message || 'Échec de l\'octroi de l\'abonnement.'}`);
-    }
-  };
-
-  const openCollaboratorModal = (collaborators: User[]) => {
-    setCurrentCollaborators(collaborators);
-    setShowCollaboratorModal(true);
-  };
-
-  if (loading) return <div className="text-center p-4">Chargement des utilisateurs...</div>;
-  if (error) return <div className="text-center p-4 text-red-600">Erreur: {error}</div>;
-
-  const freeTrialUsers = users.filter(u => u.planName === 'Free Trial');
-  const payingUsers = users.filter(u => u.planName !== 'Free Trial' && u.hasActiveSubscription);
-
-  return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Gestion des Abonnements</h2>
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Abonné</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fin Abonnement</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collaborateurs</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            <tr className="bg-gray-100">
-              <td colSpan={8} className="px-6 py-3 text-left text-sm font-bold text-gray-700">Free Trial</td>
-            </tr>
-            {freeTrialUsers.map(user => (
-              <tr key={user._id?.toString()}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.hasActiveSubscription ? 'Oui' : 'Non'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.planName || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.subscriptionEndDate ? user.subscriptionEndDate.toLocaleDateString() : 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.collaborators && user.collaborators.length > 0 ? (
-                    <button
-                      onClick={() => openCollaboratorModal(user.collaborators || [])}
-                      className="text-teal-600 hover:text-teal-900 font-bold"
-                    >
-                      ({user.collaborators.length})
-                    </button>
-                  ) : (
-                    '(0)'
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => { setSelectedUser(user); setShowGrantModal(true); }}
-                    className="text-teal-600 hover:text-teal-900 mr-2"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr className="bg-gray-100">
-              <td colSpan={8} className="px-6 py-3 text-left text-sm font-bold text-gray-700">Payeurs</td>
-            </tr>
-            {payingUsers.map(user => (
-              <tr key={user._id?.toString()}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.hasActiveSubscription ? 'Oui' : 'Non'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.planName || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.subscriptionEndDate ? user.subscriptionEndDate.toLocaleDateString() : 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.collaborators && user.collaborators.length > 0 ? (
-                    <button
-                      onClick={() => openCollaboratorModal(user.collaborators || [])}
-                      className="text-teal-600 hover:text-teal-900 font-bold"
-                    >
-                      ({user.collaborators.length})
-                    </button>
-                  ) : (
-                    '(0)'
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => { setSelectedUser(user); setShowGrantModal(true); }}
-                    className="text-teal-600 hover:text-teal-900 mr-2"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {showGrantModal && selectedUser && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full">
-            <h3 className="text-xl font-bold mb-4">Octroyer un abonnement à {selectedUser.firstName} {selectedUser.lastName}</h3>
+    return (
+        <div className="container mx-auto p-6">
+            <h1 className="text-3xl font-bold text-slate-800 mb-6">Gestion des Abonnements & Justificatifs</h1>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="planName" className="block text-sm font-medium text-gray-700">Abonnement</label>
-                <select
-                  id="planName"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                  value={planName}
-                  onChange={(e) => setPlanName(e.target.value)}
-                >
-                  <option value="Free Trial">Free Trial</option>
-                  {Object.entries(pricing).flatMap(([key, plan]) => [
-                    <option key={`${key}-monthly`} value={`${plan.name} 1 mois`}>{`${plan.name} 1 mois`}</option>,
-                    <option key={`${key}-annual`} value={`${plan.name} 1 année`}>{`${plan.name} 1 année`}</option>
-                  ])}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantité</label>
-                <input
-                  type="number"
-                  id="quantity"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-                  min="1"
-                />
-              </div>
+            <div className="bg-white rounded-lg shadow overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-slate-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pharmacien</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Abonnement</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière Commande</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preuve Paiement</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {subscribers.map(sub => (
+                            <tr key={sub._id} className="hover:bg-slate-50">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <div>
+                                            <div className="text-sm font-medium text-gray-900">{sub.firstName} {sub.lastName}</div>
+                                            <div className="text-sm text-gray-500">{sub.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-teal-100 text-teal-800">
+                                        {sub.planName || 'Inconnu'}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>Début: {formatDate(sub.subscriptionStartDate)}</div>
+                                    <div>Fin: {formatDate(sub.subscriptionEndDate)}</div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {sub.latestOrder ? (
+                                        <div>
+                                            <div>ID: {sub.latestOrder._id.substring(0, 8)}...</div>
+                                            <div className={`font-bold ${sub.latestOrder.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-600'}`}>
+                                                {sub.latestOrder.status}
+                                            </div>
+                                            <div>{sub.latestOrder.totalAmount} TND</div>
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-400 italic">Aucune</span>
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div className="flex flex-col space-y-2">
+                                        {sub.latestOrder?.paymentProofUrl ? (
+                                            <a 
+                                                href={sub.latestOrder.paymentProofUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-teal-600 hover:text-teal-900 flex items-center"
+                                            >
+                                                <CheckCircleIcon className="h-5 w-5 mr-1" />
+                                                Voir le justificatif
+                                            </a>
+                                        ) : (
+                                            <div className="text-orange-500 flex items-center">
+                                                <XCircleIcon className="h-5 w-5 mr-1" />
+                                                Manquant
+                                            </div>
+                                        )}
+                                        
+                                        <label className="cursor-pointer bg-white border border-gray-300 rounded-md shadow-sm px-3 py-1 inline-flex items-center text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                            <UploadIcon className="h-4 w-4 mr-2 text-gray-500" />
+                                            {uploadingId === sub._id ? 'Envoi...' : (sub.latestOrder?.paymentProofUrl ? 'Remplacer' : 'Ajouter')}
+                                            <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                onChange={(e) => {
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        handleFileUpload(sub._id, e.target.files[0]);
+                                                    }
+                                                }}
+                                                accept="image/*,.pdf"
+                                                disabled={uploadingId === sub._id}
+                                            />
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-
-            <div className="mb-4">
-              <p className="text-sm font-medium text-gray-700">Calcul du total :</p>
-              <p className="text-lg font-bold text-teal-600">{calculateTotal()} DT</p>
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="duration" className="block text-sm font-medium text-gray-700">Durée (jours)</label>
-              <input
-                type="number"
-                id="duration"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                value={durationInDays}
-                onChange={(e) => setDurationInDays(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-4 p-2 bg-gray-100 rounded-md">
-                <p className="text-sm text-gray-600">Commande validée par :</p>
-                <p className="text-sm font-medium text-gray-800">{currentUser?.firstName} {currentUser?.lastName} (Admin)</p>
-            </div>
-
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setShowGrantModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleGrantSubscription}
-                className="px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700"
-              >
-                Octroyer
-              </button>
-            </div>
-          </div>
         </div>
-      )}
-
-      {showCollaboratorModal && (
-        <CollaboratorDetailsModal
-          collaborators={currentCollaborators}
-          onClose={() => setShowCollaboratorModal(false)}
-        />
-      )}
-    </div>
-  );
+    );
 };
 
 export default SubscriptionManagement;
