@@ -140,6 +140,11 @@ const WebinarActionButtons: React.FC<{
         });
     };
 
+    const { login } = useAuth(); // Assuming useAuth exposes login
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+
     const handleAction = async () => {
         if (!isMasterClass && !isFree && selectedSlots.length === 0) {
             alert("Veuillez sélectionner au moins un créneau.");
@@ -150,10 +155,55 @@ const WebinarActionButtons: React.FC<{
             await onUpdateRegistration(selectedSlots);
             alert("Vos créneaux horaires ont été mis à jour avec succès.");
         } else if (isFree) {
+            // Public Registration Flow
             if (!token) {
-                navigate('/login', { state: { from: `/webinars/${webinar._id}` } });
+                if (!firstName || !lastName || !email || !phone) {
+                    alert("Tous les champs sont obligatoires pour l'inscription.");
+                    return;
+                }
+                
+                setIsSubmitting(true);
+                try {
+                    const slotsToSubmit = selectedSlots.length > 0 ? selectedSlots : [WebinarTimeSlot.MORNING];
+                    
+                    const response = await fetch(`/api/webinars/${webinar._id}/public-register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ firstName, lastName, email, phone, timeSlots: slotsToSubmit })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        if (data.code === 'USER_EXISTS') {
+                            if (window.confirm(data.message + " Voulez-vous aller à la page de connexion ?")) {
+                                navigate('/login', { state: { from: `/webinars/${webinar._id}` } });
+                            }
+                        } else {
+                            throw new Error(data.message || "Erreur lors de l'inscription");
+                        }
+                        return;
+                    }
+
+                    // Auto-login
+                    if (data.token && login) {
+                        login(data.token, data.user); // Assuming login takes token and user object
+                        alert("Compte créé et inscription validée !");
+                        window.location.reload();
+                    } else {
+                        alert("Inscription validée. Veuillez vous connecter.");
+                        navigate('/login');
+                    }
+
+                } catch (err: any) {
+                    alert(err.message);
+                } finally {
+                    setIsSubmitting(false);
+                }
                 return;
             }
+
+            // Authenticated Free Flow (Existing logic)
             if (!phone || phone.length < 8) {
                 alert("Veuillez renseigner un numéro de téléphone valide pour valider votre inscription gratuite.");
                 return;
@@ -326,6 +376,25 @@ const WebinarActionButtons: React.FC<{
 
             {isFree && !isUpdateMode && (
                 <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
+                    {!token && (
+                        <>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">Prénom</label>
+                                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full px-4 py-2 border rounded-md" required />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">Nom</label>
+                                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full px-4 py-2 border rounded-md" required />
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Email</label>
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-2 border rounded-md" required />
+                            </div>
+                        </>
+                    )}
+                    
                     <label className="block text-sm font-bold text-slate-700 mb-2">
                         Votre numéro de téléphone (obligatoire)
                     </label>

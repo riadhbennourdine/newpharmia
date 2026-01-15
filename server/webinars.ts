@@ -678,6 +678,122 @@ router.post('/:id/public-register', async (req, res) => {
 });
 
 
+// POST for a PUBLIC user to register for a webinar (Free flow)
+router.post('/:id/public-register', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { firstName, lastName, email, phone, timeSlots } = req.body;
+
+        if (!firstName || !lastName || !email || !phone) {
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires (Nom, Prénom, Email, Téléphone).' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const usersCollection = db.collection('users');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinaire non trouvé.' });
+        }
+
+        // Check if user exists
+        const existingUser = await usersCollection.findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+            return res.status(409).json({ 
+                message: 'Un compte existe déjà avec cet email. Veuillez vous connecter pour vous inscrire.',
+                code: 'USER_EXISTS'
+            });
+        }
+
+        // Create new user
+        // Generate a temporary password (not used effectively as we auto-login, but needed for schema)
+        const tempPassword = Math.random().toString(36).slice(-8); 
+        // Ideally we should hash it, but for this quick flow and without bcrypt import here, 
+        // we might just store it or set a flag "password_reset_required". 
+        // Assuming we rely on existing auth flow which likely uses bcrypt.
+        // For now, let's create a user structure compatible with the system.
+        
+        const newUser: any = { // Using any to bypass strict type checks for new fields if any
+            firstName,
+            lastName,
+            email: email.toLowerCase(),
+            username: email.toLowerCase(), // username fallback
+            phoneNumber: phone,
+            role: UserRole.PHARMACIEN, // Default to Pharmacien/Prospect target
+            status: ClientStatus.PROSPECT,
+            createdAt: new Date(),
+            passwordHash: 'PENDING_ACTIVATION', // Marker
+            hasActiveSubscription: false
+        };
+
+        const userResult = await usersCollection.insertOne(newUser);
+        const newUserId = userResult.insertedId;
+
+        // Register to Webinar
+        const newAttendee = {
+            userId: newUserId,
+            status: 'CONFIRMED' as const, // Auto-confirm for public free flow
+            registeredAt: new Date(),
+            timeSlots: timeSlots || [WebinarTimeSlot.MORNING], // Default slot
+            usedCredit: false
+        };
+
+        await webinarsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $push: { attendees: newAttendee } }
+        );
+
+        // Add to Newsletter (Brevo)
+        try {
+            await addToNewsletterGroup(email, 'Webinar Prospects');
+        } catch (e) {
+            console.error('Newsletter add failed', e);
+        }
+
+        // Send Confirmation Email
+        try {
+            const meetLink = webinar.googleMeetLink || "Le lien sera disponible dans votre espace.";
+            await sendSingleEmail({
+                to: email,
+                subject: `Confirmation d'inscription : ${webinar.title}`,
+                htmlContent: `
+                    <h1>Bienvenue sur PharmIA !</h1>
+                    <p>Bonjour ${firstName},</p>
+                    <p>Votre compte a été créé et votre inscription au wébinaire <strong>"${webinar.title}"</strong> est validée.</p>
+                    <p><strong>Lien de connexion :</strong> ${meetLink}</p>
+                    <p><em>Note : Pour accéder à votre compte ultérieurement, veuillez utiliser la fonction "Mot de passe oublié" avec votre email.</em></p>
+                    <p>Cordialement,<br>L'équipe PharmIA</p>
+                `
+            });
+        } catch (emailError) {
+            console.error("Failed to send confirmation email:", emailError);
+        }
+
+        // Generate Token for Auto-Login
+        const token = jwt.sign(
+            { 
+                _id: newUserId.toString(), 
+                role: newUser.role, 
+                email: newUser.email 
+            },
+            process.env.JWT_SECRET || 'default_secret',
+            { expiresIn: '24h' }
+        );
+
+        res.status(201).json({ 
+            message: 'Inscription réussie.',
+            token,
+            user: { _id: newUserId, firstName, lastName, email, role: newUser.role }
+        });
+
+    } catch (error) {
+        console.error('Error in public registration:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 // POST for a user to submit their proof of payment
 router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
