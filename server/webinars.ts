@@ -2,7 +2,7 @@ import express from 'express';
 import { sendSingleEmail } from './emailService.js';
 import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
-import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus } from '../types.js';
+import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus, WebinarTimeSlot } from '../types.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 import { authenticateToken, checkRole, softAuthenticateToken } from './authMiddleware.js';
