@@ -1,4 +1,5 @@
 import express from 'express';
+import { sendSingleEmail } from './emailService.js';
 import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus } from '../types.js';
@@ -469,9 +470,24 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
 
         let status: 'PENDING' | 'CONFIRMED' = 'PENDING';
         let usedCredit = false;
+        let isFree = false;
 
-        // Credit Usage Logic
-        if (useCredit) {
+        // Check if Webinar is Free
+        if (webinar.price === 0) {
+            isFree = true;
+            // Validate Phone Number for Free Webinars
+            const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (!user?.phoneNumber) {
+                return res.status(400).json({ 
+                    message: 'Un numéro de téléphone est requis pour l\'inscription aux wébinaires gratuits. Veuillez mettre à jour votre profil.',
+                    code: 'PHONE_REQUIRED'
+                });
+            }
+            status = 'CONFIRMED';
+        }
+
+        // Credit Usage Logic (Only if not free)
+        if (useCredit && !isFree) {
             if (webinar.group !== WebinarGroup.MASTER_CLASS) {
                 return res.status(400).json({ message: 'Les crédits ne sont valables que pour les Master Classes.' });
             }
@@ -517,8 +533,35 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
             return res.status(404).json({ message: 'Webinar not found during registration.' });
         }
 
+        // Send Confirmation Email for Free Webinars
+        if (isFree && status === 'CONFIRMED') {
+            const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+            if (user && user.email) {
+                try {
+                    const meetLink = webinar.googleMeetLink || "Le lien sera disponible dans votre espace 'Mes Wébinaires' le jour J.";
+                    await sendSingleEmail({
+                        to: user.email,
+                        subject: `Confirmation d'inscription : ${webinar.title}`,
+                        htmlContent: `
+                            <h1>Inscription Confirmée</h1>
+                            <p>Bonjour ${user.firstName || 'Cher participant'},</p>
+                            <p>Votre inscription au wébinaire gratuit <strong>"${webinar.title}"</strong> est validée.</p>
+                            <p><strong>Date :</strong> ${new Date(webinar.date).toLocaleDateString('fr-FR')} à ${timeSlots.join(', ')}</p>
+                            <p><strong>Lien de connexion :</strong> ${meetLink}</p>
+                            <p>Cordialement,<br>L'équipe PharmIA</p>
+                        `
+                    });
+                } catch (emailError) {
+                    console.error("Failed to send confirmation email:", emailError);
+                    // Non-blocking error
+                }
+            }
+        }
+
         if (usedCredit) {
             res.json({ message: 'Inscription confirmée avec succès (1 crédit utilisé).' });
+        } else if (isFree) {
+            res.json({ message: 'Inscription gratuite confirmée avec succès !' });
         } else {
             res.json({ message: 'Successfully registered for the webinar. Please submit payment to confirm.' });
         }

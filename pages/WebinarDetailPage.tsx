@@ -103,13 +103,14 @@ const WebinarActionButtons: React.FC<{
     setIsAdded: React.Dispatch<React.SetStateAction<boolean>>; // Prop received from parent
 }> = ({ webinar, initialSelectedSlots, onUpdateRegistration, userMasterClassCredits = 0, onUseCredit, isAdded, setIsAdded }) => {
     const { addToCart } = useCart();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
     const isMasterClass = webinar.group === WebinarGroup.MASTER_CLASS;
+    const isFree = webinar.price === 0;
     const [selectedSlots, setSelectedSlots] = useState<WebinarTimeSlot[]>(initialSelectedSlots || []);
+    const [phone, setPhone] = useState(user?.phoneNumber || '');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
-    // isAdded and setIsAdded are now props
-    // isInitiallyInCart removed
-
     // Determine if we are in "update registration" mode
     const isUpdateMode = !!onUpdateRegistration;
 
@@ -132,9 +133,7 @@ const WebinarActionButtons: React.FC<{
                 ? prev.filter(s => s !== slot)
                 : [...prev, slot];
             
-            // If in cart mode and item is already in cart, update it immediately
-            // isInitiallyInCart is removed, but we can check if it's currently in cart using `isAdded`
-            if (!isUpdateMode && isAdded) { 
+            if (!isUpdateMode && isAdded && !isFree) { 
                 addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: newSlots, price: webinar.price });
             }
             return newSlots;
@@ -142,17 +141,60 @@ const WebinarActionButtons: React.FC<{
     };
 
     const handleAction = async () => {
-        if (!isMasterClass && selectedSlots.length === 0) { // Only check for slots if not a Master Class
+        if (!isMasterClass && selectedSlots.length === 0) {
             alert("Veuillez sélectionner au moins un créneau.");
             return;
         }
 
         if (isUpdateMode) {
-            // Call the provided update registration function
             await onUpdateRegistration(selectedSlots);
             alert("Vos créneaux horaires ont été mis à jour avec succès.");
+        } else if (isFree) {
+            if (!token) {
+                navigate('/login', { state: { from: `/webinars/${webinar._id}` } });
+                return;
+            }
+            if (!phone || phone.length < 8) {
+                alert("Veuillez renseigner un numéro de téléphone valide pour valider votre inscription gratuite.");
+                return;
+            }
+
+            setIsSubmitting(true);
+            try {
+                // Update phone number if it's new
+                if (phone !== user?.phoneNumber) {
+                    await fetch('/api/profile', {
+                        method: 'PUT',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ phoneNumber: phone })
+                    });
+                }
+
+                const response = await fetch(`/api/webinars/${webinar._id}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ timeSlots: selectedSlots })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || "Erreur lors de l'inscription");
+                }
+
+                alert("Inscription gratuite confirmée ! Vous allez recevoir un email de confirmation.");
+                window.location.reload();
+            } catch (err: any) {
+                alert(err.message);
+            } finally {
+                setIsSubmitting(false);
+            }
         } else {
-            // Add to cart flow
             addToCart({ webinar: webinar, type: ProductType.WEBINAR, selectedSlots: selectedSlots, price: webinar.price });
             setIsAdded(true);
         }
@@ -162,9 +204,9 @@ const WebinarActionButtons: React.FC<{
         navigate('/cart');
     };
 
-    const buttonText = isUpdateMode
+    const buttonText = isSubmitting ? 'Traitement...' : isUpdateMode
         ? 'Modifier les créneaux'
-        : (isAdded ? 'Ajouté' : 'Ajouter au panier');
+        : (isFree ? 'M\'inscrire gratuitement' : (isAdded ? 'Ajouté' : 'Ajouter au panier'));
 
     const buttonOnClick = isUpdateMode
         ? handleAction
@@ -172,13 +214,13 @@ const WebinarActionButtons: React.FC<{
 
     const buttonClassName = `w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors ${ 
         isUpdateMode
-            ? 'bg-blue-600 text-white hover:bg-blue-700' // Blue for update mode
-            : (isAdded
+            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+            : (isAdded && !isFree
                 ? 'bg-orange-500 text-white hover:bg-orange-600'
                 : 'bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed')
     }`;
 
-    if (isPastWebinar && !isUpdateMode) { // If it's a past webinar and not in update mode (meaning not already registered)
+    if (isPastWebinar && !isUpdateMode) {
         return (
             <div className="text-center text-red-600 font-semibold mt-4">
                 Ce webinaire est passé. L'inscription n'est plus possible.
@@ -197,7 +239,7 @@ const WebinarActionButtons: React.FC<{
                 <>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
                     <p className="text-sm text-slate-500 mb-3">Vous pouvez sélectionner un ou plusieurs créneaux.</p>
-                    <div className="space-y-2">
+                    <div className="space-y-2 mb-6">
                         {Object.values(WebinarTimeSlot)
                             .filter(slot => {
                                 if (webinar.group === WebinarGroup.PHARMIA) {
@@ -206,7 +248,6 @@ const WebinarActionButtons: React.FC<{
                                 if (webinar.group === WebinarGroup.MASTER_CLASS) {
                                     return slot === WebinarTimeSlot.MORNING;
                                 }
-                                // Default for other groups (e.g. CROP Tunis)
                                 return [WebinarTimeSlot.MORNING, WebinarTimeSlot.AFTERNOON, WebinarTimeSlot.EVENING].includes(slot);
                             })
                             .map((slot) => {
@@ -244,6 +285,25 @@ const WebinarActionButtons: React.FC<{
                                 );
                             })}
                     </div>
+
+                    {isFree && !isUpdateMode && (
+                        <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">
+                                Votre numéro de téléphone (obligatoire)
+                            </label>
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="Ex: 22 123 456"
+                                className="w-full px-4 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                                required
+                            />
+                            <p className="text-xs text-slate-500 mt-2 italic">
+                                PharmIA a besoin de votre numéro pour vous envoyer les rappels et ressources liés à ce wébinaire gratuit.
+                            </p>
+                        </div>
+                    )}
                 </>
             )}
             <WebinarActionButtons
@@ -260,7 +320,7 @@ const WebinarActionButtons: React.FC<{
                 isMasterClass={isMasterClass}
                 isUpdateMode={isUpdateMode}
             />
-            {isAdded && !isUpdateMode && (
+            {isAdded && !isUpdateMode && !isFree && (
                 <button
                     onClick={() => navigate('/webinars')}
                     className="w-full mt-2 text-center text-teal-600 font-semibold py-2 px-4 rounded-lg hover:bg-teal-50 transition-colors"
@@ -519,12 +579,20 @@ const WebinarDetailPage: React.FC = () => {
                     )}
                     {webinar.group === WebinarGroup.PHARMIA && (
                         <div className="text-right mb-4">
-                            <p className="text-xl font-bold text-teal-600">
-                                Prix : {PHARMIA_WEBINAR_PRICE_HT.toFixed(3)} DT HT
-                            </p>
-                            <p className="text-sm text-slate-500 font-medium">
-                                Soit {(PHARMIA_WEBINAR_PRICE_HT * (1 + TAX_RATES.TVA)).toFixed(3)} DT TTC
-                            </p>
+                            {webinar.price === 0 ? (
+                                <span className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full font-bold text-xl animate-pulse">
+                                    🎁 GRATUIT
+                                </span>
+                            ) : (
+                                <>
+                                    <p className="text-xl font-bold text-teal-600">
+                                        Prix : {PHARMIA_WEBINAR_PRICE_HT.toFixed(3)} DT HT
+                                    </p>
+                                    <p className="text-sm text-slate-500 font-medium">
+                                        Soit {(PHARMIA_WEBINAR_PRICE_HT * (1 + TAX_RATES.TVA)).toFixed(3)} DT TTC
+                                    </p>
+                                </>
+                            )}
                         </div>
                     )}
                     

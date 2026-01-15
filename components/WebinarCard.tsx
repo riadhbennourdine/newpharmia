@@ -176,7 +176,12 @@ const WebinarCard: React.FC<{
         <div className="group bg-white rounded-lg border border-slate-200 hover:border-teal-500 transition-shadow duration-300 overflow-hidden flex flex-col">
             <Link to={`/webinars/${webinar._id}`} className="block relative">
                 <img src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'} alt={webinar.title} className="h-40 w-full object-cover" />
-                            </Link>
+                {webinar.price === 0 && (
+                    <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded shadow-lg animate-bounce">
+                        GRATUIT
+                    </div>
+                )}
+            </Link>
             <div className="p-4 flex-grow flex flex-col">
                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
                     <Link to={`/webinars/${webinar._id}`} className="flex items-center">
