@@ -188,10 +188,10 @@ const WebinarActionButtons: React.FC<{
                     // Auto-login
                     if (data.token && login) {
                         login(data.token, data.user); // Assuming login takes token and user object
-                        alert("Compte créé et inscription validée !");
+                        alert("Votre compte a été créé et votre inscription est validée ! Un email contenant le lien de la formation vient de vous être envoyé.");
                         window.location.reload();
                     } else {
-                        alert("Inscription validée. Veuillez vous connecter.");
+                        alert("Votre inscription est validée ! Un email contenant le lien de la formation vient de vous être envoyé. Veuillez vous connecter pour accéder à votre espace.");
                         navigate('/login');
                     }
 
@@ -240,7 +240,7 @@ const WebinarActionButtons: React.FC<{
                     throw new Error(data.message || "Erreur lors de l'inscription");
                 }
 
-                alert("Inscription gratuite confirmée ! Vous allez recevoir un email de confirmation.");
+                alert("Votre inscription est validée ! Un email contenant le lien de la formation vient de vous être envoyé.");
                 window.location.reload();
             } catch (err: any) {
                 alert(err.message);
