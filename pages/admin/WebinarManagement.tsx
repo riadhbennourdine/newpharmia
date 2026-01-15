@@ -416,10 +416,7 @@ const WebinarManagement: React.FC = () => {
             </div>
 
             <div className="flex justify-between items-center mb-2">
-                <h1 className="text-3xl font-bold text-slate-800">
-                    Gestion des Webinaires 
-                    <span className="ml-4 text-xs bg-red-600 text-white px-2 py-1 rounded-full uppercase tracking-wider">DEBUG MODE V2</span>
-                </h1>
+                <h1 className="text-3xl font-bold text-slate-800">Gestion des Webinaires</h1>
             </div>
 
             {isLoading && <div className="flex justify-center items-center h-64"><Spinner /></div>}
@@ -565,6 +562,19 @@ const WebinarManagement: React.FC = () => {
                             <form onSubmit={handleSaveWebinar} className="space-y-6">
                                 <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                                     <div className="sm:col-span-2">
+                                        <label htmlFor="publicationStatus" className="block text-sm font-medium text-slate-700">Statut de Publication</label>
+                                        <select 
+                                            name="publicationStatus" 
+                                            id="publicationStatus" 
+                                            value={currentWebinar.publicationStatus || 'DRAFT'} 
+                                            onChange={handleInputChange} 
+                                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+                                        >
+                                            <option value="DRAFT">Brouillon (Admin seulement)</option>
+                                            <option value="PUBLISHED">Publié (Visible par tous)</option>
+                                        </select>
+                                    </div>
+                                    <div className="sm:col-span-2">
                                         <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
                                         <input type="text" name="title" id="title" value={currentWebinar.title || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                                     </div>
@@ -612,19 +622,6 @@ const WebinarManagement: React.FC = () => {
                                             placeholder="Laissez vide pour utiliser le prix par défaut du groupe"
                                             className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" 
                                         />
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="publicationStatus" className="block text-sm font-medium text-slate-700">Statut de Publication</label>
-                                        <select 
-                                            name="publicationStatus" 
-                                            id="publicationStatus" 
-                                            value={currentWebinar.publicationStatus || 'DRAFT'} 
-                                            onChange={handleInputChange} 
-                                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
-                                        >
-                                            <option value="DRAFT">Brouillon (Admin seulement)</option>
-                                            <option value="PUBLISHED">Publié (Visible par tous)</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-4 pt-4">
