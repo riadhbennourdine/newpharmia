@@ -575,17 +575,17 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
 router.post('/:id/public-register', async (req, res) => {
     try {
         const { id } = req.params;
-        const { firstName, lastName, email, timeSlots } = req.body;
+        const { firstName, lastName, email, phone, timeSlots } = req.body;
 
         // --- Validation ---
         if (!firstName || !lastName || !email || !timeSlots) {
-            return res.status(400).json({ message: 'First name, last name, email, and time slots are required.' });
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires (Nom, Prénom, Email, Créneaux).' });
         }
         if (!Array.isArray(timeSlots) || timeSlots.length === 0) {
-            return res.status(400).json({ message: 'At least one time slot is required.' });
+            return res.status(400).json({ message: 'Au moins un créneau est requis.' });
         }
         if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid webinar ID.' });
+            return res.status(400).json({ message: 'ID de webinaire invalide.' });
         }
 
         const client = await clientPromise;
@@ -593,7 +593,105 @@ router.post('/:id/public-register', async (req, res) => {
         const usersCollection = db.collection('users');
         const webinarsCollection = db.collection<Webinar>('webinars');
 
-        // --- Find or Create User ---
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinaire non trouvé.' });
+        }
+
+        const isFree = webinar.price === 0;
+
+        // --- FREE WEBINAR LOGIC ---
+        if (isFree) {
+            if (!phone) {
+                 return res.status(400).json({ message: 'Le téléphone est requis pour les wébinaires gratuits.' });
+            }
+
+            // Check if user exists
+            const existingUser = await usersCollection.findOne({ email: email.toLowerCase() });
+            if (existingUser) {
+                return res.status(409).json({ 
+                    message: 'Un compte existe déjà avec cet email. Veuillez vous connecter pour vous inscrire.',
+                    code: 'USER_EXISTS'
+                });
+            }
+
+            // Create new user
+            const newUser: any = {
+                firstName,
+                lastName,
+                email: email.toLowerCase(),
+                username: email.toLowerCase(),
+                phoneNumber: phone,
+                role: UserRole.PHARMACIEN, // Default to Pharmacien/Prospect target
+                status: ClientStatus.PROSPECT,
+                createdAt: new Date(),
+                passwordHash: 'PENDING_ACTIVATION',
+                hasActiveSubscription: false
+            };
+
+            const userResult = await usersCollection.insertOne(newUser);
+            const newUserId = userResult.insertedId;
+
+            // Register to Webinar
+            const newAttendee = {
+                userId: newUserId,
+                status: 'CONFIRMED' as const,
+                registeredAt: new Date(),
+                timeSlots: timeSlots,
+                usedCredit: false
+            };
+
+            await webinarsCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $push: { attendees: newAttendee } }
+            );
+
+            // Add to Newsletter
+            try {
+                await addToNewsletterGroup(email, 'Webinar Prospects');
+            } catch (e) {
+                console.error('Newsletter add failed', e);
+            }
+
+            // Send Confirmation Email
+            try {
+                const meetLink = webinar.googleMeetLink || "Le lien sera disponible dans votre espace.";
+                await sendSingleEmail({
+                    to: email,
+                    subject: `Confirmation d'inscription : ${webinar.title}`,
+                    htmlContent: `
+                        <h1>Bienvenue sur PharmIA !</h1>
+                        <p>Bonjour ${firstName},</p>
+                        <p>Votre compte a été créé et votre inscription au wébinaire <strong>"${webinar.title}"</strong> est validée.</p>
+                        <p><strong>Date :</strong> ${new Date(webinar.date).toLocaleDateString('fr-FR')}</p>
+                        <p><strong>Lien de connexion :</strong> ${meetLink}</p>
+                        <p><em>Note : Pour accéder à votre compte ultérieurement, veuillez utiliser la fonction "Mot de passe oublié" avec votre email.</em></p>
+                        <p>Cordialement,<br>L'équipe PharmIA</p>
+                    `
+                });
+            } catch (emailError) {
+                console.error("Failed to send confirmation email:", emailError);
+            }
+
+            // Token
+            const token = jwt.sign(
+                { 
+                    _id: newUserId.toString(), 
+                    role: newUser.role, 
+                    email: newUser.email 
+                },
+                process.env.JWT_SECRET || 'default_secret',
+                { expiresIn: '24h' }
+            );
+
+            return res.status(201).json({ 
+                message: 'Inscription réussie.',
+                token,
+                user: { _id: newUserId, firstName, lastName, email, role: newUser.role }
+            });
+        }
+
+        // --- PAID WEBINAR LOGIC (Legacy Support) ---
         let user;
         try {
             user = await usersCollection.findOneAndUpdate(
@@ -613,8 +711,8 @@ router.post('/:id/public-register', async (req, res) => {
             );
 
             if (!user) {
-                console.error('Failed to upsert user. The database returned a nullish value.');
-                return res.status(500).json({ message: 'Failed to find or create user.' });
+                // Fallback
+                user = await usersCollection.findOne({ email: email.toLowerCase() });
             }
 
         } catch (dbError) {
@@ -622,20 +720,12 @@ router.post('/:id/public-register', async (req, res) => {
             return res.status(500).json({ message: 'A database error occurred.' });
         }
         
-        const userId = user._id;
+        const userId = user!._id;
 
-        // --- Add to Newsletter Group ---
         try {
             await addToNewsletterGroup(email, 'Webinar Participants');
         } catch (newsletterError) {
-            console.error("Could not add user to newsletter group:", newsletterError);
-            // Non-fatal error, so we continue with the registration
-        }
-
-        // --- Register for Webinar ---
-        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
-        if (!webinar) {
-            return res.status(404).json({ message: 'Webinaire non trouvé.' });
+            // ignore
         }
 
         const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
@@ -659,11 +749,10 @@ router.post('/:id/public-register', async (req, res) => {
             return res.status(404).json({ message: 'Webinar not found during update.' });
         }
 
-        // --- Generate Guest Token ---
         const guestToken = jwt.sign(
-            { id: userId.toString(), role: user.role },
+            { id: userId.toString(), role: user!.role },
             process.env.JWT_SECRET!,
-            { expiresIn: '24h' } // Guest token is valid for 24 hours
+            { expiresIn: '24h' } 
         );
 
         res.status(200).json({
@@ -678,121 +767,7 @@ router.post('/:id/public-register', async (req, res) => {
 });
 
 
-// POST for a PUBLIC user to register for a webinar (Free flow)
-router.post('/:id/public-register', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { firstName, lastName, email, phone, timeSlots } = req.body;
 
-        if (!firstName || !lastName || !email || !phone) {
-            return res.status(400).json({ message: 'Tous les champs sont obligatoires (Nom, Prénom, Email, Téléphone).' });
-        }
-
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const usersCollection = db.collection('users');
-        const webinarsCollection = db.collection<Webinar>('webinars');
-
-        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
-        if (!webinar) {
-            return res.status(404).json({ message: 'Webinaire non trouvé.' });
-        }
-
-        // Check if user exists
-        const existingUser = await usersCollection.findOne({ email: email.toLowerCase() });
-        if (existingUser) {
-            return res.status(409).json({ 
-                message: 'Un compte existe déjà avec cet email. Veuillez vous connecter pour vous inscrire.',
-                code: 'USER_EXISTS'
-            });
-        }
-
-        // Create new user
-        // Generate a temporary password (not used effectively as we auto-login, but needed for schema)
-        const tempPassword = Math.random().toString(36).slice(-8); 
-        // Ideally we should hash it, but for this quick flow and without bcrypt import here, 
-        // we might just store it or set a flag "password_reset_required". 
-        // Assuming we rely on existing auth flow which likely uses bcrypt.
-        // For now, let's create a user structure compatible with the system.
-        
-        const newUser: any = { // Using any to bypass strict type checks for new fields if any
-            firstName,
-            lastName,
-            email: email.toLowerCase(),
-            username: email.toLowerCase(), // username fallback
-            phoneNumber: phone,
-            role: UserRole.PHARMACIEN, // Default to Pharmacien/Prospect target
-            status: ClientStatus.PROSPECT,
-            createdAt: new Date(),
-            passwordHash: 'PENDING_ACTIVATION', // Marker
-            hasActiveSubscription: false
-        };
-
-        const userResult = await usersCollection.insertOne(newUser);
-        const newUserId = userResult.insertedId;
-
-        // Register to Webinar
-        const newAttendee = {
-            userId: newUserId,
-            status: 'CONFIRMED' as const, // Auto-confirm for public free flow
-            registeredAt: new Date(),
-            timeSlots: timeSlots || [WebinarTimeSlot.MORNING], // Default slot
-            usedCredit: false
-        };
-
-        await webinarsCollection.updateOne(
-            { _id: new ObjectId(id) },
-            { $push: { attendees: newAttendee } }
-        );
-
-        // Add to Newsletter (Brevo)
-        try {
-            await addToNewsletterGroup(email, 'Webinar Prospects');
-        } catch (e) {
-            console.error('Newsletter add failed', e);
-        }
-
-        // Send Confirmation Email
-        try {
-            const meetLink = webinar.googleMeetLink || "Le lien sera disponible dans votre espace.";
-            await sendSingleEmail({
-                to: email,
-                subject: `Confirmation d'inscription : ${webinar.title}`,
-                htmlContent: `
-                    <h1>Bienvenue sur PharmIA !</h1>
-                    <p>Bonjour ${firstName},</p>
-                    <p>Votre compte a été créé et votre inscription au wébinaire <strong>"${webinar.title}"</strong> est validée.</p>
-                    <p><strong>Lien de connexion :</strong> ${meetLink}</p>
-                    <p><em>Note : Pour accéder à votre compte ultérieurement, veuillez utiliser la fonction "Mot de passe oublié" avec votre email.</em></p>
-                    <p>Cordialement,<br>L'équipe PharmIA</p>
-                `
-            });
-        } catch (emailError) {
-            console.error("Failed to send confirmation email:", emailError);
-        }
-
-        // Generate Token for Auto-Login
-        const token = jwt.sign(
-            { 
-                _id: newUserId.toString(), 
-                role: newUser.role, 
-                email: newUser.email 
-            },
-            process.env.JWT_SECRET || 'default_secret',
-            { expiresIn: '24h' }
-        );
-
-        res.status(201).json({ 
-            message: 'Inscription réussie.',
-            token,
-            user: { _id: newUserId, firstName, lastName, email, role: newUser.role }
-        });
-
-    } catch (error) {
-        console.error('Error in public registration:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
-    }
-});
 
 // POST for a user to submit their proof of payment
 router.post('/:id/submit-payment', authenticateToken, async (req: AuthenticatedRequest, res) => {
