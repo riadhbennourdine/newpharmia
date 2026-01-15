@@ -56,7 +56,7 @@ const WebinarActionButtons: React.FC<{
     isMasterClass: boolean;
     isUpdateMode: boolean;
 }> = ({ webinar, userMasterClassCredits, onUseCredit, isAdded, handleGoToCart, handleAction, buttonClassName, buttonText, buttonOnClick, selectedSlots, isMasterClass, isUpdateMode }) => {
-    const { addToCart } = useCart(); // Assuming addToCart is available in this scope
+    const isFree = webinar.price === 0;
 
     if (isMasterClass && !isUpdateMode && !isAdded) {
         return (
@@ -83,7 +83,7 @@ const WebinarActionButtons: React.FC<{
         return (
             <button
                 onClick={buttonOnClick}
-                disabled={!isMasterClass && selectedSlots.length === 0 && !isAdded}
+                disabled={!isMasterClass && !isFree && selectedSlots.length === 0 && !isAdded}
                 className={buttonClassName}
             >
                 {buttonText}
