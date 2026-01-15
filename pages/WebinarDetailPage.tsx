@@ -141,7 +141,7 @@ const WebinarActionButtons: React.FC<{
     };
 
     const handleAction = async () => {
-        if (!isMasterClass && selectedSlots.length === 0) {
+        if (!isMasterClass && !isFree && selectedSlots.length === 0) {
             alert("Veuillez sélectionner au moins un créneau.");
             return;
         }
@@ -173,13 +173,16 @@ const WebinarActionButtons: React.FC<{
                     });
                 }
 
+                // For free webinars, we use a default slot since the time is fixed by the date
+                const slotsToSubmit = selectedSlots.length > 0 ? selectedSlots : [WebinarTimeSlot.MORNING];
+
                 const response = await fetch(`/api/webinars/${webinar._id}/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ timeSlots: selectedSlots })
+                    body: JSON.stringify({ timeSlots: slotsToSubmit })
                 });
 
                 if (!response.ok) {
@@ -235,6 +238,36 @@ const WebinarActionButtons: React.FC<{
                     Inscription via crédits Master Class.
                     <p className="text-sm text-slate-500 mt-1">Choisissez ce webinaire et validez via votre panier.</p>
                 </div>
+            ) : isFree && !isUpdateMode ? (
+                <div className="mb-8 p-6 bg-white rounded-xl border-2 border-teal-500 shadow-sm">
+                    <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span className="text-2xl">📅</span> Détails de l'événement
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4 text-lg">
+                            <div className="p-2 bg-teal-50 rounded-lg">
+                                <CalendarIcon className="h-6 w-6 text-teal-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Date</p>
+                                <p className="font-bold text-slate-800">
+                                    {new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 text-lg">
+                            <div className="p-2 bg-teal-50 rounded-lg">
+                                <ClockIcon className="h-6 w-6 text-teal-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Heure</p>
+                                <p className="font-bold text-slate-800">
+                                    {new Date(webinar.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             ) : (
                 <>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Choisissez vos créneaux</h3>
@@ -242,12 +275,15 @@ const WebinarActionButtons: React.FC<{
                     <div className="space-y-2 mb-6">
                         {Object.values(WebinarTimeSlot)
                             .filter(slot => {
+                                // If PharmIA and NOT Free -> Enforce Tuesday/Friday rule
                                 if (webinar.group === WebinarGroup.PHARMIA) {
                                     return [WebinarTimeSlot.PHARMIA_TUESDAY, WebinarTimeSlot.PHARMIA_FRIDAY].includes(slot);
                                 }
+                                // If Master Class -> Morning only
                                 if (webinar.group === WebinarGroup.MASTER_CLASS) {
                                     return slot === WebinarTimeSlot.MORNING;
                                 }
+                                // Default (CROP Tunis) -> Standard slots
                                 return [WebinarTimeSlot.MORNING, WebinarTimeSlot.AFTERNOON, WebinarTimeSlot.EVENING].includes(slot);
                             })
                             .map((slot) => {
@@ -285,26 +321,26 @@ const WebinarActionButtons: React.FC<{
                                 );
                             })}
                     </div>
-
-                    {isFree && !isUpdateMode && (
-                        <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
-                            <label className="block text-sm font-bold text-slate-700 mb-2">
-                                Votre numéro de téléphone (obligatoire)
-                            </label>
-                            <input
-                                type="tel"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                placeholder="Ex: 22 123 456"
-                                className="w-full px-4 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
-                                required
-                            />
-                            <p className="text-xs text-slate-500 mt-2 italic">
-                                PharmIA a besoin de votre numéro pour vous envoyer les rappels et ressources liés à ce wébinaire gratuit.
-                            </p>
-                        </div>
-                    )}
                 </>
+            )}
+
+            {isFree && !isUpdateMode && (
+                <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Votre numéro de téléphone (obligatoire)
+                    </label>
+                    <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="Ex: 22 123 456"
+                        className="w-full px-4 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500"
+                        required
+                    />
+                    <p className="text-xs text-slate-500 mt-2 italic">
+                        PharmIA a besoin de votre numéro pour vous envoyer les rappels et ressources liés à ce wébinaire gratuit.
+                    </p>
+                </div>
             )}
             <WebinarActionButtons
                 webinar={webinar}
