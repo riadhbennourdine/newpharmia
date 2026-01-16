@@ -768,7 +768,7 @@ const WebinarDetailPage: React.FC = () => {
                                         <p className={`font-semibold text-center mb-4 ${registeredAttendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>
                                             {registeredAttendee.status === 'CONFIRMED' ? 'Votre inscription est confirmée !' : 'Votre inscription est en attente de validation.'}
                                         </p>
-                                        {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && webinar.group !== WebinarGroup.MASTER_CLASS && (
+                                        {registeredAttendee.timeSlots && registeredAttendee.timeSlots.length > 0 && webinar.group !== WebinarGroup.MASTER_CLASS && webinar.price !== 0 && (
                                             <>
                                                 <h3 className="text-lg font-semibold text-slate-800 mb-2">Vos créneaux choisis :</h3>
                                                 {/* Display current slots or allow modification */}
