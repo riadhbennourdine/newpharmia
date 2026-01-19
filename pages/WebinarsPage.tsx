@@ -330,25 +330,37 @@ const WebinarsPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Card for MasterClass */}
+                {/* Card for CROP Tunis */}
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
                     <div className="p-8 flex-grow">
-                        <h3 className="text-2xl font-bold text-slate-800">Master Class Officine 2026</h3>
-                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Pharmaciens</p>
+                        <img src="/assets/logo-crop.png" alt="CROP Tunis Logo" className="h-16 w-auto mb-4 object-contain" />
+                        <h3 className="text-2xl font-bold text-slate-800">Wébinaires CROP Tunis</h3>
+                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Préparateurs</p>
                         <p className="mt-4 text-slate-600">
-                            Un programme d'excellence pour approfondir vos connaissances sur des thèmes majeurs de l'officine.
+                           Le programme de formation de référence pour les préparateurs en pharmacie d'officine.
                         </p>
                     </div>
                     <div className="p-6 bg-slate-50">
-                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors">
-                            Explorer le programme
+                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            Découvrir les sessions
                         </button>
+                         {user && (
+                            <button onClick={() => setView('MY_WEBINARS_CROP')} className="mt-2 w-full text-blue-600 hover:text-blue-800 font-medium py-3 px-4 rounded-lg hover:bg-blue-100 transition-colors">
+                                Mes wébinaires CROP Tunis
+                            </button>
+                        )}
+                        {isAdmin && (
+                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                Gérer les wébinaires CROP
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 {/* Card for PharmIA */}
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
                     <div className="p-8 flex-grow">
+                        <img src="/assets/logo-pharmia.png" alt="PharmIA Logo" className="h-16 w-auto mb-4 object-contain" />
                         <h3 className="text-2xl font-bold text-slate-800">Wébinaires PharmIA</h3>
                          <p className="text-sm font-semibold text-teal-600 mt-1">Pour Pharmaciens & Préparateurs</p>
                         <p className="mt-4 text-slate-600">
@@ -368,35 +380,44 @@ const WebinarsPage: React.FC = () => {
                             <ShoppingCartIcon className="h-6 w-6" />
                             <span>Acheter des crédits</span>
                         </button>
+                         {user && !isWebinarAdmin && (
+                            <button onClick={() => setView('MY_WEBINARS_PHARMIA')} className="mt-2 w-full text-teal-600 hover:text-teal-800 font-medium py-3 px-4 rounded-lg hover:bg-teal-100 transition-colors">
+                                Mes wébinaires PharmIA
+                            </button>
+                        )}
+                        {isAdmin && (
+                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                Gérer les wébinaires PharmIA
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* Card for CROP Tunis */}
+                {/* Card for MasterClass */}
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
                     <div className="p-8 flex-grow">
-                        <h3 className="text-2xl font-bold text-slate-800">Wébinaires CROP Tunis</h3>
-                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Préparateurs</p>
+                        <img src="/assets/logo-masterclass.png" alt="Master Class Logo" className="h-16 w-auto mb-4 object-contain" />
+                        <h3 className="text-2xl font-bold text-slate-800">Master Class Officine 2026</h3>
+                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Pharmaciens</p>
                         <p className="mt-4 text-slate-600">
-                           Le programme de formation de référence pour les préparateurs en pharmacie d'officine.
+                            Un programme d'excellence pour approfondir vos connaissances sur des thèmes majeurs de l'officine.
                         </p>
                     </div>
                     <div className="p-6 bg-slate-50">
-                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                            Découvrir les sessions
+                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors">
+                            Explorer le programme
                         </button>
+                         {isSuperAdmin && (
+                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                Gérer les Master Class
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
              <div className="mt-12 text-center space-x-4">
-                <button onClick={() => setView('MY_WEBINARS_PHARMIA')} className="text-slate-600 hover:text-teal-600 font-medium">Mes wébinaires PharmIA</button>
-                <span className="text-slate-300">|</span>
-                <button onClick={() => setView('MY_WEBINARS_CROP')} className="text-slate-600 hover:text-teal-600 font-medium">Mes wébinaires CROP Tunis</button>
-                {isAdmin && (
-                    <>
-                        <span className="text-slate-300">|</span>
-                        <button onClick={() => navigate('/admin/webinars')} className="text-slate-600 hover:text-red-600 font-medium">Gérer les webinaires</button>
-                    </>
-                )}
+                
+                {/* Remove the old links here as they are now embedded in the cards */}
             </div>
         </div>
     );
