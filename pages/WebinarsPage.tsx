@@ -329,62 +329,55 @@ const WebinarsPage: React.FC = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
                 {/* Card for CROP Tunis */}
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-                    <div className="p-8 flex-grow">
-                        <img src="/api/ftp/view?filePath=%2Fpharmia%2Fcropt%2Fcrop-tunis.jpg" alt="CROP Tunis Logo" className="h-16 w-auto mb-4 object-contain" />
-                        <h3 className="text-2xl font-bold text-slate-800">Wébinaires CROP Tunis</h3>
-                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Préparateurs</p>
-                        <p className="mt-4 text-slate-600">
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col p-8 border border-slate-200">
+                    <div className="flex-grow">
+                        <img src="/api/ftp/view?filePath=%2Fpharmia%2Fcropt%2Fcrop-tunis.jpg" alt="CROP Tunis Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
+                        <h3 className="text-2xl font-bold text-slate-800 mb-2">Wébinaires CROP Tunis</h3>
+                        <p className="text-sm font-semibold text-teal-600 mb-4">Pour Préparateurs</p>
+                        <p className="text-slate-600 mb-6 flex-grow">
                            Le programme de formation de référence pour les préparateurs en pharmacie d'officine.
                         </p>
                     </div>
-                    <div className="p-6 bg-slate-50">
-                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <div className="mt-auto">
+                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
                             Découvrir les sessions
                         </button>
-
                     </div>
                 </div>
 
                 {/* Card for PharmIA */}
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-                    <div className="p-8 flex-grow">
-                        <img src="/assets/logo-pharmia.png" alt="PharmIA Logo" className="h-16 w-auto mb-4 object-contain" />
-                        <h3 className="text-2xl font-bold text-slate-800">Wébinaires PharmIA</h3>
-                         <p className="text-sm font-semibold text-teal-600 mt-1">Pour Pharmaciens & Préparateurs</p>
-                        <p className="mt-4 text-slate-600">
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col p-8 border border-slate-200">
+                    <div className="flex-grow">
+                        <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="PharmIA Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
+                        <h3 className="text-2xl font-bold text-slate-800 mb-2">Wébinaires PharmIA</h3>
+                         <p className="text-sm font-semibold text-teal-600 mb-4">Pour Pharmaciens & Préparateurs</p>
+                        <p className="text-slate-600 mb-6 flex-grow">
                             Des sessions interactives pour maîtriser les outils et la méthodologie PharmIA au comptoir.
                         </p>
-                        <button onClick={() => setView(WebinarGroup.PHARMIA)} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+                    </div>
+                    <div className="mt-auto">
+                        <button onClick={() => setView(WebinarGroup.PHARMIA)} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg">
                             Découvrir les sessions PharmIA
                         </button>
-                    </div>
-                    <div className="p-6 bg-slate-50 border-t">
-                        <button onClick={() => setIsPharmiaPricingOpen(!isPharmiaPricingOpen)} className="w-full flex items-center justify-center gap-2 text-slate-600 font-bold py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors">
-                            <ShoppingCartIcon className="h-6 w-6" />
-                            <span>Acheter des crédits</span>
-                        </button>
-
                     </div>
                 </div>
 
                 {/* Card for MasterClass */}
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
-                    <div className="p-8 flex-grow">
-                        <img src="/assets/logo-masterclass.png" alt="Master Class Logo" className="h-16 w-auto mb-4 object-contain" />
-                        <h3 className="text-2xl font-bold text-slate-800">Master Class Officine 2026</h3>
-                        <p className="text-sm font-semibold text-teal-600 mt-1">Pour Pharmaciens</p>
-                        <p className="mt-4 text-slate-600">
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col p-8 border border-slate-200">
+                    <div className="flex-grow">
+                        <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="Master Class Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
+                        <h3 className="text-2xl font-bold text-slate-800 mb-2">Master Class Officine 2026</h3>
+                        <p className="text-sm font-semibold text-teal-600 mb-4">Pour Pharmaciens</p>
+                        <p className="text-slate-600 mb-6 flex-grow">
                             Un programme d'excellence pour approfondir vos connaissances sur des thèmes majeurs de l'officine.
                         </p>
                     </div>
-                    <div className="p-6 bg-slate-50">
-                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors">
+                    <div className="mt-auto">
+                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors shadow-md hover:shadow-lg">
                             Explorer le programme
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -659,6 +652,152 @@ const WebinarsPage: React.FC = () => {
                     renderWebinarList(allWebinars.filter(w => w.group === view))
                 )}
             </div>
+
+            {isPharmiaPricingOpen && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+                    <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
+                        {PHARMIA_CREDIT_PACKS.map((pack) => (
+                            <button
+                                key={pack.id}
+                                onClick={() => setActivePharmiaPricingTab(pack.id)}
+                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${
+                                    activePharmiaPricingTab === pack.id
+                                        ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
+                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
+                                }`}
+                            >
+                                {pack.name}
+                                {pack.badge && (
+                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${
+                                        activePharmiaPricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'
+                                    }`}>
+                                        {pack.badge}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="p-8 md:p-12">
+                        {PHARMIA_CREDIT_PACKS.map((pack) => {
+                            if (pack.id !== activePharmiaPricingTab) return null;
+                            
+                            const priceHT = pack.priceHT;
+                            const unitPriceHT = priceHT / pack.credits;
+                            const originalPriceHT = PHARMIA_WEBINAR_PRICE_HT * pack.credits;
+
+                            return (
+                                <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
+                                    <div className="flex-1 text-center md:text-left">
+                                        <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
+                                        <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
+                                        
+                                        <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                            {pack.discountPercentage && pack.discountPercentage > 0 && (
+                                                <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                                                    <span className="text-xl font-medium text-slate-400 line-through">
+                                                        {originalPriceHT.toFixed(3)} DT
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                                                        -{pack.discountPercentage}%
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-baseline justify-center md:justify-start">
+                                                <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
+                                                <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
+                                                <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                            </div>
+                                            <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
+                                                Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Crédit
+                                            </div>
+                                            <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
+                                        <button
+                                            onClick={() => handleBuyPack(pack)}
+                                            className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                                        >
+                                            Choisir ce pack
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {isPricingOpen && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+                    <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
+                        {MASTER_CLASS_PACKS.map((pack) => (
+                            <button
+                                key={pack.id}
+                                onClick={() => setActivePricingTab(pack.id)}
+                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${
+                                    activePricingTab === pack.id
+                                        ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
+                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
+                                }`}
+                            >
+                                {pack.name}
+                                {pack.badge && (
+                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${
+                                        activePricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'
+                                    }`}>
+                                        {pack.badge}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="p-8 md:p-12">
+                        {MASTER_CLASS_PACKS.map((pack) => {
+                            if (pack.id !== activePricingTab) return null;
+                            
+                            const priceHT = pack.priceHT;
+                            const numberOfMasterClasses = pack.credits / 3;
+                            const unitPriceHT = priceHT / numberOfMasterClasses;
+                            
+                            let features: string[] = [];
+                            if (pack.id === 'MC_UNIT') features = ["Accès au cycle complet (3 sessions)", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour se former sur un sujet précis"];
+                            else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~16% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
+                            else if (pack.id === 'MC_PACK_6') features = ["Accès à 6 Master Classes complètes", "Économie de ~33% (Formation Semestrielle)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
+                            else if (pack.id === 'MC_FULL') features = ["Accès INTÉGRAL aux 10 Master Classes", "Tarif imbattable (-50%)", "Bibliothèque complète de ressources", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
+
+                            return (
+                                <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
+                                    <div className="flex-1 text-center md:text-left">
+                                        <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
+                                        <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
+                                        
+                                        <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                            <div className="flex items-baseline justify-center md:justify-start">
+                                                <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
+                                                <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
+                                                <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                            </div>
+                                            <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
+                                                Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Master Class
+                                            </div>
+                                            <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
+                                        <button
+                                            onClick={() => handleBuyPack(pack)}
+                                            className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                                        >
+                                            Choisir ce pack
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {isMediaViewerOpen && selectedResource && (
                 <MediaViewerModal
