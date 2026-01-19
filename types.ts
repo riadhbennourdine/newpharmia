@@ -293,15 +293,15 @@ export enum ProductType {
     PACK = 'PACK',
 }
 
-export interface Pack {
+  export interface Pack {
     id: string;
     name: string;
     description: string;
     credits: number;
     priceHT: number;
     priceTTC?: number;
-    badge?: string;
-}
+    discountPercentage?: number; // New field for discount
+  }
 
 export interface WebinarResource {
   type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube';

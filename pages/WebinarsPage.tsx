@@ -608,9 +608,9 @@ const WebinarsPage: React.FC = () => {
                                     {PHARMIA_CREDIT_PACKS.map((pack) => {
                                         if (pack.id !== activePharmiaPricingTab) return null;
                                         
-                                        const priceHT = pack.priceHT;
-                                        const unitPriceHT = priceHT / pack.credits;
-                                        
+                                        const originalPriceHT = PHARMIA_WEBINAR_PRICE_HT * pack.credits;
+                                        const discountAmount = originalPriceHT - priceHT;
+
                                         return (
                                             <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
                                                 <div className="flex-1 text-center md:text-left">
@@ -618,6 +618,16 @@ const WebinarsPage: React.FC = () => {
                                                     <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
                                                     
                                                     <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                                        {pack.discountPercentage && pack.discountPercentage > 0 && (
+                                                            <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                                                                <span className="text-xl font-medium text-slate-400 line-through">
+                                                                    {originalPriceHT.toFixed(3)} DT
+                                                                </span>
+                                                                <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                                                                    -{pack.discountPercentage}%
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                         <div className="flex items-baseline justify-center md:justify-start">
                                                             <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
                                                             <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>

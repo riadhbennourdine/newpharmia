@@ -8,65 +8,65 @@ export const TAX_RATES = {
 };
 
 export const MASTER_CLASS_PACKS = [
-    {
-        id: 'MC_UNIT',
-        name: '1 Master Class',
-        description: 'Accès au cycle complet de 3 sessions sur un thème.',
-        credits: 3,
-        priceHT: 399.000,
-        badge: 'Standard'
-    },
-    {
-        id: 'MC_PACK_3',
-        name: 'Pack 3 MC',
-        description: 'Choisissez 3 thèmes majeurs (-16% de remise).',
-        credits: 9,
-        priceHT: 999.000, 
-        badge: 'Populaire'
-    },
-    {
-        id: 'MC_PACK_6',
-        name: 'Pack 6 MC',
-        description: 'Un semestre de formation complet (-33% de remise).',
-        credits: 18,
-        priceHT: 1599.000, 
-        badge: 'Avancé'
-    },
-    {
-        id: 'MC_FULL',
-        name: 'Pack Intégral (10)',
-        description: 'TOUTES les Master Class 2026 (-50% de remise).',
-        credits: 30,
-        priceHT: 1995.000, 
-        badge: 'Meilleure Offre'
-    }
+  {
+    id: 'MC_UNIT',
+    name: 'Master Class Unitaire',
+    description: 'Accès à 1 Master Class au choix.',
+    credits: 3, // 1 MC = 3 credits
+    priceHT: 399.000,
+    discountPercentage: 0 // Base price, no discount
+  },
+  {
+    id: 'MC_PACK_3',
+    name: 'Pack 3 MC',
+    description: 'Choisissez 3 thèmes majeurs (-16% de remise).',
+    credits: 9, // 3 MCs
+    priceHT: 999.000,
+    discountPercentage: 16.54 // (3 * 399 - 999) / (3 * 399) * 100
+  },
+  {
+    id: 'MC_PACK_6',
+    name: 'Pack 6 MC',
+    description: 'Un semestre de formation complet (-33% de remise).',
+    credits: 18, // 6 MCs
+    priceHT: 1599.000,
+    discountPercentage: 33.20 // (6 * 399 - 1599) / (6 * 399) * 100
+  },
+  {
+    id: 'MC_FULL',
+    name: 'Pack Intégral (10)',
+    description: 'TOUTES les Master Class 2026 (-50% de remise).',
+    credits: 30, // 10 MCs
+    priceHT: 1995.000,
+    discountPercentage: 50 // (10 * 399 - 1995) / (10 * 399) * 100
+  }
 ];
 
 export const PHARMIA_CREDIT_PACKS = [
-    {
-        id: 'PIA_PACK_4',
-        name: 'Pack 4 Crédits',
-        description: '4 wébinaires PharmIA à un tarif préférentiel.',
-        credits: 4,
-        priceHT: 143.640, // 4 * 39.900 * 0.90
-        badge: 'Standard'
-    },
-    {
-        id: 'PIA_PACK_12',
-        name: 'Pack 12 Crédits',
-        description: '12 wébinaires PharmIA pour une formation continue.',
-        credits: 12,
-        priceHT: 359.100, // 12 * 39.900 * 0.75
-        badge: 'Populaire'
-    },
-    {
-        id: 'PIA_PACK_24',
-        name: 'Pack 24 Crédits',
-        description: '24 wébinaires PharmIA pour une expertise complète.',
-        credits: 24,
-        priceHT: 478.800, // 24 * 39.900 * 0.50
-        badge: 'Meilleure Offre'
-    }
+  {
+    id: 'PIA_PACK_4',
+    name: 'Pack 4 Crédits',
+    description: '4 Crédits pour les wébinaires PharmIA (-10%).',
+    credits: 4,
+    priceHT: 143.640, // 4 * 39.900 * 0.90
+    discountPercentage: 10
+  },
+  {
+    id: 'PIA_PACK_12',
+    name: 'Pack 12 Crédits',
+    description: '12 Crédits pour les wébinaires PharmIA (-25%).',
+    credits: 12,
+    priceHT: 359.100, // 12 * 39.900 * 0.75
+    discountPercentage: 25
+  },
+  {
+    id: 'PIA_PACK_24',
+    name: 'Pack 24 Crédits',
+    description: '24 Crédits pour les wébinaires PharmIA (-50%).',
+    credits: 24,
+    priceHT: 478.800, // 24 * 39.900 * 0.50
+    discountPercentage: 50
+  }
 ];
 
 export const TOPIC_CATEGORIES = [
