@@ -69,27 +69,23 @@ const CartPage: React.FC = () => {
   const totalPrice = useMemo(() => {
     let hasTaxableItems = false;
     const itemsTotal = cartItems.reduce((total, item) => {
-        const isPack = item.type === ProductType.PACK || !!item.packId;
-        
-        if (isPack && item.packId) {
+        if (item.type === ProductType.PACK) {
             hasTaxableItems = true;
-            const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-            if (pack) {
-                return total + (pack.priceHT * (1 + TAX_RATES.TVA));
+            if (item.priceHT) {
+                return total + (item.priceHT * (1 + TAX_RATES.TVA));
             }
-            console.warn('Pack not found for ID:', item.packId);
         } else { // It's a webinar
             const webinarDetails = webinars.find(w => w._id === (item.webinarId || item.id));
             if (webinarDetails) {
                 if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
                     hasTaxableItems = true;
-                    const mcBasePrice = item.price || webinarDetails.price || 0; // MC prices are HT
+                    const mcBasePrice = item.priceHT || webinarDetails.price || 0; // MC prices are HT
                     return total + (mcBasePrice * (1 + TAX_RATES.TVA));
                 } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
                     return total + WEBINAR_PRICE; // CROP prices are 80.000 TTC
                 } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
                     hasTaxableItems = true;
-                    const priceHT = item.price || webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
+                    const priceHT = item.priceHT || webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
                     return total + (priceHT * (1 + TAX_RATES.TVA));
                 }
             } else {
@@ -172,20 +168,18 @@ const CartPage: React.FC = () => {
                 const isPack = item.type === ProductType.PACK || !!item.packId;
 
                 // Render Pack Item
-                if (isPack && item.packId) {
-                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                    if (!pack) return null;
-                    const priceTTC = (pack.priceHT * (1 + TAX_RATES.TVA));
+                if (item.type === ProductType.PACK) {
+                    const priceTTC = (item.priceHT || 0) * (1 + TAX_RATES.TVA);
 
                     return (
                         <li key={`${item.id}-${index}`} className="p-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 bg-teal-50/50">
                              <div className="h-24 w-24 flex items-center justify-center bg-teal-100 rounded-md text-teal-600 font-bold text-xl">
-                                {pack.id}
+                                {item.packId}
                              </div>
                              <div className="flex-grow">
-                                <h2 className="font-semibold text-slate-800">{pack.name}</h2>
-                                <p className="text-sm text-slate-500">{pack.credits} Crédits Master Class</p>
-                                <p className="text-xs text-slate-400 mt-1">{pack.description}</p>
+                                <h2 className="font-semibold text-slate-800">{item.title}</h2>
+                                <p className="text-sm text-slate-500">{item.credits} Crédits</p>
+                                <p className="text-xs text-slate-400 mt-1">{item.description}</p>
                              </div>
                              <div className="text-right self-center">
                                 <p className="font-bold text-lg text-teal-600 mb-2">{priceTTC.toFixed(3)} TND</p>
@@ -233,9 +227,9 @@ const CartPage: React.FC = () => {
                                 {webinar && ( // Ensure webinar details are loaded before showing price
                                     <p className="font-bold text-lg text-teal-600 mb-2">
                                         {webinar.group === WebinarGroup.MASTER_CLASS
-                                            ? ((item.price || webinar.price || 0) * (1 + TAX_RATES.TVA)).toFixed(3)
+                                            ? ((item.priceHT || webinar.price || 0) * (1 + TAX_RATES.TVA)).toFixed(3)
                                             : webinar.group === WebinarGroup.PHARMIA
-                                                ? ((item.price || webinar.price || PHARMIA_WEBINAR_PRICE_HT) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)
+                                                ? ((item.priceHT || webinar.price || PHARMIA_WEBINAR_PRICE_HT) * (1 + TAX_RATES.TVA) + TAX_RATES.TIMBRE).toFixed(3)
                                                 : WEBINAR_PRICE.toFixed(3) // CROP Tunis is fixed WEBINAR_PRICE
                                         } TND <span className="text-sm">(TTC)</span>
                                     </p>

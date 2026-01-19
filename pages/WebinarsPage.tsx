@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType } from '../types';
+import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType, Pack } from '../types';
 import { MASTER_CLASS_PACKS, PHARMIA_CREDIT_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
@@ -81,7 +81,7 @@ const WebinarsPage: React.FC = () => {
         };
     }, [handleClickOutside]);
 
-    const handleBuyPack = (packId: string, packName: string) => {
+    const handleBuyPack = (pack: Pack) => {
         if (!user || !token) {
             navigate('/login', { state: { from: '/webinars' } });
             return;
@@ -89,8 +89,7 @@ const WebinarsPage: React.FC = () => {
         // Use Cart Context to add pack (triggering security check)
         addToCart({
             type: ProductType.PACK,
-            packId: packId,
-            packName: packName
+            pack: pack,
         });
         navigate('/cart');
     };
@@ -642,7 +641,7 @@ const WebinarsPage: React.FC = () => {
                                                 </div>
                                                 <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
                                                     <button
-                                                        onClick={() => handleBuyPack(pack.id, pack.name)}
+                                                        onClick={() => handleBuyPack(pack)}
                                                         className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                                                     >
                                                         Choisir ce pack
@@ -797,7 +796,7 @@ const WebinarsPage: React.FC = () => {
                                                     </ul>
                                                     
                                                     <button
-                                                        onClick={() => handleBuyPack(pack.id, pack.name)}
+                                                        onClick={() => handleBuyPack(pack)}
                                                         className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                                                     >
                                                         Choisir ce pack

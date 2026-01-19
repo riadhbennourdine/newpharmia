@@ -46,18 +46,18 @@ export const PHARMIA_CREDIT_PACKS = [
   {
     id: 'PIA_PACK_4',
     name: 'Pack 4 Crédits',
-    description: '4 Crédits pour les wébinaires PharmIA (-10%).',
+    description: '4 Crédits pour les wébinaires PharmIA (-20%).',
     credits: 4,
-    priceHT: 143.640, // 4 * 39.900 * 0.90
-    discountPercentage: 10
+    priceHT: 127.680, // 4 * 39.900 * 0.80
+    discountPercentage: 20
   },
   {
     id: 'PIA_PACK_12',
     name: 'Pack 12 Crédits',
-    description: '12 Crédits pour les wébinaires PharmIA (-25%).',
+    description: '12 Crédits pour les wébinaires PharmIA (-30%).',
     credits: 12,
-    priceHT: 359.100, // 12 * 39.900 * 0.75
-    discountPercentage: 25
+    priceHT: 335.160, // 12 * 39.900 * 0.70
+    discountPercentage: 30
   },
   {
     id: 'PIA_PACK_24',

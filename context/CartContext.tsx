@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { WebinarTimeSlot, Webinar, WebinarGroup, ProductType } from '../types';
+import { WebinarTimeSlot, Webinar, WebinarGroup, ProductType, Pack } from '../types';
 
 // Define the shape of a single cart item
 export interface CartItem {
@@ -12,12 +12,15 @@ export interface CartItem {
   title: string;
   date?: Date; // Only for webinars
   group: WebinarGroup; // Critical for mixed-cart check
+  priceHT?: number;
+  credits?: number;
+  description?: string;
 }
 
 // Define the shape of the context data
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: { webinar?: Webinar, packId?: string, packName?: string, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => void;
+  addToCart: (item: { webinar?: Webinar, pack?: Pack, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => void;
   removeFromCart: (id: string) => void;
   updateItemSlots: (webinarId: string, newSlots: WebinarTimeSlot[]) => void;
   clearCart: () => void;
@@ -61,8 +64,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem('webinarCart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (input: { webinar?: Webinar, packId?: string, packName?: string, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => {
-    const { webinar, packId, packName, type, selectedSlots } = input;
+  const addToCart = (input: { webinar?: Webinar, pack?: Pack, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => {
+    const { webinar, pack, type, selectedSlots } = input;
     
     let newItem: CartItem;
     let itemGroup: WebinarGroup;
@@ -94,16 +97,23 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             title: webinar.title,
             date: webinar.date,
             group: webinar.group,
-            price: webinar.price, // Add webinar price to CartItem
+            priceHT: webinar.price, // Add webinar price to CartItem
         };
-    } else if (type === ProductType.PACK && packId) {
-        itemGroup = WebinarGroup.MASTER_CLASS; // Packs are always Master Class for now
+    } else if (type === ProductType.PACK && pack) {
+        if (pack.id.startsWith('PIA_')) {
+            itemGroup = WebinarGroup.PHARMIA;
+        } else {
+            itemGroup = WebinarGroup.MASTER_CLASS;
+        }
         newItem = {
             type: ProductType.PACK,
-            id: packId,
-            packId: packId,
-            title: packName || 'Pack Master Class',
-            group: itemGroup
+            id: pack.id,
+            packId: pack.id,
+            title: pack.name,
+            group: itemGroup,
+            priceHT: pack.priceHT,
+            credits: pack.credits,
+            description: pack.description,
         };
     } else {
         console.error("Invalid addToCart input");
