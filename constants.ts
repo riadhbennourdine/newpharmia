@@ -44,27 +44,27 @@ export const MASTER_CLASS_PACKS = [
 
 export const PHARMIA_CREDIT_PACKS = [
     {
-        id: 'PIA_UNIT',
-        name: '1 Crédit PharmIA',
-        description: 'Accès à un wébinaire PharmIA.',
-        credits: 1,
-        priceHT: 39.900,
+        id: 'PIA_PACK_4',
+        name: 'Pack 4 Crédits',
+        description: '4 wébinaires PharmIA à un tarif préférentiel.',
+        credits: 4,
+        priceHT: 143.640, // 4 * 39.900 * 0.90
         badge: 'Standard'
     },
     {
-        id: 'PIA_PACK_5',
-        name: 'Pack 5 Crédits',
-        description: '5 wébinaires PharmIA à un tarif préférentiel.',
-        credits: 5,
-        priceHT: 179.550, // 5 * 39.900 * 0.9
+        id: 'PIA_PACK_12',
+        name: 'Pack 12 Crédits',
+        description: '12 wébinaires PharmIA pour une formation continue.',
+        credits: 12,
+        priceHT: 359.100, // 12 * 39.900 * 0.75
         badge: 'Populaire'
     },
     {
-        id: 'PIA_PACK_10',
-        name: 'Pack 10 Crédits',
-        description: '10 wébinaires PharmIA pour une formation continue.',
-        credits: 10,
-        priceHT: 339.150, // 5 * 39.900 * 0.85
+        id: 'PIA_PACK_24',
+        name: 'Pack 24 Crédits',
+        description: '24 wébinaires PharmIA pour une expertise complète.',
+        credits: 24,
+        priceHT: 478.800, // 24 * 39.900 * 0.50
         badge: 'Meilleure Offre'
     }
 ];
