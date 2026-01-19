@@ -719,11 +719,11 @@ const WebinarsPage: React.FC = () => {
                         })}
                     </div>
                 </div>
-                </div> 
+                </div> {/* Closing tag for fixed inset-0 div */}
             )}
 
             {isPricingOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"> 
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
                     <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
                         {MASTER_CLASS_PACKS.map((pack) => (
@@ -789,7 +789,7 @@ const WebinarsPage: React.FC = () => {
                         })}
                     </div>
                 </div>
-                </div> 
+                </div> {/* Closing tag for fixed inset-0 div for isPricingOpen */}
             )}
 
             {isMediaViewerOpen && selectedResource && (
