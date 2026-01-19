@@ -118,7 +118,7 @@ router.get('/', softAuthenticateToken, async (req: AuthenticatedRequest, res) =>
                     // Check trial
                     const isInTrial = trialExpiresAt && new Date(trialExpiresAt) > new Date();
 
-                    if (hasPersonalSubscription || hasPharmacistSubscription || isInTrial || user.role === UserRole.PHARMACIEN && user.hasActiveSubscription || user.role === UserRole.FORMATEUR) {
+                    if (hasPersonalSubscription || hasPharmacistSubscription || isInTrial || user.role === UserRole.PHARMACIEN && user.hasActiveSubscription) {
                         hasAccess = true;
                     }
 
@@ -218,16 +218,16 @@ router.get('/:id', authenticateToken, async (req: AuthenticatedRequest, res) => 
         }
 
         // Apprenant and Preparateur need an active subscription or group access
-        if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN || user.role === UserRole.ADMIN_WEBINAR || user.role === UserRole.FORMATEUR) {
+        if (user.role === UserRole.APPRENANT || user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN || user.role === UserRole.ADMIN_WEBINAR) {
             let effectiveSubscriber: User | null = user; // Start with the user trying to access
             
             // If preparator or assistant pharmacist, check if they are linked to a pharmacist with an active subscription
-            if ((user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN || user.role === UserRole.FORMATEUR) && user.pharmacistId) {
+            if ((user.role === UserRole.PREPARATEUR || user.role === UserRole.PHARMACIEN) && user.pharmacistId) {
                 const associatedPharmacist = await usersCollection.findOne({ _id: new ObjectId(user.pharmacistId) });
                 if (associatedPharmacist) {
                     effectiveSubscriber = associatedPharmacist;
                 }
-            } else if ((user.role === UserRole.APPRENANT || user.role === UserRole.PHARMACIEN || user.role === UserRole.FORMATEUR) && user.groupId) {
+            } else if ((user.role === UserRole.APPRENANT || user.role === UserRole.PHARMACIEN) && user.groupId) {
                 // If apprenant or pharmacist and in a group, check the group's pharmacist's subscription
                 const groupDetails = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
                 if (groupDetails && groupDetails.pharmacistIds && groupDetails.pharmacistIds.length > 0) {
