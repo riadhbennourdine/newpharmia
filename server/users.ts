@@ -13,7 +13,7 @@ router.get('/public/pharmacists', async (req, res) => {
     try {
         const { usersCollection } = await getCollections();
         const pharmacists = await usersCollection.find(
-            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } },
+            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } },
             { projection: { _id: 1, firstName: 1, lastName: 1, city: 1, email: 1 } }
         ).toArray();
         res.json(pharmacists);
@@ -38,7 +38,7 @@ router.get('/pharmacists', authenticateToken, checkRole([UserRole.ADMIN, UserRol
     try {
         const { usersCollection } = await getCollections();
         const pharmacists = await usersCollection.find(
-            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } },
+            { role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } },
             { projection: { passwordHash: 0 } }
         ).toArray();
         res.json(pharmacists);
@@ -402,7 +402,7 @@ router.put('/preparateurs/:preparateurId/assign-pharmacist', authenticateToken, 
 
         // If pharmacist, can only assign to self
         let effectivePharmacistId = pharmacistId;
-        if (authUser.role === UserRole.PHARMACIEN) {
+        if (authUser.role === UserRole.PHARMACIEN || authUser.role === UserRole.FORMATEUR) {
             effectivePharmacistId = authUser._id.toString();
         }
 

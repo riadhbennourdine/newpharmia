@@ -611,6 +611,16 @@ const WebinarManagement: React.FC = () => {
                                             <option value={WebinarGroup.MASTER_CLASS}>Master Class Officine 2026</option>
                                         </select>
                                     </div>
+                                    {currentWebinar.group === WebinarGroup.PHARMIA && (
+                                        <div className="sm:col-span-2">
+                                            <label htmlFor="targetAudience" className="block text-sm font-medium text-slate-700">Public Cible</label>
+                                            <select name="targetAudience" id="targetAudience" value={currentWebinar.targetAudience || 'Tous'} onChange={handleInputChange} className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md">
+                                                <option value="Tous">Tous</option>
+                                                <option value="Pharmacien">Pharmacien</option>
+                                                <option value="Préparateur">Préparateur</option>
+                                            </select>
+                                        </div>
+                                    )}
                                     <div className="sm:col-span-2">
                                         <label htmlFor="price" className="block text-sm font-medium text-slate-700">Prix (optionnel)</label>
                                         <input 

@@ -84,6 +84,11 @@ export const checkRole = (allowedRoles: UserRole[]) => {
             effectiveRoles.push(UserRole.PHARMACIEN);
         }
 
+        // Un FORMATEUR a aussi les droits d'un PHARMACIEN
+        if (req.user.role === UserRole.FORMATEUR) {
+            effectiveRoles.push(UserRole.PHARMACIEN);
+        }
+
         const hasPermission = allowedRoles.some(allowedRole => effectiveRoles.includes(allowedRole));
 
         if (!hasPermission) {

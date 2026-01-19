@@ -333,6 +333,7 @@ export interface Webinar {
   calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
   resources?: WebinarResource[]; // New field for media resources
   publicationStatus?: 'DRAFT' | 'PUBLISHED';
+  targetAudience?: 'Pharmacien' | 'Préparateur' | 'Tous';
 }
 
 export interface Image {
