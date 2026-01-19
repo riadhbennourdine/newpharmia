@@ -608,8 +608,9 @@ const WebinarsPage: React.FC = () => {
                                     {PHARMIA_CREDIT_PACKS.map((pack) => {
                                         if (pack.id !== activePharmiaPricingTab) return null;
                                         
+                                        const priceHT = pack.priceHT;
+                                        const unitPriceHT = priceHT / pack.credits;
                                         const originalPriceHT = PHARMIA_WEBINAR_PRICE_HT * pack.credits;
-                                        const discountAmount = originalPriceHT - priceHT;
 
                                         return (
                                             <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
