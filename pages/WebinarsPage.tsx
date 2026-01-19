@@ -565,11 +565,12 @@ const WebinarsPage: React.FC = () => {
                                     </button>
                                 )}
                                 {isAdmin && (
-                                    <button onClick={() => navigate('/admin/webinars')} className="text-red-600 hover:text-red-800 font-medium py-2 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                    <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
                                         Gérer les wébinaires CROP
                                     </button>
                                 )}
-
+                            </div>
+                        )}
                         {(view === WebinarGroup.PHARMIA || view === 'PHARMIA_PHARMACIEN' || view === 'PHARMIA_PREPARATEUR' || view === 'MY_WEBINARS_PHARMIA') && (
                             <div className="mt-4 flex flex-wrap gap-4">
                                 {user && !isWebinarAdmin && (
