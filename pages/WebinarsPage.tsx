@@ -719,7 +719,7 @@ const WebinarsPage: React.FC = () => {
                         })}
                     </div>
                 </div>
-                </div> {/* Closing tag for fixed inset-0 div */}
+                </div>
             )}
 
             {isPricingOpen && (
@@ -789,7 +789,7 @@ const WebinarsPage: React.FC = () => {
                         })}
                     </div>
                 </div>
-                </div> {/* Closing tag for fixed inset-0 div for isPricingOpen */}
+                </div>
             )}
 
             {isMediaViewerOpen && selectedResource && (
@@ -810,7 +810,7 @@ const WebinarsPage: React.FC = () => {
                 <MasterClassProgramModal onClose={() => setIsProgramModalOpen(false)} />
             )}
         </div>
-    );
+    )
 };
 
 export default WebinarsPage;
