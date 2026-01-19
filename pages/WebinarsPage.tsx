@@ -344,16 +344,7 @@ const WebinarsPage: React.FC = () => {
                         <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
                             Découvrir les sessions
                         </button>
-                         {user && (
-                            <button onClick={() => setView('MY_WEBINARS_CROP')} className="mt-2 w-full text-blue-600 hover:text-blue-800 font-medium py-3 px-4 rounded-lg hover:bg-blue-100 transition-colors">
-                                Mes wébinaires CROP Tunis
-                            </button>
-                        )}
-                        {isAdmin && (
-                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
-                                Gérer les wébinaires CROP
-                            </button>
-                        )}
+
                     </div>
                 </div>
 
@@ -375,16 +366,7 @@ const WebinarsPage: React.FC = () => {
                             <ShoppingCartIcon className="h-6 w-6" />
                             <span>Acheter des crédits</span>
                         </button>
-                         {user && !isWebinarAdmin && (
-                            <button onClick={() => setView('MY_WEBINARS_PHARMIA')} className="mt-2 w-full text-teal-600 hover:text-teal-800 font-medium py-3 px-4 rounded-lg hover:bg-teal-100 transition-colors">
-                                Mes wébinaires PharmIA
-                            </button>
-                        )}
-                        {isAdmin && (
-                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
-                                Gérer les wébinaires PharmIA
-                            </button>
-                        )}
+
                     </div>
                 </div>
 
@@ -402,11 +384,7 @@ const WebinarsPage: React.FC = () => {
                         <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors">
                             Explorer le programme
                         </button>
-                         {isSuperAdmin && (
-                            <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
-                                Gérer les Master Class
-                            </button>
-                        )}
+
                     </div>
                 </div>
             </div>
@@ -579,6 +557,19 @@ const WebinarsPage: React.FC = () => {
                         <button onClick={() => setView('hub')} className="text-teal-600 hover:text-teal-800 font-medium">
                             &larr; Retour à toutes les formations
                         </button>
+                        {(view === WebinarGroup.CROP_TUNIS || view === 'MY_WEBINARS_CROP') && (
+                            <div className="mt-4 flex flex-wrap gap-4">
+                                {user && (
+                                    <button onClick={() => setView('MY_WEBINARS_CROP')} className="text-blue-600 hover:text-blue-800 font-medium py-2 px-4 rounded-lg hover:bg-blue-100 transition-colors">
+                                        Mes wébinaires CROP Tunis
+                                    </button>
+                                )}
+                                {isAdmin && (
+                                    <button onClick={() => navigate('/admin/webinars')} className="text-red-600 hover:text-red-800 font-medium py-2 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                        Gérer les wébinaires CROP
+                                    </button>
+                                )}
+                        )}
                     </div>
                 )}
 
