@@ -37,7 +37,7 @@ const WebinarsPage: React.FC = () => {
     const [isPharmiaPricingOpen, setIsPharmiaPricingOpen] = useState(false);
     const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_5'); // Default to popular pack
 
-
+    // The ADMIN_WEBINAR redirect useEffect block has been intentionally removed here.
 
     useEffect(() => {
         fetch('/content/master_class_description.md')
@@ -121,7 +121,6 @@ const WebinarsPage: React.FC = () => {
         let effectiveDuration = duration || 90;
         
         // Extended duration for PharmIA (until Friday Replay)
-        // Adding 3 days (approx 4320 mins) to cover until Friday
         if (group === WebinarGroup.PHARMIA) {
              effectiveDuration += (3 * 24 * 60); 
         }
@@ -177,7 +176,8 @@ const WebinarsPage: React.FC = () => {
                 } else {
                     setMyRegisteredWebinars([]);
                 }
-            } catch (err) {
+            }
+            catch (err) {
                 const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
                 setError(`Impossible de charger les webinaires. Raison: ${errorMessage}`);
                 console.error(err);
@@ -656,17 +656,14 @@ const WebinarsPage: React.FC = () => {
                             <button
                                 key={pack.id}
                                 onClick={() => setActivePharmiaPricingTab(pack.id)}
-                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${
-                                    activePharmiaPricingTab === pack.id
+                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${activePharmiaPricingTab === pack.id
                                         ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
                                         : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
-                                }`}
-                            >
+                                }
+                            `}>
                                 {pack.name}
                                 {pack.badge && (
-                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${
-                                        activePharmiaPricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'
-                                    }`}>
+                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${activePharmiaPricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'}`}>
                                         {pack.badge}
                                     </span>
                                 )}
@@ -731,17 +728,14 @@ const WebinarsPage: React.FC = () => {
                             <button
                                 key={pack.id}
                                 onClick={() => setActivePricingTab(pack.id)}
-                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${
-                                    activePricingTab === pack.id
+                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${activePricingTab === pack.id
                                         ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
                                         : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
-                                }`}
-                            >
+                                }
+                            `}>
                                 {pack.name}
                                 {pack.badge && (
-                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${
-                                        activePricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'
-                                    }`}>
+                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${activePricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'}`}>
                                         {pack.badge}
                                     </span>
                                 )}
