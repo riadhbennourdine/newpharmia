@@ -576,7 +576,7 @@ const WebinarsPage: React.FC = () => {
                                             Gérer les wébinaires PharmIA
                                         </button>
                                     )}
-                                    <button onClick={() => setIsPharmiaPricingOpen(!isPharmiaPricingOpen)} className="w-full sm:w-auto flex items-center justify-center gap-2 text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors border border-slate-400">
+                                    <button onClick={() => { console.log('Toggling isPharmiaPricingOpen:', !isPharmiaPricingOpen); setIsPharmiaPricingOpen(!isPharmiaPricingOpen); }} className="w-full sm:w-auto flex items-center justify-center gap-2 text-slate-600 font-bold py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors border border-slate-400">
                                         <ShoppingCartIcon className="h-5 w-5" />
                                         <span>Acheter des crédits PharmIA</span>
                                     </button>
