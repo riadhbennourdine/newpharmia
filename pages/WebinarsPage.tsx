@@ -341,7 +341,7 @@ const WebinarsPage: React.FC = () => {
                         </p>
                     </div>
                     <div className="mt-auto">
-                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
+                        <button onClick={() => setView(WebinarGroup.CROP_TUNIS)} className="w-full text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg" style={{ backgroundColor: '#197738', '&:hover': { backgroundColor: '#15652D' } }}>
                             Découvrir les sessions
                         </button>
                     </div>
@@ -359,7 +359,7 @@ const WebinarsPage: React.FC = () => {
                     </div>
                     <div className="mt-auto">
                         <button onClick={() => setView(WebinarGroup.PHARMIA)} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg">
-                            Découvrir les sessions PharmIA
+                            Découvrir les sessions
                         </button>
                     </div>
                 </div>
@@ -375,7 +375,7 @@ const WebinarsPage: React.FC = () => {
                         </p>
                     </div>
                     <div className="mt-auto">
-                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors shadow-md hover:shadow-lg">
+                        <button onClick={() => setView(WebinarGroup.MASTER_CLASS)} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg">
                             Explorer le programme
                         </button>
                     </div>
