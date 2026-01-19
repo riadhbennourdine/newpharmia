@@ -48,8 +48,9 @@ const WebinarCard: React.FC<{
     onResourceClick: (resource: WebinarResource) => void;
     onManageResources: (webinar: Webinar) => void;
     userCredits?: number; // New prop
+    pharmiaCredits?: number; // New prop for PharmIA credits
     onUseCredit?: (webinarId: string) => void; // New prop
-}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick, onManageResources, userCredits = 0, onUseCredit }) => {
+}> = ({ webinar, isLiveCard, isMyWebinarCard = false, onResourceClick, onManageResources, userCredits = 0, pharmiaCredits = 0, onUseCredit }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { findItem } = useCart();
@@ -113,6 +114,19 @@ const WebinarCard: React.FC<{
                 >
                     <SparklesIcon className="h-4 w-4 mr-2" />
                     Utiliser 1 crédit
+                </button>
+            );
+        }
+
+        // Logic for using credits (PharmIA Only)
+        if (webinar.group === WebinarGroup.PHARMIA && pharmiaCredits > 0 && onUseCredit && !isInCart) {
+            return (
+                <button
+                    onClick={() => onUseCredit(webinar._id as string)}
+                    className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center"
+                >
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    Utiliser 1 crédit PharmIA
                 </button>
             );
         }

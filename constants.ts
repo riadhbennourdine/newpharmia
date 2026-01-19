@@ -42,6 +42,33 @@ export const MASTER_CLASS_PACKS = [
     }
 ];
 
+export const PHARMIA_CREDIT_PACKS = [
+    {
+        id: 'PIA_UNIT',
+        name: '1 Crédit PharmIA',
+        description: 'Accès à un wébinaire PharmIA.',
+        credits: 1,
+        priceHT: 39.900,
+        badge: 'Standard'
+    },
+    {
+        id: 'PIA_PACK_5',
+        name: 'Pack 5 Crédits',
+        description: '5 wébinaires PharmIA à un tarif préférentiel.',
+        credits: 5,
+        priceHT: 179.550, // 5 * 39.900 * 0.9
+        badge: 'Populaire'
+    },
+    {
+        id: 'PIA_PACK_10',
+        name: 'Pack 10 Crédits',
+        description: '10 wébinaires PharmIA pour une formation continue.',
+        credits: 10,
+        priceHT: 339.150, // 5 * 39.900 * 0.85
+        badge: 'Meilleure Offre'
+    }
+];
+
 export const TOPIC_CATEGORIES = [
     {
         category: "Thèmes Pédagogiques",

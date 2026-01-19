@@ -5,7 +5,7 @@ import clientPromise from './mongo.js';
 import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType, UserRole } from '../types.js';
-import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
+import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, PHARMIA_CREDIT_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
 
 const router = express.Router();
 
@@ -78,20 +78,32 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
         // Process Pack Items
         const packItems = items.filter(i => i.type === ProductType.PACK || i.packId);
         for (const item of packItems) {
-            const packDef = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-            if (!packDef) {
+            const mcPackDef = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+            const piaPackDef = PHARMIA_CREDIT_PACKS.find(p => p.id === item.packId);
+
+            if (mcPackDef) {
+                hasTaxableItems = true;
+                const priceTTCNoStamp = (mcPackDef.priceHT * (1 + TAX_RATES.TVA));
+                totalAmount += priceTTCNoStamp;
+                
+                processedItems.push({
+                    type: ProductType.PACK,
+                    packId: item.packId,
+                    productId: item.packId
+                });
+            } else if (piaPackDef) {
+                hasTaxableItems = true;
+                const priceTTCNoStamp = (piaPackDef.priceHT * (1 + TAX_RATES.TVA));
+                totalAmount += priceTTCNoStamp;
+                
+                processedItems.push({
+                    type: ProductType.PACK,
+                    packId: item.packId,
+                    productId: item.packId
+                });
+            } else {
                 return res.status(400).json({ message: `Invalid pack ID: ${item.packId}` });
             }
-            hasTaxableItems = true;
-            // Calculate Pack Price TTC excluding Timbre (added once at end)
-            const priceTTCNoStamp = (packDef.priceHT * (1 + TAX_RATES.TVA));
-            totalAmount += priceTTCNoStamp;
-            
-            processedItems.push({
-                type: ProductType.PACK,
-                packId: item.packId,
-                productId: item.packId // Unified ID access
-            });
         }
 
         if (hasTaxableItems) {
@@ -134,20 +146,32 @@ router.post('/checkout', authenticateToken, async (req: AuthenticatedRequest, re
             }
 
             // 2. Grant Credits for Packs
-            const packItems = processedItems.filter(i => i.type === ProductType.PACK && i.packId);
-            let creditsToAdd = 0;
-            for (const item of packItems) {
-                const packDef = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                if (packDef) {
-                    creditsToAdd += packDef.credits;
+            const packItemsForAdmin = processedItems.filter(i => i.type === ProductType.PACK && i.packId);
+            let masterClassCreditsToAdd = 0;
+            let pharmiaCreditsToAdd = 0;
+            for (const item of packItemsForAdmin) {
+                const mcPackDef = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                if (mcPackDef) {
+                    masterClassCreditsToAdd += mcPackDef.credits;
+                }
+                const piaPackDef = PHARMIA_CREDIT_PACKS.find(p => p.id === item.packId);
+                if (piaPackDef) {
+                    pharmiaCreditsToAdd += piaPackDef.credits;
                 }
             }
 
-            if (creditsToAdd > 0) {
+            if (masterClassCreditsToAdd > 0) {
                 const usersCollection = db.collection('users');
                 await usersCollection.updateOne(
                     { _id: new ObjectId(userId) },
-                    { $inc: { masterClassCredits: creditsToAdd } }
+                    { $inc: { masterClassCredits: masterClassCreditsToAdd } }
+                );
+            }
+            if (pharmiaCreditsToAdd > 0) {
+                const usersCollection = db.collection('users');
+                await usersCollection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $inc: { pharmiaCredits: pharmiaCreditsToAdd } }
                 );
             }
         }
@@ -385,13 +409,18 @@ router.post('/:orderId/confirm', authenticateToken, async (req: AuthenticatedReq
         );
 
         // 2. Process Items (Grant Credits or Confirm Webinar Seats)
-        let creditsToAdd = 0;
+        let masterClassCreditsToAdd = 0;
+        let pharmiaCreditsToAdd = 0;
 
         for (const item of order.items) {
             if (item.type === ProductType.PACK && item.packId) {
-                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                if (pack) {
-                    creditsToAdd += pack.credits;
+                const mcPack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                if (mcPack) {
+                    masterClassCreditsToAdd += mcPack.credits;
+                }
+                const piaPack = PHARMIA_CREDIT_PACKS.find(p => p.id === item.packId);
+                if (piaPack) {
+                    pharmiaCreditsToAdd += piaPack.credits;
                 }
             } else if (!item.type || item.type === ProductType.WEBINAR) {
                  // For standard webinars, we update the attendee status to CONFIRMED
@@ -409,14 +438,20 @@ router.post('/:orderId/confirm', authenticateToken, async (req: AuthenticatedReq
         }
 
         // 3. Grant Credits to User
-        if (creditsToAdd > 0) {
+        if (masterClassCreditsToAdd > 0) {
             await usersCollection.updateOne(
                 { _id: new ObjectId(order.userId) },
-                { $inc: { masterClassCredits: creditsToAdd } }
+                { $inc: { masterClassCredits: masterClassCreditsToAdd } }
+            );
+        }
+        if (pharmiaCreditsToAdd > 0) {
+            await usersCollection.updateOne(
+                { _id: new ObjectId(order.userId) },
+                { $inc: { pharmiaCredits: pharmiaCreditsToAdd } }
             );
         }
 
-        res.json({ message: 'Order confirmed and credits/seats updated.', creditsAdded: creditsToAdd });
+        res.json({ message: 'Order confirmed and credits/seats updated.', creditsAdded: masterClassCreditsToAdd + pharmiaCreditsToAdd });
 
     } catch (error) {
         console.error('Error confirming order:', error);

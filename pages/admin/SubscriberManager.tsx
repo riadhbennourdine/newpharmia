@@ -7,6 +7,7 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
     const [subscriptionEndDate, setSubscriptionEndDate] = useState(user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : '');
     const [planName, setPlanName] = useState(user.planName || '');
     const [credits, setCredits] = useState<number>(user.masterClassCredits || 0);
+    const [pharmiaCredits, setPharmiaCredits] = useState<number>(user.pharmiaCredits || 0);
     const [firstName, setFirstName] = useState(user.firstName || '');
     const [lastName, setLastName] = useState(user.lastName || '');
 
@@ -58,6 +59,20 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
                     throw new Error('Failed to update credits');
                 }
                 updatedUser = { ...updatedUser, masterClassCredits: credits };
+            }
+
+            // Update PharmIA Credits if changed
+            if (pharmiaCredits !== (user.pharmiaCredits || 0)) {
+                const creditResponse = await fetch(`/api/users/${user._id}/pharmia-credits`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({ credits: pharmiaCredits }),
+                });
+                
+                if (!creditResponse.ok) {
+                    throw new Error('Failed to update PharmIA credits');
+                }
+                updatedUser = { ...updatedUser, pharmiaCredits: pharmiaCredits };
             }
 
             onUpdate(updatedUser);
@@ -126,6 +141,18 @@ const EditSubscriptionModal: React.FC<{ user: User; onClose: () => void; onUpdat
                             className="mt-1 block w-full px-3 py-2 bg-white border border-teal-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                         />
                         <p className="text-xs text-teal-600 mt-1">Modifiez ce solde pour ajouter ou retirer des crédits manuellement.</p>
+                    </div>
+                    <div className="mb-4 bg-blue-50 p-4 rounded-md border border-blue-200">
+                        <label htmlFor="pharmiaCredits" className="block text-sm font-bold text-blue-800">Crédits PharmIA</label>
+                        <input
+                            type="number"
+                            id="pharmiaCredits"
+                            min="0"
+                            value={pharmiaCredits}
+                            onChange={(e) => setPharmiaCredits(parseInt(e.target.value) || 0)}
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        />
+                        <p className="text-xs text-blue-600 mt-1">Modifiez ce solde pour ajouter ou retirer des crédits PharmIA.</p>
                     </div>
                 </div>
                 <div className="flex justify-end space-x-4 mt-8">
@@ -252,6 +279,7 @@ const SubscriberManager: React.FC = () => {
                 <th className="py-2 px-4 border-b text-left">Nom</th>
                 <th className="py-2 px-4 border-b text-left">Rôle</th>
                 <th className="py-2 px-4 border-b text-left">Crédits MC</th>
+                <th className="py-2 px-4 border-b text-left">Crédits PharmIA</th>
                 <th className="py-2 px-4 border-b text-left">Valide jusqu'au</th>
                 <th className="py-2 px-4 border-b text-left">Actions</th>
             </tr>
@@ -264,6 +292,7 @@ const SubscriberManager: React.FC = () => {
                 <td className="py-2 px-4 border-b">{subscriber.firstName} {subscriber.lastName}</td>
                 <td className="py-2 px-4 border-b"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{subscriber.role}</span></td>
                 <td className="py-2 px-4 border-b font-bold text-teal-600">{subscriber.masterClassCredits || 0}</td>
+                <td className="py-2 px-4 border-b font-bold text-blue-600">{subscriber.pharmiaCredits || 0}</td>
                 <td className="py-2 px-4 border-b">{subscriber.subscriptionEndDate ? new Date(subscriber.subscriptionEndDate).toLocaleDateString() : 'N/A'}</td>
                 <td className="py-2 px-4 border-b flex space-x-2">
                   <button onClick={() => setSelectedUser(subscriber)} className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">
@@ -277,7 +306,7 @@ const SubscriberManager: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="py-4 px-4 border-b text-center text-gray-500">
+                <td colSpan={7} className="py-4 px-4 border-b text-center text-gray-500">
                   Aucun utilisateur ne correspond aux filtres actuels.
                 </td>
               </tr>

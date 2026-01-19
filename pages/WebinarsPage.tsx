@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Webinar, WebinarGroup, UserRole, WebinarStatus, WebinarResource, ProductType } from '../types';
-import { MASTER_CLASS_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
+import { MASTER_CLASS_PACKS, PHARMIA_CREDIT_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 import WebinarCard from '../components/WebinarCard';
@@ -33,6 +33,9 @@ const WebinarsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [masterClassDescription, setMasterClassDescription] = useState<string>('');
     const [activePricingTab, setActivePricingTab] = useState<string>('MC_PACK_3'); // Default to popular pack
+
+    const [isPharmiaPricingOpen, setIsPharmiaPricingOpen] = useState(false);
+    const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_5'); // Default to popular pack
 
     useEffect(() => {
         // Redirect ADMIN_WEBINAR to CROP Tunis by default as they don't have access to PharmIA
@@ -92,9 +95,11 @@ const WebinarsPage: React.FC = () => {
         navigate('/cart');
     };
 
-    const handleUseCredit = async (webinarId: string) => {
+    const handleUseCredit = async (webinarId: string, webinarGroup: WebinarGroup) => {
         if (!token) return;
-        if (!window.confirm("Voulez-vous utiliser 1 crédit Master Class pour vous inscrire ?")) return;
+
+        const creditType = webinarGroup === WebinarGroup.MASTER_CLASS ? "Master Class" : "PharmIA";
+        if (!window.confirm(`Voulez-vous utiliser 1 crédit ${creditType} pour vous inscrire ?`)) return;
 
         try {
             await registerForWebinar(webinarId, [WebinarTimeSlot.MORNING], token, true);
@@ -441,7 +446,7 @@ const WebinarsPage: React.FC = () => {
                                                 onResourceClick={handleResourceClick} 
                                                 onManageResources={handleOpenResourcesModal} 
                                                 userCredits={user?.masterClassCredits} 
-                                                onUseCredit={handleUseCredit}
+                                                onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)}
                                             />
                                         </div>
                                     ))}
@@ -471,7 +476,7 @@ const WebinarsPage: React.FC = () => {
                         <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
                             <div className="grid grid-cols-1 gap-6">
                                 {liveWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                                 ))}
                             </div>
                         </div>
@@ -481,7 +486,7 @@ const WebinarsPage: React.FC = () => {
                 {nearestWebinar && !isMyList && (
                     <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
                         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">Prochain Webinaire</h2>
-                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, nearestWebinar.group)} />
                     </div>
                 )}
 
@@ -490,7 +495,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Autres webinaires ce mois-ci</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {currentMonthWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                             ))}
                         </div>
                     </div>
@@ -504,7 +509,7 @@ const WebinarsPage: React.FC = () => {
                                 <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {monthWebinars.map(webinar => (
-                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                                     ))}
                                 </div>
                             </div>
@@ -515,7 +520,7 @@ const WebinarsPage: React.FC = () => {
                 {isMyList && (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {webinarsToRender.map(webinar => (
-                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                         ))}
                     </div>
                 )}
@@ -525,7 +530,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">Webinaires Passés</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {pastWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} onUseCredit={handleUseCredit} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                             ))}
                         </div>
                     </div>
@@ -567,8 +572,77 @@ const WebinarsPage: React.FC = () => {
                                         Soit {(PHARMIA_WEBINAR_PRICE_HT * (1 + TAX_RATES.TVA)).toFixed(3)} DT TTC
                                     </p>
                                 </div>
+                                <button
+                                    onClick={() => setIsPharmiaPricingOpen(!isPharmiaPricingOpen)}
+                                    className="mt-4 text-teal-600 font-bold py-2 px-4 rounded-lg hover:bg-teal-50 transition-colors"
+                                >
+                                    {isPharmiaPricingOpen ? 'Masquer les packs de crédits' : 'Acheter des packs de crédits'}
+                                </button>
                             </div>
                         </div>
+                        {isPharmiaPricingOpen && (
+                            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+                                <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
+                                    {PHARMIA_CREDIT_PACKS.map((pack) => (
+                                        <button
+                                            key={pack.id}
+                                            onClick={() => setActivePharmiaPricingTab(pack.id)}
+                                            className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${
+                                                activePharmiaPricingTab === pack.id
+                                                    ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
+                                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
+                                            }`}
+                                        >
+                                            {pack.name}
+                                            {pack.badge && (
+                                                <span className={`block mt-1 text-[10px] uppercase tracking-wide ${
+                                                    activePharmiaPricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'
+                                                }`}>
+                                                    {pack.badge}
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="p-8 md:p-12">
+                                    {PHARMIA_CREDIT_PACKS.map((pack) => {
+                                        if (pack.id !== activePharmiaPricingTab) return null;
+                                        
+                                        const priceHT = pack.priceHT;
+                                        const unitPriceHT = priceHT / pack.credits;
+                                        
+                                        return (
+                                            <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
+                                                <div className="flex-1 text-center md:text-left">
+                                                    <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
+                                                    <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
+                                                    
+                                                    <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                                        <div className="flex items-baseline justify-center md:justify-start">
+                                                            <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
+                                                            <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
+                                                            <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                                        </div>
+                                                        <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
+                                                            Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Crédit
+                                                        </div>
+                                                        <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
+                                                    <button
+                                                        onClick={() => handleBuyPack(pack.id, pack.name)}
+                                                        className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                                                    >
+                                                        Choisir ce pack
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

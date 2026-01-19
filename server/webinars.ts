@@ -488,28 +488,47 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
 
         // Credit Usage Logic (Only if not free)
         if (useCredit && !isFree) {
-            if (webinar.group !== WebinarGroup.MASTER_CLASS) {
-                return res.status(400).json({ message: 'Les crédits ne sont valables que pour les Master Classes.' });
+            if (webinar.group === WebinarGroup.MASTER_CLASS) {
+                // Fetch latest user data to check balance
+                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+                if (!user || !user.masterClassCredits || user.masterClassCredits < 1) {
+                    return res.status(402).json({ message: 'Solde de crédits Master Class insuffisant.' });
+                }
+
+                // Deduct credit
+                const updateResult = await usersCollection.updateOne(
+                    { _id: new ObjectId(userId), masterClassCredits: { $gte: 1 } },
+                    { $inc: { masterClassCredits: -1 } }
+                );
+
+                if (updateResult.modifiedCount === 0) {
+                     return res.status(409).json({ message: 'Erreur lors du débit du crédit (concurrence).' });
+                }
+
+                status = 'CONFIRMED';
+                usedCredit = true;
+            } else if (webinar.group === WebinarGroup.PHARMIA) {
+                // Fetch latest user data to check balance
+                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+                if (!user || !user.pharmiaCredits || user.pharmiaCredits < 1) {
+                    return res.status(402).json({ message: 'Solde de crédits PharmIA insuffisant.' });
+                }
+
+                // Deduct credit
+                const updateResult = await usersCollection.updateOne(
+                    { _id: new ObjectId(userId), pharmiaCredits: { $gte: 1 } },
+                    { $inc: { pharmiaCredits: -1 } }
+                );
+
+                if (updateResult.modifiedCount === 0) {
+                     return res.status(409).json({ message: 'Erreur lors du débit du crédit (concurrence).' });
+                }
+
+                status = 'CONFIRMED';
+                usedCredit = true; // We can reuse this flag
+            } else {
+                return res.status(400).json({ message: 'Les crédits ne sont pas applicables pour ce type de wébinaire.' });
             }
-
-            // Fetch latest user data to check balance
-            const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-            if (!user || !user.masterClassCredits || user.masterClassCredits < 1) {
-                return res.status(402).json({ message: 'Solde de crédits insuffisant.' });
-            }
-
-            // Deduct credit
-            const updateResult = await usersCollection.updateOne(
-                { _id: new ObjectId(userId), masterClassCredits: { $gte: 1 } },
-                { $inc: { masterClassCredits: -1 } }
-            );
-
-            if (updateResult.modifiedCount === 0) {
-                 return res.status(409).json({ message: 'Erreur lors du débit du crédit (concurrence).' });
-            }
-
-            status = 'CONFIRMED';
-            usedCredit = true;
         }
 
         const newAttendee = {
@@ -528,7 +547,11 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         if (result.matchedCount === 0) {
              // Rollback credit if update fails (edge case)
              if (usedCredit) {
-                 await usersCollection.updateOne({ _id: new ObjectId(userId) }, { $inc: { masterClassCredits: 1 } });
+                if (webinar.group === WebinarGroup.MASTER_CLASS) {
+                    await usersCollection.updateOne({ _id: new ObjectId(userId) }, { $inc: { masterClassCredits: 1 } });
+                } else if (webinar.group === WebinarGroup.PHARMIA) {
+                    await usersCollection.updateOne({ _id: new ObjectId(userId) }, { $inc: { pharmiaCredits: 1 } });
+                }
              }
             return res.status(404).json({ message: 'Webinar not found during registration.' });
         }
@@ -559,7 +582,13 @@ router.post('/:id/register', authenticateToken, async (req: AuthenticatedRequest
         }
 
         if (usedCredit) {
-            res.json({ message: 'Inscription confirmée avec succès (1 crédit utilisé).' });
+            if (webinar.group === WebinarGroup.MASTER_CLASS) {
+                res.json({ message: 'Inscription confirmée avec succès (1 crédit Master Class utilisé).' });
+            } else if (webinar.group === WebinarGroup.PHARMIA) {
+                res.json({ message: 'Inscription confirmée avec succès (1 crédit PharmIA utilisé).' });
+            } else {
+                res.json({ message: 'Inscription confirmée avec succès (1 crédit utilisé).' });
+            }
         } else if (isFree) {
             res.json({ message: 'Inscription gratuite confirmée avec succès !' });
         } else {

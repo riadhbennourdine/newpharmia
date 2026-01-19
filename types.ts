@@ -89,6 +89,7 @@ export interface User {
   secteur?: string;
   paymentProofUrl?: string;
   masterClassCredits?: number;
+  pharmiaCredits?: number;
 }
 
 export interface Group {
