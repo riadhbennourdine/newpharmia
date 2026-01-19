@@ -37,12 +37,7 @@ const WebinarsPage: React.FC = () => {
     const [isPharmiaPricingOpen, setIsPharmiaPricingOpen] = useState(false);
     const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_5'); // Default to popular pack
 
-    useEffect(() => {
-        // Redirect ADMIN_WEBINAR to CROP Tunis by default as they don't have access to PharmIA
-        if (user?.role === UserRole.ADMIN_WEBINAR && view === WebinarGroup.PHARMIA) {
-            setView(WebinarGroup.CROP_TUNIS);
-        }
-    }, [user, view]);
+
 
     useEffect(() => {
         fetch('/content/master_class_description.md')
@@ -654,6 +649,7 @@ const WebinarsPage: React.FC = () => {
             </div>
 
             {isPharmiaPricingOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
                     <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
                         {PHARMIA_CREDIT_PACKS.map((pack) => (
