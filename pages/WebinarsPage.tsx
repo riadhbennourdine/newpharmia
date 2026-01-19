@@ -366,14 +366,9 @@ const WebinarsPage: React.FC = () => {
                         <p className="mt-4 text-slate-600">
                             Des sessions interactives pour maîtriser les outils et la méthodologie PharmIA au comptoir.
                         </p>
-                        <div className="mt-6 space-y-3">
-                            <button onClick={() => setView('PHARMIA_PHARMACIEN')} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors">
-                                Espace Pharmacien
-                            </button>
-                            <button onClick={() => setView('PHARMIA_PREPARATEUR')} className="w-full bg-teal-100 text-teal-800 font-bold py-3 px-4 rounded-lg hover:bg-teal-200 transition-colors">
-                                Espace Préparateur
-                            </button>
-                        </div>
+                        <button onClick={() => setView(WebinarGroup.PHARMIA)} className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+                            Découvrir les sessions PharmIA
+                        </button>
                     </div>
                     <div className="p-6 bg-slate-50 border-t">
                         <button onClick={() => setIsPharmiaPricingOpen(!isPharmiaPricingOpen)} className="w-full flex items-center justify-center gap-2 text-slate-600 font-bold py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors">
