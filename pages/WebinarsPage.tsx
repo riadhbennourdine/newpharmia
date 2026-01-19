@@ -569,6 +569,39 @@ const WebinarsPage: React.FC = () => {
                                         Gérer les wébinaires CROP
                                     </button>
                                 )}
+
+                        {(view === WebinarGroup.PHARMIA || view === 'PHARMIA_PHARMACIEN' || view === 'PHARMIA_PREPARATEUR' || view === 'MY_WEBINARS_PHARMIA') && (
+                            <div className="mt-4 flex flex-wrap gap-4">
+                                {user && !isWebinarAdmin && (
+                                    <button onClick={() => setView('MY_WEBINARS_PHARMIA')} className="text-teal-600 hover:text-teal-800 font-medium py-2 px-4 rounded-lg hover:bg-teal-100 transition-colors">
+                                        Mes wébinaires PharmIA
+                                    </button>
+                                )}
+                                {isAdmin && (
+                                    <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-3 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                        Gérer les wébinaires PharmIA
+                                    </button>
+                                )}
+                                <button onClick={() => setIsPharmiaPricingOpen(!isPharmiaPricingOpen)} className="mt-2 w-full flex items-center justify-center gap-2 text-slate-600 font-bold py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors">
+                                    <ShoppingCartIcon className="h-6 w-6" />
+                                    <span>Acheter des crédits PharmIA</span>
+                                </button>
+                            </div>
+                        )}
+                        {view === WebinarGroup.MASTER_CLASS && (
+                            <div className="mt-4 flex flex-wrap gap-4">
+                                <button onClick={() => setIsProgramModalOpen(true)} className="text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
+                                    Voir le Programme & Calendrier Complet
+                                </button>
+                                <button onClick={() => setIsPricingOpen(!isPricingOpen)} className="text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors">
+                                    Consulter les Tarifs & Packs Master Class
+                                </button>
+                                {isSuperAdmin && (
+                                    <button onClick={() => navigate('/admin/webinars')} className="mt-2 w-full text-red-600 hover:text-red-800 font-medium py-2 px-4 rounded-lg hover:bg-red-100 transition-colors">
+                                        Gérer les Master Class
+                                    </button>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
