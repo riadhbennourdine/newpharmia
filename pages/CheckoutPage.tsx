@@ -437,7 +437,7 @@ const CheckoutPage: React.FC = () => {
     const isPdfRib = bankDetails.imageUrl ? bankDetails.imageUrl.toLowerCase().includes('.pdf') : false;
 
     // Determine if Konnect (card) payment should be available (only for MasterClass items)
-    const containsMasterClassItems = hasPacks || hasMasterClassWebinars;
+    const containsMasterClassItems = hasMasterClassPacks || hasMasterClassWebinars;
 
     return (
         <div className="bg-slate-100 min-h-screen py-12">
