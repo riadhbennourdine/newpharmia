@@ -394,7 +394,10 @@ const CheckoutPage: React.FC = () => {
                     );
                 })}
                 {order.items.filter(i => i.type === ProductType.PACK || !!i.packId).map((item, idx) => {
-                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    const masterClassPack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                    const pharmiaCreditPack = PHARMIA_CREDIT_PACKS.find(p => p.id === item.packId);
+                    const pack = masterClassPack || pharmiaCreditPack;
+
                     // Calculate TTC for display if needed, but order.totalAmount has the sum
                     const priceHT = pack ? pack.priceHT : 0;
                     const priceTTC = (priceHT * (1 + TAX_RATES.TVA)) + TAX_RATES.TIMBRE;
@@ -410,19 +413,23 @@ const CheckoutPage: React.FC = () => {
     };
 
     // Determine Bank Details based on Order Content
-    const hasPacks = order?.items.some(i => i.type === ProductType.PACK || !!i.packId || (i.productId && i.productId.startsWith('MC')));
+    const hasMasterClassPacks = order?.items.some(i => (i.type === ProductType.PACK && i.packId && MASTER_CLASS_PACKS.some(p => p.id === i.packId)) || (i.productId && i.productId.startsWith('MC')));
+    const hasPharmIAPacks = order?.items.some(i => (i.type === ProductType.PACK && i.packId && PHARMIA_CREDIT_PACKS.some(p => p.id === i.packId)));
     const hasMasterClassWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.MASTER_CLASS);
     const hasPharmIAWebinars = webinarsInOrder.some(w => w.group === WebinarGroup.PHARMIA);
-    const useSkillSeed = hasPacks || hasMasterClassWebinars;
+    
+    // Prioritize PharmIA, then MasterClass, then CROP
+    const usePharmIAAccount = hasPharmIAPacks || hasPharmIAWebinars;
+    const useSkillSeedAccount = hasMasterClassPacks || hasMasterClassWebinars;
     
     // Fallback object to prevent crash if import fails
     const defaultBank = { holder: 'N/A', bank: 'N/A', branch: '', rib: 'N/A', imageUrl: '' };
     
     let bankDetails = defaultBank;
-    if (useSkillSeed) {
-        bankDetails = SKILL_SEED_BANK_DETAILS;
-    } else if (hasPharmIAWebinars) {
+    if (usePharmIAAccount) {
         bankDetails = PHARMACONSEIL_BANK_DETAILS;
+    } else if (useSkillSeedAccount) {
+        bankDetails = SKILL_SEED_BANK_DETAILS;
     } else {
         bankDetails = CROPT_BANK_DETAILS;
     }
@@ -531,7 +538,10 @@ const CheckoutPage: React.FC = () => {
                                             const isPack = item.type === ProductType.PACK || !!item.packId;
                                             
                                             if (isPack && item.packId) {
-                                                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                                const masterClassPack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
+                                                const pharmiaCreditPack = PHARMIA_CREDIT_PACKS.find(p => p.id === item.packId);
+                                                const pack = masterClassPack || pharmiaCreditPack;
+
                                                 if (pack) {
                                                     calculatedTotalHT += pack.priceHT;
                                                     calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
