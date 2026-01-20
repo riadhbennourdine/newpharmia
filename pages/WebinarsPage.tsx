@@ -213,6 +213,11 @@ const WebinarsPage: React.FC = () => {
             setError("Vous devez être connecté pour sauvegarder les ressources.");
             return;
         }
+        // Vérification de l'autorisation
+        if (!user || (![UserRole.ADMIN, UserRole.ADMIN_WEBINAR].includes(user.role))) {
+            setError("Vous n'avez pas la permission de modifier les ressources.");
+            return;
+        }
         try {
             await updateWebinarResources(webinarId, resources, token);
             const allCROPWebinars = await fetchWebinars(token, WebinarGroup.CROP_TUNIS);
