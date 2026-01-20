@@ -35,7 +35,7 @@ const WebinarsPage: React.FC = () => {
     const [activePricingTab, setActivePricingTab] = useState<string>('MC_PACK_3'); // Default to popular pack
 
     const [isPharmiaPricingOpen, setIsPharmiaPricingOpen] = useState(false);
-    const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_5'); // Default to popular pack
+    const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_4'); // Default to "Pack 4 Crédits"
 
     // The ADMIN_WEBINAR redirect useEffect block has been intentionally removed here.
 
@@ -650,7 +650,15 @@ const WebinarsPage: React.FC = () => {
 
             {isPharmiaPricingOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 relative"> {/* Added relative for positioning */}
+                    <button
+                        onClick={() => setIsPharmiaPricingOpen(false)}
+                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                     <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
                         {PHARMIA_CREDIT_PACKS.map((pack) => (
                             <button
