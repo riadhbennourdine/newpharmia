@@ -319,6 +319,7 @@ const WebinarsPage: React.FC = () => {
     const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
     const isSuperAdmin = user?.role === UserRole.ADMIN;
     const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
+    const canManageResources = user?.role === UserRole.ADMIN; // Only full ADMIN can manage resources
 
     const renderHub = () => (
         <div className="space-y-12">
@@ -443,7 +444,7 @@ const WebinarsPage: React.FC = () => {
                                             <WebinarCard 
                                                 webinar={webinar} 
                                                 onResourceClick={handleResourceClick} 
-                                                onManageResources={handleOpenResourcesModal} 
+                                                onManageResources={canManageResources ? handleOpenResourcesModal : undefined} 
                                                 userCredits={user?.masterClassCredits} 
                                                 onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)}
                                             />
@@ -475,7 +476,7 @@ const WebinarsPage: React.FC = () => {
                         <div className="p-6 text-slate-800 rounded-lg shadow-xl" style={{ backgroundColor: '#CBDFDE' }}>
                             <div className="grid grid-cols-1 gap-6">
                                 {liveWebinars.map(webinar => (
-                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
+                                    <WebinarCard key={webinar._id.toString()} webinar={webinar} isLiveCard={true} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                                 ))}
                             </div>
                         </div>
@@ -485,7 +486,7 @@ const WebinarsPage: React.FC = () => {
                 {nearestWebinar && !isMyList && (
                     <div className="mb-12 p-6 rounded-lg shadow-xl border-2 border-teal-500 max-w-4xl" style={{ backgroundColor: '#CBDFDE' }}>
                         <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center text-left">Prochain Webinaire</h2>
-                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, nearestWebinar.group)} />
+                        <WebinarCard webinar={nearestWebinar} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, nearestWebinar.group)} />
                     </div>
                 )}
 
@@ -494,7 +495,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-teal-500 pb-2">Autres webinaires ce mois-ci</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {currentMonthWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                             ))}
                         </div>
                     </div>
@@ -508,7 +509,7 @@ const WebinarsPage: React.FC = () => {
                                 <h3 className="text-xl font-bold text-slate-700 mb-4">{monthYear}</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {monthWebinars.map(webinar => (
-                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
+                                        <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                                     ))}
                                 </div>
                             </div>
@@ -519,7 +520,7 @@ const WebinarsPage: React.FC = () => {
                 {isMyList && (
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {webinarsToRender.map(webinar => (
-                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
+                            <WebinarCard key={webinar._id.toString()} webinar={webinar} isMyWebinarCard={true} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                         ))}
                     </div>
                 )}
@@ -529,7 +530,7 @@ const WebinarsPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b-2 border-slate-500 pb-2">Webinaires Passés</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {pastWebinars.map(webinar => (
-                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={handleOpenResourcesModal} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
+                                <WebinarCard key={webinar._id.toString()} webinar={webinar} onResourceClick={handleResourceClick} onManageResources={canManageResources ? handleOpenResourcesModal : undefined} userCredits={user?.masterClassCredits} pharmiaCredits={user?.pharmiaCredits} onUseCredit={(webinarId) => handleUseCredit(webinarId, webinar.group)} />
                             ))}
                         </div>
                     </div>
