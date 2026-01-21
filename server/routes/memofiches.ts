@@ -406,4 +406,35 @@ router.post('/validate-ids', async (req, res) => {
     }
 });
 
+// GET /api/memofiches/search-for-admin - Authenticated and Admin/Formateur only
+router.get('/search-for-admin', authenticateToken, checkRole([UserRole.ADMIN, UserRole.FORMATEUR]), async (req: AuthenticatedRequest, res) => {
+    try {
+        const { search = '' } = req.query as { [key: string]: string };
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const memofichesCollection = db.collection<CaseStudy>('memofiches');
+
+        let query: any = {};
+        if (search) {
+            const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
+            query.$or = [
+                { title: searchRegex },
+                { shortDescription: searchRegex }
+            ];
+        }
+
+        const fiches = await memofichesCollection.find(query)
+            .project({ _id: 1, title: 1, shortDescription: 1 }) // Project only necessary fields
+            .limit(20) // Limit results for performance
+            .toArray();
+
+        res.json(fiches);
+
+    } catch (error) {
+        console.error('Error searching memofiches for admin:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur lors de la recherche des mémofiches.' });
+    }
+});
+
 export default router;

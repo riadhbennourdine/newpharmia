@@ -252,6 +252,24 @@ const WebinarCard: React.FC<{
                             Gérer les médias
                         </button>
                     )}
+
+                    {/* NOUVELLE SECTION POUR LES MÉMOFICHES LIÉES */}
+                    {webinar.linkedMemofiches && webinar.linkedMemofiches.length > 0 && (
+                        <div className="mt-6">
+                            <h4 className="text-sm font-bold text-slate-700 mb-2">Mémofiches liées</h4>
+                            <ul className="space-y-2">
+                                {webinar.linkedMemofiches.map((ficheId, index) => (
+                                    <li key={index} className="flex items-center justify-between text-sm text-slate-600">
+                                        <Link to={`/memofiche/${ficheId}`} className="flex items-center text-sm text-slate-600 hover:text-teal-600 transition-colors">
+                                            <BookOpenIcon className="h-5 w-5 mr-2" />
+                                            {/* TODO: Récupérer le titre de la mémofiche via une API ou en peuplant le webinar object */}
+                                            <span>Mémofiche: {ficheId.toString()}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             )}
             {/* Admin Edit Shortcut */}

@@ -334,6 +334,7 @@ export interface Webinar {
   resources?: WebinarResource[]; // New field for media resources
   publicationStatus?: 'DRAFT' | 'PUBLISHED';
   targetAudience?: 'Pharmacien' | 'Préparateur' | 'Tous';
+  linkedMemofiches?: (ObjectId | string)[]; // NOUVEAU CHAMP
 }
 
 export interface Image {

@@ -981,7 +981,8 @@ router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req:
 router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
         const { id } = req.params;
-        const { resources } = req.body; // Expect an array of WebinarResource objects
+        // On récupère les ressources ET les linkedMemofiches du body
+        const { resources, linkedMemofiches } = req.body; 
 
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'Invalid webinar ID.' });
@@ -1008,8 +1009,16 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
         if (!Array.isArray(resources)) {
             return res.status(400).json({ message: 'Resources must be an array.' });
         }
+        // Validation pour linkedMemofiches
+        if (linkedMemofiches !== undefined && !Array.isArray(linkedMemofiches)) {
+            return res.status(400).json({ message: 'Linked memofiches must be an array of IDs.' });
+        }
+        if (linkedMemofiches && linkedMemofiches.some((mfId: any) => !ObjectId.isValid(mfId))) {
+            return res.status(400).json({ message: 'Invalid ObjectId found in linked memofiches.' });
+        }
 
-        // Basic validation for each resource
+
+        // Basic validation for each resource (reste inchangé)
         for (const resource of resources) {
             if (!resource.type) {
                 return res.status(400).json({ message: 'Each resource must have a type.' });
@@ -1023,17 +1032,25 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
             }
         }
 
+        // Mettre à jour les deux champs: resources ET linkedMemofiches
+        const updateDoc: any = { 
+            resources: resources, 
+            updatedAt: new Date() 
+        };
+        if (linkedMemofiches !== undefined) {
+            updateDoc.linkedMemofiches = linkedMemofiches.map((id: string) => new ObjectId(id));
+        }
+
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
-            { $set: { resources: resources, updatedAt: new Date() } }
+            { $set: updateDoc }
         );
 
         if (result.matchedCount === 0) {
-            // This case should theoretically not be hit due to the check above, but it's good practice
             return res.status(404).json({ message: 'Webinar not found.' });
         }
 
-        res.json({ message: 'Webinar resources updated successfully.' });
+        res.json({ message: 'Webinar resources and linked memofiches updated successfully.' });
 
     } catch (error) {
         console.error('Error updating webinar resources:', error);

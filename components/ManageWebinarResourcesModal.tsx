@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { WebinarResource } from '../types';
+import React, { useState, useEffect, useCallback } from 'react'; // Added useEffect and useCallback
+import { WebinarResource, CaseStudy, ObjectId } from '../types'; // Added CaseStudy and ObjectId
+import { Spinner } from './Icons'; // Added Spinner
 
 interface ManageWebinarResourcesModalProps {
     webinarId: string;
     resources: WebinarResource[];
+    linkedMemofiches: (ObjectId | string)[]; // NOUVEAU
     onClose: () => void;
-    onSave: (webinarId: string, resources: WebinarResource[]) => void;
+    onSave: (webinarId: string, resources: WebinarResource[], linkedMemofiches: (ObjectId | string)[]) => void; // MODIFIÉ
 }
 
-const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = ({ webinarId, resources, onClose, onSave }) => {
+const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = ({ webinarId, resources, linkedMemofiches, onClose, onSave }) => {
     // Handle migration from old data shape { url: ... } to new { source: ... }
     const migratedResources = (resources || []).map((r: any) => ({
         type: r.type,
@@ -17,6 +19,13 @@ const ManageWebinarResourcesModal: React.FC<ManageWebinarResourcesModalProps> = 
     }));
 
     const [localResources, setLocalResources] = useState<WebinarResource[]>(migratedResources);
+    const [localLinkedMemofiches, setLocalLinkedMemofiches] = useState<(ObjectId | string)[]>(linkedMemofiches || []); // NOUVEL ÉTAT
+
+    // États pour la recherche de mémofiches
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<CaseStudy[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchError, setSearchError] = useState<string | null>(null);
 
     const handleAddResource = () => {
         setLocalResources([...localResources, { type: 'Replay', source: '', title: '' }]);
