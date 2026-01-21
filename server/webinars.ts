@@ -209,6 +209,29 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         if (!webinar) {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
+        
+        // NEW: Resolve linked memofiches and add them to resources
+        if (webinar.linkedMemofiches && webinar.linkedMemofiches.length > 0) {
+            const memofichesCollection = db.collection('memofiches');
+            const memoficheIds = webinar.linkedMemofiches.map(id => new ObjectId(id));
+        
+            const linkedFiches = await memofichesCollection.find(
+                { _id: { $in: memoficheIds } },
+                { projection: { title: 1 } }
+            ).toArray();
+        
+            if (linkedFiches.length > 0) {
+                const memoficheResources = linkedFiches.map(fiche => ({
+                    type: 'link' as const, // Use as const for type safety
+                    source: `/memofiches/${fiche._id}`,
+                    title: `Mémofiche: ${fiche.title}`
+                }));
+        
+                // Prepend to existing resources, ensuring resources is an array
+                webinar.resources = [...memoficheResources, ...(webinar.resources || [])];
+            }
+        }
+
 
         console.log('[Webinar Debug] Entering GET /:id handler.');
         const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
