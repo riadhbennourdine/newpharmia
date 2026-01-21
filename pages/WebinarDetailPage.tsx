@@ -740,7 +740,7 @@ const WebinarDetailPage: React.FC = () => {
                                 </div>
                             )}
 
-                            {webinar.calculatedStatus === 'PAST' && webinar.resources && webinar.resources.length > 0 && (
+                            {((webinar.calculatedStatus === 'PAST' || registeredAttendee)) && webinar.resources && webinar.resources.length > 0 && (
                                 <div className="mt-8 pt-6 border-t">
                                     <h3 className="text-2xl font-bold text-slate-800 mb-4">Ressources du Webinaire</h3>
                                     <div className="space-y-6">
