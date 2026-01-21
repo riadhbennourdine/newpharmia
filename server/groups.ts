@@ -144,7 +144,7 @@ adminRouter.post('/', async (req, res) => {
     }
 
     const pharmacistObjectIds = pharmacistIds.map((id: string) => new ObjectId(id));
-    const pharmacists = await usersCollection.find({ _id: { $in: pharmacistObjectIds }, role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } }).toArray();
+    const pharmacists = await usersCollection.find({ _id: { $in: pharmacistObjectIds }, role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } }).toArray();
 
     if (pharmacists.length !== pharmacistIds.length) {
       return res.status(400).json({ message: 'Un ou plusieurs pharmaciens sont invalides ou n\'existent pas.' });
@@ -184,7 +184,7 @@ adminRouter.get('/', async (req, res) => {
     // Fetch all groups, pharmacists, and managers concurrently
     const [groups, pharmacists, managers] = await Promise.all([
       groupsCollection.find({}).toArray(),
-      usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR] } }).toArray(),
+      usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } }).toArray(),
       usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray(),
     ]);
 
