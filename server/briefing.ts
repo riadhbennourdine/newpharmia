@@ -26,7 +26,7 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
         const { groupsCollection } = await getCollections();
 
         if (!user.groupId) {
-            return res.status(404).json({ message: 'User has no group.' });
+            return res.status(400).json({ message: 'User has no group or group not found.' });
         }
 
         const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });

@@ -93,19 +93,32 @@ const ImageUploader: React.FC<{ onUploadSuccess: (url: string) => void }> = ({ o
 };
 
 const ImageGallery: React.FC<{ onSelectImage: (url: string) => void }> = ({ onSelectImage }) => {
-    const [images, setImages] = useState<FtpFile[]>([]);
+    const [items, setItems] = useState<FtpFile[]>([]); // items inclura fichiers et dossiers
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPath, setCurrentPath] = useState('/'); // Nouvel état pour le chemin actuel
+
+    // Nouvelle fonction pour remonter dans l'arborescence
+    const handleGoBack = () => {
+        if (currentPath === '/') return;
+        const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+        setCurrentPath(parentPath === '' ? '/' : parentPath);
+    };
 
     useEffect(() => {
         const fetchImages = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch('/api/ftp/list'); // New FTP list endpoint
+                const response = await fetch(`/api/ftp/list?path=${encodeURIComponent(currentPath)}`); // Utiliser currentPath et l'encoder
                 if (!response.ok) {
                     throw new Error('Failed to load gallery data from FTP.');
                 }
                 const data: FtpFile[] = await response.json();
-                setImages(data.filter(item => item.type === 'file')); // Only display files
+                // Tri pour afficher les dossiers en premier
+                setItems(data.sort((a, b) => {
+                    if (a.type === 'directory' && b.type === 'file') return -1;
+                    if (a.type === 'file' && b.type === 'directory') return 1;
+                    return a.name.localeCompare(b.name);
+                }));
             } catch (error) {
                 console.error(error);
             } finally {
@@ -113,28 +126,52 @@ const ImageGallery: React.FC<{ onSelectImage: (url: string) => void }> = ({ onSe
             }
         };
         fetchImages();
-    }, []);
+    }, [currentPath]); // Refetch lorsque currentPath change
 
     return (
         <>
-            {/* No more theme filtering UI */}
+            <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center space-x-2">
+                {currentPath !== '/' && (
+                    <button onClick={handleGoBack} className="p-2 bg-slate-200 rounded-md hover:bg-slate-300">
+                        {/* Icône de retour */}
+                        <svg className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                )}
+                <span className="text-sm font-medium text-slate-700">{currentPath === '/' ? 'Racine' : currentPath}</span>
+            </div>
             <div className="overflow-y-auto flex-grow p-4">
                 {isLoading ? (
                     <div className="flex justify-center items-center h-full"><Spinner /></div>
                 ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
-                        {images.map(image => (
-                            <div key={image.name} className="cursor-pointer group" onClick={() => onSelectImage(getFtpViewUrl(image.name))}>
-                                <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-slate-100 relative">
-                                    <img src={getFtpViewUrl(image.name)} alt={image.name} className="w-full h-full object-cover object-center" />
-                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
-                                        <p className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold text-center p-2">Sélectionner</p>
-                                    </div>
+                        {items.map(item => (
+                            item.type === 'directory' ? (
+                                <div 
+                                    key={item.name} 
+                                    className="cursor-pointer group flex flex-col items-center justify-center p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors"
+                                    onClick={() => setCurrentPath(currentPath === '/' ? `/${item.name}` : `${currentPath}/${item.name}`)}
+                                >
+                                    {/* Icône de dossier */}
+                                    <svg className="h-10 w-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <p className="mt-2 text-sm font-medium text-slate-800 truncate">{item.name}</p>
                                 </div>
-                                <p className="mt-2 text-sm font-medium text-slate-800 truncate">{image.name}</p>
-                                <p className="text-xs text-slate-500">Taille: {(image.size / 1024).toFixed(2)} KB</p>
-                                <p className="text-xs text-slate-500">Modifié: {new Date(image.modifyTime).toLocaleDateString()}</p>
-                            </div>
+                            ) : (
+                                <div key={item.name} className="cursor-pointer group" onClick={() => onSelectImage(getFtpViewUrl(item.name, currentPath))}>
+                                    <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-slate-100 relative">
+                                        <img src={getFtpViewUrl(item.name, currentPath)} alt={item.name} className="w-full h-full object-cover object-center" />
+                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                                            <p className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold text-center p-2">Sélectionner</p>
+                                        </div>
+                                    </div>
+                                    <p className="mt-2 text-sm font-medium text-slate-800 truncate">{item.name}</p>
+                                    <p className="text-xs text-slate-500">Taille: {(item.size / 1024).toFixed(2)} KB</p>
+                                    <p className="text-xs text-slate-500">Modifié: {new Date(item.modifyTime).toLocaleDateString()}</p>
+                                </div>
+                            )
                         ))}
                     </div>
                 )}

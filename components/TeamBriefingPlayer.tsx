@@ -42,6 +42,11 @@ const TeamBriefingPlayer: React.FC = () => {
                 const response = await fetch('/api/briefing', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    setErrorMessage(errorData.message || "Erreur lors de la récupération du briefing.");
+                    return; // Stop processing if response is not ok
+                }
                 const data = await response.json();
                 if (data.script || data.instruction) {
                     setScript(data.script || null);
@@ -50,9 +55,17 @@ const TeamBriefingPlayer: React.FC = () => {
                     setIsScriptToday(data.isToday);
                     if (data.language) setLanguage(data.language);
                     if (data.audioUrl) setAudioUrl(data.audioUrl);
+                } else {
+                    // If no script or instruction, but response was OK, means no briefing available/generated
+                    setScript(null);
+                    setActions([]);
+                    setInstruction(null);
+                    setIsScriptToday(false);
+                    setAudioUrl(null);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error fetching briefing:", error);
+                setErrorMessage(error.message || "Erreur lors de la récupération du briefing.");
             }
         };
         fetchExistingBriefing();
@@ -89,6 +102,13 @@ const TeamBriefingPlayer: React.FC = () => {
                 },
                 body: JSON.stringify({ language })
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || "Erreur lors de la génération du briefing.");
+                return; // Stop processing if response is not ok
+            }
+
             const data = await response.json();
             
             if (data.script) {
@@ -97,8 +117,9 @@ const TeamBriefingPlayer: React.FC = () => {
                 setIsScriptToday(true);
                 setAudioUrl(data.audioUrl || null);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to generate briefing", error);
+            setErrorMessage(error.message || "Erreur lors de la génération du briefing.");
         } finally {
             setIsLoading(false);
         }
