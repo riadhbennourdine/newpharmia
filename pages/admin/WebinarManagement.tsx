@@ -215,8 +215,9 @@ const WebinarManagement: React.FC = () => {
         setIsResourceModalOpen(true);
     };
 
-    const handleSaveResources = async (webinarId: string, resources: WebinarResource[]) => {
+    const handleSaveResources = async (webinarId: string, resources: WebinarResource[], linkedMemofiches: (ObjectId | string)[]) => {
         if (!token) return;
+        setError(null);
         try {
             const response = await fetch(`/api/webinars/${webinarId}/resources`, {
                 method: 'PUT',
@@ -224,11 +225,12 @@ const WebinarManagement: React.FC = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ resources }),
+                body: JSON.stringify({ resources, linkedMemofiches }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save resources');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to save resources');
             }
 
             await fetchWebinars(); // Refresh the list
@@ -237,7 +239,6 @@ const WebinarManagement: React.FC = () => {
 
         } catch (err: any) {
             setError(err.message);
-            // Optionally, provide feedback to the user in the modal
         }
     };
 
@@ -648,6 +649,7 @@ const WebinarManagement: React.FC = () => {
                 <ManageWebinarResourcesModal
                     webinarId={currentWebinarForResources._id.toString()}
                     resources={currentWebinarForResources.resources || []}
+                    linkedMemofiches={currentWebinarForResources.linkedMemofiches || []}
                     onClose={() => setIsResourceModalOpen(false)}
                     onSave={handleSaveResources}
                 />
