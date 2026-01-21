@@ -247,7 +247,7 @@ const WebinarCard: React.FC<{
                     ) : (
                         <p className="text-sm text-slate-500">Aucun média ajouté pour ce webinaire.</p>
                     )}
-                    {(isAdmin || isWebinarAdmin) && (
+                    {isAdmin && (
                         <button onClick={() => onManageResources(webinar)} className="mt-3 bg-teal-600 text-white text-sm px-3 py-1 rounded hover:bg-teal-700">
                             Gérer les médias
                         </button>
