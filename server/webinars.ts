@@ -206,6 +206,8 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         const webinarsCollection = db.collection<Webinar>('webinars');
         const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) }, { readPreference: 'primary' });
 
+        console.log(`[DEBUG] Fetched webinar ${id} from DB:`, JSON.stringify(webinar, null, 2));
+
         if (!webinar) {
             return res.status(404).json({ message: 'Webinaire non trouvé.' });
         }
@@ -298,6 +300,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
             delete webinarResponse.attendees;
         }
         
+        console.log(`[DEBUG] Final webinarResponse for ${id}:`, JSON.stringify(webinarResponse, null, 2));
         res.setHeader('Cache-Control', 'no-store');
         res.json(webinarResponse);
 
@@ -1007,6 +1010,11 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
         // On récupère les ressources ET les linkedMemofiches du body
         const { resources, linkedMemofiches } = req.body; 
 
+        console.log(`[DEBUG] Updating resources for webinar ${id}.`);
+        console.log(`[DEBUG] Received resources:`, JSON.stringify(resources, null, 2));
+        console.log(`[DEBUG] Received linkedMemofiches:`, JSON.stringify(linkedMemofiches, null, 2));
+
+
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'Invalid webinar ID.' });
         }
@@ -1063,6 +1071,8 @@ router.put('/:id/resources', authenticateToken, async (req: AuthenticatedRequest
         if (linkedMemofiches !== undefined) {
             updateDoc.linkedMemofiches = linkedMemofiches.map((id: string) => new ObjectId(id));
         }
+
+        console.log(`[DEBUG] Update document:`, JSON.stringify(updateDoc, null, 2));
 
         const result = await webinarsCollection.updateOne(
             { _id: new ObjectId(id) },
