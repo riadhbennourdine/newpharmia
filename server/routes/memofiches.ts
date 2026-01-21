@@ -437,4 +437,25 @@ router.get('/search-for-admin', authenticateToken, checkRole([UserRole.ADMIN, Us
     }
 });
 
+router.post('/by-ids', authenticateToken, async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) {
+            return res.status(400).json({ message: 'Request body must be an array of IDs.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const memofichesCollection = db.collection<CaseStudy>('memofiches');
+        
+        const objectIds = ids.map(id => new ObjectId(id));
+        const fiches = await memofichesCollection.find({ _id: { $in: objectIds } }).toArray();
+        
+        res.json(fiches);
+    } catch (error) {
+        console.error('Error fetching memofiches by IDs:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 export default router;
