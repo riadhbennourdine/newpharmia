@@ -440,6 +440,7 @@ const WebinarManagement: React.FC = () => {
                                     {(user?.role === UserRole.ADMIN) && (
                                         <div className="flex gap-2 flex-shrink-0 ml-4">
                                             <button onClick={() => handleOpenModal(soonestWebinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
+                                            <button onClick={() => handleOpenResourceModal(soonestWebinar)} className="p-2 text-slate-500 hover:text-teal-600" title="Gérer les médias"><MediaIcon className="h-5 w-5" /></button>
                                             <button onClick={() => handleDeleteWebinar(soonestWebinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
                                         </div>
                                     )}
@@ -476,6 +477,7 @@ const WebinarManagement: React.FC = () => {
                                         {(user?.role === UserRole.ADMIN) && (
                                             <div className="flex gap-2">
                                                 <button onClick={() => handleOpenModal(webinar)} className="p-2 text-slate-500 hover:text-blue-600"><PencilIcon className="h-5 w-5" /></button>
+                                                <button onClick={() => handleOpenResourceModal(webinar)} className="p-2 text-slate-500 hover:text-teal-600" title="Gérer les médias"><MediaIcon className="h-5 w-5" /></button>
                                                 <button onClick={() => handleDeleteWebinar(webinar._id.toString())} className="p-2 text-slate-500 hover:text-red-600"><TrashIcon className="h-5 w-5" /></button>
                                             </div>
                                         )}
