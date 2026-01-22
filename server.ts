@@ -1184,7 +1184,7 @@ async function migrateWebinarGroup() {
 }
 
 
-app.listen(port, async () => {
+const server = app.listen(port, async () => { // Capture server instance
     // await migrateWebinars();
     // await migrateWebinarGroup();
     console.log(`Server is running on http://localhost:${port}`);
