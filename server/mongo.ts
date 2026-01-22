@@ -9,7 +9,7 @@ if (!uri) {
   throw new Error('FATAL ERROR: MONGO_URL environment variable is not defined.\nPlease set the MONGO_URL environment variable to your MongoDB connection string.');
 }
 
-let client: MongoClient;
+export let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === 'development') {
