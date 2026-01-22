@@ -578,9 +578,25 @@ const WebinarManagement: React.FC = () => {
                                         </select>
                                     </div>
                                     <div className="sm:col-span-2">
-                                        <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
-                                        <input type="text" name="title" id="title" value={currentWebinar.title || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                        <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre principal</label>
+                                        <input type="text" name="title" id="title" value={currentWebinar.group === WebinarGroup.MASTER_CLASS && currentWebinar.title?.includes(' - ') ? currentWebinar.title.split(' - ')[0] : currentWebinar.title || ''} onChange={(e) => {
+                                            if (!currentWebinar) return;
+                                            const newTitle = e.target.value;
+                                            const existingSubtitle = currentWebinar.group === WebinarGroup.MASTER_CLASS && currentWebinar.title?.includes(' - ') ? currentWebinar.title.split(' - ').slice(1).join(' - ') : '';
+                                            setCurrentWebinar({ ...currentWebinar, title: existingSubtitle ? `${newTitle} - ${existingSubtitle}` : newTitle });
+                                        }} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                                     </div>
+                                    {currentWebinar.group === WebinarGroup.MASTER_CLASS && (
+                                        <div className="sm:col-span-2">
+                                            <label htmlFor="subtitle" className="block text-sm font-medium text-slate-700">Sous-titre (pour Master Class)</label>
+                                            <input type="text" name="subtitle" id="subtitle" value={currentWebinar.group === WebinarGroup.MASTER_CLASS && currentWebinar.title?.includes(' - ') ? currentWebinar.title.split(' - ').slice(1).join(' - ') : ''} onChange={(e) => {
+                                                if (!currentWebinar) return;
+                                                const newSubtitle = e.target.value;
+                                                const existingMainTitle = currentWebinar.group === WebinarGroup.MASTER_CLASS && currentWebinar.title?.includes(' - ') ? currentWebinar.title.split(' - ')[0] : currentWebinar.title || '';
+                                                setCurrentWebinar({ ...currentWebinar, title: newSubtitle ? `${existingMainTitle} - ${newSubtitle}` : existingMainTitle });
+                                            }} className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
+                                        </div>
+                                    )}
                                     <div className="sm:col-span-2">
                                         <label htmlFor="description" className="block text-sm font-medium text-slate-700">Description</label>
                                         <textarea name="description" id="description" value={currentWebinar.description || ''} onChange={handleInputChange} rows={4} required className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"></textarea>
