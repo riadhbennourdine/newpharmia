@@ -1,6 +1,6 @@
 export const WEBINAR_PRICE = 80.000; // Price in TND for standard CROP Tunis webinars (TTC)
 export const PHARMIA_WEBINAR_PRICE_HT = 39.900; // Price in TND for PharmIA webinars (HT)
-export const MASTER_CLASS_PRICE = 475.810; // Price in TND for 1 Master Class TTC (399.000 HT + 19% TVA + 1 DT)
+export const MASTER_CLASS_PRICE = 285.600; // Price in TND for 1 Master Class (240 HT + 19% TVA)
 
 export const TAX_RATES = {
     TVA: 0.19,
@@ -12,33 +12,33 @@ export const MASTER_CLASS_PACKS = [
     id: 'MC_UNIT',
     name: 'Master Class Unitaire',
     description: 'Accès à 1 Master Class au choix.',
-    credits: 3, // 1 MC = 3 credits
-    priceHT: 399.000,
+    credits: 3, // 1 MC = 3 credits (sessions)
+    priceHT: 240.000,
     discountPercentage: 0 // Base price, no discount
   },
   {
     id: 'MC_PACK_3',
     name: 'Pack 3 MC',
-    description: 'Choisissez 3 thèmes majeurs (-16% de remise).',
+    description: 'Choisissez 3 thèmes majeurs (-16.54% de remise).',
     credits: 9, // 3 MCs
-    priceHT: 999.000,
-    discountPercentage: 16.54 // (3 * 399 - 999) / (3 * 399) * 100
+    priceHT: 600.912, // 3 * 240 * (1 - 0.1654) = 720 * 0.8346
+    discountPercentage: 16.54 
   },
   {
     id: 'MC_PACK_6',
     name: 'Pack 6 MC',
-    description: 'Un semestre de formation complet (-33% de remise).',
+    description: 'Un semestre de formation complet (-33.20% de remise).',
     credits: 18, // 6 MCs
-    priceHT: 1599.000,
-    discountPercentage: 33.20 // (6 * 399 - 1599) / (6 * 399) * 100
+    priceHT: 962.000, // 6 * 240 * (1 - 0.3320) = 1440 * 0.668
+    discountPercentage: 33.20
   },
   {
     id: 'MC_FULL',
     name: 'Pack Intégral (10)',
     description: 'TOUTES les Master Class 2026 (-50% de remise).',
     credits: 30, // 10 MCs
-    priceHT: 1995.000,
-    discountPercentage: 50 // (10 * 399 - 1995) / (10 * 399) * 100
+    priceHT: 1200.000, // 10 * 240 * (1 - 0.50) = 2400 * 0.5
+    discountPercentage: 50
   }
 ];
 

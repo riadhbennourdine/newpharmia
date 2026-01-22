@@ -774,11 +774,12 @@ const WebinarsPage: React.FC = () => {
                             const priceHT = pack.priceHT;
                             const numberOfMasterClasses = pack.credits / 3;
                             const unitPriceHT = priceHT / numberOfMasterClasses;
-                            
+                            const originalPriceHT = 120.000 * numberOfMasterClasses; // Base unit price * number of MCs in pack
+
                             let features: string[] = [];
                             if (pack.id === 'MC_UNIT') features = ["Accès au cycle complet (3 sessions)", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour se former sur un sujet précis"];
-                            else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~16% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
-                            else if (pack.id === 'MC_PACK_6') features = ["Accès à 6 Master Classes complètes", "Économie de ~33% (Formation Semestrielle)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
+                            else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~16.54% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
+                            else if (pack.id === 'MC_PACK_6') features = ["Accès à 6 Master Classes complètes", "Économie de ~33.20% (Formation Semestrielle)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
                             else if (pack.id === 'MC_FULL') features = ["Accès INTÉGRAL aux 10 Master Classes", "Tarif imbattable (-50%)", "Bibliothèque complète de ressources", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
 
                             return (
@@ -787,7 +788,18 @@ const WebinarsPage: React.FC = () => {
                                         <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
                                         <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
                                         
+                                        {/* NEW: Discount display similar to PharmIA packs */}
                                         <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                            {pack.discountPercentage > 0 && (
+                                                <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                                                    <span className="text-xl font-medium text-slate-400 line-through">
+                                                        {originalPriceHT.toFixed(3)} DT
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                                                        -{pack.discountPercentage}%
+                                                    </span>
+                                                </div>
+                                            )}
                                             <div className="flex items-baseline justify-center md:justify-start">
                                                 <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
                                                 <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
@@ -798,6 +810,17 @@ const WebinarsPage: React.FC = () => {
                                             </div>
                                             <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
                                         </div>
+                                        
+                                        {/* NEW: Features list below pricing */}
+                                        <ul className="text-slate-700 text-left space-y-2 mt-6">
+                                            {features.map((feature, idx) => (
+                                                <li key={idx} className="flex items-center">
+                                                    <svg className="h-5 w-5 text-teal-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                                                    {feature}
+                                                </li>
+                                            ))}
+                                        </ul>
+
                                     </div>
                                     <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
                                         <button
