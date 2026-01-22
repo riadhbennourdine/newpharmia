@@ -79,16 +79,16 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({ onClo
                                             <th className="px-4 py-3">Thème Master Class</th>
                                             <th className="px-4 py-3 text-center">Webinaire 1</th>
                                             <th className="px-4 py-3 text-center">Webinaire 2</th>
-                                            <th className="px-4 py-3 text-center">Séminaire</th>
+                                            <th className="px-4 py-3 text-center">Webinaire 3</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-200 bg-white">
                                         <tr className="hover:bg-slate-50 transition-colors">
                                             <td className="px-4 py-3 text-center font-bold text-teal-600">1</td>
                                             <td className="px-4 py-3 font-medium text-slate-900">🩹 Dermatologie & Triage</td>
-                                            <td className="px-4 py-3 text-center">21 janv</td>
                                             <td className="px-4 py-3 text-center">28 janv</td>
                                             <td className="px-4 py-3 text-center">04 fév</td>
+                                            <td className="px-4 py-3 text-center">11 fév</td>
                                         </tr>
                                         {/* RAMADAN */}
                                         <tr className="bg-amber-50/60 border-y-2 border-amber-100">
