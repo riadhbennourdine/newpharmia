@@ -316,6 +316,7 @@ const WebinarsPage: React.FC = () => {
     }, [view, allWebinars, myRegisteredWebinars, processWebinars]);
 
 
+    const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
     const isSuperAdmin = user?.role === UserRole.ADMIN;
     const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
     const canManageResources = user?.role === UserRole.ADMIN; // Only full ADMIN can manage resources
