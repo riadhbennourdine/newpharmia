@@ -19,18 +19,18 @@ export const MASTER_CLASS_PACKS = [
   {
     id: 'MC_PACK_3',
     name: 'Pack 3 MC',
-    description: 'Choisissez 3 thèmes majeurs (-16.54% de remise).',
+    description: 'Choisissez 3 thèmes majeurs (-15% de remise).',
     credits: 9, // 3 MCs
-    priceHT: 600.912, // 3 * 240 * (1 - 0.1654) = 720 * 0.8346
-    discountPercentage: 16.54 
+    priceHT: 612.000, // 3 * 240 * (1 - 0.15) = 720 * 0.85
+    discountPercentage: 15 
   },
   {
     id: 'MC_PACK_6',
     name: 'Pack 6 MC',
-    description: 'Un semestre de formation complet (-33.20% de remise).',
+    description: 'Un semestre de formation complet (-25% de remise).',
     credits: 18, // 6 MCs
-    priceHT: 962.000, // 6 * 240 * (1 - 0.3320) = 1440 * 0.668
-    discountPercentage: 33.20
+    priceHT: 1080.000, // 6 * 240 * (1 - 0.25) = 1440 * 0.75
+    discountPercentage: 25
   },
   {
     id: 'MC_FULL',

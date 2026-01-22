@@ -747,95 +747,106 @@ const WebinarsPage: React.FC = () => {
             )}
 
             {isPricingOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-                    <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
-                        {MASTER_CLASS_PACKS.map((pack) => (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+                    <div className="max-w-5xl w-full mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 max-h-[90vh] flex flex-col">
+                        {/* Modal Header */}
+                        <div className="flex-shrink-0 p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center rounded-t-2xl">
+                            <h3 className="text-xl font-bold text-slate-800 text-center">Tarifs & Packs Master Class</h3>
                             <button
-                                key={pack.id}
-                                onClick={() => setActivePricingTab(pack.id)}
-                                className={`flex-1 py-4 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${activePricingTab === pack.id
-                                        ? 'bg-white text-teal-600 border-t-4 border-teal-500 shadow-[0_2px_10px_rgba(0,0,0,0.05)] z-10'
-                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-t-4 border-transparent'
-                                }
-                            `}>
-                                {pack.name}
-                                {pack.badge && (
-                                    <span className={`block mt-1 text-[10px] uppercase tracking-wide ${activePricingTab === pack.id ? 'text-teal-500' : 'text-slate-400'}`}>
-                                        {pack.badge}
-                                    </span>
-                                )}
+                                onClick={() => setIsPricingOpen(false)}
+                                className="text-slate-400 hover:text-slate-600 focus:outline-none"
+                            >
+                                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
-                        ))}
-                    </div>
-                    <div className="p-8 md:p-12">
-                        {MASTER_CLASS_PACKS.map((pack) => {
-                            if (pack.id !== activePricingTab) return null;
+                        </div>
+
+                        {/* Scrollable Content Area */}
+                        <div className="flex-1 overflow-y-auto">
+                            {/* Tab Buttons */}
+                            <div className="sticky top-0 flex flex-wrap border-b border-slate-200 bg-slate-50 z-10">
+                                {MASTER_CLASS_PACKS.map((pack) => (
+                                    <button
+                                        key={pack.id}
+                                        onClick={() => setActivePricingTab(pack.id)}
+                                        className={`flex-1 py-3 px-2 text-center text-sm font-bold transition-all duration-200 focus:outline-none ${activePricingTab === pack.id
+                                                ? 'bg-white text-teal-600 border-b-4 border-teal-500'
+                                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border-b-4 border-transparent'
+                                        }`}
+                                    >
+                                        {pack.name}
+                                    </button>
+                                ))}
+                            </div>
                             
-                            const priceHT = pack.priceHT;
-                            const numberOfMasterClasses = pack.credits / 3;
-                            const unitPriceHT = priceHT / numberOfMasterClasses;
-                            const originalPriceHT = 120.000 * numberOfMasterClasses; // Base unit price * number of MCs in pack
+                            {/* Tab Content */}
+                            <div className="p-8 md:p-12">
+                                {MASTER_CLASS_PACKS.map((pack) => {
+                                    if (pack.id !== activePricingTab) return null;
+                                    
+                                    const priceHT = pack.priceHT;
+                                    const numberOfMasterClasses = pack.id === 'MC_UNIT' ? 1 : parseInt(pack.id.split('_')[2]);
+                                    const unitPriceHT = priceHT / numberOfMasterClasses;
+                                    const originalPriceHT = 240.000 * numberOfMasterClasses;
 
-                            let features: string[] = [];
-                            if (pack.id === 'MC_UNIT') features = ["Accès au cycle complet (3 sessions)", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour se former sur un sujet précis"];
-                            else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~16.54% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
-                            else if (pack.id === 'MC_PACK_6') features = ["Accès à 6 Master Classes complètes", "Économie de ~33.20% (Formation Semestrielle)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
-                            else if (pack.id === 'MC_FULL') features = ["Accès INTÉGRAL aux 10 Master Classes", "Tarif imbattable (-50%)", "Bibliothèque complète de ressources", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
+                                    let features: string[] = [];
+                                    if (pack.id === 'MC_UNIT') features = ["Accès au cycle complet (3 sessions)", "Support de cours PDF inclus", "Replay disponible pendant 48h", "Idéal pour se former sur un sujet précis"];
+                                    else if (pack.id === 'MC_PACK_3') features = ["Accès à 3 Master Classes complètes", "Économie de ~15% sur le tarif unitaire", "Supports de cours PDF inclus", "Replay illimité sur les sessions choisies", "Certificat de participation"];
+                                    else if (pack.id === 'MC_PACK_5') features = ["Accès à 5 Master Classes complètes", "Économie de ~30% (Tarif préférentiel)", "Supports de cours PDF inclus", "Replay illimité", "Accès prioritaire aux questions/réponses"];
+                                    else if (pack.id === 'MC_FULL') features = ["Accès INTÉGRAL aux 10 Master Classes", "Tarif imbattable (-50%)", "Bibliothèque complète de ressources", "Accès à vie aux replays de la saison", "Diplôme d'Honneur PharmIA", "Statut VIP lors des événements"];
 
-                            return (
-                                <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
-                                    <div className="flex-1 text-center md:text-left">
-                                        <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
-                                        <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
-                                        
-                                        {/* NEW: Discount display similar to PharmIA packs */}
-                                        <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
-                                            {pack.discountPercentage > 0 && (
-                                                <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
-                                                    <span className="text-xl font-medium text-slate-400 line-through">
-                                                        {originalPriceHT.toFixed(3)} DT
-                                                    </span>
-                                                    <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
-                                                        -{pack.discountPercentage}%
-                                                    </span>
+                                    return (
+                                        <div key={pack.id} className="flex flex-col md:flex-row gap-8 items-center md:items-start animate-fadeIn">
+                                            <div className="flex-1 text-center md:text-left">
+                                                <h3 className="text-3xl font-extrabold text-slate-900 mb-2">{pack.name}</h3>
+                                                <p className="text-lg text-slate-600 mb-6">{pack.description}</p>
+                                                
+                                                <div className="mb-6 inline-block bg-teal-50 rounded-xl p-6 border border-teal-100">
+                                                    {pack.discountPercentage > 0 && (
+                                                        <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                                                            <span className="text-xl font-medium text-slate-400 line-through">
+                                                                {originalPriceHT.toFixed(3)} DT
+                                                            </span>
+                                                            <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                                                                -{pack.discountPercentage}%
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-baseline justify-center md:justify-start">
+                                                        <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
+                                                        <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
+                                                        <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                                    </div>
+                                                    <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
+                                                        Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Master Class
+                                                    </div>
+                                                    <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA et 1 DT de droit de timbre</p>
                                                 </div>
-                                            )}
-                                            <div className="flex items-baseline justify-center md:justify-start">
-                                                <span className="text-5xl font-extrabold text-teal-700">{priceHT.toFixed(3)}</span>
-                                                <span className="ml-2 text-2xl font-medium text-teal-600">DT</span>
-                                                <span className="ml-2 text-sm font-medium text-slate-400">HT</span>
+                                                
+                                                <ul className="text-slate-700 text-left space-y-2 mt-6">
+                                                    {features.map((feature, idx) => (
+                                                        <li key={idx} className="flex items-center">
+                                                            <svg className="h-5 w-5 text-teal-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                                                            {feature}
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                            <div className="mt-2 text-sm text-slate-500 font-medium text-center md:text-left">
-                                                Soit <span className="font-bold text-teal-700">{unitPriceHT.toFixed(3)} DT</span> / Master Class
+                                            <div className="flex-1 w-full md:max-w-xs bg-slate-50 rounded-xl p-8 border border-slate-100 self-center">
+                                                <button
+                                                    onClick={() => handleBuyPack(pack)}
+                                                    className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                                                >
+                                                    Choisir ce pack
+                                                </button>
                                             </div>
-                                            <p className="mt-2 text-xs text-slate-400 italic text-center md:text-left">+ 19% TVA</p>
                                         </div>
-                                        
-                                        {/* NEW: Features list below pricing */}
-                                        <ul className="text-slate-700 text-left space-y-2 mt-6">
-                                            {features.map((feature, idx) => (
-                                                <li key={idx} className="flex items-center">
-                                                    <svg className="h-5 w-5 text-teal-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                                                    {feature}
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                    </div>
-                                    <div className="flex-1 w-full bg-slate-50 rounded-xl p-8 border border-slate-100">
-                                        <button
-                                            onClick={() => handleBuyPack(pack)}
-                                            className="w-full py-4 px-6 rounded-lg font-bold text-lg text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                                        >
-                                            Choisir ce pack
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
-                </div>
                 </div>
             )}
 
