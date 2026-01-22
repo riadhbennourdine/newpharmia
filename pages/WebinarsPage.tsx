@@ -316,10 +316,17 @@ const WebinarsPage: React.FC = () => {
     }, [view, allWebinars, myRegisteredWebinars, processWebinars]);
 
 
-    const isAdmin = user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR;
     const isSuperAdmin = user?.role === UserRole.ADMIN;
     const isWebinarAdmin = user?.role === UserRole.ADMIN_WEBINAR;
     const canManageResources = user?.role === UserRole.ADMIN; // Only full ADMIN can manage resources
+
+    const isMasterClassPublished = useMemo(() => {
+        return allWebinars.some(w => 
+            w.group === WebinarGroup.MASTER_CLASS && w.publicationStatus === 'PUBLISHED'
+        );
+    }, [allWebinars]);
+    
+    const shouldShowPricingButton = isMasterClassPublished || isSuperAdmin;
 
     const renderHub = () => (
         <div className="space-y-12">
@@ -596,9 +603,11 @@ const WebinarsPage: React.FC = () => {
                                     <button onClick={() => setIsProgramModalOpen(true)} className="w-full sm:w-auto text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors border border-slate-400">
                                         Voir le Programme & Calendrier Complet
                                     </button>
-                                    <button onClick={() => setIsPricingOpen(!isPricingOpen)} className="w-full sm:w-auto text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors border border-slate-400">
-                                        Consulter les Tarifs & Packs Master Class
-                                    </button>
+                                    {shouldShowPricingButton && (
+                                        <button onClick={() => setIsPricingOpen(!isPricingOpen)} className="w-full sm:w-auto text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors border border-slate-400">
+                                            Consulter les Tarifs & Packs Master Class
+                                        </button>
+                                    )}
                                     {isSuperAdmin && (
                                         <button onClick={() => navigate('/admin/webinars')} className="w-full sm:w-auto text-red-600 hover:text-red-800 font-medium py-2 px-4 rounded-lg hover:bg-red-100 transition-colors border border-red-400">
                                             Gérer les Master Class
