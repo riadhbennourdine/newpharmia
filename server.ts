@@ -19,7 +19,7 @@ import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MASTER_CLASS_PACKS } from './constants.js';
 
-import clientPromise from './server/mongo.js';
+import clientPromise, { client } from './server/mongo.js';
 
 import crmRoutes from './server/crm.js';
 import { adminRouter as adminGroupsRouter, nonAdminRouter as groupsRouter } from './server/groups.js';
