@@ -197,12 +197,17 @@ const WebinarCard: React.FC<{
                 )}
             </Link>
             <div className="p-4 flex-grow flex flex-col">
-                <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700 truncate flex items-center">
-                    <Link to={`/webinars/${webinar._id}`} className="flex items-center">
-                        {webinar.title}
-                    </Link>
-                </h3>
-                <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mt-1">Animé par {webinar.presenter}</p>
+                <Link to={`/webinars/${webinar._id}`} className="block">
+                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-700">
+                        {isMasterClass && webinar.title.includes(' - ') ? webinar.title.split(' - ')[0] : webinar.title}
+                    </h3>
+                    {isMasterClass && webinar.title.includes(' - ') && (
+                        <p className="text-md font-medium text-teal-600 mt-1">
+                            {webinar.title.split(' - ').slice(1).join(' - ')}
+                        </p>
+                    )}
+                </Link>
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide mt-2">Animé par {webinar.presenter}</p>
                 <p className="text-xs text-slate-500 mt-1">
                     {isMasterClass
                         ? `Le ${new Date(webinar.date).toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' })}`
