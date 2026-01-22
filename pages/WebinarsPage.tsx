@@ -549,6 +549,7 @@ const WebinarsPage: React.FC = () => {
 
     return (
         <div className="bg-slate-50 min-h-screen">
+            <div className="bg-red-500 text-white text-center p-2 font-bold">DEBUG: Version du {new Date().toISOString()}</div>
             <Helmet>
                 <title>Webinaires - Pharmia</title>
                 <meta name="description" content="Découvrez nos webinaires pour pharmaciens et préparateurs." />
