@@ -257,10 +257,8 @@ const WebinarsPage: React.FC = () => {
             tabSpecificWebinars = myRegisteredWebinars.filter(w => w.group === WebinarGroup.CROP_TUNIS);
         } else if (view === 'MY_WEBINARS_PHARMIA') {
              tabSpecificWebinars = myRegisteredWebinars.filter(w => w.group === WebinarGroup.PHARMIA);
-        } else if (view === 'PHARMIA_PHARMACIEN') {
-            tabSpecificWebinars = allWebinars.filter(w => w.group === WebinarGroup.PHARMIA && (w.targetAudience === 'Pharmacien' || w.targetAudience === 'Tous'));
-        } else if (view === 'PHARMIA_PREPARATEUR') {
-            tabSpecificWebinars = allWebinars.filter(w => w.group === WebinarGroup.PHARMIA && (w.targetAudience === 'Préparateur' || w.targetAudience === 'Tous'));
+        } else if (view === 'PHARMIA_PHARMACIEN' || view === 'PHARMIA_PREPARATEUR') {
+            tabSpecificWebinars = allWebinars.filter(w => w.group === WebinarGroup.PHARMIA);
         }
         else {
             tabSpecificWebinars = allWebinars.filter(w => w.group === view);
