@@ -25,12 +25,12 @@ export const MASTER_CLASS_PACKS = [
     discountPercentage: 15 
   },
   {
-    id: 'MC_PACK_6',
-    name: 'Pack 6 MC',
-    description: 'Un semestre de formation complet (-25% de remise).',
-    credits: 18, // 6 MCs
-    priceHT: 1080.000, // 6 * 240 * (1 - 0.25) = 1440 * 0.75
-    discountPercentage: 25
+    id: 'MC_PACK_5',
+    name: 'Pack 5 MC',
+    description: '5 thèmes pour approfondir vos compétences (-30% de remise).',
+    credits: 15, // 5 MCs
+    priceHT: 840.000, // 5 * 240 * (1 - 0.30) = 1200 * 0.70
+    discountPercentage: 30
   },
   {
     id: 'MC_FULL',
