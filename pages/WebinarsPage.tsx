@@ -32,7 +32,7 @@ const WebinarsPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [masterClassDescription, setMasterClassDescription] = useState<string>('');
-    const [activePricingTab, setActivePricingTab] = useState<string>('MC_PACK_3'); // Default to popular pack
+    const [activePricingTab, setActivePricingTab] = useState<string>('MC_UNIT'); // Default to MC1
 
     const [isPharmiaPricingOpen, setIsPharmiaPricingOpen] = useState(false);
     const [activePharmiaPricingTab, setActivePharmiaPricingTab] = useState<string>('PIA_PACK_4'); // Default to "Pack 4 Crédits"
@@ -786,7 +786,13 @@ const WebinarsPage: React.FC = () => {
                                     if (pack.id !== activePricingTab) return null;
                                     
                                     const priceHT = pack.priceHT;
-                                    const numberOfMasterClasses = pack.id === 'MC_UNIT' ? 1 : parseInt(pack.id.split('_')[2]);
+                                    const getNumberOfClasses = (id: string) => {
+                                        if (id === 'MC_UNIT') return 1;
+                                        if (id === 'MC_FULL') return 10;
+                                        const parts = id.split('_');
+                                        return parseInt(parts[parts.length - 1]) || 1;
+                                    };
+                                    const numberOfMasterClasses = getNumberOfClasses(pack.id);
                                     const unitPriceHT = priceHT / numberOfMasterClasses;
                                     const originalPriceHT = 240.000 * numberOfMasterClasses;
 
