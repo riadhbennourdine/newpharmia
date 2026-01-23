@@ -16,6 +16,7 @@ dist-server
 
 # Ignore documentation and temporary files
 *.md
+!memofiches_documentation.md
 .gemini/
 tmp/
 uploads_temp/
