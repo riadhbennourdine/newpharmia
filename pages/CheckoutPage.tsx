@@ -188,40 +188,8 @@ const CheckoutPage: React.FC = () => {
         setIsKonnectLoading(true);
         setError(null);
 
-        // Calculate total amount
-        let totalAmount = 0;
-        let calculatedTotalHT = 0;
-        let calculatedTotalTVA = 0;
-        const calculatedStampDuty = TAX_RATES.TIMBRE;
-        let cropWebinarsTTC = 0;
-
-        order.items.forEach(item => {
-            const isPack = item.type === ProductType.PACK || !!item.packId;
-            if (isPack && item.packId) {
-                const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                if (pack) {
-                    calculatedTotalHT += pack.priceHT;
-                    calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
-                }
-            } else {
-                const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
-                if (webinarDetails) {
-                    if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
-                        const webinarBasePrice = webinarDetails.price || 0;
-                        calculatedTotalHT += webinarBasePrice;
-                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                    } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
-                        cropWebinarsTTC += (webinarDetails.price || 80.000);
-                    } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
-                        const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
-                        calculatedTotalHT += webinarBasePrice;
-                        calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                    }
-                }
-            }
-        });
-        const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
-        totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
+        // Use the totalAmount from the fetched order, as it's already correctly calculated by the backend
+        const amountToSend = order.totalAmount;
 
         try {
             const response = await fetch('/api/konnect/initiate-payment', {
@@ -265,45 +233,8 @@ const CheckoutPage: React.FC = () => {
         setError(null);
 
         try {
-            // Calculate total amount exactly as displayed
-            let totalAmount = 0;
-            let calculatedTotalHT = 0;
-            let calculatedTotalTVA = 0;
-            const calculatedStampDuty = TAX_RATES.TIMBRE;
-            let cropWebinarsTTC = 0;
-
-            order.items.forEach(item => {
-                const isPack = item.type === ProductType.PACK || !!item.packId;
-                if (isPack && item.packId) {
-                    const pack = MASTER_CLASS_PACKS.find(p => p.id === item.packId);
-                    if (pack) {
-                        calculatedTotalHT += pack.priceHT;
-                        calculatedTotalTVA += pack.priceHT * TAX_RATES.TVA;
-                    }
-                } else {
-                    const webinarDetails = webinarsInOrder.find(w => w._id === (item.webinarId || item.productId));
-                    if (webinarDetails) {
-                        if (webinarDetails.group === WebinarGroup.MASTER_CLASS) {
-                            const webinarBasePrice = webinarDetails.price || 0;
-                            calculatedTotalHT += webinarBasePrice;
-                            calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                        } else if (webinarDetails.group === WebinarGroup.CROP_TUNIS) {
-                            cropWebinarsTTC += (webinarDetails.price || 80.000);
-                        } else if (webinarDetails.group === WebinarGroup.PHARMIA) {
-                            const webinarBasePrice = webinarDetails.price || PHARMIA_WEBINAR_PRICE_HT;
-                            calculatedTotalHT += webinarBasePrice;
-                            calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                        } else {
-                            // Fallback standard PharmIA webinar
-                            const webinarBasePrice = webinarDetails.price || WEBINAR_PRICE;
-                             calculatedTotalHT += webinarBasePrice;
-                             calculatedTotalTVA += webinarBasePrice * TAX_RATES.TVA;
-                        }
-                    }
-                }
-            });
-            const hasTaxableItems = calculatedTotalHT > 0 || calculatedTotalTVA > 0;
-            totalAmount = calculatedTotalHT + calculatedTotalTVA + (hasTaxableItems ? calculatedStampDuty : 0) + cropWebinarsTTC;
+            // Use the totalAmount from the fetched order, as it's already correctly calculated by the backend
+            const amountToSend = order.totalAmount;
 
 
             const response = await fetch('/api/gpg/initiate-payment', {
