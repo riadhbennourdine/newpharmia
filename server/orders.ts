@@ -6,7 +6,6 @@ import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType, UserRole } from '../types.js';
 import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, PHARMIA_CREDIT_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
-import PDFDocument from 'pdfkit';
 
 const router = express.Router();
 
