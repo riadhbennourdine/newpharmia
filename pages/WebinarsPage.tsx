@@ -377,6 +377,7 @@ const WebinarsPage: React.FC = () => {
                     <div className="flex-grow">
                         <img src="https://pharmaconseilbmb.com/photos/site/P.png" alt="Master Class Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Master Class Officine 2026</h3>
+                        <p className="text-base font-bold text-teal-700 mb-2">1 Master Class : 240 DT HT</p>
                         <p className="text-sm font-semibold text-teal-600 mb-4">Pour Pharmaciens</p>
                         <p className="text-slate-600 mb-6 flex-grow">
                             Un programme d'excellence pour approfondir vos connaissances sur des thèmes majeurs de l'officine.
