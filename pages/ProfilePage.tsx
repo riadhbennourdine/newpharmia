@@ -259,9 +259,9 @@ const ProfilePage: React.FC = () => {
                         <DocumentTextIcon className="h-8 w-8 text-teal-600 mr-3"/>
                         <h2 className="text-2xl font-semibold text-slate-700 font-poppins">Mes Factures</h2>
                     </div>
-                    {invoices.length > 0 ? (
+                    {invoices.filter(invoice => invoice.invoiceUrl).length > 0 ? (
                         <ul className="space-y-4">
-                            {invoices.map(invoice => (
+                            {invoices.filter(invoice => invoice.invoiceUrl).map(invoice => (
                                 <li key={invoice._id as string} className="border border-slate-200 rounded-lg p-4 flex justify-between items-center shadow-sm">
                                     <div>
                                         <p className="font-semibold text-slate-800 font-roboto">Facture #{invoice._id?.toString().slice(-6)}</p>
@@ -269,18 +269,14 @@ const ProfilePage: React.FC = () => {
                                         <p className="text-sm text-slate-600 font-roboto">Statut: {invoice.status}</p>
                                         <p className="text-sm text-slate-600 font-roboto">Date: {new Date(invoice.createdAt).toLocaleDateString()}</p>
                                     </div>
-                                    {invoice.invoiceUrl ? (
-                                        <a 
-                                            href={invoice.invoiceUrl} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                                        >
-                                            Voir la facture
-                                        </a>
-                                    ) : (
-                                        <span className="text-slate-500 px-4 py-2">Facture non disponible</span>
-                                    )}
+                                    <a 
+                                        href={invoice.invoiceUrl!} // Assert non-null because of filter
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                                    >
+                                        Voir la facture
+                                    </a>
                                 </li>
                             ))}
                         </ul>
