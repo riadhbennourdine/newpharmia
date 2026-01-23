@@ -971,6 +971,63 @@ router.delete('/:webinarId/attendees/:attendeeUserId', authenticateToken, checkR
     }
 });
 
+// POST to manually add an attendee to a webinar (Admin only)
+router.post('/:webinarId/attendees', authenticateToken, checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]), async (req, res) => {
+    try {
+        const { webinarId } = req.params;
+        const { userId } = req.body;
+
+        if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid webinar ID or user ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+        const usersCollection = db.collection('users');
+
+        const webinar = await webinarsCollection.findOne({ _id: new ObjectId(webinarId) });
+        if (!webinar) {
+            return res.status(404).json({ message: 'Webinar not found.' });
+        }
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const isRegistered = webinar.attendees.some(att => att.userId.toString() === userId.toString());
+        if (isRegistered) {
+            return res.status(409).json({ message: 'User is already registered for this webinar.' });
+        }
+
+        const newAttendee = {
+            userId: new ObjectId(userId),
+            status: 'CONFIRMED' as const,
+            registeredAt: new Date(),
+            timeSlots: ['ON_DEMAND'],
+            usedCredit: false,
+            email: user.email, // Include email for reference
+        };
+
+        const result = await webinarsCollection.updateOne(
+            { _id: new ObjectId(webinarId) },
+            { $push: { attendees: newAttendee as any } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(500).json({ message: 'Failed to add attendee to webinar.' });
+        }
+        
+        // Return the updated webinar or just a success message
+        res.status(201).json({ message: 'Attendee added successfully.' });
+
+    } catch (error) {
+        console.error('Error manually adding attendee:', error);
+        res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+});
+
 // PUT to update time slots for an attendee (User or Admin)
 router.put('/:webinarId/attendees/:userId/slots', authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {

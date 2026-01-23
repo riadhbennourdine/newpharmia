@@ -448,6 +448,8 @@ const WebinarDetailPage: React.FC = () => {
     const { findItem, addToCart } = useCart(); // Access findItem and addToCart from useCart
     const [isAdded, setIsAdded] = useState(false); // New state elevated to WebinarDetailPage
     const navigate = useNavigate();
+    const [newUserEmail, setNewUserEmail] = useState('');
+    const [isAddingUser, setIsAddingUser] = useState(false);
 
     // Effect to update isAdded state when webinar or cart items change
     useEffect(() => {
@@ -455,6 +457,51 @@ const WebinarDetailPage: React.FC = () => {
             setIsAdded(!!findItem(webinar._id as string));
         }
     }, [webinar, findItem]);
+
+    const handleAddAttendee = async () => {
+        if (!newUserEmail) {
+            alert('Veuillez entrer un email.');
+            return;
+        }
+        if (!webinarId || !token) return;
+
+        setIsAddingUser(true);
+        try {
+            // 1. Find user by email
+            const userResponse = await fetch(`/api/users/by-email/${newUserEmail}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Utilisateur non trouvé.');
+            }
+            const userToAdd: User = await userResponse.json();
+
+            // 2. Add user to webinar
+            const addResponse = await fetch(`/api/webinars/${webinarId}/attendees`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ userId: userToAdd._id }),
+            });
+
+            if (!addResponse.ok) {
+                const errorData = await addResponse.json();
+                throw new Error(errorData.message || 'Erreur lors de l\'ajout du participant.');
+            }
+
+            alert('Participant ajouté avec succès.');
+            setNewUserEmail('');
+            window.location.reload(); // Reload to refresh the list
+
+        } catch (err: any) {
+            alert(`Erreur: ${err.message}`);
+        } finally {
+            setIsAddingUser(false);
+        }
+    };
 
     const handleUseCreditForMasterClass = async (webinarId: string) => {
         if (!user || !token || !webinarId) return;
@@ -524,10 +571,9 @@ const WebinarDetailPage: React.FC = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to delete attendee');
             }
-
-            // Refetch webinar details to update the attendee list
-            // The useEffect will handle the refetch
+            
             alert('Participant supprimé avec succès.');
+            window.location.reload(); // Reload to refresh the list
 
         } catch (err: any) {
             alert(`Erreur: ${err.message}`);
@@ -812,6 +858,25 @@ const WebinarDetailPage: React.FC = () => {
                             {(user?.role === UserRole.ADMIN || user?.role === UserRole.ADMIN_WEBINAR) && webinar.attendees && (
                                  <div className="mt-8 p-4 border-t border-gray-200">
                                     <h3 className="text-xl font-semibold text-slate-800">Participants ({webinar.attendees.length})</h3>
+                                    <div className="mt-4 mb-4 p-4 border rounded-lg bg-slate-50">
+                                        <h4 className="font-semibold text-slate-700 mb-2">Ajouter un participant manuellement</h4>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="email"
+                                                value={newUserEmail}
+                                                onChange={(e) => setNewUserEmail(e.target.value)}
+                                                placeholder="Email de l'utilisateur"
+                                                className="flex-grow p-2 border rounded-md"
+                                            />
+                                            <button
+                                                onClick={handleAddAttendee}
+                                                disabled={isAddingUser}
+                                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+                                            >
+                                                {isAddingUser ? 'Ajout...' : 'Ajouter'}
+                                            </button>
+                                        </div>
+                                    </div>
                                     <ul className="list-disc list-inside mt-2 text-slate-600">
                                         {webinar.attendees.map(attendee => (
                                             <li key={attendee.userId.toString()} className="flex items-center justify-between">
