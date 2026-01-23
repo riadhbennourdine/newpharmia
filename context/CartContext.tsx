@@ -148,6 +148,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return [...prevItems, newItem];
       }
     });
+    console.log('Cart items after update:', cartItems); // Diagnostic log
   };
 
   const removeFromCart = (id: string) => {
