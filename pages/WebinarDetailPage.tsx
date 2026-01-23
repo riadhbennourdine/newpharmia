@@ -55,7 +55,8 @@ const WebinarActionButtons: React.FC<{
     selectedSlots: WebinarTimeSlot[];
     isMasterClass: boolean;
     isUpdateMode: boolean;
-}> = ({ webinar, userMasterClassCredits, onUseCredit, isAdded, handleGoToCart, handleAction, buttonClassName, buttonText, buttonOnClick, selectedSlots, isMasterClass, isUpdateMode }) => {
+    addToCart: (item: { webinar?: Webinar, pack?: Pack, type: ProductType, selectedSlots?: WebinarTimeSlot[] }) => void;
+}> = ({ webinar, userMasterClassCredits, onUseCredit, isAdded, handleGoToCart, handleAction, buttonClassName, buttonText, buttonOnClick, selectedSlots, isMasterClass, isUpdateMode, addToCart }) => {
     const isFree = webinar.price === 0;
 
     if (isMasterClass && !isUpdateMode && !isAdded) {
@@ -444,7 +445,7 @@ const WebinarDetailPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [webinarDescription, setWebinarDescription] = useState<string | null>(null);
     const { user, token } = useAuth();
-    const { findItem } = useCart(); // Access findItem from useCart
+    const { findItem, addToCart } = useCart(); // Access findItem and addToCart from useCart
     const [isAdded, setIsAdded] = useState(false); // New state elevated to WebinarDetailPage
     const navigate = useNavigate();
 
@@ -736,6 +737,7 @@ const WebinarDetailPage: React.FC = () => {
                                         selectedSlots={[]}
                                         isMasterClass={true}
                                         isUpdateMode={false}
+                                        addToCart={addToCart} // Pass addToCart here
                                     />
                                 </div>
                             )}
