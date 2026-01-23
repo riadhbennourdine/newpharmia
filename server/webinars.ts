@@ -236,6 +236,7 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         }
 
 
+        const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
         webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar);
         
         // Populate price for Master Class webinars
