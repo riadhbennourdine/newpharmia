@@ -6,6 +6,7 @@ import { authenticateToken } from './authMiddleware.js';
 import type { AuthenticatedRequest } from './authMiddleware.js';
 import { Order, OrderStatus, Webinar, WebinarTimeSlot, WebinarGroup, ProductType, UserRole } from '../types.js';
 import { WEBINAR_PRICE, MASTER_CLASS_PRICE, MASTER_CLASS_PACKS, PHARMIA_CREDIT_PACKS, TAX_RATES, PHARMIA_WEBINAR_PRICE_HT } from '../constants.js';
+import PDFDocument from 'pdfkit';
 
 const router = express.Router();
 
@@ -236,6 +237,30 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
     }
 });
 
+// GET /api/orders/my-orders
+// Lists orders for the authenticated user.
+router.get('/my-orders', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated.' });
+    }
+
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const ordersCollection = db.collection<Order>('orders');
+
+        const orders = await ordersCollection.find({ userId: new ObjectId(userId) }).sort({ createdAt: -1 }).toArray();
+
+        res.json(orders);
+
+    } catch (error) {
+        console.error('Error fetching user orders:', error);
+        res.status(500).json({ message: 'Internal server error while fetching user orders.' });
+    }
+});
+
 // GET /api/orders/:orderId
 // Retrieves a specific order, ensuring the user is authorized to view it.
 router.get('/:orderId', authenticateToken, async (req: AuthenticatedRequest, res) => {
@@ -268,6 +293,83 @@ router.get('/:orderId', authenticateToken, async (req: AuthenticatedRequest, res
     } catch (error) {
         console.error('Error fetching order:', error);
         res.status(500).json({ message: 'Internal server error while fetching order.' });
+    }
+});
+
+// GET /api/orders/:orderId/invoice
+// Generates and serves a PDF invoice for a specific order.
+router.get('/:orderId/invoice', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    const { orderId } = req.params;
+    const userId = req.user?._id;
+    const userRole = req.user?.role;
+
+    if (!ObjectId.isValid(orderId)) {
+        return res.status(400).json({ message: 'Invalid order ID.' });
+    }
+
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const ordersCollection = db.collection<Order>('orders');
+        const usersCollection = db.collection('users');
+
+        const order = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found.' });
+        }
+
+        // Ensure the user is the owner of the order or an admin
+        if (order.userId.toString() !== userId?.toString() && userRole !== 'ADMIN') {
+            return res.status(403).json({ message: 'You are not authorized to view this invoice.' });
+        }
+
+        const user = await usersCollection.findOne({ _id: order.userId });
+
+        // Create a new PDF document
+        const doc = new PDFDocument({ margin: 50 });
+
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+
+        doc.pipe(res);
+
+        // Add content to the PDF
+        doc.fontSize(25).text('Facture Pharmia', { align: 'center' });
+        doc.moveDown();
+
+        doc.fontSize(12).text(`Date de la facture: ${new Date(order.createdAt).toLocaleDateString()}`);
+        doc.text(`Numéro de commande: ${order._id}`);
+        doc.moveDown();
+
+        doc.text(`Client:`);
+        doc.text(`${user?.firstName} ${user?.lastName}`);
+        doc.text(`${user?.email}`);
+        doc.text(`${user?.phoneNumber || ''}`);
+        doc.text(`${user?.city || ''}`);
+        doc.moveDown();
+
+        doc.fontSize(15).text('Détails de la commande:', { underline: true });
+        doc.moveDown();
+
+        order.items.forEach((item, index) => {
+            doc.text(`- Article ${index + 1}: ${item.type === ProductType.WEBINAR ? 'Webinar' : 'Pack'} (ID: ${item.webinarId || item.packId})`);
+            // Add more details about the item if necessary
+        });
+        doc.moveDown();
+
+        doc.fontSize(18).text(`Montant Total: ${order.totalAmount?.toFixed(2)} TND`, { align: 'right' });
+        doc.moveDown();
+
+        doc.fontSize(10).text('Merci pour votre commande!', { align: 'center' });
+
+        // Finalize PDF file
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating invoice PDF:', error);
+        res.status(500).json({ message: 'Internal server error while generating invoice PDF.' });
     }
 });
 

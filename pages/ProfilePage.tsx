@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../types';
-import { UserIcon, KeyIcon, UserGroupIcon, PencilIcon, CheckCircleIcon } from '../components/Icons';
+import { Order } from '../types';
+import { UserIcon, KeyIcon, UserGroupIcon, PencilIcon, CheckCircleIcon, DocumentTextIcon } from '../components/Icons';
 
 const ProfilePage: React.FC = () => {
     const { user, token, setUser } = useAuth();
@@ -12,6 +13,7 @@ const ProfilePage: React.FC = () => {
     const [newPassword, setNewPassword] = useState('');
     const [team, setTeam] = useState<User[]>([]);
     const [isEditing, setIsEditing] = useState(false);
+    const [invoices, setInvoices] = useState<Order[]>([]); // New state for invoices
 
     useEffect(() => {
         if (user?.role === 'PHARMACIEN' && user?._id) {
@@ -33,6 +35,30 @@ const ProfilePage: React.FC = () => {
             fetchTeam();
         }
     }, [user, token]);
+
+    // New useEffect to fetch invoices
+    useEffect(() => {
+        if (user) {
+            const fetchInvoices = async () => {
+                try {
+                    const response = await fetch('/api/orders/my-orders', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const invoiceData = await response.json();
+                        setInvoices(invoiceData);
+                    } else {
+                        console.error('Failed to fetch invoices:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error fetching invoices:', error);
+                }
+            };
+            fetchInvoices();
+        }
+    }, [user, token]); // Re-fetch when user or token changes
 
     if (!user) {
         return <div className="flex justify-center items-center h-screen">Chargement du profil...</div>;
@@ -204,6 +230,36 @@ const ProfilePage: React.FC = () => {
                             Mettre à jour le mot de passe
                         </button>
                     </form>
+                </div>
+
+                {/* Invoices Section */}
+                <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+                    <div className="flex items-center mb-6">
+                        <DocumentTextIcon className="h-8 w-8 text-teal-600 mr-3"/>
+                        <h2 className="text-2xl font-semibold text-slate-700 font-poppins">Mes Factures</h2>
+                    </div>
+                    {invoices.length > 0 ? (
+                        <ul className="space-y-4">
+                            {invoices.map(invoice => (
+                                <li key={invoice._id as string} className="border border-slate-200 rounded-lg p-4 flex justify-between items-center shadow-sm">
+                                    <div>
+                                        <p className="font-semibold text-slate-800 font-roboto">Facture #{invoice._id?.toString().slice(-6)}</p>
+                                        <p className="text-sm text-slate-600 font-roboto">Montant: {invoice.totalAmount?.toFixed(2)} TND</p>
+                                        <p className="text-sm text-slate-600 font-roboto">Statut: {invoice.status}</p>
+                                        <p className="text-sm text-slate-600 font-roboto">Date: {new Date(invoice.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => window.open(`/api/orders/${invoice._id}/invoice`, '_blank')} // Open PDF in new tab
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                                    >
+                                        Voir la facture
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-slate-500 font-roboto">Aucune facture disponible pour le moment.</p>
+                    )}
                 </div>
 
                 {/* Team Members Section */}
