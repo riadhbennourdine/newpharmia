@@ -3,6 +3,7 @@ import { sendSingleEmail } from './emailService.js';
 import jwt from 'jsonwebtoken';
 import { addToNewsletterGroup } from './subscribe.js';
 import { Webinar, UserRole, WebinarGroup, WebinarStatus, ClientStatus, WebinarTimeSlot } from '../types.js';
+import { MASTER_CLASS_PACKS } from '../constants.js';
 import clientPromise from './mongo.js';
 import { ObjectId } from 'mongodb';
 import { authenticateToken, checkRole, softAuthenticateToken } from './authMiddleware.js';
@@ -235,9 +236,12 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
         }
 
 
-        console.log('[Webinar Debug] Entering GET /:id handler.');
-        const webinarResponse = { ...webinar } as Partial<Webinar> & { isRegistered?: boolean; registrationStatus?: string | null; calculatedStatus?: WebinarStatus };
         webinarResponse.calculatedStatus = getWebinarCalculatedStatus(webinar);
+        
+        // Populate price for Master Class webinars
+        if (webinar.group === WebinarGroup.MASTER_CLASS) {
+            webinarResponse.price = MASTER_CLASS_PACKS[0].priceHT; // Price for 1 Master Class unit
+        }
 
         const authReq = req as AuthenticatedRequest;
         
