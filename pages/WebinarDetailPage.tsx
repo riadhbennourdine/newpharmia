@@ -554,6 +554,7 @@ const WebinarDetailPage: React.FC = () => {
 
                 // --- NEW LOGIC FOR MASTERCLASS DESCRIPTION ---
                 if (data.group === WebinarGroup.MASTER_CLASS) {
+                    console.log('WebinarDetailPage: Master Class Webinar Price:', data.price); // Diagnostic log
                     try {
                         const mdResponse = await fetch('/content/master_class_description.md');
                         if (mdResponse.ok) {
