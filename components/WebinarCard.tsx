@@ -221,8 +221,8 @@ const WebinarCard: React.FC<{
             <div className="mt-auto p-4 border-t border-slate-100 bg-slate-50 flex flex-row justify-between items-center">
                 <p className="text-xl font-bold text-teal-600 py-2">
                     {isMasterClass
-                        ? new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) // Display date for MCs
-                        : new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        ? '240 DT HT' // Display 240 DT HT for MCs
+                        : new Date(webinar.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </p>
                 {renderButtons()}
             </div>
