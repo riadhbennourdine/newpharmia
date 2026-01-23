@@ -324,7 +324,7 @@ router.get('/:orderId/invoice', authenticateToken, async (req: AuthenticatedRequ
             return res.status(403).json({ message: 'You are not authorized to view this invoice.' });
         }
 
-        const user = await usersCollection.findOne({ _id: order.userId });
+        const user = await usersCollection.findOne({ _id: new ObjectId(order.userId) });
 
         // Create a new PDF document
         const doc = new PDFDocument({ margin: 50 });
