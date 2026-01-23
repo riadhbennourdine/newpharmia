@@ -1204,6 +1204,9 @@ const server = app.listen(port, async () => { // Capture server instance
     // await ensureAdminUserExists();
 });
 
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown); // Also handle Ctrl+C locally
+
 // Graceful Shutdown Logic
 const gracefulShutdown = async () => {
     console.log('Received SIGTERM/SIGINT signal. Initiating graceful shutdown.');
