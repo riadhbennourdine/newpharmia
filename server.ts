@@ -1207,6 +1207,38 @@ const server = app.listen(port, async () => { // Capture server instance
 
 
 
+// Graceful Shutdown Logic
+const gracefulShutdown = async () => {
+    console.log('Received SIGTERM/SIGINT signal. Initiating graceful shutdown.');
+    
+    // 1. Close HTTP server
+    server.close(() => {
+        console.log('HTTP server closed.');
+        // 2. Close MongoDB connection
+        client.close(false) // Use false to indicate not forcing close
+            .then(() => console.log('MongoDB connection closed.'))
+            .catch(err => console.error('Error closing MongoDB connection:', err))
+            .finally(() => {
+                // 3. Stop Cron Jobs (if initCronJobs exposed a stop method)
+                // For now, cron jobs will be terminated with the process.
+                // TODO: Implement graceful stop for cron jobs in server/cronService.ts
+
+                console.log('Process exiting.');
+                process.exit(0);
+            });
+    });
+
+    // Force close after a timeout if server doesn't close gracefully
+    setTimeout(() => {
+        console.error('Forcing shutdown after 10 seconds.');
+        process.exit(1);
+    }, 10000); // 10 seconds timeout
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown); // Also handle Ctrl+C locally
+
+
 async function ensureAdminUserExists() {
     try {
         const client = await clientPromise;
