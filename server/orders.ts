@@ -483,4 +483,45 @@ router.post('/:orderId/confirm', authenticateToken, async (req: AuthenticatedReq
     }
 });
 
+// PUT /api/orders/:orderId/invoiceUrl (Admin Only)
+// Updates the invoiceUrl for a specific order.
+router.put('/:orderId/invoiceUrl', authenticateToken, async (req: AuthenticatedRequest, res) => {
+    const { orderId } = req.params;
+    const { invoiceUrl } = req.body;
+    const userRole = req.user?.role;
+
+    if (userRole !== 'ADMIN' && userRole !== 'ADMIN_WEBINAR') {
+        return res.status(403).json({ message: 'Unauthorized.' });
+    }
+
+    if (!ObjectId.isValid(orderId)) {
+        return res.status(400).json({ message: 'Invalid order ID.' });
+    }
+
+    if (typeof invoiceUrl !== 'string' && invoiceUrl !== null && invoiceUrl !== undefined) {
+        return res.status(400).json({ message: 'invoiceUrl must be a string, null, or undefined.' });
+    }
+
+    try {
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const ordersCollection = db.collection<Order>('orders');
+
+        const result = await ordersCollection.updateOne(
+            { _id: new ObjectId(orderId) },
+            { $set: { invoiceUrl: invoiceUrl, updatedAt: new Date() } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Order not found.' });
+        }
+
+        res.json({ message: 'Invoice URL updated successfully.' });
+
+    } catch (error) {
+        console.error('Error updating invoice URL:', error);
+        res.status(500).json({ message: 'Internal server error while updating invoice URL.' });
+    }
+});
+
 export default router;

@@ -20,6 +20,8 @@ const OrderManager: React.FC = () => {
     const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
     const [filterType, setFilterType] = useState<'ALL' | 'MASTER_CLASS' | 'CROP_TUNIS'>('ALL');
     const [filteredOrders, setFilteredOrders] = useState<OrderWithUser[]>([]);
+    const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null);
+    const [currentInvoiceUrlInput, setCurrentInvoiceUrlInput] = useState<string>('');
 
     useEffect(() => {
         let currentFilteredOrders = orders;
@@ -76,6 +78,31 @@ const OrderManager: React.FC = () => {
             alert('Commande confirmée avec succès.');
             // Refresh list
             setOrders(orders.filter(o => o._id.toString() !== orderId));
+        } catch (err: any) {
+            alert(`Erreur: ${err.message}`);
+        } finally {
+            setProcessingOrderId(null);
+        }
+    };
+
+    const handleSaveInvoiceUrl = async (orderId: string) => {
+        setProcessingOrderId(orderId);
+        try {
+            const response = await fetch(`/api/orders/${orderId}/invoiceUrl`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ invoiceUrl: currentInvoiceUrlInput === '' ? null : currentInvoiceUrlInput })
+            });
+
+            if (!response.ok) throw new Error('Failed to update invoice URL');
+
+            alert('URL de la facture mise à jour avec succès.');
+            setEditingInvoiceId(null);
+            setCurrentInvoiceUrlInput('');
+            fetchOrders(); // Refresh orders to show updated invoice URL
         } catch (err: any) {
             alert(`Erreur: ${err.message}`);
         } finally {
@@ -157,6 +184,53 @@ const OrderManager: React.FC = () => {
                                     </a>
                                 ) : (
                                     <span className="text-red-500 text-sm italic">Pas de preuve téléversée</span>
+                                )}
+
+                                {editingInvoiceId === order._id.toString() ? (
+                                    <div className="flex flex-col items-end space-y-2">
+                                        <input
+                                            type="text"
+                                            value={currentInvoiceUrlInput}
+                                            onChange={(e) => setCurrentInvoiceUrlInput(e.target.value)}
+                                            placeholder="URL de la facture (laisser vide pour supprimer)"
+                                            className="w-full md:w-64 p-2 border border-slate-300 rounded-md text-sm"
+                                        />
+                                        <div className="flex space-x-2">
+                                            <button
+                                                onClick={() => handleSaveInvoiceUrl(order._id.toString())}
+                                                disabled={processingOrderId === order._id.toString()}
+                                                className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1 px-3 rounded shadow-sm disabled:opacity-50 text-sm"
+                                            >
+                                                {processingOrderId === order._id.toString() ? <Spinner className="h-4 w-4 mr-2" /> : 'Sauvegarder'}
+                                            </button>
+                                            <button
+                                                onClick={() => { setEditingInvoiceId(null); setCurrentInvoiceUrlInput(''); }}
+                                                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded shadow-sm text-sm"
+                                            >
+                                                Annuler
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-end space-y-2">
+                                        {order.invoiceUrl && (
+                                            <a 
+                                                href={order.invoiceUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="flex items-center text-green-600 hover:text-green-800 text-sm font-medium"
+                                            >
+                                                <DocumentTextIcon className="h-5 w-5 mr-1" />
+                                                Voir la facture attachée
+                                            </a>
+                                        )}
+                                        <button
+                                            onClick={() => { setEditingInvoiceId(order._id.toString()); setCurrentInvoiceUrlInput(order.invoiceUrl || ''); }}
+                                            className="bg-gray-200 hover:bg-gray-300 text-slate-700 font-bold py-1 px-3 rounded shadow-sm text-sm"
+                                        >
+                                            Attacher/Modifier Facture
+                                        </button>
+                                    </div>
                                 )}
 
                                 <button
