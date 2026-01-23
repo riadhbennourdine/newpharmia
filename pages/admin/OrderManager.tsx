@@ -22,6 +22,8 @@ const OrderManager: React.FC = () => {
     const [filteredOrders, setFilteredOrders] = useState<OrderWithUser[]>([]);
     const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null);
     const [currentInvoiceUrlInput, setCurrentInvoiceUrlInput] = useState<string>('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null); // New state for file upload
+    const [uploadingFile, setUploadingFile] = useState<boolean>(false); // New state for upload status
 
     useEffect(() => {
         let currentFilteredOrders = orders;
@@ -102,11 +104,41 @@ const OrderManager: React.FC = () => {
             alert('URL de la facture mise à jour avec succès.');
             setEditingInvoiceId(null);
             setCurrentInvoiceUrlInput('');
-            fetchOrders(); // Refresh orders to show updated invoice URL
-        } catch (err: any) {
-            alert(`Erreur: ${err.message}`);
-        } finally {
             setProcessingOrderId(null);
+        }
+    };
+
+    const handleFileUpload = async (orderId: string) => {
+        if (!selectedFile) {
+            alert('Veuillez sélectionner un fichier PDF à télécharger.');
+            return;
+        }
+
+        setUploadingFile(true);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+            const response = await fetch('/api/upload/file', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                    // Note: Content-Type header is usually not set manually for FormData
+                },
+                body: formData,
+            });
+
+            if (!response.ok) throw new Error('Échec du téléchargement du fichier.');
+
+            const data = await response.json();
+            setCurrentInvoiceUrlInput(data.fileUrl); // Set the returned URL to the input field
+            alert('Fichier téléchargé avec succès. Vous pouvez maintenant sauvegarder l\'URL.');
+        } catch (err: any) {
+            console.error('Error uploading file:', err);
+            alert(`Erreur lors du téléchargement: ${err.message}`);
+        } finally {
+            setUploadingFile(false);
+            setSelectedFile(null); // Clear selected file after upload attempt
         }
     };
 
@@ -188,23 +220,38 @@ const OrderManager: React.FC = () => {
 
                                 {editingInvoiceId === order._id.toString() ? (
                                     <div className="flex flex-col items-end space-y-2">
-                                        <input
-                                            type="text"
-                                            value={currentInvoiceUrlInput}
-                                            onChange={(e) => setCurrentInvoiceUrlInput(e.target.value)}
-                                            placeholder="URL de la facture (laisser vide pour supprimer)"
-                                            className="w-full md:w-64 p-2 border border-slate-300 rounded-md text-sm"
-                                        />
-                                        <div className="flex space-x-2">
+                                        <div className="w-full md:w-64">
+                                            <input
+                                                type="text"
+                                                value={currentInvoiceUrlInput}
+                                                onChange={(e) => setCurrentInvoiceUrlInput(e.target.value)}
+                                                placeholder="URL de la facture (coller ou télécharger)"
+                                                className="w-full p-2 border border-slate-300 rounded-md text-sm mb-2"
+                                            />
+                                            <input 
+                                                type="file" 
+                                                onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)} 
+                                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                            />
+                                            {selectedFile && <p className="text-xs text-slate-600 mt-1">Fichier sélectionné: {selectedFile.name}</p>}
+                                            <button
+                                                onClick={() => handleFileUpload(order._id.toString())}
+                                                disabled={uploadingFile || !selectedFile}
+                                                className="w-full mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded shadow-sm disabled:opacity-50 text-sm flex items-center justify-center"
+                                            >
+                                                {uploadingFile ? <Spinner className="h-4 w-4 mr-2" /> : 'Télécharger et obtenir l\'URL'}
+                                            </button>
+                                        </div>
+                                        <div className="flex space-x-2 mt-2">
                                             <button
                                                 onClick={() => handleSaveInvoiceUrl(order._id.toString())}
-                                                disabled={processingOrderId === order._id.toString()}
+                                                disabled={processingOrderId === order._id.toString() || uploadingFile}
                                                 className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1 px-3 rounded shadow-sm disabled:opacity-50 text-sm"
                                             >
-                                                {processingOrderId === order._id.toString() ? <Spinner className="h-4 w-4 mr-2" /> : 'Sauvegarder'}
+                                                {processingOrderId === order._id.toString() ? <Spinner className="h-4 w-4 mr-2" /> : 'Sauvegarder l\'URL'}
                                             </button>
                                             <button
-                                                onClick={() => { setEditingInvoiceId(null); setCurrentInvoiceUrlInput(''); }}
+                                                onClick={() => { setEditingInvoiceId(null); setCurrentInvoiceUrlInput(''); setSelectedFile(null); }}
                                                 className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded shadow-sm text-sm"
                                             >
                                                 Annuler
