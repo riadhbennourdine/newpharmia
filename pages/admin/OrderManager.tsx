@@ -104,6 +104,10 @@ const OrderManager: React.FC = () => {
             alert('URL de la facture mise à jour avec succès.');
             setEditingInvoiceId(null);
             setCurrentInvoiceUrlInput('');
+            fetchOrders(); // Refresh orders to show updated invoice URL
+        } catch (err: any) {
+            alert(`Erreur: ${err.message}`);
+        } finally {
             setProcessingOrderId(null);
         }
     };
