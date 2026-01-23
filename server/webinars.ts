@@ -336,6 +336,13 @@ router.post('/by-ids', async (req, res) => {
 
         const webinars = await webinarsCollection.find({ _id: { $in: validObjectIds } }).toArray();
         
+        // Populate price for Master Class webinars
+        webinars.forEach(webinar => {
+            if (webinar.group === WebinarGroup.MASTER_CLASS) {
+                webinar.price = MASTER_CLASS_PACKS[0].priceHT; // Price for 1 Master Class unit
+            }
+        });
+
         res.json(webinars);
 
     } catch (error) {
