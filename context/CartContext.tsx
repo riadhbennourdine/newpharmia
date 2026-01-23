@@ -127,7 +127,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // If current cart is CROP and new item is MASTER_CLASS -> Error
         // If current cart is MASTER_CLASS and new item is CROP -> Error
         if (firstItemGroup !== itemGroup) {
-            alert("Impossible d'associer des formations CROP Tunis et des Master Classes dans le même panier pour des raisons de facturation.\n\nVeuillez finaliser votre commande en cours ou vider votre panier.");
+            alert("Impossible d'associer différents types de formations (CROP Tunis, PharmIA, Master Class) dans le même panier pour des raisons de facturation.\n\nVeuillez finaliser votre commande en cours ou vider votre panier.");
             return;
         }
     }
