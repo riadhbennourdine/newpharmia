@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '../types';
-import { Order } from '../types';
-import { UserIcon, KeyIcon, UserGroupIcon, PencilIcon, CheckCircleIcon, DocumentTextIcon } from '../components/Icons';
+import { Order } from '../types'; // Import Order type
+import { UserIcon, KeyIcon, UserGroupIcon, PencilIcon, CheckCircleIcon, DocumentTextIcon } from '../components/Icons'; // Import DocumentTextIcon
 
 const ProfilePage: React.FC = () => {
     const { user, token, setUser } = useAuth();
@@ -59,6 +59,27 @@ const ProfilePage: React.FC = () => {
             fetchInvoices();
         }
     }, [user, token]); // Re-fetch when user or token changes
+
+    useEffect(() => {
+        if (user?.role === 'PHARMACIEN' && user?._id) {
+            const fetchTeam = async () => {
+                try {
+                    const response = await fetch(`/api/users/pharmacists/${user._id}/team`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const teamData = await response.json();
+                        setTeam(teamData);
+                    }
+                } catch (error) {
+                    console.error('Error fetching team:', error);
+                }
+            };
+            fetchTeam();
+        }
+    }, [user, token]);
 
     if (!user) {
         return <div className="flex justify-center items-center h-screen">Chargement du profil...</div>;
@@ -248,12 +269,18 @@ const ProfilePage: React.FC = () => {
                                         <p className="text-sm text-slate-600 font-roboto">Statut: {invoice.status}</p>
                                         <p className="text-sm text-slate-600 font-roboto">Date: {new Date(invoice.createdAt).toLocaleDateString()}</p>
                                     </div>
-                                    <button 
-                                        onClick={() => window.open(`/api/orders/${invoice._id}/invoice`, '_blank')} // Open PDF in new tab
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                                    >
-                                        Voir la facture
-                                    </button>
+                                    {invoice.invoiceUrl ? (
+                                        <a 
+                                            href={invoice.invoiceUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                                        >
+                                            Voir la facture
+                                        </a>
+                                    ) : (
+                                        <span className="text-slate-500 px-4 py-2">Facture non disponible</span>
+                                    )}
                                 </li>
                             ))}
                         </ul>

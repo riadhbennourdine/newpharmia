@@ -379,6 +379,7 @@ export interface Order {
   status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
+  invoiceUrl?: string;
 }
 
 export interface Rating {
