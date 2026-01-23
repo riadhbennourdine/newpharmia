@@ -81,6 +81,7 @@ const WebinarsPage: React.FC = () => {
             navigate('/login', { state: { from: '/webinars' } });
             return;
         }
+        console.log('handleBuyPack: pack object before addToCart:', pack); // Diagnostic log
         // Use Cart Context to add pack (triggering security check)
         addToCart({
             type: ProductType.PACK,
