@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { ObjectId } from 'mongodb';
 import clientPromise from './mongo.js';
@@ -21,113 +20,153 @@ async function getCollections() {
 // NON-ADMIN ROUTES
 
 // Get group for the current user
-nonAdminRouter.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
+nonAdminRouter.get(
+  '/',
+  authenticateToken,
+  async (req: AuthenticatedRequest, res) => {
     console.log('GET /api/groups hit for non-admin user');
     const user = req.user!; // Authenticated user is guaranteed
 
     try {
-        const { usersCollection, groupsCollection } = await getCollections();
-        
-        if (!user.groupId) {
-            return res.status(404).json({ message: 'Group not found for this user.' });
-        }
+      const { usersCollection, groupsCollection } = await getCollections();
 
-        const group = await groupsCollection.findOne({ _id: new ObjectId(user.groupId) });
-        res.json(group);
+      if (!user.groupId) {
+        return res
+          .status(404)
+          .json({ message: 'Group not found for this user.' });
+      }
+
+      const group = await groupsCollection.findOne({
+        _id: new ObjectId(user.groupId),
+      });
+      res.json(group);
     } catch (error) {
-        res.status(500).json({ message: "Erreur lors de la récupération du groupe.", error });
+      res
+        .status(500)
+        .json({ message: 'Erreur lors de la récupération du groupe.', error });
     }
-});
-
+  },
+);
 
 // Update planning for a group
-nonAdminRouter.put('/:id/planning', authenticateToken, async (req: AuthenticatedRequest, res) => {
+nonAdminRouter.put(
+  '/:id/planning',
+  authenticateToken,
+  async (req: AuthenticatedRequest, res) => {
     try {
-        const { planning, isPlanningEnabled } = req.body;
-        const groupId = req.params.id;
-        const user = req.user!;
-        const { groupsCollection } = await getCollections();
+      const { planning, isPlanningEnabled } = req.body;
+      const groupId = req.params.id;
+      const user = req.user!;
+      const { groupsCollection } = await getCollections();
 
-        // 1. Verify Permission
-        const group = await groupsCollection.findOne({ _id: new ObjectId(groupId) });
-        if (!group) return res.status(404).json({ message: "Groupe non trouvé." });
+      // 1. Verify Permission
+      const group = await groupsCollection.findOne({
+        _id: new ObjectId(groupId),
+      });
+      if (!group)
+        return res.status(404).json({ message: 'Groupe non trouvé.' });
 
-        const isPharmacistInGroup = group.pharmacistIds.some(id => id.toString() === user._id.toString());
-        const isManager = group.managedBy && group.managedBy.toString() === user._id.toString();
-        const isAdmin = user.role === UserRole.ADMIN || user.role === UserRole.ADMIN_WEBINAR;
+      const isPharmacistInGroup = group.pharmacistIds.some(
+        (id) => id.toString() === user._id.toString(),
+      );
+      const isManager =
+        group.managedBy && group.managedBy.toString() === user._id.toString();
+      const isAdmin =
+        user.role === UserRole.ADMIN || user.role === UserRole.ADMIN_WEBINAR;
 
-        if (!isPharmacistInGroup && !isManager && !isAdmin) {
-             return res.status(403).json({ message: "Non autorisé à modifier le planning de ce groupe." });
-        }
+      if (!isPharmacistInGroup && !isManager && !isAdmin) {
+        return res
+          .status(403)
+          .json({
+            message: 'Non autorisé à modifier le planning de ce groupe.',
+          });
+      }
 
-        // 2. Validate & Sanitize Planning Data
-        const updateData: any = {};
-        
-        if (planning !== undefined) {
-            if (!Array.isArray(planning)) return res.status(400).json({ message: "Format de planning invalide." });
-            updateData.planning = planning.map((item: any) => ({
-                ficheId: item.ficheId,
-                startDate: new Date(item.startDate),
-                endDate: item.endDate ? new Date(item.endDate) : undefined,
-                active: item.active !== false
-            }));
-        }
+      // 2. Validate & Sanitize Planning Data
+      const updateData: any = {};
 
-        if (isPlanningEnabled !== undefined) {
-            updateData.isPlanningEnabled = !!isPlanningEnabled;
-        }
+      if (planning !== undefined) {
+        if (!Array.isArray(planning))
+          return res
+            .status(400)
+            .json({ message: 'Format de planning invalide.' });
+        updateData.planning = planning.map((item: any) => ({
+          ficheId: item.ficheId,
+          startDate: new Date(item.startDate),
+          endDate: item.endDate ? new Date(item.endDate) : undefined,
+          active: item.active !== false,
+        }));
+      }
 
-        // 3. Update Database
-        await groupsCollection.updateOne(
-            { _id: new ObjectId(groupId) },
-            { $set: updateData }
-        );
+      if (isPlanningEnabled !== undefined) {
+        updateData.isPlanningEnabled = !!isPlanningEnabled;
+      }
 
-        res.status(200).json({ message: "Planning mis à jour avec succès.", ...updateData });
+      // 3. Update Database
+      await groupsCollection.updateOne(
+        { _id: new ObjectId(groupId) },
+        { $set: updateData },
+      );
 
+      res
+        .status(200)
+        .json({ message: 'Planning mis à jour avec succès.', ...updateData });
     } catch (error) {
-        console.error("Erreur lors de la mise à jour du planning:", error);
-        res.status(500).json({ message: "Erreur lors de la mise à jour du planning.", error });
+      console.error('Erreur lors de la mise à jour du planning:', error);
+      res
+        .status(500)
+        .json({ message: 'Erreur lors de la mise à jour du planning.', error });
     }
-});
+  },
+);
 
 // Update instruction for a group
 nonAdminRouter.put('/:id/instruction', async (req, res) => {
-    try {
-        const { instruction, primaryMemoFicheId, additionalMemoFicheIds } = req.body;
-        const { groupsCollection } = await getCollections();
+  try {
+    const { instruction, primaryMemoFicheId, additionalMemoFicheIds } =
+      req.body;
+    const { groupsCollection } = await getCollections();
 
-        const updateFields: any = {
-            instruction,
-            instructionDate: new Date(),
-        };
+    const updateFields: any = {
+      instruction,
+      instructionDate: new Date(),
+    };
 
-        if (primaryMemoFicheId) {
-            updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
-        } else {
-            updateFields.primaryMemoFicheId = undefined; // Clear if not provided
-        }
-
-        if (additionalMemoFicheIds && Array.isArray(additionalMemoFicheIds)) {
-            updateFields.instructionFiches = additionalMemoFicheIds.map((id: string) => new ObjectId(id));
-        } else {
-            updateFields.instructionFiches = []; // Clear if not provided or invalid
-        }
-
-        const result = await groupsCollection.updateOne(
-            { _id: new ObjectId(req.params.id) },
-            { $set: updateFields }
-        );
-
-        if (result.modifiedCount === 0) {
-            return res.status(404).json({ message: "Groupe non trouvé ou consigne non modifiée." });
-        }
-
-        res.status(200).json({ message: "Consigne mise à jour avec succès." });
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour de la consigne:", error);
-        res.status(500).json({ message: "Erreur lors de la mise à jour de la consigne.", error });
+    if (primaryMemoFicheId) {
+      updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
+    } else {
+      updateFields.primaryMemoFicheId = undefined; // Clear if not provided
     }
+
+    if (additionalMemoFicheIds && Array.isArray(additionalMemoFicheIds)) {
+      updateFields.instructionFiches = additionalMemoFicheIds.map(
+        (id: string) => new ObjectId(id),
+      );
+    } else {
+      updateFields.instructionFiches = []; // Clear if not provided or invalid
+    }
+
+    const result = await groupsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateFields },
+    );
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: 'Groupe non trouvé ou consigne non modifiée.' });
+    }
+
+    res.status(200).json({ message: 'Consigne mise à jour avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la consigne:', error);
+    res
+      .status(500)
+      .json({
+        message: 'Erreur lors de la mise à jour de la consigne.',
+        error,
+      });
+  }
 });
 
 // ADMIN ROUTES
@@ -135,19 +174,48 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
 // Create a new group
 adminRouter.post('/', async (req, res) => {
   try {
-    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount } = req.body;
+    const {
+      name,
+      pharmacistIds,
+      preparatorIds,
+      managedBy,
+      subscriptionAmount,
+    } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
 
     // Validate that there is at least one member
-    if ((pharmacistIds?.length || 0) === 0 && (preparatorIds?.length || 0) === 0) {
-      return res.status(400).json({ message: 'Le groupe doit contenir au moins un membre.' });
+    if (
+      (pharmacistIds?.length || 0) === 0 &&
+      (preparatorIds?.length || 0) === 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: 'Le groupe doit contenir au moins un membre.' });
     }
 
-    const pharmacistObjectIds = pharmacistIds.map((id: string) => new ObjectId(id));
-    const pharmacists = await usersCollection.find({ _id: { $in: pharmacistObjectIds }, role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } }).toArray();
+    const pharmacistObjectIds = pharmacistIds.map(
+      (id: string) => new ObjectId(id),
+    );
+    const pharmacists = await usersCollection
+      .find({
+        _id: { $in: pharmacistObjectIds },
+        role: {
+          $in: [
+            UserRole.PHARMACIEN,
+            UserRole.ADMIN_WEBINAR,
+            UserRole.FORMATEUR,
+          ],
+        },
+      })
+      .toArray();
 
     if (pharmacists.length !== pharmacistIds.length) {
-      return res.status(400).json({ message: 'Un ou plusieurs pharmaciens sont invalides ou n\'existent pas.' });
+      return res
+        .status(400)
+        .json({
+          message:
+            "Un ou plusieurs pharmaciens sont invalides ou n'existent pas.",
+        });
     }
 
     const newGroup: Group = {
@@ -163,16 +231,37 @@ adminRouter.post('/', async (req, res) => {
     const result = await groupsCollection.insertOne(newGroup);
 
     // Update users with the new group ID
-    const userIdsToUpdate = [...pharmacistObjectIds, ...preparatorIds.map((id: string) => new ObjectId(id))];
-    await usersCollection.updateMany(
-      { _id: { $in: userIdsToUpdate } },
-      { $set: { groupId: newGroup._id } }
-    );
+    const preparatorObjectIds = preparatorIds.map((id: string) => new ObjectId(id));
+
+    if (pharmacistObjectIds.length > 0) {
+      await usersCollection.updateMany(
+        { _id: { $in: pharmacistObjectIds } },
+        { $set: { groupId: newGroup._id } },
+      );
+    }
+
+    if (preparatorObjectIds.length > 0) {
+      const primaryPharmacistId = pharmacistObjectIds[0];
+      if (primaryPharmacistId) {
+        await usersCollection.updateMany(
+          { _id: { $in: preparatorObjectIds } },
+          { $set: { groupId: newGroup._id, pharmacistId: primaryPharmacistId } },
+        );
+      } else {
+        // Fallback if a group is created with only preparators
+        await usersCollection.updateMany(
+          { _id: { $in: preparatorObjectIds } },
+          { $set: { groupId: newGroup._id } },
+        );
+      }
+    }
 
     res.status(201).json(newGroup);
   } catch (error) {
-    console.error("Erreur lors de la création du groupe:", error);
-    res.status(500).json({ message: "Erreur lors de la création du groupe.", error });
+    console.error('Erreur lors de la création du groupe:', error);
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la création du groupe.', error });
   }
 });
 
@@ -180,34 +269,50 @@ adminRouter.post('/', async (req, res) => {
 adminRouter.get('/', async (req, res) => {
   try {
     const { groupsCollection, usersCollection } = await getCollections();
-    
+
     // Fetch all groups, pharmacists, and managers concurrently
     const [groups, pharmacists, managers] = await Promise.all([
       groupsCollection.find({}).toArray(),
-      usersCollection.find({ role: { $in: [UserRole.PHARMACIEN, UserRole.ADMIN_WEBINAR, UserRole.FORMATEUR] } }).toArray(),
-      usersCollection.find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } }).toArray(),
+      usersCollection
+        .find({
+          role: {
+            $in: [
+              UserRole.PHARMACIEN,
+              UserRole.ADMIN_WEBINAR,
+              UserRole.FORMATEUR,
+            ],
+          },
+        })
+        .toArray(),
+      usersCollection
+        .find({ role: { $in: [UserRole.ADMIN, UserRole.FORMATEUR] } })
+        .toArray(),
     ]);
 
     // Combine all users who could potentially be a manager
     const allPotentialManagers = [...pharmacists, ...managers];
 
     // Create a map of pharmacists for easy lookup
-    const pharmacistMap = new Map(pharmacists.map(p => [
-      (p._id as ObjectId).toString(),
-      `${p.firstName} ${p.lastName}`
-    ]));
+    const pharmacistMap = new Map(
+      pharmacists.map((p) => [
+        (p._id as ObjectId).toString(),
+        `${p.firstName} ${p.lastName}`,
+      ]),
+    );
 
     // Create a map of managers for easy lookup
-    const managerMap = new Map(managers.map(m => [
+    const managerMap = new Map(
+      managers.map((m) => [
         (m._id as ObjectId).toString(),
-        `${m.firstName} ${m.lastName}`
-    ]));
+        `${m.firstName} ${m.lastName}`,
+      ]),
+    );
 
     // Add pharmacistNames, managerName, and subscriptionEndDate to each group
-    const populatedGroups = groups.map(group => {
+    const populatedGroups = groups.map((group) => {
       const pharmacistNames = (group.pharmacistIds || [])
-        .map(id => pharmacistMap.get(id.toString()))
-        .filter(name => name) as string[];
+        .map((id) => pharmacistMap.get(id.toString()))
+        .filter((name) => name) as string[];
 
       let managerName = 'Non assigné';
       let groupSubscriptionEndDate: Date | undefined = undefined;
@@ -216,21 +321,31 @@ adminRouter.get('/', async (req, res) => {
       if (group.pharmacistIds && group.pharmacistIds.length > 0) {
         const pharmacistSubscriptionDates: Date[] = [];
         for (const pharmacistId of group.pharmacistIds) {
-          const pharmacist = pharmacists.find(p => (p._id as ObjectId).toString() === pharmacistId.toString());
+          const pharmacist = pharmacists.find(
+            (p) => (p._id as ObjectId).toString() === pharmacistId.toString(),
+          );
           if (pharmacist && pharmacist.subscriptionEndDate) {
             pharmacistSubscriptionDates.push(pharmacist.subscriptionEndDate);
           }
         }
         if (pharmacistSubscriptionDates.length > 0) {
-          groupSubscriptionEndDate = new Date(Math.min(...pharmacistSubscriptionDates.map(date => date.getTime())));
+          groupSubscriptionEndDate = new Date(
+            Math.min(
+              ...pharmacistSubscriptionDates.map((date) => date.getTime()),
+            ),
+          );
         }
       }
 
       if (group.managedBy && ObjectId.isValid(group.managedBy.toString())) {
         const managerId = group.managedBy.toString();
         // Use the combined map for name lookup for simplicity, or create a combined one
-        const tempManagerName = allPotentialManagers.find(m => (m._id as ObjectId).toString() === managerId);
-        managerName = tempManagerName ? `${tempManagerName.firstName} ${tempManagerName.lastName}` : 'Non assigné';
+        const tempManagerName = allPotentialManagers.find(
+          (m) => (m._id as ObjectId).toString() === managerId,
+        );
+        managerName = tempManagerName
+          ? `${tempManagerName.firstName} ${tempManagerName.lastName}`
+          : 'Non assigné';
       }
 
       return {
@@ -244,7 +359,9 @@ adminRouter.get('/', async (req, res) => {
 
     res.json(populatedGroups);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des groupes.", error });
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la récupération des groupes.', error });
   }
 });
 
@@ -252,31 +369,49 @@ adminRouter.get('/', async (req, res) => {
 adminRouter.get('/:id', async (req, res) => {
   try {
     const { groupsCollection } = await getCollections();
-    const group = await groupsCollection.findOne({ _id: new ObjectId(req.params.id) });
+    const group = await groupsCollection.findOne({
+      _id: new ObjectId(req.params.id),
+    });
     if (!group) {
-      return res.status(404).json({ message: "Groupe non trouvé." });
+      return res.status(404).json({ message: 'Groupe non trouvé.' });
     }
     res.json(group);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération du groupe.", error });
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la récupération du groupe.', error });
   }
 });
 
 // Update a group
 adminRouter.put('/:id', async (req, res) => {
   try {
-    const { name, pharmacistIds, preparatorIds, managedBy, subscriptionAmount, subscriptionEndDate, primaryMemoFicheId, instructionFiches } = req.body;
+    const {
+      name,
+      pharmacistIds,
+      preparatorIds,
+      managedBy,
+      subscriptionAmount,
+      subscriptionEndDate,
+      primaryMemoFicheId,
+      instructionFiches,
+    } = req.body;
     const { groupsCollection, usersCollection } = await getCollections();
     const groupId = new ObjectId(req.params.id);
 
-
-
     const updateFields: any = {};
     if (name) updateFields.name = name;
-    if (pharmacistIds !== undefined) updateFields.pharmacistIds = (pharmacistIds as string[]).map(id => new ObjectId(id));
-    if (preparatorIds !== undefined) updateFields.preparatorIds = (preparatorIds as string[]).map(id => new ObjectId(id));
-    if (subscriptionAmount) updateFields.subscriptionAmount = subscriptionAmount;
-    
+    if (pharmacistIds !== undefined)
+      updateFields.pharmacistIds = (pharmacistIds as string[]).map(
+        (id) => new ObjectId(id),
+      );
+    if (preparatorIds !== undefined)
+      updateFields.preparatorIds = (preparatorIds as string[]).map(
+        (id) => new ObjectId(id),
+      );
+    if (subscriptionAmount)
+      updateFields.subscriptionAmount = subscriptionAmount;
+
     if (managedBy) {
       updateFields.managedBy = new ObjectId(managedBy);
     } else if (managedBy === '' || managedBy === null) {
@@ -285,58 +420,93 @@ adminRouter.put('/:id', async (req, res) => {
 
     // Handle primaryMemoFicheId
     if (primaryMemoFicheId) {
-        updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
+      updateFields.primaryMemoFicheId = new ObjectId(primaryMemoFicheId);
     } else if (primaryMemoFicheId === null) {
-        updateFields.primaryMemoFicheId = null; // Explicitly set to null to clear
+      updateFields.primaryMemoFicheId = null; // Explicitly set to null to clear
     }
 
     // Handle instructionFiches
     if (instructionFiches && Array.isArray(instructionFiches)) {
-        updateFields.instructionFiches = instructionFiches.map((id: string) => new ObjectId(id));
+      updateFields.instructionFiches = instructionFiches.map(
+        (id: string) => new ObjectId(id),
+      );
     } else if (instructionFiches === null || instructionFiches === undefined) {
-        updateFields.instructionFiches = []; // Explicitly set to empty array to clear
+      updateFields.instructionFiches = []; // Explicitly set to empty array to clear
     }
 
     const updatedGroup = await groupsCollection.findOneAndUpdate(
       { _id: groupId },
       { $set: updateFields },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
     );
 
     if (!updatedGroup) {
-      return res.status(404).json({ message: "Groupe non trouvé." });
+      return res.status(404).json({ message: 'Groupe non trouvé.' });
     }
 
     // Update users' groupId
-    const oldGroupUsers = await usersCollection.find({ groupId: groupId }).toArray();
-    const oldUserIds = oldGroupUsers.map(u => u._id);
+    const oldGroupUsers = await usersCollection
+      .find({ groupId: groupId })
+      .toArray();
+    const oldUserIds = oldGroupUsers.map((u) => u._id);
 
     const newUserIds = [
       ...(updateFields.pharmacistIds || []),
-      ...(updateFields.preparatorIds || [])
+      ...(updateFields.preparatorIds || []),
     ];
 
-    const usersToRemove = oldUserIds.filter(id => !newUserIds.some(newId => newId.toString() === id.toString()));
-    const usersToAdd = newUserIds.filter(id => !oldUserIds.some(oldId => oldId.toString() === id.toString()));
+    const usersToRemove = oldUserIds.filter(
+      (id) => !newUserIds.some((newId) => newId.toString() === id.toString()),
+    );
+    const usersToAdd = newUserIds.filter(
+      (id) => !oldUserIds.some((oldId) => oldId.toString() === id.toString()),
+    );
 
     if (usersToRemove.length > 0) {
       await usersCollection.updateMany(
         { _id: { $in: usersToRemove } },
-        { $unset: { groupId: "" } }
+        { $unset: { groupId: '', pharmacistId: '' } },
       );
     }
 
     if (usersToAdd.length > 0) {
-      await usersCollection.updateMany(
-        { _id: { $in: usersToAdd } },
-        { $set: { groupId: groupId } }
+      const preparatorsToAdd = usersToAdd.filter(id =>
+        (updateFields.preparatorIds || []).some((pId: ObjectId) => pId.equals(id))
       );
+      const pharmacistsToAdd = usersToAdd.filter(id =>
+        (updateFields.pharmacistIds || []).some((pId: ObjectId) => pId.equals(id))
+      );
+
+      if (pharmacistsToAdd.length > 0) {
+        await usersCollection.updateMany(
+          { _id: { $in: pharmacistsToAdd } },
+          { $set: { groupId: groupId } }
+        );
+      }
+
+      if (preparatorsToAdd.length > 0) {
+        const groupPharmacists = updatedGroup.pharmacistIds || [];
+        const primaryPharmacistId = groupPharmacists[0];
+        if (primaryPharmacistId) {
+            await usersCollection.updateMany(
+                { _id: { $in: preparatorsToAdd } },
+                { $set: { groupId: groupId, pharmacistId: primaryPharmacistId } }
+            );
+        } else {
+            await usersCollection.updateMany(
+                { _id: { $in: preparatorsToAdd } },
+                { $set: { groupId: groupId } }
+            );
+        }
+      }
     }
 
     res.json(updatedGroup);
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du groupe:", error);
-    res.status(500).json({ message: "Erreur lors de la mise à jour du groupe.", error });
+    console.error('Erreur lors de la mise à jour du groupe:', error);
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la mise à jour du groupe.', error });
   }
 });
 
@@ -349,15 +519,17 @@ adminRouter.delete('/:id', async (req, res) => {
     const result = await groupsCollection.deleteOne({ _id: groupId });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Groupe non trouvé." });
+      return res.status(404).json({ message: 'Groupe non trouvé.' });
     }
 
     // Remove groupId from users
     await usersCollection.updateMany({ groupId }, { $unset: { groupId: '' } });
 
-    res.status(200).json({ message: "Groupe supprimé avec succès." });
+    res.status(200).json({ message: 'Groupe supprimé avec succès.' });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la suppression du groupe.", error });
+    res
+      .status(500)
+      .json({ message: 'Erreur lors de la suppression du groupe.', error });
   }
 });
 
@@ -369,16 +541,21 @@ adminRouter.post('/:id/assign-fiche', async (req, res) => {
 
     const result = await groupsCollection.updateOne(
       { _id: new ObjectId(req.params.id) },
-      { $addToSet: { assignedFiches: { ficheId, assignedAt: new Date() } } }
+      { $addToSet: { assignedFiches: { ficheId, assignedAt: new Date() } } },
     );
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: "Groupe non trouvé." });
+      return res.status(404).json({ message: 'Groupe non trouvé.' });
     }
 
-    res.status(200).json({ message: "Mémofiche assignée avec succès." });
+    res.status(200).json({ message: 'Mémofiche assignée avec succès.' });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de l'assignation de la mémofiche.", error });
+    res
+      .status(500)
+      .json({
+        message: "Erreur lors de l'assignation de la mémofiche.",
+        error,
+      });
   }
 });
 
