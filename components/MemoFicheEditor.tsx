@@ -235,11 +235,8 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
 
   // Get IDs of all automatically included sections (dynamic non-memo sections + memo sections)
   const autoIncludedSectionIds = [...defaultDynamicSectionIds]; // Create mutable copy
-  if (
-    caseStudyType === 'maladie' ||
-    caseStudyType === 'pharmacologie' ||
-    caseStudyType === 'savoir'
-  ) {
+  // If memo sections exist, ensure they are included in the ordering
+  if (finalMemoSections.length > 0) {
     autoIncludedSectionIds.push(...finalMemoSections.map((s) => s.id));
   }
   const customSectionIds = safeCustomSections.map((s) => s.id);
@@ -542,22 +539,22 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
         allSections.push(
           {
             id: 'patientSituation',
-            title: 'Cas comptoir',
+            title: caseStudy.patientSituationTitle || 'Cas comptoir',
             rawContent: caseStudy.patientSituation,
           },
           {
             id: 'keyQuestions',
-            title: 'Questions clés à poser',
+            title: caseStudy.keyQuestionsTitle || 'Questions clés à poser',
             rawContent: caseStudy.keyQuestions,
           },
           {
             id: 'pathologyOverview',
-            title: 'Aperçu pathologie',
+            title: caseStudy.pathologyOverviewTitle || 'Aperçu pathologie',
             rawContent: caseStudy.pathologyOverview,
           },
           {
             id: 'redFlags',
-            title: "Signaux d'alerte",
+            title: caseStudy.redFlagsTitle || "Signaux d'alerte",
             rawContent: caseStudy.redFlags,
           },
         );
@@ -660,27 +657,27 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
         allSections.push(
           {
             id: 'mainTreatment',
-            title: 'Traitement Principal',
+            title: caseStudy.mainTreatmentTitle || 'Traitement Principal',
             rawContent: caseStudy.mainTreatment,
           },
           {
             id: 'associatedProducts',
-            title: 'Produits Associés',
+            title: caseStudy.associatedProductsTitle || 'Produits Associés',
             rawContent: caseStudy.associatedProducts,
           },
           {
             id: 'lifestyleAdvice',
-            title: 'Conseils Hygiène de vie',
+            title: caseStudy.lifestyleAdviceTitle || 'Conseils Hygiène de vie',
             rawContent: caseStudy.lifestyleAdvice,
           },
           {
             id: 'dietaryAdvice',
-            title: 'Conseils alimentaires',
+            title: caseStudy.dietaryAdviceTitle || 'Conseils alimentaires',
             rawContent: caseStudy.dietaryAdvice,
           },
           {
             id: 'keyPoints',
-            title: 'Points Clés & Références',
+            title: caseStudy.keyPointsTitle || 'Points Clés & Références',
             rawContent: caseStudy.keyPoints,
           },
         );
@@ -1228,6 +1225,15 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
             <SectionWrapper
               key={sectionInfo.id}
               title={sectionInfo.isMemoSection ? '' : sectionInfo.title}
+              onTitleChange={
+                !sectionInfo.isCustom && !sectionInfo.isMemoSection
+                  ? (newTitle) =>
+                      setCaseStudy((prev) => ({
+                        ...prev,
+                        [`${sectionInfo.id}Title`]: newTitle,
+                      }))
+                  : undefined
+              }
               onMoveUp={() => moveSection(index, 'up')}
               onMoveDown={() => moveSection(index, 'down')}
               isFirst={index === 0}

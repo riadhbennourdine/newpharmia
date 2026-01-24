@@ -25,12 +25,12 @@ export enum MemoFicheStatus {
 }
 
 export interface SimulationResult {
-    date: Date;
-    score: number;
-    feedback: string;
-    topic: string;
-    conversationHistory: ChatHistoryMessage[];
-    recommendedFiches?: { _id: string; title: string; }[];
+  date: Date;
+  score: number;
+  feedback: string;
+  topic: string;
+  conversationHistory: ChatHistoryMessage[];
+  recommendedFiches?: { _id: string; title: string }[];
 }
 
 export interface QuizHistoryEntry {
@@ -66,7 +66,7 @@ export interface User {
   updatedAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
-  readFiches?: { ficheId: string; readAt: Date; }[];
+  readFiches?: { ficheId: string; readAt: Date }[];
   quizHistory?: QuizHistoryEntry[];
   simulationHistory?: SimulationResult[];
   activeSimulation?: {
@@ -97,7 +97,7 @@ export interface Group {
   name: string;
   pharmacistIds: (ObjectId | string)[]; // Changé de pharmacistId à pharmacistIds (tableau)
   preparatorIds: (ObjectId | string)[];
-  assignedFiches: { ficheId: string; assignedAt: Date; }[];
+  assignedFiches: { ficheId: string; assignedAt: Date }[];
   managedBy?: ObjectId | string;
   subscriptionAmount?: number;
   instruction?: string;
@@ -107,7 +107,7 @@ export interface Group {
   dailyBriefing?: {
     script: string;
     date: Date;
-    actions?: { label: string; url: string; }[];
+    actions?: { label: string; url: string }[];
     audioUrl?: string;
   };
   planning?: GroupAssignment[];
@@ -163,7 +163,15 @@ export interface Media {
 export interface CaseStudy {
   _id: ObjectId | string;
   id: string;
-  type?: 'maladie' | 'pharmacologie' | 'dermocosmetique' | 'le-medicament' | 'dispositifs-medicaux' | 'ordonnances' | 'communication' | 'savoir';
+  type?:
+    | 'maladie'
+    | 'pharmacologie'
+    | 'dermocosmetique'
+    | 'le-medicament'
+    | 'dispositifs-medicaux'
+    | 'ordonnances'
+    | 'communication'
+    | 'savoir';
   title: string;
   shortDescription: string;
   theme: string;
@@ -171,14 +179,23 @@ export interface CaseStudy {
   creationDate: string;
   isLocked?: boolean;
   patientSituation: string | MemoFicheSection;
+  patientSituationTitle?: string;
   keyQuestions: string[];
+  keyQuestionsTitle?: string;
   pathologyOverview: string | MemoFicheSection;
+  pathologyOverviewTitle?: string;
   redFlags: string[];
+  redFlagsTitle?: string;
   mainTreatment?: string[];
+  mainTreatmentTitle?: string;
   associatedProducts?: string[];
+  associatedProductsTitle?: string;
   lifestyleAdvice?: string[];
+  lifestyleAdviceTitle?: string;
   dietaryAdvice?: string[];
+  dietaryAdviceTitle?: string;
   references: string[];
+  referencesTitle?: string;
   recommendations?: {
     mainTreatment?: string[];
     associatedProducts?: string[];
@@ -186,11 +203,12 @@ export interface CaseStudy {
     dietaryAdvice?: string[];
   };
   keyPoints: string[];
+  keyPointsTitle?: string;
   glossary: GlossaryTerm[];
   flashcards: Flashcard[];
   coverImageUrl?: string;
   coverImagePosition?: 'top' | 'middle' | 'bottom';
-  youtubeLinks?: { url: string; title: string; }[];
+  youtubeLinks?: { url: string; title: string }[];
   kahootUrl?: string;
   quiz?: QuizQuestion[];
   summary?: string;
@@ -228,12 +246,14 @@ export interface CaseStudy {
   informationsMaladie?: string[];
   conseilsHygieneDeVie?: string[];
   conseilsAlimentaires?: string[];
-  ventesAdditionnelles?: {
-    complementsAlimentaires?: string[];
-    accessoires?: string[];
-    dispositifs?: string[];
-    cosmetiques?: string[];
-  } | string[];
+  ventesAdditionnelles?:
+    | {
+        complementsAlimentaires?: string[];
+        accessoires?: string[];
+        dispositifs?: string[];
+        cosmetiques?: string[];
+      }
+    | string[];
 }
 
 export type MemoFiche = CaseStudy;
@@ -267,41 +287,41 @@ export interface ImageTheme {
 }
 
 export enum WebinarTimeSlot {
-    MORNING = '09:00',
-    LATE_MORNING = '11:00',
-    AFTERNOON = '13:30',
-    EVENING = '15:30',
-    PHARMIA_TUESDAY = 'Mardi 11:00',
-    PHARMIA_FRIDAY = 'Vendredi 13:30 (Replay)',
+  MORNING = '09:00',
+  LATE_MORNING = '11:00',
+  AFTERNOON = '13:30',
+  EVENING = '15:30',
+  PHARMIA_TUESDAY = 'Mardi 11:00',
+  PHARMIA_FRIDAY = 'Vendredi 13:30 (Replay)',
 }
 
 export enum WebinarStatus {
-    LIVE = 'LIVE',
-    UPCOMING = 'UPCOMING',
-    PAST = 'PAST',
-    REGISTRATION_CLOSED = 'REGISTRATION_CLOSED',
+  LIVE = 'LIVE',
+  UPCOMING = 'UPCOMING',
+  PAST = 'PAST',
+  REGISTRATION_CLOSED = 'REGISTRATION_CLOSED',
 }
 
 export enum WebinarGroup {
-    CROP_TUNIS = 'CROP Tunis',
-    PHARMIA = 'PharmIA',
-    MASTER_CLASS = 'MASTER CLASS OFFICINE 2026',
+  CROP_TUNIS = 'CROP Tunis',
+  PHARMIA = 'PharmIA',
+  MASTER_CLASS = 'MASTER CLASS OFFICINE 2026',
 }
 
 export enum ProductType {
-    WEBINAR = 'WEBINAR',
-    PACK = 'PACK',
+  WEBINAR = 'WEBINAR',
+  PACK = 'PACK',
 }
 
-  export interface Pack {
-    id: string;
-    name: string;
-    description: string;
-    credits: number;
-    priceHT: number;
-    priceTTC?: number;
-    discountPercentage?: number; // New field for discount
-  }
+export interface Pack {
+  id: string;
+  name: string;
+  description: string;
+  credits: number;
+  priceHT: number;
+  priceTTC?: number;
+  discountPercentage?: number; // New field for discount
+}
 
 export interface WebinarResource {
   type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube';
@@ -318,7 +338,7 @@ export interface Webinar {
   imageUrl?: string;
   googleMeetLink?: string;
   registrationLink?: string;
-  attendees: { 
+  attendees: {
     userId: ObjectId | string | Partial<User>;
     status: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
     proofUrl?: string;
