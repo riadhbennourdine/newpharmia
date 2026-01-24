@@ -490,7 +490,7 @@ adminRouter.put('/:id', async (req, res) => {
         if (primaryPharmacistId) {
             await usersCollection.updateMany(
                 { _id: { $in: preparatorsToAdd } },
-                { $set: { groupId: groupId, pharmacistId: primaryPharmacistId } }
+                { $set: { groupId: groupId, pharmacistId: new ObjectId(primaryPharmacistId) } }
             );
         } else {
             await usersCollection.updateMany(
