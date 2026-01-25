@@ -559,20 +559,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
         ];
         return content;
       } else if (caseStudy.type === 'dermocosmetique') {
-        const sections = [
-            { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation },
-            { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', data: caseStudy.keyQuestions },
-            { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview },
-            { id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"},
-        ];
-        return sections.map((section, index) => ({
-            ...section,
-            icon: <img src={getAbsoluteImageUrl(getIconUrl(section.id))} className="h-6 w-6 mr-3" alt={section.title} />,
-            content: renderContentWithKeywords(section.data, section.isAlert),
-            startOpen: index === 0,
-        }));
-      } else if (caseStudy.type === 'dermocosmetique') {
-        const sections = [
+        const baseSections = [
             { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation },
             { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', data: caseStudy.keyQuestions },
             { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview },
@@ -580,11 +567,39 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
             { id: 'associatedProducts', title: caseStudy.associatedProductsTitle || 'Produits associés', data: caseStudy.associatedProducts },
             { id: 'lifestyleAdvice', title: caseStudy.lifestyleAdviceTitle || 'Conseils Hygiène de vie', data: caseStudy.lifestyleAdvice },
             { id: 'dietaryAdvice', title: caseStudy.dietaryAdviceTitle || 'Conseils alimentaires', data: caseStudy.dietaryAdvice },
-            { id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"},
         ];
-        return sections.map((section, index) => ({
+
+        const memoSectionsForDisplay = (caseStudy.memoSections || [])
+            .filter(section => !isMemoFicheSectionContentEmpty(section.content))
+            .map((section, index) => ({
+                id: section.id || `memoSection-${index}`,
+                title: section.title,
+                data: section.content,
+                isMemoSection: true, // Flag to identify memo sections
+            }));
+
+        const allSections = [...baseSections, ...memoSectionsForDisplay];
+
+        allSections.push({ id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"});
+
+        // Use sectionOrder if available to sort, otherwise use the natural order
+        const effectiveSectionOrder = ensureArray(caseStudy.sectionOrder);
+        
+        const sortedSections = effectiveSectionOrder.length > 0
+            ? effectiveSectionOrder
+                .map(id => allSections.find(s => s.id === id))
+                .filter(s => s !== undefined)
+            : allSections;
+        
+        // Add any sections that might not be in the order to the end
+        const remainingSections = allSections.filter(s => !sortedSections.some(ss => ss.id === s.id));
+        const finalSections = [...sortedSections, ...remainingSections];
+
+        return finalSections.map((section, index) => ({
             ...section,
-            icon: <img src={getAbsoluteImageUrl(getIconUrl(section.id))} className="h-6 w-6 mr-3" alt={section.title} />,
+            icon: section.isMemoSection
+                ? <div className="flex items-center justify-center h-6 w-6 mr-3 bg-blue-600 text-white rounded-full font-bold text-sm">{index + 1}</div>
+                : <img src={getAbsoluteImageUrl(getIconUrl(section.id))} className="h-6 w-6 mr-3" alt={section.title} />,
             content: renderContentWithKeywords(section.data, section.isAlert),
             startOpen: index === 0,
         }));
