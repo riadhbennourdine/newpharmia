@@ -1,15 +1,15 @@
-import { CaseStudy } from "../types";
-import { TOPIC_CATEGORIES } from "../constants";
+import { CaseStudy } from '../types';
+import { TOPIC_CATEGORIES } from '../constants';
 
 export const buildAIPrompt = (
-    memoFicheType: CaseStudy['type'],
-    sourceText: string,
-    selectedTheme: string,
-    selectedSystem: string,
-    pharmaTheme: string,
-    pharmaPathology: string
+  memoFicheType: CaseStudy['type'],
+  sourceText: string,
+  selectedTheme: string,
+  selectedSystem: string,
+  pharmaTheme: string,
+  pharmaPathology: string,
 ): string => {
-    const formattingInstructions = `
+  const formattingInstructions = `
 
 Instructions de formatage impératives pour chaque section :
 - Améliorer le style de rédaction pour qu'il soit clair, concis et professionnel.
@@ -32,7 +32,7 @@ Instructions spécifiques par section :
 - **dietaryAdvice (Conseils alimentaires)**: Aliments à privilégier ou éviter spécifiquement pour cette pathologie.
 `;
 
-    const pharmacologieFormattingInstructions = `
+  const pharmacologieFormattingInstructions = `
 
 Instructions de formatage impératives :
 - Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
@@ -46,7 +46,7 @@ Instructions spécifiques pour les sections personnalisées :
 - Le contenu de chaque section doit être une liste à puces, où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
 `;
 
-    const dispositifsMedicauxFormattingInstructions = `
+  const dispositifsMedicauxFormattingInstructions = `
 
 Instructions de formatage impératives et strictes pour chaque section :
 - Le style de rédaction doit être clair, concis et professionnel.
@@ -81,9 +81,9 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
     -   Doit être une liste de points.
 `;
 
-    let prompt = '';
-    if (memoFicheType === 'maladie') {
-        prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
+  let prompt = '';
+  if (memoFicheType === 'maladie') {
+    prompt = `Génère une mémofiche pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
         
         Tu dois générer un objet JSON avec les clés exactes suivantes :
         - "title" : Titre de la mémofiche
@@ -98,18 +98,32 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
         - "dietaryAdvice" : Tableau de chaînes de caractères (Conseils alimentaires)
 
         ${formattingInstructions}`;
-    } else if (memoFicheType === 'pharmacologie') {
-        prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
-    } else if (memoFicheType === 'dispositifs-medicaux') {
-        prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
-    } else if (memoFicheType === 'dermocosmetique') {
-        prompt = `Vous devez impérativement utiliser le modèle de mémofiche de dermocosmétique. Ne pas utiliser le modèle de maladies courantes. Génère une mémofiche de dermocosmétique sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".${formattingInstructions}`;
-    } else if (memoFicheType === 'communication') {
-        prompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
+  } else if (memoFicheType === 'pharmacologie') {
+    prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
+  } else if (memoFicheType === 'dispositifs-medicaux') {
+    prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
+  } else if (memoFicheType === 'dermocosmetique') {
+    prompt = `Génère une mémofiche de dermocosmétique pour des professionnels de la pharmacie sur le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
+        
+        Tu dois générer un objet JSON avec les clés exactes suivantes :
+        - "title" : Titre de la mémofiche
+        - "shortDescription" : Courte description
+        - "patientSituation" : Cas comptoir (description du patient et de sa demande)
+        - "keyQuestions" : Tableau de chaînes de caractères (Questions clés à poser)
+        - "pathologyOverview" : Nommé "Besoin Dermo-cosmétique", il doit décrire les besoins spécifiques de la peau liés au sujet.
+        - "mainTreatment" : Nommé "Dermocosmétique principal", il doit lister les solutions ou produits principaux.
+        - "associatedProducts" : Tableau de chaînes de caractères (Produits complémentaires)
+        - "lifestyleAdvice" : Tableau de chaînes de caractères (Conseils Hygiène de vie)
+        - "dietaryAdvice" : Tableau de chaînes de caractères (Conseils alimentaires)
+        - "references" : Tableau de chaînes de caractères (Références bibliographiques)
+
+        ${formattingInstructions}`;
+  } else if (memoFicheType === 'communication') {
+    prompt = `En tant qu'expert en communication pharmaceutique, analyse le texte suivant et génère une mémofiche de type 'communication'. La mémofiche doit inclure un titre pertinent, une courte description, un résumé d'introduction, une section 'cas comptoir' (patientSituation) et plusieurs sections personnalisées (customSections) qui décomposent le sujet de manière logique et facile à comprendre pour un professionnel de la pharmacie. Le contenu de chaque section doit être détaillé, professionnel et rédigé dans un style clair et concis. Chaque section doit avoir un titre et un contenu. Le contenu de chaque section doit être une liste à puces. Chaque point de la liste doit être sur une nouvelle ligne (en utilisant '\n'). Chaque ligne doit commencer par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**). Le texte à analyser est :
 
 ${sourceText}`;
-    } else if (memoFicheType === 'ordonnances') {
-        prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
+  } else if (memoFicheType === 'ordonnances') {
+    prompt = `Génère une mémofiche sur l'analyse d'une ordonnance pour le sujet : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}".
 Tu dois générer un objet JSON avec les clés suivantes : "ordonnance", "analyseOrdonnance", "conseilsTraitement", "informationsMaladie", "conseilsHygieneDeVie", "conseilsAlimentaires", "ventesAdditionnelles", "references".
 Le contenu de chaque clé doit être un tableau de chaînes de caractères.
 Chaque chaîne de caractères doit correspondre à un point de la section.
@@ -125,10 +139,10 @@ Voici le détail de chaque section :
 
 ${formattingInstructions}
 `;
-    } else if (memoFicheType === 'micronutrition') {
-        prompt = `Créer une mémofiche claire et concise pour initier les pharmaciens d'officine et leurs collaborateurs débutants à la micronutrition et son apport pour les patients souffrant de [maladie]. La mémofiche doit se concentrer sur le déclenchement de la discussion au comptoir et comment créer le besoin, puis explication de la [maladie] , les traitements conventionnels. Puis l'approche micronutritionnelle en expliquant simplement les mécanismes d'action de chaque micronutriment et en proposant des conseils alimentaires et des règles d'hygiène de vie. utiliser un langage accessible et encourageant. Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le sujet détaillé est : "${sourceText}".`;
-    } else if (memoFicheType === 'savoir') {
-        prompt = `En tant qu'expert en santé et pharmacie, analyse le texte brut suivant et génère une mémofiche de type 'Savoir'. L'objectif est de créer un focus sur un sujet de santé avec une approche pharmaceutique.
+  } else if (memoFicheType === 'micronutrition') {
+    prompt = `Créer une mémofiche claire et concise pour initier les pharmaciens d'officine et leurs collaborateurs débutants à la micronutrition et son apport pour les patients souffrant de [maladie]. La mémofiche doit se concentrer sur le déclenchement de la discussion au comptoir et comment créer le besoin, puis explication de la [maladie] , les traitements conventionnels. Puis l'approche micronutritionnelle en expliquant simplement les mécanismes d'action de chaque micronutriment et en proposant des conseils alimentaires et des règles d'hygiène de vie. utiliser un langage accessible et encourageant. Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le sujet détaillé est : "${sourceText}".`;
+  } else if (memoFicheType === 'savoir') {
+    prompt = `En tant qu'expert en santé et pharmacie, analyse le texte brut suivant et génère une mémofiche de type 'Savoir'. L'objectif est de créer un focus sur un sujet de santé avec une approche pharmaceutique.
 
 Le processus est le suivant :
 1.  **Extraire les titres** : Identifie tous les titres présents dans le texte brut.
@@ -141,11 +155,12 @@ Le thème pédagogique est "${selectedTheme}" et le système clinique est "${sel
 Le texte à analyser est :
 
 ${sourceText}`;
-    } else if (memoFicheType === 'le-medicament') { // New 'Le médicament' type
-        prompt = `Génère une mémofiche détaillée sur le médicament suivant : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le contenu doit inclure des informations sur sa classification, son mécanisme d'action, ses indications, sa posologie, ses effets secondaires, ses contre-indications et ses interactions médicamenteuses.`;
-    } else {
-        // Fallback for types not explicitly handled (should not happen if type definitions are exhaustive)
-        prompt = `Génère une mémofiche sur le sujet suivant : "${sourceText}".`;
-    }
-    return prompt;
+  } else if (memoFicheType === 'le-medicament') {
+    // New 'Le médicament' type
+    prompt = `Génère une mémofiche détaillée sur le médicament suivant : "${sourceText}". Le thème pédagogique est "${selectedTheme}" et le système clinique est "${selectedSystem}". Le contenu doit inclure des informations sur sa classification, son mécanisme d'action, ses indications, sa posologie, ses effets secondaires, ses contre-indications et ses interactions médicamenteuses.`;
+  } else {
+    // Fallback for types not explicitly handled (should not happen if type definitions are exhaustive)
+    prompt = `Génère une mémofiche sur le sujet suivant : "${sourceText}".`;
+  }
+  return prompt;
 };
