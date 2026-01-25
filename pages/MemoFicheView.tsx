@@ -533,8 +533,8 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
   
       const memoContent = useMemo(() => {
       if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
-        // For these types, the main content is within memoSections.
-        const sectionsToDisplay = (caseStudy.memoSections || [])
+        // For these types, content can be in memoSections (new) or customSections (legacy).
+        const memoSections = (caseStudy.memoSections || [])
             .filter(section => !isMemoFicheSectionContentEmpty(section.content))
             .map((section, index) => ({
                 id: section.id || `memoSection-${index}`,
@@ -544,6 +544,25 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 isMemoSection: true,
             }));
 
+        const customSections = (caseStudy.customSections || [])
+            .filter(section => !isMemoFicheSectionContentEmpty(section.content))
+            .map((section, index) => ({
+                id: section.id || `customSection-${index}`,
+                title: section.title,
+                icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-blue-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+                data: section.content,
+                isCustomSection: true,
+            }));
+
+        // Combine, giving priority to memoSections if there are ID conflicts.
+        const combined = [...memoSections];
+        customSections.forEach(customSec => {
+            if (!combined.some(memoSec => memoSec.id === customSec.id)) {
+                combined.push(customSec);
+            }
+        });
+        let sectionsToDisplay = combined;
+
         // Add references if they exist and are not already in another section
         if (!sectionsToDisplay.some(s => s.id === 'references') && caseStudy.references && caseStudy.references.length > 0) {
             sectionsToDisplay.push({ 
@@ -552,7 +571,6 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />,
                 data: caseStudy.references, 
                 contentClassName: "text-sm",
-                isMemoSection: false
             });
         }
         
