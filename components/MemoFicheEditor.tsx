@@ -485,6 +485,7 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
       );
 
       const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
+      alert(JSON.stringify(draft));
       const learningTools = await generateLearningTools(draft);
 
       setCaseStudy((prevCaseStudy) => {
