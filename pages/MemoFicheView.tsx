@@ -571,6 +571,23 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
             content: renderContentWithKeywords(section.data, section.isAlert),
             startOpen: index === 0,
         }));
+      } else if (caseStudy.type === 'dermocosmetique') {
+        const sections = [
+            { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation },
+            { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', data: caseStudy.keyQuestions },
+            { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview },
+            { id: 'mainTreatment', title: caseStudy.mainTreatmentTitle || 'Dermocosmétique principal', data: caseStudy.mainTreatment },
+            { id: 'associatedProducts', title: caseStudy.associatedProductsTitle || 'Produits associés', data: caseStudy.associatedProducts },
+            { id: 'lifestyleAdvice', title: caseStudy.lifestyleAdviceTitle || 'Conseils Hygiène de vie', data: caseStudy.lifestyleAdvice },
+            { id: 'dietaryAdvice', title: caseStudy.dietaryAdviceTitle || 'Conseils alimentaires', data: caseStudy.dietaryAdvice },
+            { id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"},
+        ];
+        return sections.map((section, index) => ({
+            ...section,
+            icon: <img src={getAbsoluteImageUrl(getIconUrl(section.id))} className="h-6 w-6 mr-3" alt={section.title} />,
+            content: renderContentWithKeywords(section.data, section.isAlert),
+            startOpen: index === 0,
+        }));
       }
   
       const mainSections = [

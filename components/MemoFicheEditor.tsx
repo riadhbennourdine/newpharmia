@@ -131,6 +131,11 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
       'patientSituation',
       'keyQuestions',
       'pathologyOverview',
+      'mainTreatment',
+      'associatedProducts',
+      'lifestyleAdvice',
+      'dietaryAdvice',
+      'references',
     );
   } else if (caseStudyType === 'dispositifs-medicaux') {
     defaultDynamicSectionIds.push(
@@ -580,6 +585,31 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
             id: 'pathologyOverview',
             title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique',
             rawContent: caseStudy.pathologyOverview,
+          },
+          {
+            id: 'mainTreatment',
+            title: caseStudy.mainTreatmentTitle || 'Dermocosmétique principal',
+            rawContent: caseStudy.mainTreatment,
+          },
+          {
+            id: 'associatedProducts',
+            title: caseStudy.associatedProductsTitle || 'Produits associés',
+            rawContent: caseStudy.associatedProducts,
+          },
+          {
+            id: 'lifestyleAdvice',
+            title: caseStudy.lifestyleAdviceTitle || 'Conseils Hygiène de vie',
+            rawContent: caseStudy.lifestyleAdvice,
+          },
+          {
+            id: 'dietaryAdvice',
+            title: caseStudy.dietaryAdviceTitle || 'Conseils alimentaires',
+            rawContent: caseStudy.dietaryAdvice,
+          },
+          {
+            id: 'references',
+            title: caseStudy.referencesTitle || 'Références bibliographiques',
+            rawContent: caseStudy.references,
           },
         );
       } else if (caseStudy.type === 'dispositifs-medicaux') {
