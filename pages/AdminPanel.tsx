@@ -16,12 +16,19 @@ const AdminPanel: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 animate-fade-in">
-      <h1 className="text-4xl font-bold text-center mb-4">Panneau d'Administration</h1>
-      <p className="text-gray-600 text-center mb-12">Gérez les abonnés, les commandes et le contenu.</p>
+      <h1 className="text-4xl font-bold text-center mb-4">
+        Panneau d'Administration
+      </h1>
+      <p className="text-gray-600 text-center mb-12">
+        Gérez les abonnés, les commandes et le contenu.
+      </p>
 
       <div className="mb-6">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-2 sm:space-x-4 justify-center flex-wrap" aria-label="Tabs">
+          <nav
+            className="-mb-px flex space-x-2 sm:space-x-4 justify-center flex-wrap"
+            aria-label="Tabs"
+          >
             <button
               onClick={() => setActiveTab('crm')}
               className={`px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${activeTab === 'crm' ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`}

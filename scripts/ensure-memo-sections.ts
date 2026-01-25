@@ -11,23 +11,22 @@ async function run() {
 
   const filter = {
     type: { $in: ['maladie', 'pharmacologie', 'savoir'] },
-    $or: [
-        { memoSections: { $exists: false } },
-        { memoSections: null }
-    ]
+    $or: [{ memoSections: { $exists: false } }, { memoSections: null }],
   };
   const update = { $set: { memoSections: [] } };
 
   console.log('Updating documents...');
   const result = await memofiches.updateMany(filter, update);
 
-  console.log(`Migration complete. Found and updated ${result.modifiedCount} documents to ensure 'memoSections' field exists.`);
+  console.log(
+    `Migration complete. Found and updated ${result.modifiedCount} documents to ensure 'memoSections' field exists.`,
+  );
 
   await client.close();
   console.log('Database connection closed.');
 }
 
-run().catch(err => {
-    console.error('An error occurred during the migration:', err);
-    process.exit(1);
+run().catch((err) => {
+  console.error('An error occurred during the migration:', err);
+  process.exit(1);
 });

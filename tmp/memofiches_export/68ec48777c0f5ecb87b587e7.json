@@ -196,12 +196,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la durée moyenne recommandée pour un traitement par ITA ?",
-      "options": [
-        "6 mois à 1 an",
-        "1 à 2 ans",
-        "3 à 5 ans",
-        "Plus de 10 ans"
-      ],
+      "options": ["6 mois à 1 an", "1 à 2 ans", "3 à 5 ans", "Plus de 10 ans"],
       "correctAnswerIndex": 2,
       "explanation": "Pour induire une tolérance immunologique durable et des effets bénéfiques à long terme, l'ITA est généralement administrée sur une période de 3 à 5 ans."
     },
@@ -256,40 +251,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "L'Immunothérapie Allergénique (ITA) est un traitement qui agit en quelques jours seulement.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. L'ITA est un traitement de fond qui nécessite plusieurs mois, voire années (généralement 3 à 5 ans), pour induire une tolérance immunologique durable et des effets bénéfiques significatifs."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les patients sous ITA sous-cutanée (SCIT) doivent rester sous surveillance médicale après l'injection.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. Après une injection d'ITA-SC, il est recommandé au patient de rester sous surveillance pendant au moins 30 minutes pour détecter et prendre en charge rapidement une éventuelle réaction systémique, y compris l'anaphylaxie."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'ITA est un traitement symptomatique qui soulage les symptômes au moment de leur apparition.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. L'ITA est un traitement étiologique (de la cause) et de fond, visant à modifier la réponse immunitaire à long terme, et non un traitement symptomatique qui soulage les crises immédiatement."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'anaphylaxie est une complication potentiellement grave de l'ITA.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. Bien que rare, l'anaphylaxie est la complication la plus grave de l'ITA, en particulier de l'ITA sous-cutanée, et c'est pourquoi une surveillance post-injection est nécessaire."
     }

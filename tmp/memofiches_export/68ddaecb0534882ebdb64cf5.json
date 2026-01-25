@@ -183,12 +183,7 @@
     {
       "questionType": "QCM",
       "question": "Parmi les médicaments suivants, lequel est classé comme un IPP?",
-      "options": [
-        "Gaviscon",
-        "Ranitidine",
-        "Oméprazole",
-        "Maalox"
-      ],
+      "options": ["Gaviscon", "Ranitidine", "Oméprazole", "Maalox"],
       "correctAnswerIndex": 2,
       "explanation": "L'Oméprazole est un Inhibiteur de la Pompe à Protons (IPP), tandis que Gaviscon et Maalox sont des antiacides/alginates, et la Ranitidine est un anti-H2."
     },
@@ -231,52 +226,35 @@
     {
       "questionType": "QCM",
       "question": "Parmi les facteurs suivants, lequel n'est PAS un facteur favorisant le RGO mentionné dans la mémofiche?",
-      "options": [
-        "Stress",
-        "Tabac",
-        "Activité physique intense",
-        "Repas gras"
-      ],
+      "options": ["Stress", "Tabac", "Activité physique intense", "Repas gras"],
       "correctAnswerIndex": 2,
       "explanation": "Seuls le stress, le tabac et les repas gras sont des facteurs favorisant les épisodes de RGO."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les alginates doivent être pris à jeun pour une efficacité maximale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les alginates doivent être pris après les repas et avant le coucher, à distance des autres médicaments, et non à jeun."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une perte de poids inexpliquée chez un patient avec des symptômes de RGO est un signal d'alerte nécessitant une consultation médicale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La perte de poids inexpliquée fait partie des signaux d'alerte généraux qui justifient une évaluation médicale approfondie."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est recommandé d'associer deux IPP entre eux pour augmenter l'efficacité du traitement du RGO.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'association de deux IPP différents ou d'un IPP avec un anti-H2 est déconseillée."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "On conseille le patient souffrant de RGO d'éviter de boire l'eau tout le long de la journée.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "En cas du RGO, on recommande de boire beaucoup d'eau mais, préférentiellement, en dehors des repas."
     }

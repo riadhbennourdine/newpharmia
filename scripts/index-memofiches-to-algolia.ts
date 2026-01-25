@@ -8,14 +8,14 @@ const runIndexing = async () => {
     console.log('Connecting to MongoDB...');
     mongoClient = await clientPromise;
     const db = mongoClient.db('pharmia');
-    
+
     console.log('Clearing Algolia index...');
     await clearIndex();
 
     console.log('Fetching documents from memofiches collection...');
     const fichesCollection = db.collection<MemoFiche>('memofiches');
     const allFiches = await fichesCollection.find({}).toArray();
-    
+
     console.log(`Found ${allFiches.length} fiches to index.`);
 
     if (allFiches.length > 0) {
@@ -23,7 +23,6 @@ const runIndexing = async () => {
       await indexMemoFiches(allFiches);
       console.log('Indexing complete.');
     }
-
   } catch (error) {
     console.error('An error occurred during the indexing process:', error);
   } finally {

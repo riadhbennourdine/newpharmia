@@ -76,9 +76,7 @@
       "-Bien sécher la vulve après la toilette.",
       "-Laver le linge à haute température (70°C)."
     ],
-    "dietaryAdvice": [
-      "-Boire suffisamment d'eau."
-    ]
+    "dietaryAdvice": ["-Boire suffisamment d'eau."]
   },
   "references": [
     "-Amouri, I, Abbes, S. Laboratoire de biologie moléculaire parasitaire et fongique, faculté de médecine, 3029 Sfax, Tunisie. (2010). La candidose vulvovaginale : revue / Vulvovaginal candidiasis: A review. In Journal De Mycologie Médicale (Vol. 20, pp. 108–115) [Journal-article]. Elsevier Masson SAS. https://doi.org/10.1016/j.mycmed.2010.01.005 ",
@@ -237,40 +235,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La candidose vaginale est une maladie sexuellement transmissible (MST).",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche stipule clairement : 'N'est PAS une maladie sexuellement transmissible (MST)'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est recommandé d'interrompre le traitement antifongique local pendant les règles.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche précise : 'Ne pas interrompre le traitement pendant les règles'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Des récidives de candidose vaginale sont définies par 4 épisodes ou plus par an.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche indique : 'Récidives Définies par ≥ 4 épisodes/an'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Des pertes vaginales jaunes et malodorantes sont un symptôme typique de la candidose vaginale et ne nécessitent pas de consultation médicale supplémentaire.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche décrit les pertes typiques comme 'blanchâtres, épaisses, d'aspect 'lait caillé''. Des 'pertes jaunes malodorantes' sont listées comme un signal d'alerte pouvant indiquer une autre infection."
     }

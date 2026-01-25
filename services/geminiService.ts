@@ -33,24 +33,6 @@ export const generateCaseStudyDraft = async (
   return handleResponse(response);
 };
 
-export const generateDermoCaseStudy = async (
-  prompt: string,
-): Promise<Partial<CaseStudy>> => {
-  const token = getAuthToken();
-  if (!token) throw new Error("Jeton d'authentification non trouvé.");
-
-  const response = await fetch('/api/gemini/generate-dermo-fiche', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ prompt }),
-  });
-
-  return handleResponse(response);
-};
-
 export const generateLearningTools = async (
   memoContent: Partial<CaseStudy>,
 ): Promise<Partial<CaseStudy>> => {

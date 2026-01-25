@@ -270,30 +270,21 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les corticostéroïdes nasaux agissent immédiatement après la première administration.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les corticostéroïdes nasaux peuvent prendre plusieurs jours (souvent 3 à 7 jours) pour atteindre leur plein effet thérapeutique et nécessitent une utilisation régulière."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'éviction des allergènes est une stratégie importante dans la gestion de la rhinite allergique.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Réduire l'exposition aux allergènes (p. ex., acariens, pollens, poils d'animaux) est une mesure clé pour minimiser les symptômes de la rhinite allergique: il faut donc insister sur l'importance des recommandations hygiéniques en addition des traitements médicamenteux."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les compléments à base d'extrait d'échinacée sont les produits de choix à conseiller à un patient allergique.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'échinacée peut causer des réactions allergiques, elle est à éviter chez les personnes allergiques."
     },

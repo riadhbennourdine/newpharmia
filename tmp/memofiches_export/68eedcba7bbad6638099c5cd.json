@@ -194,12 +194,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la cause principale de l'onychomycose selon la mémofiche?",
-      "options": [
-        "Bactéries",
-        "Virus",
-        "Dermatophytes",
-        "Parasites"
-      ],
+      "options": ["Bactéries", "Virus", "Dermatophytes", "Parasites"],
       "correctAnswerIndex": 2,
       "explanation": "La mémofiche indique que l'onychomycose est 'principalement des dermatophytes, levures (Candida) ou moisissures', les dermatophytes étant les plus courants."
     },
@@ -266,40 +261,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "L'onychomycose est une infection non contagieuse.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche indique clairement que 'L'infection est contagieuse et auto-inoculable.'"
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le traitement des onychomycoses avec des vernis antifongiques doit être poursuivi seulement pendant quelques semaines.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche stipule de 'Poursuivre le traitement sur plusieurs mois (jusqu'à repousse complète d'un ongle sain)'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est recommandé d'utiliser des vernis colorés sur les ongles pendant la durée du traitement antifongique.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche conseille d' 'Éviter les vernis colorés et les faux ongles pendant la durée du traitement'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'onychomycose chez l'enfant est un signal d'alerte pour une consultation médicale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche liste 'Onychomycose chez l'enfant' dans les 'Signaux d'alerte' nécessitant une consultation."
     }

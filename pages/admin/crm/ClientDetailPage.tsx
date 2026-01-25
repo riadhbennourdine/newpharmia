@@ -22,18 +22,21 @@ const ClientDetailPage = () => {
   const [status, setStatus] = useState<ClientStatus | undefined>(undefined);
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   // Subscription state
   const [selectedPlan, setSelectedPlan] = useState('Premium');
-  const [subscriptionStartDate, setSubscriptionStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [subscriptionStartDate, setSubscriptionStartDate] = useState(
+    new Date().toISOString().split('T')[0],
+  );
   const [subscriptionDuration, setSubscriptionDuration] = useState(12);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-        setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target.files[0]);
     }
   };
 
@@ -42,42 +45,53 @@ const ClientDetailPage = () => {
 
     setIsUploading(true);
     try {
-        const formData = new FormData();
-        formData.append('file', selectedFile);
+      const formData = new FormData();
+      formData.append('file', selectedFile);
 
-        const uploadResponse = await fetch('/api/upload/file', {
-            method: 'POST',
-            body: formData,
-        });
+      const uploadResponse = await fetch('/api/upload/file', {
+        method: 'POST',
+        body: formData,
+      });
 
-        if (!uploadResponse.ok) {
-            throw new Error('Failed to upload file');
-        }
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file');
+      }
 
-        const uploadResult = await uploadResponse.json();
-        const { fileUrl } = uploadResult;
+      const uploadResult = await uploadResponse.json();
+      const { fileUrl } = uploadResult;
 
-        const submitResponse = await fetch(`/api/admin/crm/clients/${client._id}/payment-proof`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileUrl }),
-        });
+      const submitResponse = await fetch(
+        `/api/admin/crm/clients/${client._id}/payment-proof`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileUrl }),
+        },
+      );
 
-        if (!submitResponse.ok) {
-            throw new Error('Failed to submit payment proof');
-        }
+      if (!submitResponse.ok) {
+        throw new Error('Failed to submit payment proof');
+      }
 
-        alert('Pièce justificative téléversée avec succès!');
-        setClient(prevClient => prevClient ? { ...prevClient, paymentProofUrl: fileUrl } : null);
-        setSelectedFile(null);
+      alert('Pièce justificative téléversée avec succès!');
+      setClient((prevClient) =>
+        prevClient ? { ...prevClient, paymentProofUrl: fileUrl } : null,
+      );
+      setSelectedFile(null);
     } catch (err: any) {
-        setError(err.message);
+      setError(err.message);
     } finally {
-        setIsUploading(false);
+      setIsUploading(false);
     }
   };
-  
-  const handleAddAppointment = async (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => {
+
+  const handleAddAppointment = async (appointment: {
+    clientId: string;
+    clientName: string;
+    date: string;
+    title: string;
+    notes: string;
+  }) => {
     try {
       const response = await fetch('/api/admin/crm/appointments', {
         method: 'POST',
@@ -94,12 +108,13 @@ const ClientDetailPage = () => {
 
       setIsAppointmentModalOpen(false);
       // refetch appointments
-      const appointmentsRes = await fetch(`/api/admin/crm/clients/${id}/appointments`);
+      const appointmentsRes = await fetch(
+        `/api/admin/crm/clients/${id}/appointments`,
+      );
       if (appointmentsRes.ok) {
         const appointmentsData = await appointmentsRes.json();
         setAppointments(appointmentsData);
       }
-
     } catch (err: any) {
       setError(err.message);
     }
@@ -113,19 +128,17 @@ const ClientDetailPage = () => {
     endDate.setMonth(endDate.getMonth() + subscriptionDuration);
 
     try {
-      const response = await fetch(`/api/users/${client._id}/subscription`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            subscriptionStartDate: startDate.toISOString(), // Send start date too if backend supports it, currently backend might only use endDate or derive start. Let's send endDate primarily.
-            subscriptionEndDate: endDate.toISOString(),
-            planName: selectedPlan,
-            hasActiveSubscription: true,
-            status: ClientStatus.ACTIVE_CLIENT
-          }),
-        }
-      );
+      const response = await fetch(`/api/users/${client._id}/subscription`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscriptionStartDate: startDate.toISOString(), // Send start date too if backend supports it, currently backend might only use endDate or derive start. Let's send endDate primarily.
+          subscriptionEndDate: endDate.toISOString(),
+          planName: selectedPlan,
+          hasActiveSubscription: true,
+          status: ClientStatus.ACTIVE_CLIENT,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error('Failed to activate subscription');
@@ -139,7 +152,6 @@ const ClientDetailPage = () => {
         setClient(clientData);
         setStatus(clientData.status);
       }
-
     } catch (err: any) {
       setError(err.message);
     }
@@ -154,11 +166,14 @@ const ClientDetailPage = () => {
     if (!selectedAppointment) return;
 
     try {
-      const response = await fetch(`/api/admin/crm/appointments/${selectedAppointment._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes }),
-      });
+      const response = await fetch(
+        `/api/admin/crm/appointments/${selectedAppointment._id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes }),
+        },
+      );
 
       if (!response.ok) {
         throw new Error('Failed to save notes');
@@ -166,7 +181,9 @@ const ClientDetailPage = () => {
 
       setIsNoteModalOpen(false);
       // Refetch appointments to show the updated note
-      const appointmentsRes = await fetch(`/api/admin/crm/clients/${id}/appointments`);
+      const appointmentsRes = await fetch(
+        `/api/admin/crm/clients/${id}/appointments`,
+      );
       if (appointmentsRes.ok) {
         const appointmentsData = await appointmentsRes.json();
         setAppointments(appointmentsData);
@@ -183,7 +200,7 @@ const ClientDetailPage = () => {
         const [clientRes, teamRes, appointmentsRes] = await Promise.all([
           fetch(`/api/admin/crm/clients/${id}`),
           fetch(`/api/users/pharmacists/${id}/team`),
-          fetch(`/api/admin/crm/clients/${id}/appointments`)
+          fetch(`/api/admin/crm/clients/${id}/appointments`),
         ]);
 
         if (!clientRes.ok) throw new Error('Failed to fetch client details');
@@ -205,7 +222,6 @@ const ClientDetailPage = () => {
           const appointmentsData = await appointmentsRes.json();
           setAppointments(appointmentsData);
         }
-
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -220,13 +236,11 @@ const ClientDetailPage = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await fetch(`/api/admin/crm/clients/${id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, status, objectifs, CA, zone, secteur }),
-        }
-      );
+      const response = await fetch(`/api/admin/crm/clients/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes, status, objectifs, CA, zone, secteur }),
+      });
 
       if (!response.ok) {
         throw new Error('Failed to save changes');
@@ -243,244 +257,333 @@ const ClientDetailPage = () => {
   if (error) return <div className="p-6 text-red-500">Erreur: {error}</div>;
   if (!client) return <div className="p-6">Client non trouvé.</div>;
 
-    return (
-      <div className="p-6 bg-gray-50 min-h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <h1 className="text-4xl font-bold text-teal-600">{client.firstName} {client.lastName}</h1>
-                {client.city && <p className="text-base text-gray-700">{client.city}</p>}
+  return (
+    <div className="p-6 bg-gray-50 min-h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h1 className="text-4xl font-bold text-teal-600">
+              {client.firstName} {client.lastName}
+            </h1>
+            {client.city && (
+              <p className="text-base text-gray-700">{client.city}</p>
+            )}
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">
+              Informations
+            </h3>
+            <div className="space-y-3">
+              <p>
+                <strong>Email:</strong> {client.email}
+              </p>
+              {client.companyName && client.companyName !== 'N/A' && (
+                <p>
+                  <strong>Société:</strong> {client.companyName}
+                </p>
+              )}
+              {client.zone && (
+                <p>
+                  <strong>Zone:</strong> {client.zone}
+                </p>
+              )}
+              {client.secteur && (
+                <p>
+                  <strong>Secteur:</strong> {client.secteur}
+                </p>
+              )}
+              <hr />
+              <p>
+                <strong>Plan d'abonnement:</strong> {client.planName || 'N/A'}
+              </p>
+              <p>
+                <strong>Date d'expiration:</strong>{' '}
+                {client.subscriptionEndDate
+                  ? new Date(client.subscriptionEndDate).toLocaleDateString()
+                  : 'N/A'}
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-teal-600 mb-4">Informations</h3>
-              <div className="space-y-3">
-                <p><strong>Email:</strong> {client.email}</p>
-                {client.companyName && client.companyName !== 'N/A' && <p><strong>Société:</strong> {client.companyName}</p>}
-                {client.zone && <p><strong>Zone:</strong> {client.zone}</p>}
-                {client.secteur && <p><strong>Secteur:</strong> {client.secteur}</p>}
-                <hr />
-                <p><strong>Plan d'abonnement:</strong> {client.planName || 'N/A'}</p>
-                <p><strong>Date d'expiration:</strong> {client.subscriptionEndDate ? new Date(client.subscriptionEndDate).toLocaleDateString() : 'N/A'}</p>
-              </div>
-              <button 
-                  onClick={() => setIsAppointmentModalOpen(true)}
-                  className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
-                >
-                  + Planifier un RDV
-                </button>
-                {client.status === ClientStatus.PROSPECT && (
-                  <div className="mt-6 p-4 border border-teal-100 rounded-md bg-teal-50">
-                    <h4 className="font-semibold text-teal-700 mb-2">Activer l'abonnement</h4>
-                    
-                    <div className="space-y-3 mb-3">
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">Plan</label>
-                        <select 
-                          value={selectedPlan} 
-                          onChange={(e) => setSelectedPlan(e.target.value)}
-                          className="w-full p-2 border rounded text-sm"
-                        >
-                          <option value="Standard">Standard</option>
-                          <option value="Premium">Premium</option>
-                          <option value="Entreprise">Entreprise</option>
-                        </select>
-                      </div>
+            <button
+              onClick={() => setIsAppointmentModalOpen(true)}
+              className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+            >
+              + Planifier un RDV
+            </button>
+            {client.status === ClientStatus.PROSPECT && (
+              <div className="mt-6 p-4 border border-teal-100 rounded-md bg-teal-50">
+                <h4 className="font-semibold text-teal-700 mb-2">
+                  Activer l'abonnement
+                </h4>
 
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">Date de début</label>
-                        <input 
-                          type="date" 
-                          value={subscriptionStartDate} 
-                          onChange={(e) => setSubscriptionStartDate(e.target.value)}
-                          className="w-full p-2 border rounded text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">Durée</label>
-                        <select 
-                          value={subscriptionDuration} 
-                          onChange={(e) => setSubscriptionDuration(Number(e.target.value))}
-                          className="w-full p-2 border rounded text-sm"
-                        >
-                          <option value={1}>1 Mois</option>
-                          <option value={3}>3 Mois</option>
-                          <option value={6}>6 Mois</option>
-                          <option value={12}>1 An</option>
-                          <option value={24}>2 Ans</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <button 
-                      onClick={handleActivateSubscription}
-                      className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium"
+                <div className="space-y-3 mb-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">
+                      Plan
+                    </label>
+                    <select
+                      value={selectedPlan}
+                      onChange={(e) => setSelectedPlan(e.target.value)}
+                      className="w-full p-2 border rounded text-sm"
                     >
-                      Confirmer Activation
+                      <option value="Standard">Standard</option>
+                      <option value="Premium">Premium</option>
+                      <option value="Entreprise">Entreprise</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">
+                      Date de début
+                    </label>
+                    <input
+                      type="date"
+                      value={subscriptionStartDate}
+                      onChange={(e) => setSubscriptionStartDate(e.target.value)}
+                      className="w-full p-2 border rounded text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">
+                      Durée
+                    </label>
+                    <select
+                      value={subscriptionDuration}
+                      onChange={(e) =>
+                        setSubscriptionDuration(Number(e.target.value))
+                      }
+                      className="w-full p-2 border rounded text-sm"
+                    >
+                      <option value={1}>1 Mois</option>
+                      <option value={3}>3 Mois</option>
+                      <option value={6}>6 Mois</option>
+                      <option value={12}>1 An</option>
+                      <option value={24}>2 Ans</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleActivateSubscription}
+                  className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium"
+                >
+                  Confirmer Activation
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">
+              Pièce justificative de paiement
+            </h3>
+            {client.paymentProofUrl ? (
+              <div className="mb-4">
+                <a
+                  href={client.paymentProofUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-teal-600 hover:underline"
+                >
+                  Voir la pièce justificative actuelle
+                </a>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 mb-4">
+                Aucune pièce n'a été téléversée
+              </p>
+            )}
+            <div>
+              <input type="file" onChange={handleFileChange} className="mb-2" />
+              <button
+                onClick={handleUploadPaymentProof}
+                disabled={!selectedFile || isUploading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+              >
+                {isUploading ? 'Téléversement...' : 'Uploader'}
+              </button>
+              {selectedFile && (
+                <p className="text-sm text-gray-500 mt-2">
+                  Fichier séléctionné: {selectedFile.name}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <label
+              htmlFor="secteur"
+              className="block text-lg font-bold text-teal-600 mb-2"
+            >
+              Secteur
+            </label>
+            <input
+              type="text"
+              id="secteur"
+              name="secteur"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+              value={secteur}
+              onChange={(e) => setSecteur(e.target.value)}
+            />
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <label
+              htmlFor="zone"
+              className="block text-lg font-bold text-teal-600 mb-2"
+            >
+              Zone
+            </label>
+            <input
+              type="text"
+              id="zone"
+              name="zone"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+              value={zone}
+              onChange={(e) => setZone(e.target.value)}
+            />
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <label
+              htmlFor="ca"
+              className="block text-lg font-bold text-teal-600 mb-2"
+            >
+              Chiffre d'Affaires
+            </label>
+            <input
+              type="number"
+              id="ca"
+              name="ca"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+              value={CA}
+              onChange={(e) => setCA(Number(e.target.value))}
+            />
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <label
+              htmlFor="status"
+              className="block text-lg font-bold text-teal-600 mb-2"
+            >
+              Statut
+            </label>
+            <select
+              id="status"
+              name="status"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as ClientStatus)}
+            >
+              {Object.values(ClientStatus).map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">Objectifs</h3>
+            <textarea
+              className="w-full p-2 border rounded-md h-40"
+              value={objectifs}
+              onChange={(e) => setObjectifs(e.target.value)}
+            />
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">
+              Notes Générales
+            </h3>
+            <textarea
+              className="w-full p-2 border rounded-md h-40"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
+
+          <button
+            onClick={handleSaveChanges}
+            className="w-full px-4 py-3 bg-teal-600 text-white font-bold rounded-md hover:bg-teal-700 transition-colors"
+          >
+            Enregistrer les modifications
+          </button>
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">
+              Équipe de préparateurs
+            </h3>
+            {team.length > 0 ? (
+              <ul className="list-disc list-inside space-y-1">
+                {team.map((member) => (
+                  <li key={member._id}>
+                    {member.firstName} {member.lastName} ({member.email})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Aucun préparateur dans l'équipe.</p>
+            )}
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-teal-600 mb-4">
+              Historique des rendez-vous
+            </h3>
+            {appointments.length > 0 ? (
+              <div className="space-y-4">
+                {appointments.map((app) => (
+                  <div
+                    key={app._id}
+                    className="p-4 border rounded-md bg-gray-50 flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="font-bold text-gray-700">{app.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(app.date).toLocaleString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => openNoteModal(app)}
+                      className="text-teal-600 hover:text-teal-800 font-semibold"
+                    >
+                      Voir le reporting
                     </button>
                   </div>
-                )}
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-teal-600 mb-4">Pièce justificative de paiement</h3>
-                {client.paymentProofUrl ? (
-                    <div className="mb-4">
-                        <a href={client.paymentProofUrl} target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">
-                            Voir la pièce justificative actuelle
-                        </a>
-                    </div>
-                ) : (
-                  <p className='text-sm text-gray-500 mb-4'>Aucune pièce n'a été téléversée</p>
-                )}
-                <div>
-                    <input type="file" onChange={handleFileChange} className="mb-2" />
-                    <button
-                        onClick={handleUploadPaymentProof}
-                        disabled={!selectedFile || isUploading}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-                    >
-                        {isUploading ? 'Téléversement...' : 'Uploader'}
-                    </button>
-                    {selectedFile && <p className="text-sm text-gray-500 mt-2">Fichier séléctionné: {selectedFile.name}</p>}
-                </div>
-            </div>
-  
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <label htmlFor="secteur" className="block text-lg font-bold text-teal-600 mb-2">Secteur</label>
-              <input
-                type="text"
-                id="secteur"
-                name="secteur"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
-                value={secteur}
-                onChange={(e) => setSecteur(e.target.value)}
-              />
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <label htmlFor="zone" className="block text-lg font-bold text-teal-600 mb-2">Zone</label>
-              <input
-                type="text"
-                id="zone"
-                name="zone"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
-                value={zone}
-                onChange={(e) => setZone(e.target.value)}
-              />
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <label htmlFor="ca" className="block text-lg font-bold text-teal-600 mb-2">Chiffre d'Affaires</label>
-              <input
-                type="number"
-                id="ca"
-                name="ca"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
-                value={CA}
-                onChange={(e) => setCA(Number(e.target.value))}
-              />
-            </div>
-  
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <label htmlFor="status" className="block text-lg font-bold text-teal-600 mb-2">Statut</label>
-              <select
-                id="status"
-                name="status"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as ClientStatus)}
-              >
-                {Object.values(ClientStatus).map(s => (
-                  <option key={s} value={s}>{s}</option>
                 ))}
-              </select>
-            </div>
-  
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-teal-600 mb-4">Objectifs</h3>
-              <textarea
-                className="w-full p-2 border rounded-md h-40"
-                value={objectifs}
-                onChange={(e) => setObjectifs(e.target.value)}
-              />
-            </div>
-  
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-teal-600 mb-4">Notes Générales</h3>
-              <textarea
-                className="w-full p-2 border rounded-md h-40"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-  
-            <button 
-              onClick={handleSaveChanges}
-              className="w-full px-4 py-3 bg-teal-600 text-white font-bold rounded-md hover:bg-teal-700 transition-colors"
-            >
-              Enregistrer les modifications
-            </button>
-          </div>
-  
-          {/* Right Column */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-teal-600 mb-4">Équipe de préparateurs</h3>
-              {team.length > 0 ? (
-                <ul className="list-disc list-inside space-y-1">
-                  {team.map(member => (
-                    <li key={member._id}>{member.firstName} {member.lastName} ({member.email})</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Aucun préparateur dans l'équipe.</p>
-              )}
-            </div>
-  
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-teal-600 mb-4">Historique des rendez-vous</h3>
-              {appointments.length > 0 ? (
-                <div className="space-y-4">
-                  {appointments.map(app => (
-                    <div key={app._id} className="p-4 border rounded-md bg-gray-50 flex justify-between items-center">
-                      <div>
-                        <p className="font-bold text-gray-700">{app.title}</p>
-                        <p className="text-sm text-gray-500">{new Date(app.date).toLocaleString()}</p>
-                      </div>
-                      <button onClick={() => openNoteModal(app)} className="text-teal-600 hover:text-teal-800 font-semibold">
-                        Voir le reporting
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>Aucun rendez-vous pour ce client.</p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p>Aucun rendez-vous pour ce client.</p>
+            )}
           </div>
         </div>
-  
-        {client && (
-          <AddAppointmentModal 
-            isOpen={isAppointmentModalOpen}
-            onClose={() => setIsAppointmentModalOpen(false)}
-            onAddAppointment={handleAddAppointment}
-            clientId={client._id}
-            clientName={`${client.firstName} ${client.lastName}`}
-          />
-        )}
-
-        {selectedAppointment && (
-          <AddNoteModal
-            isOpen={isNoteModalOpen}
-            onClose={() => setIsNoteModalOpen(false)}
-            onSave={handleSaveNote}
-            appointment={selectedAppointment}
-          />
-        )}
       </div>
-    );};
+
+      {client && (
+        <AddAppointmentModal
+          isOpen={isAppointmentModalOpen}
+          onClose={() => setIsAppointmentModalOpen(false)}
+          onAddAppointment={handleAddAppointment}
+          clientId={client._id}
+          clientName={`${client.firstName} ${client.lastName}`}
+        />
+      )}
+
+      {selectedAppointment && (
+        <AddNoteModal
+          isOpen={isNoteModalOpen}
+          onClose={() => setIsNoteModalOpen(false)}
+          onSave={handleSaveNote}
+          appointment={selectedAppointment}
+        />
+      )}
+    </div>
+  );
+};
 
 export default ClientDetailPage;

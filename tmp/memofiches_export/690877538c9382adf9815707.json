@@ -233,12 +233,7 @@
     {
       "questionType": "QCM",
       "question": "Quel est le délai approximatif pour l'obtention d'une protection immunitaire après la vaccination antigrippale ?",
-      "options": [
-        "24 heures",
-        "3 à 5 jours",
-        "2 semaines",
-        "1 mois"
-      ],
+      "options": ["24 heures", "3 à 5 jours", "2 semaines", "1 mois"],
       "correctAnswerIndex": 2,
       "explanation": "Il faut environ 2 semaines au système immunitaire pour développer une réponse suffisante et conférer une protection efficace après la vaccination antigrippale."
     },
@@ -281,40 +276,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Une personne âgée en bonne santé doit se faire vacciner contre la grippe.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai, les défenses immunitaires s'affaiblissent avec l'âge donc, même en absence de maladies chroniques, on recommande la vaccination des personnes âgées car ils présentent plus de risque de formes graves et de complications."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les femmes enceintes peuvent et doivent se faire vacciner contre la grippe.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai, la vaccination antigrippale est fortement recommandée pour les femmes enceintes à tout stade de la grossesse afin de les protéger, elles et leurs nouveau-nés."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il n'est pas nécessaire de se faire vacciner tous les ans contre la grippe si on l'a déjà fait l'année précédente.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux, la protection conférée par le vaccin est limitée dans le temps (6 à 12 mois) et les souches virales en circulation changent chaque année, nécessitant une vaccination annuelle pour une protection optimale."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le vaccin doit être administré durant le mois d'octobre, sinon il n'est plus efficace.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux, la vaccination antigrippale est efficace tant qu'elle est faite avant le pic de l'épidémie (généralement entre décembre et janvier). Donc il est recommandé de se faire vacciner entre octobre et décembre."
     }

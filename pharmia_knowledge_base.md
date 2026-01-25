@@ -8,40 +8,40 @@ Une mémofiche dans PharmIA est représentée par l'objet `CaseStudy` (aliasé e
 
 Les champs principaux incluent :
 
-*   **`_id`**: Identifiant unique de la mémofiche dans la base de données.
-*   **`id`**: Identifiant public de la mémofiche.
-*   **`type`**: Définit la catégorie principale de la mémofiche (ex: `maladie`, `pharmacologie`, `dermocosmetique`, `dispositifs-medicaux`, `ordonnances`, `communication`, `savoir`, `le-medicament`). Ce type influence les sections disponibles.
-*   **`title`**: Le titre de la mémofiche.
-*   **`shortDescription`**: Une brève description ou introduction.
-*   **`theme`**: Le thème pédagogique auquel elle est rattachée.
-*   **`system`**: Le système ou organe du corps humain concerné (si applicable).
-*   **`level`**: Le niveau de difficulté (`Facile`, `Moyen`, `Difficile`).
-*   **`isFree`**: Indique si la mémofiche est accessible gratuitement.
-*   **`coverImageUrl`**: URL de l'image de couverture.
-*   **`coverImagePosition`**: Positionnement de l'image de couverture (`top`, `middle`, `bottom`).
-*   **`youtubeLinks`**: Tableau de liens YouTube associés, chacun avec un `url` et un `title`.
-*   **`kahootUrl`**: Lien vers un quiz Kahoot associé.
-*   **`status`**: Statut de la mémofiche (`Draft` pour brouillon, `Published` pour publiée).
+- **`_id`**: Identifiant unique de la mémofiche dans la base de données.
+- **`id`**: Identifiant public de la mémofiche.
+- **`type`**: Définit la catégorie principale de la mémofiche (ex: `maladie`, `pharmacologie`, `dermocosmetique`, `dispositifs-medicaux`, `ordonnances`, `communication`, `savoir`, `le-medicament`). Ce type influence les sections disponibles.
+- **`title`**: Le titre de la mémofiche.
+- **`shortDescription`**: Une brève description ou introduction.
+- **`theme`**: Le thème pédagogique auquel elle est rattachée.
+- **`system`**: Le système ou organe du corps humain concerné (si applicable).
+- **`level`**: Le niveau de difficulté (`Facile`, `Moyen`, `Difficile`).
+- **`isFree`**: Indique si la mémofiche est accessible gratuitement.
+- **`coverImageUrl`**: URL de l'image de couverture.
+- **`coverImagePosition`**: Positionnement de l'image de couverture (`top`, `middle`, `bottom`).
+- **`youtubeLinks`**: Tableau de liens YouTube associés, chacun avec un `url` et un `title`.
+- **`kahootUrl`**: Lien vers un quiz Kahoot associé.
+- **`status`**: Statut de la mémofiche (`Draft` pour brouillon, `Published` pour publiée).
 
 Les mémofiches sont composées de **sections dynamiques**, qui peuvent être de différents types :
 
-*   **Sections à Contenu Enrichi (`MemoFicheSection`)**: Elles contiennent un `title` et un tableau de `content` où chaque élément de contenu est un objet `{ type: 'text' | 'image' | 'video', value: string }`.
-    *   Exemples de ces sections : `patientSituation` (Cas comptoir), `pathologyOverview` (Aperçu pathologie), `casComptoir`, `objectifsConseil`, `pathologiesConcernees`, `interetDispositif`, `beneficesSante`, `dispositifsAConseiller`, `reponsesObjections`, `pagesSponsorisees`.
-*   **Sections sous forme de Listes/Tableaux (`string[]`)**: Elles contiennent des listes de chaînes de caractères.
-    *   Exemples : `keyQuestions` (Questions clés à poser), `redFlags` (Signaux d'alerte), `mainTreatment` (Traitement Principal), `associatedProducts` (Produits Associés), `lifestyleAdvice` (Conseils Hygiène de vie), `dietaryAdvice` (Conseils alimentaires), `keyPoints` (Points Clés), `references` (Références bibliographiques).
-*   **Structures Spécifiques pour certains types (`ordonnances`)**:
-    *   `conseilsTraitement`: Tableau d'objets `{ medicament: string; conseils: string[] }`.
-    *   `ventesAdditionnelles`: Objet avec des catégories (`complementsAlimentaires`, `accessoires`, `dispositifs`, `cosmetiques`) contenant des listes de `string`.
-*   **`customSections`**: Les utilisateurs peuvent ajouter leurs propres sections personnalisées, structurées comme les sections à contenu enrichi.
-*   **`sectionOrder`**: Permet de définir l'ordre d'affichage des sections.
+- **Sections à Contenu Enrichi (`MemoFicheSection`)**: Elles contiennent un `title` et un tableau de `content` où chaque élément de contenu est un objet `{ type: 'text' | 'image' | 'video', value: string }`.
+  - Exemples de ces sections : `patientSituation` (Cas comptoir), `pathologyOverview` (Aperçu pathologie), `casComptoir`, `objectifsConseil`, `pathologiesConcernees`, `interetDispositif`, `beneficesSante`, `dispositifsAConseiller`, `reponsesObjections`, `pagesSponsorisees`.
+- **Sections sous forme de Listes/Tableaux (`string[]`)**: Elles contiennent des listes de chaînes de caractères.
+  - Exemples : `keyQuestions` (Questions clés à poser), `redFlags` (Signaux d'alerte), `mainTreatment` (Traitement Principal), `associatedProducts` (Produits Associés), `lifestyleAdvice` (Conseils Hygiène de vie), `dietaryAdvice` (Conseils alimentaires), `keyPoints` (Points Clés), `references` (Références bibliographiques).
+- **Structures Spécifiques pour certains types (`ordonnances`)**:
+  - `conseilsTraitement`: Tableau d'objets `{ medicament: string; conseils: string[] }`.
+  - `ventesAdditionnelles`: Objet avec des catégories (`complementsAlimentaires`, `accessoires`, `dispositifs`, `cosmetiques`) contenant des listes de `string`.
+- **`customSections`**: Les utilisateurs peuvent ajouter leurs propres sections personnalisées, structurées comme les sections à contenu enrichi.
+- **`sectionOrder`**: Permet de définir l'ordre d'affichage des sections.
 
 ### Outils Pédagogiques Intégrés
 
 Chaque mémofiche peut inclure des outils d'apprentissage interactifs :
 
-*   **`flashcards`**: Tableau d'objets `{ question: string; answer: string }`.
-*   **`quiz`**: Tableau d'objets `{ question: string; options: string[]; correctAnswerIndex: number; explanation: string }`. Les questions peuvent être de type QCM ou VRAI/FAUX.
-*   **`glossary`**: Tableau d'objets `{ term: string; definition: string }`.
+- **`flashcards`**: Tableau d'objets `{ question: string; answer: string }`.
+- **`quiz`**: Tableau d'objets `{ question: string; options: string[]; correctAnswerIndex: number; explanation: string }`. Les questions peuvent être de type QCM ou VRAI/FAUX.
+- **`glossary`**: Tableau d'objets `{ term: string; definition: string }`.
 
 ## Génération des Mémofiches dans PharmIA
 
@@ -51,67 +51,66 @@ La création de mémofiches peut se faire de deux manières principales : manuel
 
 L'éditeur de mémofiches est l'interface principale pour créer et modifier le contenu des mémofiches.
 
-*   **Accès et Interface**: Accessible via la page `/edit-memofiche/:id` (pour l'édition) ou `/edit-memofiche/new` (pour la création), l'interface (`components/MemoFicheEditor.tsx`) offre un formulaire complet pour gérer tous les aspects d'une mémofiche.
-*   **Champs Généraux**: Remplissage des informations de base (titre, description, type, thème, niveau, etc.).
-*   **Gestion des Sections**:
-    *   Les sections prédéfinies apparaissent dynamiquement en fonction du `type` de mémofiche choisi.
-    *   Chaque section peut être modifiée :
-        *   Les sections à contenu enrichi permettent d'ajouter des blocs de **texte**, des **images** et des **vidéos** (liens YouTube).
-        *   Les sections de type liste sont éditées via des zones de texte multilignes, où chaque ligne représente un élément.
-    *   **Sections Personnalisées**: Possibilité d'ajouter des sections entièrement nouvelles avec un titre et un contenu enrichi.
-    *   **Réorganisation des Sections**: Des boutons haut/bas permettent de modifier l'ordre d'affichage des sections.
-    *   **Suppression de Sections**: Des boutons permettent de retirer des sections personnalisées ou des sections principales.
-*   **Gestion des Flashcards**: Ajouter, modifier et supprimer des cartes (question/réponse).
-*   **Gestion des Quiz**: Créer des questions, définir les options, la bonne réponse et une explication pour chaque question.
-*   **Téléchargement d'Images**: L'intégration d'images dans les sections se fait via un `ImageUploadModal`. Ce modal permet de téléverser des images qui sont ensuite stockées sur le serveur (`/data/uploads/`) via l'API `/api/upload/image`. Les métadonnées de l'image (nom, thème, URL) sont enregistrées en base de données. L'URL de l'image est ensuite insérée dans le contenu de la mémofiche.
-*   **Statut**: Les utilisateurs ayant les rôles `ADMIN` ou `FORMATEUR` peuvent définir le statut d'une mémofiche comme `Draft` ou `Published`.
-*   **Sauvegarde**: Toutes les modifications sont enregistrées via l'API `/api/memofiches` (méthodes `POST` pour la création, `PUT` pour la mise à jour).
+- **Accès et Interface**: Accessible via la page `/edit-memofiche/:id` (pour l'édition) ou `/edit-memofiche/new` (pour la création), l'interface (`components/MemoFicheEditor.tsx`) offre un formulaire complet pour gérer tous les aspects d'une mémofiche.
+- **Champs Généraux**: Remplissage des informations de base (titre, description, type, thème, niveau, etc.).
+- **Gestion des Sections**:
+  - Les sections prédéfinies apparaissent dynamiquement en fonction du `type` de mémofiche choisi.
+  - Chaque section peut être modifiée :
+    - Les sections à contenu enrichi permettent d'ajouter des blocs de **texte**, des **images** et des **vidéos** (liens YouTube).
+    - Les sections de type liste sont éditées via des zones de texte multilignes, où chaque ligne représente un élément.
+  - **Sections Personnalisées**: Possibilité d'ajouter des sections entièrement nouvelles avec un titre et un contenu enrichi.
+  - **Réorganisation des Sections**: Des boutons haut/bas permettent de modifier l'ordre d'affichage des sections.
+  - **Suppression de Sections**: Des boutons permettent de retirer des sections personnalisées ou des sections principales.
+- **Gestion des Flashcards**: Ajouter, modifier et supprimer des cartes (question/réponse).
+- **Gestion des Quiz**: Créer des questions, définir les options, la bonne réponse et une explication pour chaque question.
+- **Téléchargement d'Images**: L'intégration d'images dans les sections se fait via un `ImageUploadModal`. Ce modal permet de téléverser des images qui sont ensuite stockées sur le serveur (`/data/uploads/`) via l'API `/api/upload/image`. Les métadonnées de l'image (nom, thème, URL) sont enregistrées en base de données. L'URL de l'image est ensuite insérée dans le contenu de la mémofiche.
+- **Statut**: Les utilisateurs ayant les rôles `ADMIN` ou `FORMATEUR` peuvent définir le statut d'une mémofiche comme `Draft` ou `Published`.
+- **Sauvegarde**: Toutes les modifications sont enregistrées via l'API `/api/memofiches` (méthodes `POST` pour la création, `PUT` pour la mise à jour).
 
 ### 2. Génération Assistée par IA (Gemini)
 
 PharmIA tire parti de l'API Gemini pour faciliter la création de contenu et d'outils pédagogiques. Le service (`server/geminiService.js`) interagit avec le modèle `gemini-1.5-flash`.
 
-*   **Génération de Brouillons de Mémofiches (`/api/gemini/generate-draft`)**:
-    *   **Processus**: Un utilisateur fournit un `prompt` (description du sujet désiré) et un `memoFicheType`.
-    *   **Fonctionnement**: L'IA Gemini est sollicitée pour générer un brouillon de `CaseStudy` en format JSON. La structure JSON attendue est dynamiquement définie en fonction du `memoFicheType` fourni, assurant que le contenu généré correspond précisément aux champs de la mémofiche. Cela inclut le `texte d'origine` pour chaque section pertinente.
-    *   **Exemple**: Pour un `memoFicheType` 'maladie', Gemini pourrait générer un `title`, `patientSituation`, `keyQuestions`, `pathologyOverview`, etc.
-*   **Génération d'Outils Pédagogiques (`/api/gemini/generate-learning-tools`)**:
-    *   **Processus**: À partir d'une mémofiche existante, l'IA peut générer automatiquement des flashcards, des termes de glossaire et des questions de quiz.
-    *   **Flashcards**: 10 flashcards pertinentes (question/réponse) sont générées.
-    *   **Glossaire**: 10 termes techniques importants de la mémofiche sont extraits et définis.
-    *   **Quiz**: Des questions de type QCM ou VRAI/FAUX sont créées, avec leurs options, la bonne réponse et des explications.
+- **Génération de Brouillons de Mémofiches (`/api/gemini/generate-draft`)**:
+  - **Processus**: Un utilisateur fournit un `prompt` (description du sujet désiré) et un `memoFicheType`.
+  - **Fonctionnement**: L'IA Gemini est sollicitée pour générer un brouillon de `CaseStudy` en format JSON. La structure JSON attendue est dynamiquement définie en fonction du `memoFicheType` fourni, assurant que le contenu généré correspond précisément aux champs de la mémofiche. Cela inclut le `texte d'origine` pour chaque section pertinente.
+  - **Exemple**: Pour un `memoFicheType` 'maladie', Gemini pourrait générer un `title`, `patientSituation`, `keyQuestions`, `pathologyOverview`, etc.
+- **Génération d'Outils Pédagogiques (`/api/gemini/generate-learning-tools`)**:
+  - **Processus**: À partir d'une mémofiche existante, l'IA peut générer automatiquement des flashcards, des termes de glossaire et des questions de quiz.
+  - **Flashcards**: 10 flashcards pertinentes (question/réponse) sont générées.
+  - **Glossaire**: 10 termes techniques importants de la mémofiche sont extraits et définis.
+  - **Quiz**: Des questions de type QCM ou VRAI/FAUX sont créées, avec leurs options, la bonne réponse et des explications.
 
 ## Affichage des Mémofiches
 
 Les mémofiches peuvent être consultées de différentes manières dans PharmIA.
 
-*   **Liste des Mémofiches**:
-    *   Accessible via `/api/memofiches`, permettant la pagination, la recherche, le filtrage par thème, système, et statut.
-    *   Les mémofiches peuvent être "verrouillées" (`isLocked`) si l'utilisateur n'a pas les droits d'accès.
-*   **Vue Détaillée d'une Mémofiche**:
-    *   Accessible via `/api/memofiches/:id`.
-    *   Présente le contenu complet de la mémofiche, y compris les sections, flashcards, quiz et glossaire.
-*   **Contrôle d'Accès**:
-    *   Les mémofiches `isFree` sont accessibles à tous.
-    *   Pour les mémofiches payantes, l'accès dépend du rôle de l'utilisateur et de son statut d'abonnement :
-        *   **ADMIN** et **FORMATEUR** ont un accès complet à toutes les mémofiches.
-        *   **APPRENANT** et **PREPARATEUR** nécessitent un abonnement actif ou que la mémofiche ait été spécifiquement assignée à leur groupe par leur pharmacien.
-    *   **QR Code de Partage**: Les `ADMINs` peuvent générer un QR code pour chaque mémofiche, permettant de partager un lien public direct vers la mémofiche.
+- **Liste des Mémofiches**:
+  - Accessible via `/api/memofiches`, permettant la pagination, la recherche, le filtrage par thème, système, et statut.
+  - Les mémofiches peuvent être "verrouillées" (`isLocked`) si l'utilisateur n'a pas les droits d'accès.
+- **Vue Détaillée d'une Mémofiche**:
+  - Accessible via `/api/memofiches/:id`.
+  - Présente le contenu complet de la mémofiche, y compris les sections, flashcards, quiz et glossaire.
+- **Contrôle d'Accès**:
+  - Les mémofiches `isFree` sont accessibles à tous.
+  - Pour les mémofiches payantes, l'accès dépend du rôle de l'utilisateur et de son statut d'abonnement :
+    - **ADMIN** et **FORMATEUR** ont un accès complet à toutes les mémofiches.
+    - **APPRENANT** et **PREPARATEUR** nécessitent un abonnement actif ou que la mémofiche ait été spécifiquement assignée à leur groupe par leur pharmacien.
+  - **QR Code de Partage**: Les `ADMINs` peuvent générer un QR code pour chaque mémofiche, permettant de partager un lien public direct vers la mémofiche.
 
 ## Backend et Persistance
 
 Toutes les mémofiches sont stockées dans une base de données **MongoDB**, au sein de la collection `memofiches`.
 Les interactions avec les mémofiches (création, lecture, mise à jour, suppression) sont gérées par des API REST dédiées exposées par le serveur (`server.ts`) :
 
-*   `GET /api/memofiches`: Récupère une liste paginée et filtrée de mémofiches.
-*   `GET /api/memofiches/all`: Récupère toutes les mémofiches.
-*   `GET /api/memofiches/:id`: Récupère une mémofiche spécifique par son ID.
-*   `POST /api/memofiches`: Crée une nouvelle mémofiche.
-*   `PUT /api/memofiches/:id`: Met à jour une mémofiche existante.
-*   `DELETE /api/memofiches/:id`: Supprime une mémofiche.
+- `GET /api/memofiches`: Récupère une liste paginée et filtrée de mémofiches.
+- `GET /api/memofiches/all`: Récupère toutes les mémofiches.
+- `GET /api/memofiches/:id`: Récupère une mémofiche spécifique par son ID.
+- `POST /api/memofiches`: Crée une nouvelle mémofiche.
+- `PUT /api/memofiches/:id`: Met à jour une mémofiche existante.
+- `DELETE /api/memofiches/:id`: Supprime une mémofiche.
 
 Ce système offre une gestion complète et flexible des contenus pédagogiques, intégrant à la fois des outils d'édition manuels et des capacités de génération avancées par IA.
-
 
 # BASE DE CONNAISSANCE DES MÉMOFICHES PHARMIA
 
@@ -139,7 +138,7 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 • - **Autres symptômes** : Fatigue modérée, maux de tête légers, légère toux sèche.
 • - **Facteurs favorisants** :
 **-**Baisse d'immunité (fatigue, stress),
-**-**Carence en fer 
+**-**Carence en fer
 **-**Froid
 **-**Tabagisme...
 • - **Complications possibles** : plus fréquentes chez les enfants, les personnes âgées, les immunodéprimés:
@@ -171,7 +170,7 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Traitement Principal
 
-- **Lavage nasal** : 
+- **Lavage nasal** :
 - **-Objectifs**
 - **.**Il aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.
 - **.**Il permet de nettoyer la muqueuse nasale des virus et des autres agents irritants.
@@ -180,35 +179,35 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 - **-Posologie**: **2** à **6** fois par jour, une narine après l'autre.
 - **-Nez qui coule**: Sérum physiologique ou solutions d'eau de mer isotoniques.
 - Ex: Medimar isotonique®.
-- **-Nez bouché**  : Solutions hypertoniques pour un effet décongestionnant osmotique. 
+- **-Nez bouché** : Solutions hypertoniques pour un effet décongestionnant osmotique.
 - Ex: Physiomer hypertonique®
-- **-Conseil**: Rincer l'embout à l'eau chaude et au savon après chaque utilisation.  
-- **-Remarque**: Le rhume est d'origine **virale**, les **antibiotiques** sont **inutiles**. 
+- **-Conseil**: Rincer l'embout à l'eau chaude et au savon après chaque utilisation.
+- **-Remarque**: Le rhume est d'origine **virale**, les **antibiotiques** sont **inutiles**.
 
 ### Produits Associés
 
-- * **-Paracétamol :**
+- - **-Paracétamol :**
 -     * **.Usage :** Fièvre et maux de tête, en première intention.
 -     * **.Posologie :** **500** mg - **1000** mg  3 fois/jour.
 -     * **.Attention :** Ne pas dépasser 4 g/jour et respecter un intervalle de 4 à 6 h entre les prises.
-- * **-Antihistaminiques (Anti-H1) :**
+- - **-Antihistaminiques (Anti-H1) :**
 -     * **.Usage :** Rhume, éternuements, larmoiements.
 -     * **.Effet secondaire :** Peuvent causer de la **somnolence**.
 -     * **.Contre-indications (CI) :** Âge <6 ans, glaucome, troubles urétro-prostatiques, grossesse/allaitement.
-- * **-Vasoconstricteurs (Pseudoéphédrine) :**
+- - **-Vasoconstricteurs (Pseudoéphédrine) :**
 -     * **.Usage :** Décongestion nasale, traitement du nez bouché
 -     * **.Durée max. :** 5  jours.
 -     * **.CI absolues :** Âge <15 ans, grossesse/allaitement, AVC, HTA sévère, maladies cardiovasculaires, glaucome, IMAO, maladies rénales.
 -     * **.Alerte médicale :** Consulter en cas de maux de tête soudains et sévères, nausées, vomissements, confusion, convulsions, ou troubles visuels.
 - **-Autres Soins et Suppléments**
-- * **.Crèmes apaisantes :** Soulagent l'irritation des narines (Ex: Homéoplasmine®).
-- * **.Inhalations chaudes :** Effet décongestionnant/antiseptique (huiles essentielles/dérivés terpéniques). 
-- * **.Inhalations sèches/Sprays :** HE (eucalyptus, menthe) sur mouchoir ou vaporisées.
-- * **.Zinc :** Antioxydant, booste l'immunité, réduit durée/sévérité des symptômes. **Posologie** :**25** mg/j pendant **7** jours si symptômes ; **15** mg/j en prévention.
-- * **.Vitamine C :** Antioxydante, renforce l'immunité, réduit la fatigue. **Posologie** :** 1000** à  **2000** mg/j si symptômes.
-- * **.Vitamine D :** Régule l'immunité, réduit le risque d'infections respiratoires. **Posologie**: Jusqu'à **4000** UI/j si symptômes ; **800** à **1200** UI/j en prévention.
-- * **.Échinacée :** Stimule le système immunitaire. **CI :** Maladies auto-immunes, allergies.
-- * **.Sureau noir :** Réduit la durée et l'intensité des symptômes du rhume. **CI :** Diabète. **Interaction :** Diurétiques.
+- - **.Crèmes apaisantes :** Soulagent l'irritation des narines (Ex: Homéoplasmine®).
+- - **.Inhalations chaudes :** Effet décongestionnant/antiseptique (huiles essentielles/dérivés terpéniques).
+- - **.Inhalations sèches/Sprays :** HE (eucalyptus, menthe) sur mouchoir ou vaporisées.
+- - **.Zinc :** Antioxydant, booste l'immunité, réduit durée/sévérité des symptômes. **Posologie** :**25** mg/j pendant **7** jours si symptômes ; **15** mg/j en prévention.
+- - **.Vitamine C :** Antioxydante, renforce l'immunité, réduit la fatigue. **Posologie** :** 1000** à **2000** mg/j si symptômes.
+- - **.Vitamine D :** Régule l'immunité, réduit le risque d'infections respiratoires. **Posologie**: Jusqu'à **4000** UI/j si symptômes ; **800** à **1200** UI/j en prévention.
+- - **.Échinacée :** Stimule le système immunitaire. **CI :** Maladies auto-immunes, allergies.
+- - **.Sureau noir :** Réduit la durée et l'intensité des symptômes du rhume. **CI :** Diabète. **Interaction :** Diurétiques.
 
 ### Conseils Hygiène de Vie
 
@@ -228,7 +227,7 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Traitement Principal (Rec)
 
-- **Lavage nasal** : 
+- **Lavage nasal** :
 - **-Objectifs**
 - **.**Il aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.
 - **.**Il permet de nettoyer la muqueuse nasale des virus et des autres agents irritants.
@@ -237,35 +236,35 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 - **-Posologie**: **2** à **6** fois par jour, une narine après l'autre.
 - **-Nez qui coule**: Sérum physiologique ou solutions d'eau de mer isotoniques.
 - Ex: Medimar isotonique®.
-- **-Nez bouché**  : Solutions hypertoniques pour un effet décongestionnant osmotique. 
+- **-Nez bouché** : Solutions hypertoniques pour un effet décongestionnant osmotique.
 - Ex: Physiomer hypertonique®
-- **-Conseil**: Rincer l'embout à l'eau chaude et au savon après chaque utilisation.  
-- **-Remarque**: Le rhume est d'origine **virale**, les **antibiotiques** sont **inutiles**. 
+- **-Conseil**: Rincer l'embout à l'eau chaude et au savon après chaque utilisation.
+- **-Remarque**: Le rhume est d'origine **virale**, les **antibiotiques** sont **inutiles**.
 
 ### Produits Associés (Rec)
 
-- * **-Paracétamol :**
+- - **-Paracétamol :**
 -     * **.Usage :** Fièvre et maux de tête, en première intention.
 -     * **.Posologie :** **500** mg - **1000** mg  3 fois/jour.
 -     * **.Attention :** Ne pas dépasser 4 g/jour et respecter un intervalle de 4 à 6 h entre les prises.
-- * **-Antihistaminiques (Anti-H1) :**
+- - **-Antihistaminiques (Anti-H1) :**
 -     * **.Usage :** Rhume, éternuements, larmoiements.
 -     * **.Effet secondaire :** Peuvent causer de la **somnolence**.
 -     * **.Contre-indications (CI) :** Âge <6 ans, glaucome, troubles urétro-prostatiques, grossesse/allaitement.
-- * **-Vasoconstricteurs (Pseudoéphédrine) :**
+- - **-Vasoconstricteurs (Pseudoéphédrine) :**
 -     * **.Usage :** Décongestion nasale, traitement du nez bouché
 -     * **.Durée max. :** 5  jours.
 -     * **.CI absolues :** Âge <15 ans, grossesse/allaitement, AVC, HTA sévère, maladies cardiovasculaires, glaucome, IMAO, maladies rénales.
 -     * **.Alerte médicale :** Consulter en cas de maux de tête soudains et sévères, nausées, vomissements, confusion, convulsions, ou troubles visuels.
 - **-Autres Soins et Suppléments**
-- * **.Crèmes apaisantes :** Soulagent l'irritation des narines (Ex: Homéoplasmine®).
-- * **.Inhalations chaudes :** Effet décongestionnant/antiseptique (huiles essentielles/dérivés terpéniques). 
-- * **.Inhalations sèches/Sprays :** HE (eucalyptus, menthe) sur mouchoir ou vaporisées.
-- * **.Zinc :** Antioxydant, booste l'immunité, réduit durée/sévérité des symptômes. **Posologie** :**25** mg/j pendant **7** jours si symptômes ; **15** mg/j en prévention.
-- * **.Vitamine C :** Antioxydante, renforce l'immunité, réduit la fatigue. **Posologie** :** 1000** à  **2000** mg/j si symptômes.
-- * **.Vitamine D :** Régule l'immunité, réduit le risque d'infections respiratoires. **Posologie**: Jusqu'à **4000** UI/j si symptômes ; **800** à **1200** UI/j en prévention.
-- * **.Échinacée :** Stimule le système immunitaire. **CI :** Maladies auto-immunes, allergies.
-- * **.Sureau noir :** Réduit la durée et l'intensité des symptômes du rhume. **CI :** Diabète. **Interaction :** Diurétiques.
+- - **.Crèmes apaisantes :** Soulagent l'irritation des narines (Ex: Homéoplasmine®).
+- - **.Inhalations chaudes :** Effet décongestionnant/antiseptique (huiles essentielles/dérivés terpéniques).
+- - **.Inhalations sèches/Sprays :** HE (eucalyptus, menthe) sur mouchoir ou vaporisées.
+- - **.Zinc :** Antioxydant, booste l'immunité, réduit durée/sévérité des symptômes. **Posologie** :**25** mg/j pendant **7** jours si symptômes ; **15** mg/j en prévention.
+- - **.Vitamine C :** Antioxydante, renforce l'immunité, réduit la fatigue. **Posologie** :** 1000** à **2000** mg/j si symptômes.
+- - **.Vitamine D :** Régule l'immunité, réduit le risque d'infections respiratoires. **Posologie**: Jusqu'à **4000** UI/j si symptômes ; **800** à **1200** UI/j en prévention.
+- - **.Échinacée :** Stimule le système immunitaire. **CI :** Maladies auto-immunes, allergies.
+- - **.Sureau noir :** Réduit la durée et l'intensité des symptômes du rhume. **CI :** Diabète. **Interaction :** Diurétiques.
 
 ### Conseils Hygiène de Vie (Rec)
 
@@ -285,11 +284,7 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Diagnostic Différentiel & Orientation
 
-
-
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -327,7 +322,7 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 ### Aperçu Pathologie
 
 **-L'angine** : est une inflammation aiguë infectieuse des amygdales ou du pharynx.
-**-Origine** : Majoritairement virale (**75-90%** chez l'adulte), moins souvent bactérienne, causée par une bactérie: Streptocoque Bêta-hémolytique du Groupe A, **SGA**( **10-25%** chez l'adulte). L'angine bactérienne est plus fréquente chez les enfants âgés de 5 à 15 ans (peut atteindre 40% des cas). 
+**-Origine** : Majoritairement virale (**75-90%** chez l'adulte), moins souvent bactérienne, causée par une bactérie: Streptocoque Bêta-hémolytique du Groupe A, **SGA**( **10-25%** chez l'adulte). L'angine bactérienne est plus fréquente chez les enfants âgés de 5 à 15 ans (peut atteindre 40% des cas).
 **-Symptômes clés** : **Mal de gorge** (odynophagie) et **fièvre** (38-39°C).,
 **-Autres symptômes** : Toux, rhume, fatigue, maux de tête, adénopathies cervicales ( gonflement et douleur des ganglions du cou) possibles.
 **-Aspect** : Le plus souvent on parle d'angine rouge dite érythémateuse ou d'angine blanche dite érythémato-pultacée. D'autres aspects sont possibles mais sont beaucoup plus rares.
@@ -359,34 +354,34 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 - **-**Ex: Pastilles: Cantalène® (anesthésique, antiseptique, anti-œdème): Risque de fausse route (éviter avant repas), Contre Indiqué si Age < 6 ans.
 - **-**Ex: Spray: Hexaspray® antiseptique
 - **Antalgiques/antipyrétiques** : paracétamol
-- **Alpha-amylase** : Enzyme à visée anti-décongestionnante, dès 6 mois. 
+- **Alpha-amylase** : Enzyme à visée anti-décongestionnante, dès 6 mois.
 - - Ex: Maxilase®
 - **Traitement antibiotique** : Uniquement pour **angine bactérienne** , sur prescription médicale.
-- **-****Amoxicilline** : Antibiotique de 1ère intention (**6** jours).
+- **-\*\***Amoxicilline** : Antibiotique de 1ère intention (**6\*\* jours).
 - **-**Alternatives ATB : Céphalosporines (cefpodoxime, céfuroxime) ou macrolides (clarithromycine, azithromycine) si allergies.
 - **Remarque**: L'utilisation des **AINS** n'est pas recommandée pour soulager la douleur de la gorge, car ils peuvent masquer l'évolution de l'angine et exposent au risque de complications infectieuses graves.
 
 ### Produits Associés
 
-- **Lavage nasal** : 
-- **-**Sérum physiologique ou eau de mer si rhinite associée. 
+- **Lavage nasal** :
+- **-**Sérum physiologique ou eau de mer si rhinite associée.
 - **-**Aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.
 - **-**Hydrate la muqueuse nasale, réduisant ainsi l'inflammation et l'inconfort.
 - **-**Aide à prévenir les complications comme la sinusite ou l'otite.
-- **Zinc** : 
-- **-**Antioxydant, il booste l'immunité et aide à réduire la durée et la sévérité symptômes. 
-- **-**Posologie en présence des symptômes: **25-50mg**/j pendant **7 **jours 
+- **Zinc** :
+- **-**Antioxydant, il booste l'immunité et aide à réduire la durée et la sévérité symptômes.
+- **-**Posologie en présence des symptômes: **25-50mg**/j pendant **7 **jours
 - **-**Posologie en absence des symptômes: **15mg**/j
-- **Vitamine C** : 
-- **-**Antioxydante, elle renforce l'immunité et aide à réduire la fatigue. 
+- **Vitamine C** :
+- **-**Antioxydante, elle renforce l'immunité et aide à réduire la fatigue.
 - **-**Posologie: **1000**-**2000**mg/j durant l'infection.
 - **Échinacée** :
-- **-**Aide à stimuler le système immunitaire. 
-- **-**Posologie: **300**mg (poudre) **3**x/j ou **200**mg extrait sec/j. 
-- **-**Contre-indications: maladies auto-immunes, allergies. 
-- **Propolis/Gelée royale** :  
+- **-**Aide à stimuler le système immunitaire.
+- **-**Posologie: **300**mg (poudre) **3**x/j ou **200**mg extrait sec/j.
+- **-**Contre-indications: maladies auto-immunes, allergies.
+- **Propolis/Gelée royale** :
 - - Aide à stimuler les défenses immunitaires
-- **Anti-tussifs** : 
+- **Anti-tussifs** :
 - **-**Soulage la toux sèche irritative
 - **-**Ex: Toumix®
 
@@ -413,34 +408,34 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 - **-**Ex: Pastilles: Cantalène® (anesthésique, antiseptique, anti-œdème): Risque de fausse route (éviter avant repas), Contre Indiqué si Age < 6 ans.
 - **-**Ex: Spray: Hexaspray® antiseptique
 - **Antalgiques/antipyrétiques** : paracétamol
-- **Alpha-amylase** : Enzyme à visée anti-décongestionnante, dès 6 mois. 
+- **Alpha-amylase** : Enzyme à visée anti-décongestionnante, dès 6 mois.
 - - Ex: Maxilase®
 - **Traitement antibiotique** : Uniquement pour **angine bactérienne** , sur prescription médicale.
-- **-****Amoxicilline** : Antibiotique de 1ère intention (**6** jours).
+- **-\*\***Amoxicilline** : Antibiotique de 1ère intention (**6\*\* jours).
 - **-**Alternatives ATB : Céphalosporines (cefpodoxime, céfuroxime) ou macrolides (clarithromycine, azithromycine) si allergies.
 - **Remarque**: L'utilisation des **AINS** n'est pas recommandée pour soulager la douleur de la gorge, car ils peuvent masquer l'évolution de l'angine et exposent au risque de complications infectieuses graves.
 
 ### Produits Associés (Rec)
 
-- **Lavage nasal** : 
-- **-**Sérum physiologique ou eau de mer si rhinite associée. 
+- **Lavage nasal** :
+- **-**Sérum physiologique ou eau de mer si rhinite associée.
 - **-**Aide à éliminer les sécrétions nasales, ce qui facilite la respiration⁠.
 - **-**Hydrate la muqueuse nasale, réduisant ainsi l'inflammation et l'inconfort.
 - **-**Aide à prévenir les complications comme la sinusite ou l'otite.
-- **Zinc** : 
-- **-**Antioxydant, il booste l'immunité et aide à réduire la durée et la sévérité symptômes. 
-- **-**Posologie en présence des symptômes: **25-50mg**/j pendant **7 **jours 
+- **Zinc** :
+- **-**Antioxydant, il booste l'immunité et aide à réduire la durée et la sévérité symptômes.
+- **-**Posologie en présence des symptômes: **25-50mg**/j pendant **7 **jours
 - **-**Posologie en absence des symptômes: **15mg**/j
-- **Vitamine C** : 
-- **-**Antioxydante, elle renforce l'immunité et aide à réduire la fatigue. 
+- **Vitamine C** :
+- **-**Antioxydante, elle renforce l'immunité et aide à réduire la fatigue.
 - **-**Posologie: **1000**-**2000**mg/j durant l'infection.
 - **Échinacée** :
-- **-**Aide à stimuler le système immunitaire. 
-- **-**Posologie: **300**mg (poudre) **3**x/j ou **200**mg extrait sec/j. 
-- **-**Contre-indications: maladies auto-immunes, allergies. 
-- **Propolis/Gelée royale** :  
+- **-**Aide à stimuler le système immunitaire.
+- **-**Posologie: **300**mg (poudre) **3**x/j ou **200**mg extrait sec/j.
+- **-**Contre-indications: maladies auto-immunes, allergies.
+- **Propolis/Gelée royale** :
 - - Aide à stimuler les défenses immunitaires
-- **Anti-tussifs** : 
+- **Anti-tussifs** :
 - **-**Soulage la toux sèche irritative
 - **-**Ex: Toumix®
 
@@ -462,8 +457,6 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 - **-**Éviter certains aliments: Acides, épicés ou trop salés.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -536,38 +529,38 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Traitement Principal
 
-- **Antiacides** : 
-- -Sels d’aluminium, de magnésium ou de calcium 
-- -Neutralisent l'acidité. 
+- **Antiacides** :
+- -Sels d’aluminium, de magnésium ou de calcium
+- -Neutralisent l'acidité.
 - -Effet rapide: 30-60 min mais de courte durée
-- -Conseiller de décaler les prises d’au moins **2h** avec un autre médicament. 
+- -Conseiller de décaler les prises d’au moins **2h** avec un autre médicament.
 - -Ex: CalmacideⓇ
-- **Alginates** : 
+- **Alginates** :
 - -Forment un gel visqueux protecteur de la muqueuse œsophagienne.
-- -Posologie: 1 à 2 sachets 3 fois/jour après repas et avant coucher, à distance **2h** des autres médicaments. 
-- -Ex: ApyrosisⓇ 
+- -Posologie: 1 à 2 sachets 3 fois/jour après repas et avant coucher, à distance **2h** des autres médicaments.
+- -Ex: ApyrosisⓇ
 - **Anti-Histaminiques H2: Anti-H2** : Famotidine (sous prescription médicale)
-- -Réduisent la sécrétion de l'acide gastrique. 
-- -Efficacité modérée et de courte durée. 
-- -Posologie: au moment de la crise ou avant le repas sans dépasser 2 cp/j 
+- -Réduisent la sécrétion de l'acide gastrique.
+- -Efficacité modérée et de courte durée.
+- -Posologie: au moment de la crise ou avant le repas sans dépasser 2 cp/j
 - -Ex: Famodine 40Ⓡ
 - **Inhibiteurs de Pompes à Protons: IPP ** (sous prescription médicale)
 - -Bloquent la production de l'acide gastrique.
-- -Posologie: 1 prise par jour, de préférence à jeun le matin. 
-- -Peuvent être associés aux antiacides/alginates en début de traitement. 
+- -Posologie: 1 prise par jour, de préférence à jeun le matin.
+- -Peuvent être associés aux antiacides/alginates en début de traitement.
 - -Utilisation prolongée peut entraîner une carence en vitamine **B12**.
 - -Ex: Esoméprazole : MesopralⓇ
 
 ### Produits Associés
 
 - **Phytothérapie** : Extraits de plantes protectrices, anti-acides, cicatrisantes ou anti-inflammatoires en complément.
-- **Gel d'aloe vera** : 
+- **Gel d'aloe vera** :
 - -2 cuillères à café à 2 cuillères à soupe au coucher.
-- **Tisane de mélisse** : 
+- **Tisane de mélisse** :
 - -2 tasses par jour en dehors des repas.
-- **Décoction de réglisse** : 
+- **Décoction de réglisse** :
 - -1 à 2 tasses par jour en dehors des repas.
-- **Huile essentielle de camomille** : 
+- **Huile essentielle de camomille** :
 - -2 gouttes 3 fois par jour sur support pendant 5 jours.
 
 ### Conseils Hygiène de Vie
@@ -589,42 +582,42 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Traitement Principal (Rec)
 
-- **Antiacides** : 
-- -Sels d’aluminium, de magnésium ou de calcium 
-- -Ils neutralisent l'acidité. 
-- -Leur effet est rapide (30-60 min) mais de courte durée: Nécessitent donc plusieurs prises par jour. 
-- -Conseiller de décaler les prises d’au moins **2h** avec un autre médicament. 
+- **Antiacides** :
+- -Sels d’aluminium, de magnésium ou de calcium
+- -Ils neutralisent l'acidité.
+- -Leur effet est rapide (30-60 min) mais de courte durée: Nécessitent donc plusieurs prises par jour.
+- -Conseiller de décaler les prises d’au moins **2h** avec un autre médicament.
 - -Ex: CalmacideⓇ
-- **Alginates** : 
+- **Alginates** :
 - -Ils forment un gel visqueux protecteur de la muqueuse œsophagienne.
-- -Conseiller de bien malaxer le sachet. 
-- -Posologie: 1 à 2 sachets trois fois/jour après repas et avant coucher, à distance (**2h**) des autres médicaments. 
-- -Ex: ApyrosisⓇ 
+- -Conseiller de bien malaxer le sachet.
+- -Posologie: 1 à 2 sachets trois fois/jour après repas et avant coucher, à distance (**2h**) des autres médicaments.
+- -Ex: ApyrosisⓇ
 - **Anti-Histaminiques H2: Anti-H2** : Famotidine
 - -Produits délivrés sous prescription médicale.
-- -Ils réduisent la sécrétion de l'acide gastrique. 
-- -Leur efficacité est modérée et de courte durée. 
-- -Posologie: À prendre en fonction des symptômes, au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour. 
+- -Ils réduisent la sécrétion de l'acide gastrique.
+- -Leur efficacité est modérée et de courte durée.
+- -Posologie: À prendre en fonction des symptômes, au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour.
 - -Ex: Famodine 40Ⓡ
-- **Inhibiteurs de Pompes à Protons: IPP ** : 
+- **Inhibiteurs de Pompes à Protons: IPP ** :
 - -Produits délivrés sous prescription médicale.
 - -Ils bloquent la production de l'acide gastrique.
-- -Posologie: 1 prise par jour, de préférence à jeun le matin. 
-- -Ils peuvent être associés aux antiacides/alginates en début de traitement. 
-- -Ne pas associer deux IPP entre eux ou un IPP avec un anti-H2. 
+- -Posologie: 1 prise par jour, de préférence à jeun le matin.
+- -Ils peuvent être associés aux antiacides/alginates en début de traitement.
+- -Ne pas associer deux IPP entre eux ou un IPP avec un anti-H2.
 - -Une utilisation prolongée peut entraîner une carence en vitamine **B12**.
 - -Ex: Esoméprazole : MesopralⓇ , Oméprazole: GastralⓇ.
 
 ### Produits Associés (Rec)
 
 - **Phytothérapie** : Extraits de plantes protectrices, anti-acides, cicatrisantes ou anti-inflammatoires en complément.
-- **Gel d'aloe vera** : 
+- **Gel d'aloe vera** :
 - -2 cuillères à café à 2 cuillères à soupe au coucher.
-- **Tisane de mélisse** : 
+- **Tisane de mélisse** :
 - -2 tasses par jour en dehors des repas.
-- **Décoction de réglisse** : 
+- **Décoction de réglisse** :
 - -1 à 2 tasses par jour en dehors des repas.
-- **Huile essentielle de camomille** : 
+- **Huile essentielle de camomille** :
 - -2 gouttes 3 fois par jour sur support pendant 5 jours.
 
 ### Conseils Hygiène de Vie (Rec)
@@ -646,13 +639,11 @@ Ce document contient l'ensemble des fiches validées. Utilisez ces informations 
 
 ### Cas comptoir complémentaire (Custom)
 
-Un patient âgé de 35 ans se présente chaque mois à la pharmacie pour de l'oméprazole 20 mg. 
-Réponse suggérée : "Je comprends que vous cherchiez un soulagement rapide avec l'oméprazole, mais il est important de ne pas l'utiliser en continu sans avis médical. Une utilisation prolongée peut masquer d'autres problèmes de santé et entraîner des effets secondaires tels la diminution de l’absorption de la vitamine B12. 
+Un patient âgé de 35 ans se présente chaque mois à la pharmacie pour de l'oméprazole 20 mg.
+Réponse suggérée : "Je comprends que vous cherchiez un soulagement rapide avec l'oméprazole, mais il est important de ne pas l'utiliser en continu sans avis médical. Une utilisation prolongée peut masquer d'autres problèmes de santé et entraîner des effets secondaires tels la diminution de l’absorption de la vitamine B12.
 Je peux vous proposer un anti-acide pour soulager votre douleur en ce moment mais je vous conseille vivement de consulter votre médecin pour discuter vos symptômes et trouver une solution adaptée à long terme."
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -661,10 +652,10 @@ Je peux vous proposer un anti-acide pour soulager votre douleur en ce moment mai
 - Q: Citez deux symptômes typiques du RGO.
   R: Les brûlures d'estomac (pyrosis) et les régurgitations acides.
 - Q: Quelles sont les facteurs favorisant la survenue des épisodes de RGO?
-  R: Mauvaises habitudes alimentaires, Grossesse, Obésité, Tabac, Prise de certains médicaments. 
+  R: Mauvaises habitudes alimentaires, Grossesse, Obésité, Tabac, Prise de certains médicaments.
 - Q: Quels sont les signaux d'alerte indiquant une urgence dans le cadre du RGO?
   R: Douleurs fortes, vomissements avec sang, sang dans les selles, anémie.
-Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
+  Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 - Q: Quels sont les conseils de prise pour les alginates?
   R: À prendre après les repas et avant le coucher, à distance (2h) des autres médicaments. Il faut bien malaxer le sachet.
 - Q: Comment doivent être pris les IPP pour une efficacité optimale?
@@ -672,9 +663,9 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 - Q: Un patient de 35 ans demande de l'oméprazole chaque mois. Quel conseil clé doit-on lui donner?
   R: Ne pas l'utiliser en continu sans avis médical, car cela peut masquer d'autres problèmes et entraîner des effets secondaires comme la diminution de l’absorption de la vitamine B12. Il est conseillé de consulter un médecin.
 - Q: Quel est le mécanisme d'action des anti-H2?
-  R: Les anti-H2 réduisent le sécrétion de l'acide gastrique. 
-- Q: Quelle est la posologie des anti-H2? 
-  R: A prendre au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour. 
+  R: Les anti-H2 réduisent le sécrétion de l'acide gastrique.
+- Q: Quelle est la posologie des anti-H2?
+  R: A prendre au moment de la crise ou avant le repas sans dépasser 2 comprimés par jour.
 - Q: Quels conseils d'hygiène de vie donner au patient souffrant de RGO ?
   R: Eviter de s'allonger directement après les repas, éviter de se pencher en avant, surélever la tête du lit.
 
@@ -727,7 +718,7 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 
 - La prise en charge repose sur une réhydratation et un traitement symptomatique.
 - **SRO** Solution de Réhydratation Orale
-- -Prévenir la déshydratation. 
+- -Prévenir la déshydratation.
 - -Elle permet de compenser les pertes en eau et électrolytes.
 - -Les SRO sont à prendre avant tout autre liquide, le plus précocement possible.
 - -Ex: Hydratec®, (sachets) à diluer dans 200 ml d'eau
@@ -735,21 +726,21 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 ### Produits Associés
 
 - ** Ralentisseur du transit** : Lopéramide
-- -Posologie: 2 gélules en début, puis 1 après chaque selle non moulée (max 6/jour, max 2 jours). 
+- -Posologie: 2 gélules en début, puis 1 après chaque selle non moulée (max 6/jour, max 2 jours).
 - -CI: Diarrhée sanglante, glaireuse, fébrile. (risque de ralentissement de l'élimination du germe)
 - -Conseil: Usage ponctuel
 - -Ex: Diaretyl®, Diarestop flash®.
 - **Adsorbant intestinal** :Diosmectite
-- -Posologie: 3 sachets/jour (jusqu'à 6 en début de traitement). 
-- -Conseil: À prendre à distance des autres médicaments. 
+- -Posologie: 3 sachets/jour (jusqu'à 6 en début de traitement).
+- -Conseil: À prendre à distance des autres médicaments.
 - -Ex: Smecta®
-- **Racécadotril** (sur ordonnance) Antisécrétoire intestinal. 
-- -Diminue sécrétion eau/électrolytes. 
-- -Posologie: 1 gélule aux premiers signes, puis 1 avant chaque repas. 
-- -Précautions: Non recommandé femmes enceintes et personnes sous IEC (risque d'angio-œdème). 
+- **Racécadotril** (sur ordonnance) Antisécrétoire intestinal.
+- -Diminue sécrétion eau/électrolytes.
+- -Posologie: 1 gélule aux premiers signes, puis 1 avant chaque repas.
+- -Précautions: Non recommandé femmes enceintes et personnes sous IEC (risque d'angio-œdème).
 - -Ex: Tiorfan®, Tiortec®
-- **Probiotiques** (Saccharomyces boulardii, Lactobacillus rhamnosus GG) : 
-- -Aident à restaurer la flore intestinale. 
+- **Probiotiques** (Saccharomyces boulardii, Lactobacillus rhamnosus GG) :
+- -Aident à restaurer la flore intestinale.
 - -À éviter: Personnes immunodéprimées.
 
 ### Conseils Hygiène de Vie
@@ -771,7 +762,7 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 
 - La prise en charge repose sur une réhydratation et un traitement symptomatique.
 - **SRO** Solution de Réhydratation Orale
-- -Prévenir la déshydratation. 
+- -Prévenir la déshydratation.
 - -Elle permet de compenser les pertes en eau et électrolytes.
 - -Les SRO sont à prendre avant tout autre liquide, le plus précocement possible.
 - -Ex: Hydratec®, (sachets) à diluer dans 200 ml d'eau
@@ -779,21 +770,21 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 ### Produits Associés (Rec)
 
 - ** Ralentisseur du transit** : Lopéramide
-- -Posologie: 2 gélules en début, puis 1 après chaque selle non moulée (max 6/jour, max 2 jours). 
+- -Posologie: 2 gélules en début, puis 1 après chaque selle non moulée (max 6/jour, max 2 jours).
 - -CI: Diarrhée sanglante, glaireuse, fébrile. (risque de ralentissement de l'élimination du germe)
 - -Conseil: Usage ponctuel
 - -Ex: Diaretyl®, Diarestop flash®.
 - **Adsorbant intestinal** :Diosmectite
-- -Posologie: 3 sachets/jour (jusqu'à 6 en début de traitement). 
-- -Conseil: À prendre à distance des autres médicaments. 
+- -Posologie: 3 sachets/jour (jusqu'à 6 en début de traitement).
+- -Conseil: À prendre à distance des autres médicaments.
 - -Ex: Smecta®
-- **Racécadotril** (sur ordonnance) Antisécrétoire intestinal. 
-- -Diminue sécrétion eau/électrolytes. 
-- -Posologie: 1 gélule aux premiers signes, puis 1 avant chaque repas. 
-- -Précautions: Non recommandé femmes enceintes et personnes sous IEC (risque d'angio-œdème). 
+- **Racécadotril** (sur ordonnance) Antisécrétoire intestinal.
+- -Diminue sécrétion eau/électrolytes.
+- -Posologie: 1 gélule aux premiers signes, puis 1 avant chaque repas.
+- -Précautions: Non recommandé femmes enceintes et personnes sous IEC (risque d'angio-œdème).
 - -Ex: Tiorfan®, Tiortec®
-- **Probiotiques** (Saccharomyces boulardii, Lactobacillus rhamnosus GG) : 
-- -Aident à restaurer la flore intestinale. 
+- **Probiotiques** (Saccharomyces boulardii, Lactobacillus rhamnosus GG) :
+- -Aident à restaurer la flore intestinale.
 - -À éviter: Personnes immunodéprimées.
 
 ### Conseils Hygiène de Vie (Rec)
@@ -812,8 +803,6 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 - -En cas de diarrhée infectieuse, éviter les produits riches en lactose.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -880,46 +869,46 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 
 - **Laxatifs osmotiques**:
 - -Augmentent l'hydratation des selles en 24 à 48h
-- - **Les sucrés**: polyols (lactulose, sorbitol) 
+- - **Les sucrés**: polyols (lactulose, sorbitol)
 - -EI: douleurs abdominales et des flatulences
 - -Ex: Duphalac®
-- - **Les osmotiques **: les macrogols 
+- - **Les osmotiques **: les macrogols
 - -Efficacité supérieure aux polyols
 - -Ex: Ilax®
 - **Laxatifs lubrifiants**:
-- -Ramollissent et facilitent l'exonération en 24h 
-- -Éviter chez alités (risque d’inhalation bronchique et de pneumonie). 
-- -Utilisation prolongée: réduction de l’absorption des Vit liposolubles A, D, E et K. 
+- -Ramollissent et facilitent l'exonération en 24h
+- -Éviter chez alités (risque d’inhalation bronchique et de pneumonie).
+- -Utilisation prolongée: réduction de l’absorption des Vit liposolubles A, D, E et K.
 - -Ex: Laxafine®
-- **Laxatifs de lest** (Psyllium) 
-- -Augmentent le volume et hydratent les selles: 2-3j 
-- -Nécessitent un apport hydrique suffisant. 
+- **Laxatifs de lest** (Psyllium)
+- -Augmentent le volume et hydratent les selles: 2-3j
+- -Nécessitent un apport hydrique suffisant.
 - -Ex: Biofibres®
-- - **Laxatifs stimulants** (Dérivés anthracéniques). 
+- - **Laxatifs stimulants** (Dérivés anthracéniques).
 - -Stimulent l'intestin: en 5-10h
 - -Utilisation: 3-5 jours max
-- -CI: colopathies inflammatoires, troubles du rythme. 
+- -CI: colopathies inflammatoires, troubles du rythme.
 - -Ex: Purgatif®
 - - **Laxatifs rectaux** (Lavements, suppositoires)
 - -Agissent localement en quelques min à 1h
-- -CI: poussée hémorroïdaire, fissure anale. 
+- -CI: poussée hémorroïdaire, fissure anale.
 - -Utilisation prolongée: peut entraver le réflexe normal d’exonération
 - -Ex: Laxagel®
 - -**Attention!!!**: Ne pas associer les salins et les stimulants du fait de leur effet hypokaliémiant aux antiarythmiques, neuroleptiques, diurétiques hypokaliémiants, corticoïdes, digitaliques, cisapride…
 
 ### Produits Associés
 
-- - **Antispasmodiques**: 
-- -Aident à réduire les douleurs abdominales. 
-- -Ex:  Spasmocalm®, Nospasm®
-- - **Tisanes laxatives**: Séné, Rhubarbe 
-- -Contiennent des dérivés anthracéniques, agissent comme des laxatifs stimulants à utiliser avec précaution. 
+- - **Antispasmodiques**:
+- -Aident à réduire les douleurs abdominales.
+- -Ex: Spasmocalm®, Nospasm®
+- - **Tisanes laxatives**: Séné, Rhubarbe
+- -Contiennent des dérivés anthracéniques, agissent comme des laxatifs stimulants à utiliser avec précaution.
 - -Ex: Laxative®
-- - **Tisanes digestives**: Fenouil, Anis 
-- -Aident à éliminer les ballonnements et améliorer le transit. 
+- - **Tisanes digestives**: Fenouil, Anis
+- -Aident à éliminer les ballonnements et améliorer le transit.
 - -Ex: Phytokad digestion®
-- - **Probiotiques** : 
-- -Modulent le microbiote pour un transit amélioré à long terme. 
+- - **Probiotiques** :
+- -Modulent le microbiote pour un transit amélioré à long terme.
 - -Ex: Lactibiane référence®
 
 ### Conseils Hygiène de Vie
@@ -940,52 +929,52 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 ### Traitement Principal (Rec)
 
 - **Laxatifs osmotiques**:
-- -Ils augmentent l'hydratation des selles en attirant l'eau dans la lumière intestinale. 
+- -Ils augmentent l'hydratation des selles en attirant l'eau dans la lumière intestinale.
 - -Leur action débute 24 à 48 heures après la première prise.
-- - **Les osmotiques sucrés**: polyols (lactulose, sorbitol) 
-- -Ils peuvent provoquer des douleurs abdominales et des flatulences du fait de leur fermentation par la flore intestinale. 
+- - **Les osmotiques sucrés**: polyols (lactulose, sorbitol)
+- -Ils peuvent provoquer des douleurs abdominales et des flatulences du fait de leur fermentation par la flore intestinale.
 - -Ex: Duphalac®
-- - **Les osmotiques salins**: les macrogols (PEG): 
+- - **Les osmotiques salins**: les macrogols (PEG):
 - -Ils ont une efficacité supérieure aux polyols et provoquent moins de douleurs abdominales car ils n'induisent pas de fermentation colique.
-- -CI: occlusion intestinale. 
+- -CI: occlusion intestinale.
 - -Ex: Ilax®
 - **Laxatifs lubrifiants**: Huile de paraffine
-- -Ils ramollissent et facilitent l'exonération (action 24h). 
-- -Éviter chez alités/reflux (risque d’inhalation bronchique et de pneumonie). 
-- -Ne pas se coucher dans les 2h après prise 
-- -Au long cours, ils exposent à une réduction de l’absorption des vitamines liposolubles A, D, E et K. 
+- -Ils ramollissent et facilitent l'exonération (action 24h).
+- -Éviter chez alités/reflux (risque d’inhalation bronchique et de pneumonie).
+- -Ne pas se coucher dans les 2h après prise
+- -Au long cours, ils exposent à une réduction de l’absorption des vitamines liposolubles A, D, E et K.
 - -Ex: Laxafine®
-- **Laxatifs de lest** (Psyllium, Ispaghul) 
-- -Augmentent le volume et hydratent les selles (action 2-3 jours). 
-- -Nécessitent un apport hydrique suffisant. 
-- -CI: occlusion, fécalome. 
+- **Laxatifs de lest** (Psyllium, Ispaghul)
+- -Augmentent le volume et hydratent les selles (action 2-3 jours).
+- -Nécessitent un apport hydrique suffisant.
+- -CI: occlusion, fécalome.
 - -Ex: Biofibres®
-- - **Laxatifs stimulants** (Dérivés anthracéniques). 
-- -Stimulent l'intestin (action 5-10h). 
-- -Utilisation ponctuel (3-5 jours max)**. 
-- -CI: colopathies inflammatoires, occlusion, troubles du rythme. 
+- - **Laxatifs stimulants** (Dérivés anthracéniques).
+- -Stimulent l'intestin (action 5-10h).
+- -Utilisation ponctuel (3-5 jours max)\*\*.
+- -CI: colopathies inflammatoires, occlusion, troubles du rythme.
 - -Ex: Purgatif®
 - - **Laxatifs rectaux** (Lavements, suppositoires)
-- -Agissent localement par effet osmotique ou en stimulant le réflexe de défécation, 
+- -Agissent localement par effet osmotique ou en stimulant le réflexe de défécation,
 - -Délai d'action de quelques minutes à 1 heure
-- -CI: poussée hémorroïdaire, fissure anale. 
+- -CI: poussée hémorroïdaire, fissure anale.
 - -En cas d’utilisation prolongée, ils sont irritants et peuvent entraver le réflexe normal d’exonération, notamment chez l’enfant.
 - -Ex: Laxagel®
 - -**Attention!!!**: Ne pas associer les salins et les stimulants du fait de leur effet hypokaliémiant aux antiarythmiques, neuroleptiques, diurétiques hypokaliémiants, corticoïdes, digitaliques, cisapride…
 
 ### Produits Associés (Rec)
 
-- - **Antispasmodiques**: 
-- -Aident à réduire les douleurs abdominales. 
-- -Ex:  Spasmocalm®, Nospasm®
-- - **Tisanes laxatives**: Séné, Rhubarbe 
-- -Contiennent des dérivés anthracéniques, agissent comme des laxatifs stimulants à utiliser avec précaution. 
+- - **Antispasmodiques**:
+- -Aident à réduire les douleurs abdominales.
+- -Ex: Spasmocalm®, Nospasm®
+- - **Tisanes laxatives**: Séné, Rhubarbe
+- -Contiennent des dérivés anthracéniques, agissent comme des laxatifs stimulants à utiliser avec précaution.
 - -Ex: Laxative®
-- - **Tisanes digestives**: Fenouil, Anis 
-- -Aident à éliminer les ballonnements et améliorer le transit. 
+- - **Tisanes digestives**: Fenouil, Anis
+- -Aident à éliminer les ballonnements et améliorer le transit.
 - -Ex: Phytokad digestion®
-- - **Probiotiques** : 
-- -Modulent le microbiote pour un transit amélioré à long terme. 
+- - **Probiotiques** :
+- -Modulent le microbiote pour un transit amélioré à long terme.
 - -Ex: Lactibiane référence®
 
 ### Conseils Hygiène de Vie (Rec)
@@ -1004,8 +993,6 @@ Récidives fréquentes. Symptômes persistants après 7 jours de traitement.
 - -Éviter certains aliments: Riz blanc, viandes rouges, pomme de terre.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1075,24 +1062,24 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 - **Topiques locaux** Crèmes, pommades, suppositoires:
 - -Propriétés anti-inflammatoires, décongestionnantes, lubrifiantes et/ou veinotoniques.
 - -Utilisation courte : 1 à 2 semaines maximum
-- -Enrober le suppositoire d'une crème pour faciliter son introduction. 
+- -Enrober le suppositoire d'une crème pour faciliter son introduction.
 - -Ex: Neo-Healar®, Hémorroix®
 
 ### Produits Associés
 
-- - **Veinotoniques oraux** : 
+- - **Veinotoniques oraux** :
 - -Soulager les symptômes aigus de la maladie hémorroïdaire, incluant la douleur et les saignements (rectorragies)
 - -Les veinotoniques agissent par leur effet vasculotrope et anti-inflammatoire, limitant la dilatation veineuse et diminuant la perméabilité capillaire
 - -Posologie Daflon 500(crise) : 2 comprimés 3 fois par jour pendant 5 jours.
-- - **Antalgiques** : 
+- - **Antalgiques** :
 - -Paracétamol: 1g trois fois par jour, max 4g/j
-- - **AINS** : 
+- - **AINS** :
 - -Ibuprofène: 200 mg, 600 à 1200 mg par jour
-- - **Laxatifs doux (constipation)** : 
+- - **Laxatifs doux (constipation)** :
 - -Laxatifs osmotiques : Macrogol ou laxatifs de lest (ispaghul, psyllium).
 - - **Compléments Veinotoniques (prévention)** : Vigne rouge, Marronnier d’Inde, Ginkgo biloba.
-- -Réduit le risque de récurrence des symptômes à six mois. 
-- -Envisager une cure de 10 jours par mois pour réduire la fréquence et l'intensité des crises. 
+- -Réduit le risque de récurrence des symptômes à six mois.
+- -Envisager une cure de 10 jours par mois pour réduire la fréquence et l'intensité des crises.
 - -Ex: Keravel Forvein®
 
 ### Conseils Hygiène de Vie
@@ -1113,24 +1100,24 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 - **Topiques locaux** Crèmes, pommades, suppositoires:
 - -Propriétés anti-inflammatoires, décongestionnantes, lubrifiantes et/ou veinotoniques.
 - -Utilisation courte : 1 à 2 semaines maximum
-- -Enrober le suppositoire d'une crème pour faciliter son introduction. 
+- -Enrober le suppositoire d'une crème pour faciliter son introduction.
 - -Ex: Neo-Healar®, Hémorroix®
 
 ### Produits Associés (Rec)
 
-- - **Veinotoniques oraux** : 
+- - **Veinotoniques oraux** :
 - -Soulager les symptômes aigus de la maladie hémorroïdaire, incluant la douleur et les saignements (rectorragies)
 - -Les veinotoniques agissent par leur effet vasculotrope et anti-inflammatoire, limitant la dilatation veineuse et diminuant la perméabilité capillaire
 - -Posologie Daflon 500(crise) : 2 comprimés 3 fois par jour pendant 5 jours.
-- - **Antalgiques** : 
+- - **Antalgiques** :
 - -Paracétamol: 1g trois fois par jour, max 4g/j
-- - **AINS** : 
+- - **AINS** :
 - -Ibuprofène: 200 mg, 600 à 1200 mg par jour
-- - **Laxatifs doux (constipation)** : 
+- - **Laxatifs doux (constipation)** :
 - -Laxatifs osmotiques : Macrogol ou laxatifs de lest (ispaghul, psyllium).
 - - **Compléments Veinotoniques (prévention)** : Vigne rouge, Marronnier d’Inde, Ginkgo biloba.
-- -Réduit le risque de récurrence des symptômes à six mois. 
-- -Envisager une cure de 10 jours par mois pour réduire la fréquence et l'intensité des crises. 
+- -Réduit le risque de récurrence des symptômes à six mois.
+- -Envisager une cure de 10 jours par mois pour réduire la fréquence et l'intensité des crises.
 - -Ex: Keravel Forvein®
 
 ### Conseils Hygiène de Vie (Rec)
@@ -1147,8 +1134,6 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 - -Éviter les aliments épicés, l'alcool, le café et les excitants.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1185,18 +1170,17 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Aperçu Pathologie
 
-**Définition**: 
+**Définition**:
 -Ensemble de troubles digestifs post-repas (pesanteur gastrique, douleurs abdominales, ballonnements, rots fréquents)
-**Causes aiguës**: 
+**Causes aiguës**:
 -Excès alimentaires, aliments irritants (épicés, gras), alcool, certains médicaments (ex: AINS)
-**Causes chroniques**: 
+**Causes chroniques**:
 -RGO, ulcères (gastrique/duodénal), gastrite, SII, maladies chroniques (diabète, thyroïde), stress/anxiété
-**Rôle hépatique**: 
+**Rôle hépatique**:
 -Le foie produit la bile, essentielle à l’absorption des graisses et l’élimination des toxines.
-**Foie surchargé**: 
+**Foie surchargé**:
 -Peut diminuer la production ou la qualité de la bile, rendant la digestion des graisses plus difficile
 -Sensation de malaise digestif après un excès alimentaire
-
 
 ### Questions Clés
 
@@ -1221,7 +1205,7 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Traitement Principal
 
-- **Boldine **: 
+- **Boldine **:
 - -Cholérétique: stimule sécrétion de bile
 - -Cholagogue: facilite évacuation de la bile
 - -Posologie: 1 comprimé avant les 3 principaux repas.
@@ -1230,22 +1214,22 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Produits Associés
 
-- **Antispasmodiques**: Phloroglucinol 
-- -Réduire les douleurs abdominales 
+- **Antispasmodiques**: Phloroglucinol
+- -Réduire les douleurs abdominales
 - -Ex: Spasmocalm®
-- **Pansements gastro-intestinaux** 
+- **Pansements gastro-intestinaux**
 - -Neutralisent l'acidité
 - -Ex: Apyrosis®
-- **Probiotiques**: 
+- **Probiotiques**:
 - -Équilibrer la flore intestinale.
-- **Phytothérapie**: 
+- **Phytothérapie**:
 - **Plantes digestives, carminatives**: fenouil, menthe, gingembre ou angélique
-- -Favoriser la digestion ; limiter la formation de gaz dans le tractus digestif 
+- -Favoriser la digestion ; limiter la formation de gaz dans le tractus digestif
 - -Ex: Phytokad digestion®
-- **Plantes détoxifiantes**:  Artichaut, radis noir, desmodium, chardon marie 
+- **Plantes détoxifiantes**: Artichaut, radis noir, desmodium, chardon marie
 - -Stimulent la production et/ou l'évacuation de la bile
 - -Ex: Keravel Hepator®
-- **Homéopathie**: 
+- **Homéopathie**:
 - -Nux vomica 9CH 1 Dose avant tout repas copieux
 
 ### Conseils Hygiène de Vie
@@ -1266,7 +1250,7 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Traitement Principal (Rec)
 
-- **Boldine **: 
+- **Boldine **:
 - -Cholérétique: stimule sécrétion de bile
 - -Cholagogue: facilite évacuation de la bile
 - -Posologie: 1 comprimé avant les 3 principaux repas.
@@ -1275,22 +1259,22 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Produits Associés (Rec)
 
-- **Antispasmodiques**: Phloroglucinol 
-- -Réduire les douleurs abdominales 
+- **Antispasmodiques**: Phloroglucinol
+- -Réduire les douleurs abdominales
 - -Ex: Spasmocalm®
-- **Pansements gastro-intestinaux** 
+- **Pansements gastro-intestinaux**
 - -Neutralisent l'acidité
 - -Ex: Apyrosis®
-- **Probiotiques**: 
+- **Probiotiques**:
 - -Équilibrer la flore intestinale.
-- **Phytothérapie**: 
+- **Phytothérapie**:
 - **Plantes digestives, carminatives**: fenouil, menthe, gingembre ou angélique
-- -Favoriser la digestion ; limiter la formation de gaz dans le tractus digestif 
+- -Favoriser la digestion ; limiter la formation de gaz dans le tractus digestif
 - -Ex: Phytokad digestion®
-- **Plantes détoxifiantes**:  Artichaut, radis noir, desmodium, chardon marie 
+- **Plantes détoxifiantes**: Artichaut, radis noir, desmodium, chardon marie
 - -Stimulent la production et/ou l'évacuation de la bile
 - -Ex: Keravel Hepator®
-- **Homéopathie**: 
+- **Homéopathie**:
 - -Nux vomica 9CH 1 Dose avant tout repas copieux
 
 ### Conseils Hygiène de Vie (Rec)
@@ -1310,8 +1294,6 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 - -Boire suffisamment d'eau en dehors des repas.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1348,19 +1330,19 @@ Moins douloureuse qu'une fissure anale (déchirure), sauf en cas de thrombose (d
 
 ### Aperçu Pathologie
 
-• **Définition** 
+• **Définition**
 Infection fréquente du vagin ou de la vulve par la levure Candida albicans.
 • **Cause**
 Déséquilibre du microbiote vaginal où Candida albicans devient pathogène.
-• **Symptôme** 
+• **Symptôme**
 Prurit vulvaire intense (démangeaisons), pertes blanchâtres, épaisses, d'aspect 'lait caillé' (leucorrhées), sensation de brûlure vulvo-vaginale, parfois en fin de miction.
-• **Facteurs de risque** 
+• **Facteurs de risque**
 Grossesse, diabète, antibiotiques à large spectre, contraceptifs oraux riches en œstrogènes, corticostéroïdes, immunosuppresseurs, vêtements serrés/synthétiques, hygiène intime excessive.
-• **Récidives** 
+• **Récidives**
 Définies par ≥ 4 épisodes/an, touchent environ 15% des femmes.
-• **Complication** 
+• **Complication**
 Peut être associée à une infection bactérienne.
-• **Transmission** 
+• **Transmission**
 N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Questions Clés
@@ -1384,32 +1366,32 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal
 
-- **Antifongiques locaux**: 
+- **Antifongiques locaux**:
 - **Ovules ou capsules vaginales** à base d'imidazolés (ex: éconazole).
-- -Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles) 
+- -Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles)
 - -Exp: Ecorex® ovule
 - **Crème ou lait antifongique** pour application externe (ex: éconazole)
-- -Une application deux fois par jour pendant 8 jours 
+- -Une application deux fois par jour pendant 8 jours
 - -Exp: Ecorex® lait
-- **Partenaire** 
+- **Partenaire**
 - -Traitement uniquement si le partenaire présente des symptômes (antifongique externe, non systématique).
-- **Attention** 
+- **Attention**
 - -Ne pas interrompre le traitement pendant les règles.
 
 ### Produits Associés
 
-- **Gel lavant intime** 
+- **Gel lavant intime**
 - - À pH alcalin (pH 8) durant le traitement (14 jours max afin de protéger l'équilibre naturel de la flore vaginale.)
 - - Ex: Mycolin®
-- **Hygiène quotidienne** 
-- - Utiliser ensuite des savons ou gels à pH physiologique pour l'entretien. 
+- **Hygiène quotidienne**
+- - Utiliser ensuite des savons ou gels à pH physiologique pour l'entretien.
 - - Exp: Saforelle®
-- **Probiotiques vaginaux** 
+- **Probiotiques vaginaux**
 - - Pour restaurer la flore vaginale saine (ex: Lactibiane CND®, Vagigermina®).
 - **Ovules hydratantes/cicatrisantes**
 - - Après guérison pour apaiser tissus irrités
 - - Ex: Ialugyn®, Santes®
-- **Protège-slips** 
+- **Protège-slips**
 - - À changer fréquemment en cas d'écoulements.
 
 ### Conseils Hygiène de Vie
@@ -1430,32 +1412,32 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal (Rec)
 
-- **Antifongiques locaux**: 
+- **Antifongiques locaux**:
 - **Ovules ou capsules vaginales** à base d'imidazolés (ex: éconazole).
-- -Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles) 
+- -Un ovule le soir pendant 3 à 6 jours (sauf jeunes filles)
 - -Exp: Ecorex® ovule
 - **Crème ou lait antifongique** pour application externe (ex: éconazole)
-- -Une application deux fois par jour pendant 8 jours 
+- -Une application deux fois par jour pendant 8 jours
 - -Exp: Ecorex® lait
-- **Partenaire** 
+- **Partenaire**
 - -Traitement uniquement si le partenaire présente des symptômes (antifongique externe, non systématique).
-- **Attention** 
+- **Attention**
 - -Ne pas interrompre le traitement pendant les règles.
 
 ### Produits Associés (Rec)
 
-- **Gel lavant intime** 
+- **Gel lavant intime**
 - - À pH alcalin (pH 8) durant le traitement (14 jours max afin de protéger l'équilibre naturel de la flore vaginale.)
 - - Ex: Mycolin®
-- **Hygiène quotidienne** 
-- - Utiliser ensuite des savons ou gels à pH physiologique pour l'entretien. 
+- **Hygiène quotidienne**
+- - Utiliser ensuite des savons ou gels à pH physiologique pour l'entretien.
 - - Exp: Saforelle®
-- **Probiotiques vaginaux** 
+- **Probiotiques vaginaux**
 - - Pour restaurer la flore vaginale saine (ex: Lactibiane CND®, Vagigermina®).
 - **Ovules hydratantes/cicatrisantes**
 - - Après guérison pour apaiser tissus irrités
 - - Ex: Ialugyn®, Santes®
-- **Protège-slips** 
+- **Protège-slips**
 - - À changer fréquemment en cas d'écoulements.
 
 ### Conseils Hygiène de Vie (Rec)
@@ -1475,8 +1457,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - -Boire suffisamment d'eau.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1518,7 +1498,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 • **Types** :
 • On distingue 2 types d’infection urinaire :
 • Une infection basse : cystite : fréquente mais banale pouvant être prise en charge en officine en début de la maladie sans terrain à risque
-• Une infection haute : pyélonéphrite (colonisation bactérienne des reins et des voies urinaires hautes)  rare mais plus grave
+• Une infection haute : pyélonéphrite (colonisation bactérienne des reins et des voies urinaires hautes) rare mais plus grave
 • **Symptômes** :
 • Brûlures mictionnelles, douleurs bas-ventre, pollakiurie (fréquence excessive des mictions), impériosité, les urines peuvent être troubles, malodorantes, parfois hématurie.
 • **Incidence** :
@@ -1547,32 +1527,32 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal
 
-- **Canneberge (PACs)** : 
+- **Canneberge (PACs)** :
 - -Prévient et aide à traiter les infections urinaires.
 - -Minimum 36 mg de Proanthocyanidines de type A (PAC A) par jour.
 - -Empêche l'adhérence des bactéries (notamment E. coli) aux parois de la vessie.
 - -Ex: Bio health Cann-Cyst®, Aktiv Uricalm®
-- **Fosfomycine-trométamol** : 
+- **Fosfomycine-trométamol** :
 - -Médicament prescrit
 - -Cet antibiotique est le traitement de première intention en prise unique pour cystite aiguë simple.
 
 ### Produits Associés
 
-- **Antispasmodiques** : 
-- -Paracétamol, phloroglucinol en cas de douleurs légères. 
+- **Antispasmodiques** :
+- -Paracétamol, phloroglucinol en cas de douleurs légères.
 - -Ex: Nospasm®, Spasmocalm®
-- **AINS** : 
+- **AINS** :
 - -À éviter pendant les cystites (risque d’allongement symptômes et effets indésirables).
-- **Plantes antiseptiques diurétiques** : 
+- **Plantes antiseptiques diurétiques** :
 - -Bruyère, busserole, piloselle, orthosiphon
 - -Favorisent l'élimination
 - -Ex: 3chenes Cystinat®
-- **Probiotiques** : 
+- **Probiotiques** :
 - -Lactobacillus (L. rhamnosus, L. reuteri)
 - -Rééquilibrer la flore
 - -Ex: Feminabiane CBU®
-- **D-mannose** : 
-- -Prévention des récidives (2g/jour). 
+- **D-mannose** :
+- -Prévention des récidives (2g/jour).
 - -Inhibe l'adhérence d'E. coli
 - -Ex: D-mannosa®
 
@@ -1591,32 +1571,32 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal (Rec)
 
-- **Canneberge (PACs)** : 
+- **Canneberge (PACs)** :
 - -Prévient et aide à traiter les infections urinaires.
 - -Minimum 36 mg de Proanthocyanidines de type A (PAC A) par jour.
 - -Empêche l'adhérence des bactéries (notamment E. coli) aux parois de la vessie.
 - -Ex: Bio health Cann-Cyst.
-- **Fosfomycine-trométamol** : 
+- **Fosfomycine-trométamol** :
 - -Médicament prescrit
 - -Cet antibiotique est le traitement de première intention en prise unique pour cystite aiguë simple.
 
 ### Produits Associés (Rec)
 
-- **Antispasmodiques** : 
-- -Paracétamol, phloroglucinol en cas de douleurs légères. 
+- **Antispasmodiques** :
+- -Paracétamol, phloroglucinol en cas de douleurs légères.
 - -Ex: Nospasm®, Spasmocalm®
-- **AINS** : 
+- **AINS** :
 - -À éviter pendant les cystites (risque d’allongement symptômes et effets indésirables).
-- **Plantes antiseptiques diurétiques** : 
+- **Plantes antiseptiques diurétiques** :
 - -Bruyère, busserole, piloselle, orthosiphon
 - -Favorisent l'élimination
 - -Ex: 3chenes Cystinat®
-- **Probiotiques** : 
+- **Probiotiques** :
 - -Lactobacillus (L. rhamnosus, L. reuteri)
 - -Rééquilibrer la flore
 - -Ex: Feminabiane CBU®
-- **D-mannose** : 
-- -Prévention des récidives (2g/jour). 
+- **D-mannose** :
+- -Prévention des récidives (2g/jour).
 - -Inhibe l'adhérence d'E. coli
 - -Ex: D-mannosa®
 
@@ -1634,8 +1614,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - -Préférer une alimentation riche en fibres pour prévenir la constipation.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1675,7 +1653,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 • - **Définition**
 • Oxyurose : parasitose intestinale très fréquente chez l'enfant.
 • - **Cause**
-• Petit ver blanc (*Enterobius vermicularis*), femelles pondent des œufs autour de l'anus la nuit.
+• Petit ver blanc (_Enterobius vermicularis_), femelles pondent des œufs autour de l'anus la nuit.
 • - **Contamination**
 • Ingestion ou inhalation d'œufs présents sur les mains, objets ou dans l'air.
 • - **Cycle**
@@ -1705,7 +1683,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - Amaigrissement
 - - Diarrhées persistantes
 - - Échec d'un traitement précédent bien conduit
-- - Retour d'un voyage à l'étranger 
+- - Retour d'un voyage à l'étranger
 
 ### Traitement Principal
 
@@ -1759,8 +1737,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Conseils Traitement
 
-
-
 ### Flashcards (Révision)
 
 - Q: Qu'est-ce que l'oxyurose?
@@ -1786,7 +1762,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ---
 
-# Dysménorrhée: MémoFiche Conseil à l'officine 
+# Dysménorrhée: MémoFiche Conseil à l'officine
 
 **Type:** maladie | **Thème:** Maladies courantes | **Système:** Santé Féminine | **Niveau:** Facile
 
@@ -1801,7 +1777,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 • - **Primaire**:
 • Absence de maladie pelvienne identifiable, liée à l'hypersécrétion de prostaglandines.,
 • La douleur est maximale au début des règles (24-36h), peut irradier vers le bas du dos et les cuisses.,
-• Symptômes associés:  Nausées, vomissements, maux de tête, fatigue, irritabilité, vertiges fréquents.,
+• Symptômes associés: Nausées, vomissements, maux de tête, fatigue, irritabilité, vertiges fréquents.,
 • - **Secondaire**
 • Causée par une pathologie pelvienne sous-jacente: endométriose, fibromes, syndrome des Ovaires Polykystiques (SOPK).
 • Apparaît généralement vers la trentaine.,
@@ -1831,42 +1807,42 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal
 
-- **Paracétamol** 
+- **Paracétamol**
 - -500 mg à 1g par prise, trois fois par jour, à renouveler au bout de 4h min, sans dépasser 4g/jour.
-- **AINS** 
+- **AINS**
 - -Inhibent la synthèse des prostaglandines, responsables des contractions utérines douloureuses.
 - -Conseillé dès le premier jour des règles ou dès le début des douleurs.
 - -Dose la plus faible possible, durée la plus courte possible (max 5 jours).
 - -De préférence au cours des repas pour limiter les troubles gastro-intestinaux.
-- -Ibuprofène: 200 mg par prise, à renouveler toutes les 6 heures sans dépasser 1200 mg par jour. 
+- -Ibuprofène: 200 mg par prise, à renouveler toutes les 6 heures sans dépasser 1200 mg par jour.
 - -Ex: Dolven® 200
 
 ### Produits Associés
 
-- **Antispasmodiques** Phloroglucinol 
+- **Antispasmodiques** Phloroglucinol
 - -160 mg/prise, si besoin 3x/jour, espacer d'au moins 2h
-- -Privilégier les comprimés effervescents ou lyoc. 
+- -Privilégier les comprimés effervescents ou lyoc.
 - -Ex: Nospasm®
-- **Magnésium** 
+- **Magnésium**
 - -Aide à la relaxation musculaire, réduit les crampes et prévient les signes prémenstruels.
 - -300-400 mg/jour, en cure de 1 à 3 mois, à débuter 7 à 10 jours avant les règles.
-- -Préférer les sels organiques (citrate, malate) ou bisglycinate/glycinate pour une meilleure assimilation. 
+- -Préférer les sels organiques (citrate, malate) ou bisglycinate/glycinate pour une meilleure assimilation.
 - -Ex: Kela Mag®
-- **Vitamine B6** 
-- -Réduit les symptômes émotionnels du SPM, 
+- **Vitamine B6**
+- -Réduit les symptômes émotionnels du SPM,
 - -Augmente l’absorption du magnésium (1.5-2mg/jour).
-- **Gattilier** 
-- -Aide à réguler le cycle menstruel et réduit les symptômes du SPM 
+- **Gattilier**
+- -Aide à réguler le cycle menstruel et réduit les symptômes du SPM
 - -Conseillé du 8e au 21e jour du cycle, pendant 3 cycles
-- -Contre-indiqué chez les -18 ans, femmes enceintes et allaitantes. 
+- -Contre-indiqué chez les -18 ans, femmes enceintes et allaitantes.
 - -Ex: Bioherbs Gattilier®
-- **Huile d'Onagre** 
+- **Huile d'Onagre**
 - -Riche en acides gras essentiels, aide à réduire l'inflammation
-- -Conseillée 10 derniers jours du cycle, à renouveler 3 mois 
+- -Conseillée 10 derniers jours du cycle, à renouveler 3 mois
 - -Ex: 3chênes Onagre bourrache®
-- **Mélisse** 
-- -Antispasmodique, relaxante 
-- -300 à 600 mg/jour d'extrait sec 
+- **Mélisse**
+- -Antispasmodique, relaxante
+- -300 à 600 mg/jour d'extrait sec
 - -Ex: Thérapia Mélisse®
 
 ### Conseils Hygiène de Vie
@@ -1888,42 +1864,42 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### Traitement Principal (Rec)
 
-- **Paracétamol** 
+- **Paracétamol**
 - -500 mg à 1g par prise, trois fois par jour, à renouveler au bout de 4h min, sans dépasser 4g/jour.
-- **AINS** 
+- **AINS**
 - -Inhibent la synthèse des prostaglandines, responsables des contractions utérines douloureuses.
 - -Conseillé dès le premier jour des règles ou dès le début des douleurs.
 - -Dose la plus faible possible, durée la plus courte possible (max 5 jours).
 - -De préférence au cours des repas pour limiter les troubles gastro-intestinaux.
-- -Ibuprofène: 200 mg par prise, à renouveler toutes les 6 heures sans dépasser 1200 mg par jour. 
+- -Ibuprofène: 200 mg par prise, à renouveler toutes les 6 heures sans dépasser 1200 mg par jour.
 - -Ex: Dolven® 200
 
 ### Produits Associés (Rec)
 
-- **Antispasmodiques** Phloroglucinol 
+- **Antispasmodiques** Phloroglucinol
 - -160 mg/prise, si besoin 3x/jour, espacer d'au moins 2h
-- -Privilégier les comprimés effervescents ou lyoc. 
+- -Privilégier les comprimés effervescents ou lyoc.
 - -Ex: Nospasm®
-- **Magnésium** 
+- **Magnésium**
 - -Aide à la relaxation musculaire, réduit les crampes et prévient les signes prémenstruels.
 - -300-400 mg/jour, en cure de 1 à 3 mois, à débuter 7 à 10 jours avant les règles.
-- -Préférer les sels organiques (citrate, malate) ou bisglycinate/glycinate pour une meilleure assimilation. 
+- -Préférer les sels organiques (citrate, malate) ou bisglycinate/glycinate pour une meilleure assimilation.
 - -Ex: Kela Mag®
-- **Vitamine B6** 
-- -Réduit les symptômes émotionnels du SPM, 
+- **Vitamine B6**
+- -Réduit les symptômes émotionnels du SPM,
 - -Augmente l’absorption du magnésium (1.5-2mg/jour).
-- **Gattilier** 
-- -Aide à réguler le cycle menstruel et réduit les symptômes du SPM 
+- **Gattilier**
+- -Aide à réguler le cycle menstruel et réduit les symptômes du SPM
 - -Conseillé du 8e au 21e jour du cycle, pendant 3 cycles
-- -Contre-indiqué chez les -18 ans, femmes enceintes et allaitantes. 
+- -Contre-indiqué chez les -18 ans, femmes enceintes et allaitantes.
 - -Ex: Bioherbs Gattilier®
-- **Huile d'Onagre** 
+- **Huile d'Onagre**
 - -Riche en acides gras essentiels, aide à réduire l'inflammation
-- -Conseillée 10 derniers jours du cycle, à renouveler 3 mois 
+- -Conseillée 10 derniers jours du cycle, à renouveler 3 mois
 - -Ex: 3chênes Onagre bourrache®
-- **Mélisse** 
-- -Antispasmodique, relaxante 
-- -300 à 600 mg/jour d'extrait sec 
+- **Mélisse**
+- -Antispasmodique, relaxante
+- -300 à 600 mg/jour d'extrait sec
 - -Ex: Thérapia Mélisse®
 
 ### Conseils Hygiène de Vie (Rec)
@@ -1944,8 +1920,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - -Boire suffisamment d'eau.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -1984,14 +1958,13 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 **Définition:**
 -Le pied d'athlète, ou mycose interdigitale, est une **infection de la peau** causée par des champignons **dermatophytes**, le plus souvent Trichophyton rubrum.
-**Symptômes typiques:** 
+**Symptômes typiques:**
 -Démangeaisons, rougeurs, fissures, squames, aspect blanchâtre, macération.
 **Localisation**
 -Généralement entre le **4**ème et **5**ème orteil.
 -Peut s'étendre aux autres orteils, plante du pied, ou ongles.
 **Facteurs de risque**
 -Humidité, chaleur, transpiration, chaussures fermées, lieux publics, mauvaise hygiène.
-
 
 ### Questions Clés
 
@@ -2019,23 +1992,23 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal
 
 - -**Antifongique locaux**: les imidazolés
-- -Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- -Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- -Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- -Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - -Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- -**Galénique** 
+- -**Galénique**
 - -Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.
 - -**Important**:
 - -Respecter la durée complète même après amélioration pour éviter les rechutes.
 
 ### Produits Associés
 
-- -**Poudre antifongique** 
+- -**Poudre antifongique**
 - -Traiter les chaussures pour limiter les récidives
 - -Ex: Perozyl® poudre
-- -**Gel pH alcalin** 
+- -**Gel pH alcalin**
 - -Pour le lavage des pieds
 - -Ex: Mycolin®
-- -**Bain de pied** 
+- -**Bain de pied**
 - -Avec HE de lavande (antifongique) et bicarbonate de soude (alcalinisant).
 
 ### Conseils Hygiène de Vie
@@ -2055,23 +2028,23 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal (Rec)
 
 - **Antifongique locaux**: les imidazolés
-- - Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- - Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- - Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- - Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - - Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- **Galénique** 
+- **Galénique**
 - - Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.
 - **Important**:
 - - Respecter la durée complète même après amélioration pour éviter les rechutes.
 
 ### Produits Associés (Rec)
 
-- **Poudre antifongique** 
+- **Poudre antifongique**
 - - Traiter les chaussures pour limiter les récidives
 - - Ex: Perozyl® poudre
-- **Gel pH alcalin** 
+- **Gel pH alcalin**
 - - Pour le lavage des pieds
 - - Ex: Mycolin®
-- **Bain de pied** 
+- **Bain de pied**
 - - Avec HE de lavande (antifongique) et bicarbonate de soude (alcalinisant).
 
 ### Conseils Hygiène de Vie (Rec)
@@ -2089,8 +2062,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - Adopter une alimentation équilibrée pour soutenir le système immunitaire.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2128,15 +2099,10 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Aperçu Pathologie
 
 -**Définition**
--Infection **cutanée** des mains causée par des **champignons** (dermatophytes ou levures).,
--**Dermatophytes** (filamenteux, transmission par contact) ou **Candida albicans** (levure, infection opportuniste).,
--**Symptômes**
+-Infection **cutanée** des mains causée par des **champignons** (dermatophytes ou levures)., -**Dermatophytes** (filamenteux, transmission par contact) ou **Candida albicans** (levure, infection opportuniste)., -**Symptômes**
 -Rougeurs, démangeaisons intenses, desquamation, fissures, épaississement cutané.,
--Parfois vésicules, pustules, lésions entre les doigts, paume, dos de la main ; extension aux ongles possible.,
--**Facteurs risque**
--Humidité, port de gants, transpiration excessive, diabète, baisse de l'immunité, mauvaise hygiène.,
--**Voies de contamination**
--**Auto-contamination** (souvent des pieds), contact **direct** interhumain, **objet souillés** (serviettes, tapis de salle de bain..)
+-Parfois vésicules, pustules, lésions entre les doigts, paume, dos de la main ; extension aux ongles possible., -**Facteurs risque**
+-Humidité, port de gants, transpiration excessive, diabète, baisse de l'immunité, mauvaise hygiène., -**Voies de contamination** -**Auto-contamination** (souvent des pieds), contact **direct** interhumain, **objet souillés** (serviettes, tapis de salle de bain..)
 
 ### Questions Clés
 
@@ -2163,23 +2129,23 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal
 
 - -**Antifongique locaux**: les imidazolés
-- -Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- -Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- -Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- -Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - -Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- -**Galénique** 
+- -**Galénique**
 - -Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.
 - -**Important**:
 - -Respecter la durée complète même après amélioration pour éviter les rechutes.
 
 ### Produits Associés
 
-- -**Nettoyant** 
+- -**Nettoyant**
 - -Gel à pH alcalin pour le lavage des mains.
-- -Ex: Mycolin® 
-- -**Crème barrière** 
+- -Ex: Mycolin®
+- -**Crème barrière**
 - -Crème mains isolante cicatrisante
 - -pour protéger la peau de l'eau et des irritants pour limiter le risque de rechutes
-- -Ex: Uriage Bariederm®, Excipial P® 
+- -Ex: Uriage Bariederm®, Excipial P®
 
 ### Conseils Hygiène de Vie
 
@@ -2197,23 +2163,23 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal (Rec)
 
 - **Antifongique locaux**: les imidazolés
-- - Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- - Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- - Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- - Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - - Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- **Galénique** 
+- **Galénique**
 - - Préférer les formes poudre/lotion pour les lésions suintantes et les crèmes pour les lésions sèches.
 - **Important**:
 - - Respecter la durée complète même après amélioration pour éviter les rechutes.
 
 ### Produits Associés (Rec)
 
-- **Nettoyant** 
+- **Nettoyant**
 - Gel à pH alcalin pour le lavage des mains.
-- Ex: Mycolin® 
-- **Crème barrière** 
+- Ex: Mycolin®
+- **Crème barrière**
 - - Crème mains isolante cicatrisante
 - - pour protéger la peau de l'eau et des irritants pour limiter le risque de rechutes
-- - Ex: Uriage Bariederm®, Excipial P® 
+- - Ex: Uriage Bariederm®, Excipial P®
 
 ### Conseils Hygiène de Vie (Rec)
 
@@ -2229,8 +2195,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - Adopter une alimentation équilibrée pour soutenir le système immunitaire.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2298,21 +2262,21 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal
 
 - **Antifongique locaux**: les imidazolés
-- - Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- - Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- - Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- - Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - - Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- **Galénique** 
+- **Galénique**
 - - Préférer les formes poudre/lotion pur limiter la macération
 - **Important**:
-- - Respecter la durée complète même après amélioration pour éviter les rechutes 
+- - Respecter la durée complète même après amélioration pour éviter les rechutes
 - - Éviter l'utilisation de l'éosine aqueuse qui peut masquer l'évolution des lésions.
 
 ### Produits Associés
 
-- **Gel nettoyant** pH alcalin 
-- - Ex: Mycolin 
-- **Lotion asséchante** 
-- - Appliquer pour absorber l'humidité, limiter la prolifération des champignons et favoriser la cicatrisation 
+- **Gel nettoyant** pH alcalin
+- - Ex: Mycolin
+- **Lotion asséchante**
+- - Appliquer pour absorber l'humidité, limiter la prolifération des champignons et favoriser la cicatrisation
 - - Ex: Avène Cicalfate Lotion®
 
 ### Conseils Hygiène de Vie
@@ -2331,21 +2295,21 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Traitement Principal (Rec)
 
 - **Antifongique locaux**: les imidazolés
-- - Econazole** 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
-- - Ciclopirox** 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
+- - Econazole\*\* 1 application 2x/jour pendant 2-3 semaines, ex: Ecorex®
+- - Ciclopirox\*\* 1 application 2x/jour pendant 3 semaines, ex: Mycoster®
 - - Appliquer le médicament sur les zones atteintes et leur périphérie, après avoir bien lavé et séché les pieds
-- **Galénique** 
+- **Galénique**
 - - Préférer les formes poudre/lotion pur limiter la macération
 - **Important**:
-- - Respecter la durée complète même après amélioration pour éviter les rechutes 
+- - Respecter la durée complète même après amélioration pour éviter les rechutes
 - - Éviter l'utilisation de l'éosine aqueuse qui peut masquer l'évolution des lésions.
 
 ### Produits Associés (Rec)
 
-- **Gel nettoyant** pH alcalin 
-- - Ex: Mycolin 
-- **Lotion asséchante** 
-- - Appliquer pour absorber l'humidité, limiter la prolifération des champignons et favoriser la cicatrisation 
+- **Gel nettoyant** pH alcalin
+- - Ex: Mycolin
+- **Lotion asséchante**
+- - Appliquer pour absorber l'humidité, limiter la prolifération des champignons et favoriser la cicatrisation
 - - Ex: Avène Cicalfate Lotion®
 
 ### Conseils Hygiène de Vie (Rec)
@@ -2362,8 +2326,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - Adopter une alimentation équilibrée pour renforcer le système immunitaire.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2398,18 +2360,18 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 - **Patient** Mme Fatma H., 28 ans.
 - **Pathologie** Rhinite allergique saisonnière.
-- **Prescription** 
-- - Fluticasone (spray nasal) : 1 pulvérisation dans chaque narine, 2 fois par jour. 
+- **Prescription**
+- - Fluticasone (spray nasal) : 1 pulvérisation dans chaque narine, 2 fois par jour.
 - - Desloratadine 5 mg : 1 comprimé par jour.
 - **Durée** Pendant toute la période d'exposition aux pollens.
 
 ### Analyse de l'Ordonnance
 
 - **Analyse**
--  La prescription est typique et efficace pour une rhinite allergique modérée à sévère, combinant un **corticostéroïde nasal** (Fluticasone) pour maîtriser l'inflammation sous-jacente et un **antihistaminique oral** (Desloratadine) pour un soulagement rapide des manifestations aiguës de l'allergie.
-- **Profil patient** 
+- La prescription est typique et efficace pour une rhinite allergique modérée à sévère, combinant un **corticostéroïde nasal** (Fluticasone) pour maîtriser l'inflammation sous-jacente et un **antihistaminique oral** (Desloratadine) pour un soulagement rapide des manifestations aiguës de l'allergie.
+- **Profil patient**
 - Mme H. est une jeune adulte pour qui la rhinite saisonnière peut fortement impacter la qualité de vie, notamment en causant des troubles du sommeil (ronflements, micro-réveils), menant à une fatigue diurne, une baisse de la concentration et de la productivité.
-- **Découverte du patient** 
+- **Découverte du patient**
 - Il est pertinent de vérifier s'il s'agit:
 - **première prescription**: afin d'expliquer la technique d'administration du spray et l'importance de l'observance
 - **Un renouvellement**: pour évaluer l'efficacité et la tolérance du traitement précédent.
@@ -2417,16 +2379,16 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Conseils Traitement
 
 **Fluticasone: Corticostéroïde en spray nasal**:
+
 - **Posologie**: 1 pulvérisation dans chaque narine, 2 fois par jour.
 - **Technique**: Expliquer la technique d'administration correcte du spray nasal, surtout s'il s'agit d'une première prescription, pour garantir l'efficacité du traitement.
-- **Observance**: Insister sur l'importance de l'observance pour maîtriser l'inflammation sous-jacente et prévenir la réapparition des symptômes, contrôlant ainsi la maladie sur le long terme. Informer le patient que l'effet du médicament apparaît au bout de 3 à 4 jours de traitement.  
+- **Observance**: Insister sur l'importance de l'observance pour maîtriser l'inflammation sous-jacente et prévenir la réapparition des symptômes, contrôlant ainsi la maladie sur le long terme. Informer le patient que l'effet du médicament apparaît au bout de 3 à 4 jours de traitement.
 - **Évaluation**: Lors des renouvellements, évaluer l'efficacité du traitement et la tolérance pour ajuster si nécessaire.
-**Desloratadine 5 mg cp: Antihistaminique H1 de deuxième génération**:
+  **Desloratadine 5 mg cp: Antihistaminique H1 de deuxième génération**:
 - **Posologie**: 1 comprimé par jour.
 - **Action rapide**: Ce traitement symptomatique vise un soulagement rapide des manifestations aiguës de l'allergie.
 - **Observance**: Rappeler l'importance de la prise régulière pour un soulagement continu des symptômes.
 - **Évaluation**: Lors des renouvellements, évaluer l'efficacité et la tolérance du traitement.
-
 
 ### Flashcards (Révision)
 
@@ -2478,6 +2440,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 ### Conseils Traitement
 
 **STALORAL DPT/DF 10-100-300 IR**:
+
 - - **Phase d'initiation** : Le coffret contient des flacons à doses croissantes (10, 100, 300 IR). Suivre rigoureusement le schéma posologique indiqué par le médecin pour une augmentation progressive des doses.
 - - **Administration** : Déposer la solution directement sous la langue et la maintenir pendant 2 minutes avant de l'avaler.
 - - **Moment de prise** : Prendre le traitement de préférence pendant la journée, en dehors des repas et boissons.
@@ -2485,7 +2448,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - **Effets indésirables** : Des démangeaisons importantes (paumes des mains, plantes des pieds), une urticaire, un gonflement de la bouche et/ou de la muqueuse, une sensation d'étouffement, une gêne respiratoire, une difficulté à avaler ou une modification de la voix peuvent survenir.
 - - **Conduite à tenir** : Ces symptômes peuvent apparaître dans les heures suivant l'administration. En cas de survenue, contacter immédiatement un médecin.
 - - **Dose oubliée** : Ne jamais prendre une dose double pour compenser un oubli.
-**STALORAL DPT/DF 300 IR**:
+    **STALORAL DPT/DF 300 IR**:
 - - **Phase d'entretien** : La dose quotidienne recommandée est de 300 IR, correspondant à 4 pressions par jour.
 - - **Durée du traitement** : La durée recommandée est en moyenne de 3 ans, si une efficacité est observée.
 - - **Préparation de la pompe** : Retirer la partie en plastique colorée, tirer la languette métallique pour enlever la capsule en aluminium, puis le bouchon gris. Encliqueter fermement la pompe sur le flacon.
@@ -2499,7 +2462,6 @@ N'est PAS une maladie sexuellement transmissible (MST).
 - - **Dose oubliée** : Ne jamais prendre une dose double pour compenser un oubli.
 - - **Asthme non contrôlé** : L'asthme non contrôlé est une contre-indication à l'ITA. L'ITA ne doit jamais être prise pendant une crise d'asthme.
 - - **Observance** : L'administration quotidienne et le respect du traitement sont essentiels pour son succès.
-
 
 ### Flashcards (Révision)
 
@@ -2538,7 +2500,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### L'Importance Cruciale de la Première Impression (Custom)
 
-- L'**accueil** est la première et la plus courte étape de la relation client en officine, mais elle est d'une importance capitale car elle 'augure déjà de ce que sera la relation client'. 
+- L'**accueil** est la première et la plus courte étape de la relation client en officine, mais elle est d'une importance capitale car elle 'augure déjà de ce que sera la relation client'.
 - Les pharmaciens et leur équipe disposent d'environ 20 secondes pour réussir cette première impression. Un accueil de qualité fait que le client se sent 'reconnu et bienvenu', et il est un facteur clé dans le choix d'une officine (15% des motivations). Il est essentiel de montrer d'emblée l'importance accordée à la dimension humaine.
 
 ### L'Accueil à Distance Publique : La Première Connexion Non Verbale (Custom)
@@ -2547,7 +2509,7 @@ N'est PAS une maladie sexuellement transmissible (MST).
 
 ### L'Accueil Verbal et la Personnalisation (Custom)
 
-- L'engagement verbal doit être réfléchi et adapté pour montrer disponibilité et respect. 
+- L'engagement verbal doit être réfléchi et adapté pour montrer disponibilité et respect.
 - N'engagez la conversation que lorsque vous êtes entièrement disponible pour le client. Utilisez des mots valorisants et exprimez votre disponibilité. La formule clé est 'Bonjour'. Si vous connaissez le client, utilisez son nom, en particulier pour les seniors, mais toujours 'à distance intime et surtout pas à la cantonade'. Privilégiez des phrases comme 'Quel renseignement puis-je vous donner ?', 'En quoi puis-je vous être utile ?' ou 'Bienvenue dans notre officine, comment puis-je vous aider aujourd'hui ?'. Évitez les expressions impersonnelles comme 'C'est à qui ?' ou 'Comment allez-vous ?'.
 
 ### La Communication Non Verbale : L'Impact de la Gestuelle (Custom)
@@ -2564,13 +2526,11 @@ L'apparence physique de l'officine joue un rôle non négligeable dans l'accueil
 
 ### Conclusion : L'Accueil, Starter de la Vente et de la Fidélisation (Custom)
 
-- L'accueil en officine est un processus bref mais fondamental. 
-- Il s'agit d'une synergie efficace entre la communication non verbale (regard, sourire, gestes ouverts), la communication verbale (formules de politesse personnalisées, questions ouvertes) et une gestion adéquate du ton de la voix. 
-Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoise et rassure le client/patient, posant ainsi une base solide pour la relation client, la confiance et, in fine, la fidélisation. C'est l'investissement le plus rentable pour une officine performante.
+- L'accueil en officine est un processus bref mais fondamental.
+- Il s'agit d'une synergie efficace entre la communication non verbale (regard, sourire, gestes ouverts), la communication verbale (formules de politesse personnalisées, questions ouvertes) et une gestion adéquate du ton de la voix.
+  Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoise et rassure le client/patient, posant ainsi une base solide pour la relation client, la confiance et, in fine, la fidélisation. C'est l'investissement le plus rentable pour une officine performante.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2620,24 +2580,24 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 ### Conseils Traitement
 
 **Symbicort Turbuhaler 400**:
+
 - **Rôle** C'est votre traitement de fond. Il traite l'inflammation de vos bronches et doit être pris tous les jours, même si vous vous sentez bien, pour prévenir les crises.
 - **Administration** Armer le dispositif, expirer loin du Turbuhaler, inspirer à fond et retenir sa respiration. Se rincer la bouche à l'eau après chaque utilisation pour éviter les mycoses buccales.
 - **Effets Possibles** Raucité de la voix, candidose buccale (risque minimisé par le rinçage).
-**Onceair 10 mg (Montelukast)**:
+  **Onceair 10 mg (Montelukast)**:
 - **Rôle** Ce médicament est un traitement de fond complémentaire qui agit sur une autre voie de l'inflammation, souvent lié à l'allergie, renforçant le contrôle de votre asthme.
 - **Administration** Un comprimé à prendre chaque jour, généralement le soir.
 - **Effets Possibles** Rares troubles de l'humeur ou du sommeil sont à surveiller.
-**Solupred 20 mg (Prednisone)**:
-- **Rôle** C'est un traitement puissant et 
+  **Solupred 20 mg (Prednisone)**:
+- **Rôle** C'est un traitement puissant et
 - rapide pour éteindre l'inflammation sévère associée à la crise d'asthme que vous venez de faire.
 - **Administration** Un comprimé le matin pendant le repas, uniquement pour la durée prescrite (généralement 5 jours). Respectez scrupuleusement la durée courte de la prescription.
 - **Effets Possibles** Sur une courte durée, des troubles du sommeil, une excitation ou des troubles digestifs peuvent survenir.
-**Aerol spray (Salbutamol)**:
+  **Aerol spray (Salbutamol)**:
 - **Rôle** C'est votre traitement de secours. Il sert à vous soulager immédiatement si vous avez du mal à respirer en cas de crise.
 - **Administration** Agiter le spray, expirer, puis inspirer lentement et profondément en même temps que l'on appuie sur le dispositif. L'utilisation d'une chambre d'inhalation est suggérée, surtout si vous avez des difficultés de coordination.
 - **Signe d'Alerte** Une utilisation fréquente de ce traitement est un signal que votre asthme n'est pas bien contrôlé; il est important de revoir votre médecin.
 - **Effets Possibles** Des palpitations ou de légers tremblements peuvent survenir, ils sont généralement transitoires.
-
 
 ### Flashcards (Révision)
 
@@ -2712,36 +2672,36 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 
 ### Traitement Principal
 
-- -**Vernis antifongiques**: 
+- -**Vernis antifongiques**:
 - -**Produits Conseil**: **ciclopirox** (Mycoster 8%®)
 - -Les vernis à base de ciclopirox sont utilisés quotidiennement.
-- -Il faut appliquer une couche fine de vernis à base de ciclopirox (Mycoster)  sur toute la surface de l’ongle infecté chaque jour, de préférence le soir.
+- -Il faut appliquer une couche fine de vernis à base de ciclopirox (Mycoster) sur toute la surface de l’ongle infecté chaque jour, de préférence le soir.
 - -Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.
 - -**Produits Prescrits**: **amorolfine** (Locéryl®).
 - -Ces vernis doivent être appliqués **une à deux fois par semaine**.
 - -Il faut appliquer une couche fine de vernis sur toute la surface de l’ongle infecté, de préférence le soir.
 - -Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.
-- -**Attention!!** Il faut nettoyer les résidus de limage de l’ongle. (ils peuvent causer l’infestation d’un autre ongle ou bien les plis interdigitaux) 
+- -**Attention!!** Il faut nettoyer les résidus de limage de l’ongle. (ils peuvent causer l’infestation d’un autre ongle ou bien les plis interdigitaux)
 - -**Hygiène des outils**: Nettoyer et désinfecter les limes et spatules après chaque utilisation, ou les jeter si jetables, pour éviter l'auto-contamination.
 - -**Durée**: Poursuivre le traitement sur plusieurs mois (jusqu'à repousse complète d'un ongle sain) en respectant scrupuleusement la posologie.
 
 ### Produits Associés
 
-- -**Kératolytiques (urée 40%)**: 
-- -Pour ramollir et éliminer l'ongle épaissi, facilitant la pénétration des antifongiques. 
-- -Application quotidienne sous pansement occlusif. 
+- -**Kératolytiques (urée 40%)**:
+- -Pour ramollir et éliminer l'ongle épaissi, facilitant la pénétration des antifongiques.
+- -Application quotidienne sous pansement occlusif.
 - -ex: SVR Xerial 40® ongles
-- -**Poudres antifongiques**: 
+- -**Poudres antifongiques**:
 - -Pour décontaminer chaussures et chaussettes (ex: éconazole), à appliquer 2-3 fois/semaine.
-- -**Huiles essentielles**: 
+- -**Huiles essentielles**:
 - -Arbre à thé ou Lavande, utilisées sous forme de bain de pieds diluées avec du bicarbonate de soude.
-- -**Bicarbonate de soude**: 
+- -**Bicarbonate de soude**:
 - -Pour alcaliniser le milieu et limiter la prolifération fongique dans les bains de pieds.
-- -**Gels nettoyants à pH alcalin**: 
-- -Pour la toilette quotidienne des pieds 
+- -**Gels nettoyants à pH alcalin**:
+- -Pour la toilette quotidienne des pieds
 - -ex: Mycolin®, Dermacare pH8®
-- -**Anti-transpirants**: 
-- -En cas de transpiration excessive des pieds 
+- -**Anti-transpirants**:
+- -En cas de transpiration excessive des pieds
 - -ex: Etiaxil®, SVR Spirial®
 
 ### Conseils Hygiène de Vie
@@ -2765,37 +2725,37 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 
 ### Traitement Principal (Rec)
 
-- - **Vernis antifongiques**: 
+- - **Vernis antifongiques**:
 - **Produits Conseil**: vernis antifongiques à base de **ciclopirox** (Mycoster 8%)
 - -Les vernis à base de ciclopirox sont utilisés quotidiennement.
-- -Il faut appliquer une couche fine de vernis à base de ciclopirox (Mycoster)  sur toute la surface de l’ongle infecté chaque jour, de préférence le soir.
+- -Il faut appliquer une couche fine de vernis à base de ciclopirox (Mycoster) sur toute la surface de l’ongle infecté chaque jour, de préférence le soir.
 - -Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.
 - **Produits Prescrits**: vernis antifongiques à base d’**amorolfine** (Locéryl).
 - Ces vernis doivent être appliqués **une à deux fois par semaine**.
 - Il faut appliquer une couche fine de vernis sur toute la surface de l’ongle infecté, de préférence le soir.
 - Une fois par semaine, limer et couper l’ongle pour éliminer le plus possible de bouts d’ongle infecté puis utiliser un dissolvant afin d'enlever la couche filmogène.
-- **Attention!!** Il faut nettoyer les résidus de limage de l’ongle. (ils peuvent causer l’infestation d’un autre ongle ou bien les plis interdigitaux) 
+- **Attention!!** Il faut nettoyer les résidus de limage de l’ongle. (ils peuvent causer l’infestation d’un autre ongle ou bien les plis interdigitaux)
 - - **Hygiène des outils**: Nettoyer et désinfecter les limes et spatules après chaque utilisation, ou les jeter si jetables, pour éviter l'auto-contamination.
 - - **Durée**: Poursuivre le traitement sur plusieurs mois (jusqu'à repousse complète d'un ongle sain) en respectant scrupuleusement la posologie.
 - - **Restrictions**: Éviter les vernis colorés et les faux ongles pendant la durée du traitement.
 
 ### Produits Associés (Rec)
 
-- - **Kératolytiques (urée 40%)**: 
-- Pour ramollir et éliminer l'ongle épaissi, facilitant la pénétration des antifongiques. 
-- Application quotidienne sous pansement occlusif. 
+- - **Kératolytiques (urée 40%)**:
+- Pour ramollir et éliminer l'ongle épaissi, facilitant la pénétration des antifongiques.
+- Application quotidienne sous pansement occlusif.
 - ex: SVR Xerial 40 ongles
-- - **Poudres antifongiques**: 
+- - **Poudres antifongiques**:
 - Pour décontaminer chaussures et chaussettes (ex: éconazole), à appliquer 2-3 fois/semaine.
-- - **Huiles essentielles**: 
+- - **Huiles essentielles**:
 - Arbre à thé ou Lavande, utilisées sous forme de bain de pieds diluées avec du bicarbonate de soude.
-- - **Bicarbonate de soude**: 
+- - **Bicarbonate de soude**:
 - Pour alcaliniser le milieu et limiter la prolifération fongique dans les bains de pieds.
-- - **Gels nettoyants à pH alcalin**: 
-- Pour la toilette quotidienne des pieds 
+- - **Gels nettoyants à pH alcalin**:
+- Pour la toilette quotidienne des pieds
 - ex: Mycolin, Dermacare pH8
-- - **Anti-transpirants**: 
-- En cas de transpiration excessive des pieds 
+- - **Anti-transpirants**:
+- En cas de transpiration excessive des pieds
 - ex: Etiaxil, SVR Spirial
 
 ### Conseils Hygiène de Vie (Rec)
@@ -2817,8 +2777,6 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 - Aucune recommandation alimentaire spécifique n'est établie pour l'onychomycose.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2857,55 +2815,53 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 
 ### Les Fondamentaux de la Découverte Client (Custom)
 
-* **Objectif**: Cerner précisément les besoins et attentes du client pour un conseil adapté.
-* **Démarche**: Mener une "enquête" rapide et rigoureuse pour consolider l'information en quelques minutes.
-* **Clés**: Utiliser le questionnement, l'écoute active et la reformulation comme outils principaux.
+- **Objectif**: Cerner précisément les besoins et attentes du client pour un conseil adapté.
+- **Démarche**: Mener une "enquête" rapide et rigoureuse pour consolider l'information en quelques minutes.
+- **Clés**: Utiliser le questionnement, l'écoute active et la reformulation comme outils principaux.
 
 ### Le Questionnement Efficace : La Méthode de l'Entonnoir (Custom)
 
-* **Principe**: Succession chronologique de questions pour baliser l'interrogatoire et affiner la demande.
-* **Question Ouverte**: Pour initier le dialogue et inviter le client à s'exprimer librement ("Que puis-je pour vous ?").
-* **Question Ricochet**: Pour rebondir sur les propos du client et obtenir plus de détails sur ses besoins réels.
-* **Question Miroir**: Pour reprendre un mot ou une phrase du client et l'encourager à poursuivre son explication.
-* **Question Fermée**: À utiliser avec précaution pour obtenir des réponses précises ("oui/non"), mais limite le dialogue.
-* **Question Alternative**: Pour orienter le client en lui proposant des choix et mieux cerner ses préférences.
-* **Exploration**: Questionner sur l'effet recherché, la facilité d'utilisation, la sécurité, le confort, le prix ou les réticences.
+- **Principe**: Succession chronologique de questions pour baliser l'interrogatoire et affiner la demande.
+- **Question Ouverte**: Pour initier le dialogue et inviter le client à s'exprimer librement ("Que puis-je pour vous ?").
+- **Question Ricochet**: Pour rebondir sur les propos du client et obtenir plus de détails sur ses besoins réels.
+- **Question Miroir**: Pour reprendre un mot ou une phrase du client et l'encourager à poursuivre son explication.
+- **Question Fermée**: À utiliser avec précaution pour obtenir des réponses précises ("oui/non"), mais limite le dialogue.
+- **Question Alternative**: Pour orienter le client en lui proposant des choix et mieux cerner ses préférences.
+- **Exploration**: Questionner sur l'effet recherché, la facilité d'utilisation, la sécurité, le confort, le prix ou les réticences.
 
 ### Écoute Active et Reformulation : Piliers de la Compréhension (Custom)
 
-* **Écoute Active**: Indispensable pour identifier les attentes du client sans l'interrompre, en lui laissant la parole.
-* **Concentration**: Se concentrer totalement, sans distractions, pour accumuler les informations nécessaires et montrer son écoute.
-* **Reformulation**: Primordiale pour s'assurer d'avoir bien compris la demande du client ("Si je vous comprends bien...").
-* **Validation**: Le client doit acquiescer si la reformulation est correcte, se sentant écouté et compris.
-* **Précision**: La reformulation précise et consolide l'information, assurant une bonne transmission du message.
+- **Écoute Active**: Indispensable pour identifier les attentes du client sans l'interrompre, en lui laissant la parole.
+- **Concentration**: Se concentrer totalement, sans distractions, pour accumuler les informations nécessaires et montrer son écoute.
+- **Reformulation**: Primordiale pour s'assurer d'avoir bien compris la demande du client ("Si je vous comprends bien...").
+- **Validation**: Le client doit acquiescer si la reformulation est correcte, se sentant écouté et compris.
+- **Précision**: La reformulation précise et consolide l'information, assurant une bonne transmission du message.
 
 ### Comprendre les Motivations d'Achat : La Méthode SONCAS (Custom)
 
-* **Motivation**: Essentiel de comprendre "pourquoi" le client souhaite cet achat pour orienter l'argumentation.
-* **SONCAS**: Méthode balayant les principaux mobiles d'achat pour détecter les plus sensibles et choisir les arguments clés.
-* **S (Sécurité)**: Concerne la santé, la qualité, la garantie, et la sécurité physique (fréquent en parapharmacie).
-* **O (Orgueil)**: Besoin de reconnaissance, statut social, marque, ou influence des tiers.
-* **N (Nouveauté)**: Recherche d'innovation, de nouvelles technologies, ou de produits "tendances".
-* **C (Confort)**: Produit agréable, facile d'emploi, texture, souvent nécessite un test.
-* **A (Argent)**: Facteur économique, prix du produit (peut orienter vers des ventes par lot).
-* **S (Sympathie)**: Côté amusant, fantaisie, flaconnage attractif.
+- **Motivation**: Essentiel de comprendre "pourquoi" le client souhaite cet achat pour orienter l'argumentation.
+- **SONCAS**: Méthode balayant les principaux mobiles d'achat pour détecter les plus sensibles et choisir les arguments clés.
+- **S (Sécurité)**: Concerne la santé, la qualité, la garantie, et la sécurité physique (fréquent en parapharmacie).
+- **O (Orgueil)**: Besoin de reconnaissance, statut social, marque, ou influence des tiers.
+- **N (Nouveauté)**: Recherche d'innovation, de nouvelles technologies, ou de produits "tendances".
+- **C (Confort)**: Produit agréable, facile d'emploi, texture, souvent nécessite un test.
+- **A (Argent)**: Facteur économique, prix du produit (peut orienter vers des ventes par lot).
+- **S (Sympathie)**: Côté amusant, fantaisie, flaconnage attractif.
 
 ### L'Approche Sensorielle du Client pour un Conseil Personnalisé (Custom)
 
-* **SRS**: Système de Représentation Sensorielle pour décrypter le canal privilégié du client.
-* **Client Visuel**: Attiré par l'apparence du produit; le guider vers un facing attractif.
-* **Client Auditif**: Intègre l'information par la parole; développer un conseil détaillé et explicatif.
-* **Client Kinesthésique**: Besoin de toucher et de tester le produit; lui faire prendre en main ou essayer.
+- **SRS**: Système de Représentation Sensorielle pour décrypter le canal privilégié du client.
+- **Client Visuel**: Attiré par l'apparence du produit; le guider vers un facing attractif.
+- **Client Auditif**: Intègre l'information par la parole; développer un conseil détaillé et explicatif.
+- **Client Kinesthésique**: Besoin de toucher et de tester le produit; lui faire prendre en main ou essayer.
 
 ### La Prise de Décision Post-Découverte (Custom)
 
-* **Décision Initiale**: Après la découverte, le pharmacien prend une première décision cruciale.
-* **Conseil au Comptoir**: Si la demande est claire et relève de ses compétences, rassurer et proposer un traitement adapté.
-* **Orientation Médicale**: Face à une situation incertaine ou complexe, ne pas dispenser de traitement et orienter vers une consultation médicale.
+- **Décision Initiale**: Après la découverte, le pharmacien prend une première décision cruciale.
+- **Conseil au Comptoir**: Si la demande est claire et relève de ses compétences, rassurer et proposer un traitement adapté.
+- **Orientation Médicale**: Face à une situation incertaine ou complexe, ne pas dispenser de traitement et orienter vers une consultation médicale.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -2965,11 +2921,11 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 
 ### 3. Le Bénéfice (B) : Le "Qu'est-ce que ça change pour moi ?" (Custom)
 
-**Impact**: 
+**Impact**:
 -Met en lumière l'impact émotionnel et personnel du produit, ce qu'il va changer positivement dans la vie du patient.
-**Projection**: 
+**Projection**:
 -Projette le client dans une "vie meilleure" grâce au produit.
-**Nature**: 
+**Nature**:
 -Plus personnel que l'avantage (qui est plus générique).
 **Question Clé**: Répond à « Qu’est-ce que ça change pour moi ? ».
 **Types Émotionnels**: Sensations, perceptions, fierté, sérénité, plaisir.
@@ -3019,22 +2975,22 @@ Un accueil réussi est le 'starter de la vente' : il sécurise, touche, apprivoi
 
 **Définition**: Mots puissants qui influencent le déroulement de la vente, suscitent l'intérêt et aident à la décision.
 **1. Vous, votre** : Le client se sent important, rassuré et confiant.
-**2. Economisez**:  Incite à l'achat en promettant un gain (argent, temps, effort).
+**2. Economisez**: Incite à l'achat en promettant un gain (argent, temps, effort).
 **3. Argent** : Éveille l'intérêt, une argumentation basée sur un gain peut être décisive.
 **4. Facile**n: Le client préfère ce qui est simple, non compliqué et nécessite moins d'effort.
 **5. Garantie**: Rassure le client, calme sa peur et élimine les soupçons.
 **6. Santé Insister sur l'état de santé du client valorise l'argumentation.
 **7. Prouvé**: Le client préfère ce qui est testé et prouvé, renforce la conviction.
-**8. Sécurité**:  Valorise le produit et facilite la vente en éloignant le risque.
-**9. Découverte**:  Intéresse le client pour un produit issu d'une nouvelle recherche.
-**10. Nouveau**:  Attire l'attention du client sur les nouveautés.
+**8. Sécurité**: Valorise le produit et facilite la vente en éloignant le risque.
+**9. Découverte**: Intéresse le client pour un produit issu d'une nouvelle recherche.
+**10. Nouveau**: Attire l'attention du client sur les nouveautés.
 **11. Amour**: Évoquer le côté sentimental aide à convaincre.
 **12. Résultat**: Le client attend un résultat, il est impératif d'insister sur cet aspect.
 **13. Gratuit**: Le client adore les cadeaux, il faut insister sur les gratuités.
-Intonations Positives 
+Intonations Positives
 **Recommandation**: Préférer "Ce produit va vous convenir", "Ce médicament est adapté à votre situation et vous soulagera".
-**Expressions Négatives**: 
-**À Éviter**: "Je ne pense pas que", "Vous ne serez pas déçu", "Je ne pense pas que le médicament ne vous soulagera pas".
+**Expressions Négatives**:
+**À Éviter\*\*: "Je ne pense pas que", "Vous ne serez pas déçu", "Je ne pense pas que le médicament ne vous soulagera pas".
 
 ### Synthèse : Les Clés d'un Argumentaire Réussi (Custom)
 
@@ -3046,8 +3002,6 @@ Intonations Positives
 **Conseil : Flexibilité**: L'argumentaire doit être souple et s'adapter à la personnalité et à l'échange avec le client pour réduire les objections.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3078,8 +3032,8 @@ Intonations Positives
 
 **Type:** communication | **Thème:** Communication | **Système:** N/A | **Niveau:** Facile
 
-> Guide pratique pour les professionnels de l'officine sur **la gestion éthique et efficace des objections** des patients, 
-incluant la méthode **ACCRé** et la gestion des objections de prix.
+> Guide pratique pour les professionnels de l'officine sur **la gestion éthique et efficace des objections** des patients,
+> incluant la méthode **ACCRé** et la gestion des objections de prix.
 
 ### Situation Patient / Cas Comptoir
 
@@ -3090,72 +3044,69 @@ incluant la méthode **ACCRé** et la gestion des objections de prix.
 
 ### Comprendre la Méthode ACCRé (Custom)
 
-**Définition**: ACCRé est un acronyme signifiant Accepter, Creuser, Comprendre, Répondre. 
-**Philosophie**: Approche éthique et centrée sur le patient, respectant son besoin d'information et de réassurance. 
-**Objectif**: Transformer une objection en opportunité de dialogue et de conseil pertinent. 
+**Définition**: ACCRé est un acronyme signifiant Accepter, Creuser, Comprendre, Répondre.
+**Philosophie**: Approche éthique et centrée sur le patient, respectant son besoin d'information et de réassurance.
+**Objectif**: Transformer une objection en opportunité de dialogue et de conseil pertinent.
 **Intégration**: La "vente" de produits ou conseils à l'officine est indissociable de la déontologie médicale et de l'intérêt du patient.
 
 ![Image](/uploads/pharmia/communication/objections-slides/4.png)
 
 ### Accepter l'Objection : Créez un Climat de Confiance (Custom)
 
-**Première étape**: Accueillez l'objection sans la contrer ni vous justifier. 
-**Signe d'intérêt**: L'objection indique que le patient est en phase de décision et cherche à être rassuré. 
-**Légitimation**: Exprimez de l'empathie avec des phrases comme "Je comprends votre point de vue" ou "Votre question est légitime." 
-**Vocabulaire**: Préférez "point de vue" ou "préoccupation" à "objection" pour un dialogue constructif. 
+**Première étape**: Accueillez l'objection sans la contrer ni vous justifier.
+**Signe d'intérêt**: L'objection indique que le patient est en phase de décision et cherche à être rassuré.
+**Légitimation**: Exprimez de l'empathie avec des phrases comme "Je comprends votre point de vue" ou "Votre question est légitime."
+**Vocabulaire**: Préférez "point de vue" ou "préoccupation" à "objection" pour un dialogue constructif.
 **Anticipation**: Ne jamais anticiper l'objection ; laissez le patient l'exprimer pour éviter d'induire le doute.
 
 ![Image](/uploads/pharmia/communication/objections-slides/3.png)
 
 ### Creuser l'Objection : Débusquez la Raison Profonde (Custom)
 
-**Motivation cachée**: De nombreuses objections sont des "fausses excuses" masquant une préoccupation réelle ou un manque d'information. 
-**Questions ouvertes**: Utilisez des questions comme "Qu'est-ce qui vous gêne spécifiquement ?" ou "Trop cher par rapport à quoi ?" pour inciter le patient à s'exprimer. 
-**Techniques**: 
-    *   **L'Approfondissement**: Idéale pour les objections non sincères, elle recentre la conversation sur le problème. 
-    *   **L'Effritement**: Encourage le patient à justifier son objection, révélant ses véritables freins. 
+**Motivation cachée**: De nombreuses objections sont des "fausses excuses" masquant une préoccupation réelle ou un manque d'information.
+**Questions ouvertes**: Utilisez des questions comme "Qu'est-ce qui vous gêne spécifiquement ?" ou "Trop cher par rapport à quoi ?" pour inciter le patient à s'exprimer.
+**Techniques**:
+_ **L'Approfondissement**: Idéale pour les objections non sincères, elle recentre la conversation sur le problème.
+_ **L'Effritement**: Encourage le patient à justifier son objection, révélant ses véritables freins.
 **Révéler le besoin**: L'objectif est d'amener le patient à verbaliser sa vraie préoccupation pour la traiter efficacement.
 
 ![Image](/uploads/pharmia/communication/objections-slides/6.png)
 
 ### Comprendre l'Objection : Écoute et Empathie (Custom)
 
-**Écoute active**: Écoutez attentivement et sans interruption, en vous concentrant sur les mots et les émotions. 
-**Reformulation**: Validez votre compréhension et montrez au patient que vous l'avez écouté ("Si je comprends bien, c'est ce point qui vous préoccupe ?"). 
+**Écoute active**: Écoutez attentivement et sans interruption, en vous concentrant sur les mots et les émotions.
+**Reformulation**: Validez votre compréhension et montrez au patient que vous l'avez écouté ("Si je comprends bien, c'est ce point qui vous préoccupe ?").
 **Reconnaissance émotionnelle**: Les objections sont souvent liées à des craintes. Rassurez le patient et validez ses sentiments, sans nécessairement être d'accord avec le contenu de l'objection.
 
 ![Image](/uploads/pharmia/communication/objections-slides/7.png)
 
 ### Répondre à l'Objection : Apporter la Solution Éthique (Custom)
 
-**Transformation positive**: Utilisez l'objection comme un levier pour valoriser votre solution. 
-    *   **L'Appui**: "L'absence de parfum limite les risques d'allergies pour votre bébé." 
-    *   **Le "Oui, mais"**: Reconnaître le point du patient avant de présenter un bénéfice supérieur ("Oui, mais une seule application assure un confort toute la journée"). 
-    *   **Le Prolongement**: "C'est justement pour cette raison que ce produit est idéal..." 
-**Preuves concrètes**: Apportez des faits, chiffres, témoignages ou démonstrations pour rationaliser la décision. 
-**Éthique professionnelle**: L'argumentation doit toujours être basée sur l'intérêt du patient, la logique et la rationalité. 
+**Transformation positive**: Utilisez l'objection comme un levier pour valoriser votre solution.
+_ **L'Appui**: "L'absence de parfum limite les risques d'allergies pour votre bébé."
+_ **Le "Oui, mais"**: Reconnaître le point du patient avant de présenter un bénéfice supérieur ("Oui, mais une seule application assure un confort toute la journée"). \* **Le Prolongement**: "C'est justement pour cette raison que ce produit est idéal..."
+**Preuves concrètes**: Apportez des faits, chiffres, témoignages ou démonstrations pour rationaliser la décision.
+**Éthique professionnelle**: L'argumentation doit toujours être basée sur l'intérêt du patient, la logique et la rationalité.
 **Bénéfices client**: Mettez en avant comment la solution répond aux besoins et améliore la qualité de vie du patient.
 
 ![Image](/uploads/pharmia/communication/objections-slides/9.png)
 
 ### Gestion Spécifique des Objections de Prix en Pharmacie (Custom)
 
-**Questionnement**: Face à "C'est trop cher", demandez "Par rapport à quoi ?" pour cerner la vraie perception du coût. 
-**Valeur et bénéfices**: Expliquez la plus-value du produit (efficacité, moins d'effets secondaires, meilleure tolérance). 
-**Coût en investissement**: Reformulez le prix comme un "investissement supplémentaire" offrant des gains (temps, confort, sécurité). 
-**Preuve sociale (Les 3R)**: Mentionnez que d'autres clients ont eu la même remarque mais sont satisfaits de la qualité ou de l'efficacité. 
+**Questionnement**: Face à "C'est trop cher", demandez "Par rapport à quoi ?" pour cerner la vraie perception du coût.
+**Valeur et bénéfices**: Expliquez la plus-value du produit (efficacité, moins d'effets secondaires, meilleure tolérance).
+**Coût en investissement**: Reformulez le prix comme un "investissement supplémentaire" offrant des gains (temps, confort, sécurité).
+**Preuve sociale (Les 3R)**: Mentionnez que d'autres clients ont eu la même remarque mais sont satisfaits de la qualité ou de l'efficacité.
 **Concession prudente**: Si une concession est envisagée, offrez un complément (échantillon, accessoire) plutôt qu'une réduction directe, en demandant un retour.
 
 ### Le Pharmacien, Expert en Communication et Confiance (Custom)
 
-**Compétence fondamentale**: La gestion des objections est une compétence clé de communication, pas juste de vente. 
-**Impact de l'ACCRé**: En appliquant cette méthode, vous dissipez les doutes, renforcez la confiance du patient et personnalisez le conseil. 
-**Rôle essentiel**: Affirmez votre expertise en tant que professionnel de santé dévoué au bien-être du patient. 
+**Compétence fondamentale**: La gestion des objections est une compétence clé de communication, pas juste de vente.
+**Impact de l'ACCRé**: En appliquant cette méthode, vous dissipez les doutes, renforcez la confiance du patient et personnalisez le conseil.
+**Rôle essentiel**: Affirmez votre expertise en tant que professionnel de santé dévoué au bien-être du patient.
 **Amélioration continue**: Chaque interaction est une occasion de pratiquer et d'affiner votre approche pour mieux servir les patients.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3202,7 +3153,7 @@ incluant la méthode **ACCRé** et la gestion des objections de prix.
 
 [Video](https://www.youtubeeducation.com/watch?v=FSkrBdyZ0hQ)
 
-### Aérosol doseur - exemple: AEROL ®  (Custom)
+### Aérosol doseur - exemple: AEROL ® (Custom)
 
 [Video](https://www.youtubeeducation.com/watch?v=CRpFU3m_AUQ)
 
@@ -3252,7 +3203,7 @@ incluant la méthode **ACCRé** et la gestion des objections de prix.
 ### Dispositifs à Conseiller
 
 • **Inhalateurs de Poudre Sèche (DPI)**: Dispositifs n'utilisant pas de gaz propulseur, activés par l'inspiration du patient, exigeant une inspiration vive et profonde.
-• **DPI à Gélule/Capsule (Unidose)**: Pour les patients capables de manipuler une gélule et de vérifier qu'elle est vide. 
+• **DPI à Gélule/Capsule (Unidose)**: Pour les patients capables de manipuler une gélule et de vérifier qu'elle est vide.
 Exemples: Aerolizer (Foradil®, Eolide®, Aeoronide ).
 • **DPI Multidoses à Réservoir**: Adaptés aux patients nécessitant un débit inspiratoire relativement faible et un compteur de doses. Exemples: Turbuhaler (Pulmicort®, Symbicort®).
 • **DPI Multidoses à Plaquette**: Pour une protection individuelle des doses et un compteur visible. Exemples: Diskus (Flixotide®, Seretide®).
@@ -3267,8 +3218,6 @@ Exemples: Aerolizer (Foradil®, Eolide®, Aeoronide ).
 • **"Je ne sens rien quand j'inhale, donc le médicament ne passe pas."**: Rappeler que certains DPI (sans lactose) peuvent ne pas donner de sensation de poudre. Expliquer que si le compteur de doses a avancé, la dose a bien été délivrée. Insister sur l'importance de ne pas renouveler la prise sans avis médical ou pharmaceutique.• **"Mon inhalateur est trop compliqué à utiliser."**: Proposer une nouvelle démonstration pas à pas avec un dispositif placebo. Vérifier si un autre type de DPI serait plus adapté aux capacités du patient (ex: débit inspiratoire, coordination). Simplifier les étapes clés et mettre en place une grille d'évaluation si besoin.• **"J'ai la voix rauque et la bouche irritée à cause de mon corticoïde."**: Expliquer que le rinçage de la bouche (et le gargarisme) avec de l'eau, à cracher systématiquement après chaque prise de CSI, est crucial pour prévenir ces effets locaux. Pour les pMDI, conseiller l'usage d'une chambre d'inhalation.• **"Je dois prendre mon traitement de crise trop souvent."**: Expliquer que c'est un signe de mauvais contrôle de l'asthme et que le traitement de fond doit être bien pris. Suggérer une consultation médicale pour réévaluer la stratégie thérapeutique et proposer les entretiens BUM Asthme pour un accompagnement.• **"Je souffle dans l'appareil avant de prendre ma dose."**: Informer le patient qu'en soufflant dans un DPI chargé, la dose de poudre est dispersée et perdue. Expliquer qu'il faut préparer une nouvelle dose et inspirer vivement par la bouche, sans souffler dans l'embout.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3305,19 +3254,19 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Aperçu Pathologie
 
-**-Définition** : La toux est un réflexe naturel de défense de l'organisme pour expulser les agents irritants des voies respiratoires: C'est une expiration brusque et sonore de l'air des poumons, impliquant des récepteurs spécifiques. 
-**-Classification** : On classe la toux en: Aiguë (Durée< 3 semaines), Subaiguë (Durée de 3 à 8 semaines), Chronique (Durée > 8 semaines). 
+**-Définition** : La toux est un réflexe naturel de défense de l'organisme pour expulser les agents irritants des voies respiratoires: C'est une expiration brusque et sonore de l'air des poumons, impliquant des récepteurs spécifiques.
+**-Classification** : On classe la toux en: Aiguë (Durée< 3 semaines), Subaiguë (Durée de 3 à 8 semaines), Chronique (Durée > 8 semaines).
 **-Types:**
-**.Toux Sèche** : Irritative, non-productive, sans expectorations, souvent fatigante et nocturne. 
+**.Toux Sèche** : Irritative, non-productive, sans expectorations, souvent fatigante et nocturne.
 **.Toux Grasse** : Productive, permet l'évacuation des sécrétions et impuretés.
 **-Causes de la toux:**
-**.Virales** : Fréquemment due à des **infections respiratoires virales** (rhino-pharyngite, bronchite, trachéite). 
-**.Environnementales** : Tabagisme, poussières, substances irritantes peuvent déclencher la toux. 
+**.Virales** : Fréquemment due à des **infections respiratoires virales** (rhino-pharyngite, bronchite, trachéite).
+**.Environnementales** : Tabagisme, poussières, substances irritantes peuvent déclencher la toux.
 **.Médicamenteuses** : Les **Inhibiteurs de l'Enzyme de Conversion** (IEC) peuvent provoquer une toux irritative sèche
-**.Autres** : Infections bactériennes (coqueluche), allergies, asthme, reflux gastro-œsophagien (RGO), cardiopathies, BPCO. 
+**.Autres** : Infections bactériennes (coqueluche), allergies, asthme, reflux gastro-œsophagien (RGO), cardiopathies, BPCO.
 **-Principes de traitement** : Le traitement de la toux est symptomatique:
 **.Toux grasse**: Faciliter la toux pour dégager les voies respiratoires.
- **.Toux sèche**: Bloquer la toux pour diminuer l'irritation et soulager le patient.
+**.Toux sèche**: Bloquer la toux pour diminuer l'irritation et soulager le patient.
 
 ![Image](https://pharmaconseilbmb.com/photos/site/orl-respiration/toux.jpg)
 
@@ -3342,13 +3291,13 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Traitement Principal
 
-- **Toux Sèche (Non productive, irritative)** : 
-- -Le traitement de choix sont les **antitussifs** 
+- **Toux Sèche (Non productive, irritative)** :
+- -Le traitement de choix sont les **antitussifs**
 - -Ils agissent en bloquant l’arc réflexe de la toux
-- -On distingue **trois classes principales: **opiacés**, **antihistaminiques**, **non-opiacés non-antihistaminiques**
-- **Toux Grasse (Productive)** : 
-- -Il ne faut pas stopper la toux mais faciliter l'évacuation les sécrétions bronchiques 
-- -On distingue trois classes principales: **mucolytiques**, **expectorants**, **mucorégulateurs** 
+- -On distingue **trois classes principales: **opiacés**, **antihistaminiques**, **non-opiacés non-antihistaminiques\*\*
+- **Toux Grasse (Productive)** :
+- -Il ne faut pas stopper la toux mais faciliter l'évacuation les sécrétions bronchiques
+- -On distingue trois classes principales: **mucolytiques**, **expectorants**, **mucorégulateurs**
 - -La durée d'utilisation **maximale** de médicament contre la toux est de **5 jours**
 - **Précautions d'usage** : Ne pas réutiliser de vieux sirops ouverts (> 2 mois). Vérifier la présence d'alcool dans les sirops.
 
@@ -3372,23 +3321,22 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Toux Grasse (Custom)
 
-**Mucolytiques** : 
--**Diminuer la viscosité** du mucus pour le rendre plus facile à expectorer
+**Mucolytiques** : -**Diminuer la viscosité** du mucus pour le rendre plus facile à expectorer
 -Carbocistéine: Bronchokod®
 -Acétylcystéine: Mucolyse®
 -Bromhexine: Bromisol®
 -Prise avant 17-18 heures pour éviter une toux nocturne
-**Expectorants** : 
+**Expectorants** :
 -Stimuler la sécrétion bronchique et l'activité ciliaire.
 -Ambroxol: Muxol®
-**Mucorégulateurs**: 
+**Mucorégulateurs**:
 -Améliorer la composition du mucus (quantité et viscosité).
 -Carbocystéine: Bronchokod®
-**Produits à base de Plantes Toux Grasse** : 
--Eucalyptus: expectorant 
+**Produits à base de Plantes Toux Grasse** :
+-Eucalyptus: expectorant
 -Lierre grimpant: antispasmodique et mucolytique
--Romarin: fluidifiant 
--Plantain 
+-Romarin: fluidifiant
+-Plantain
 -ex: Prospan®, Pectal®.
 **Effets indésirables**: nausées, vomissements ou diarrhées
 **Contre-indications**: Ulcère gastro-duodénal, enfant< 2ans
@@ -3397,28 +3345,25 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Toux sèche (Custom)
 
-**Antitussifs Opiacés (sur prescription médicale)** : Codéine, Dextrométhorphane 
+**Antitussifs Opiacés (sur prescription médicale)** : Codéine, Dextrométhorphane
 -Effets indésirables principaux: somnolence, dépression respiratoire, constipation, dépendance
 -Contre-indication: insuffisance respiratoire, enfant<12 ans, asthme, grossesse
--Ex:Pectolyse®, Pulmosérum® 
-**Antitussifs Antihistaminiques H1** : Oxomémazine 
+-Ex:Pectolyse®, Pulmosérum®
+**Antitussifs Antihistaminiques H1** : Oxomémazine
 -Utile pour toux nocturne,
--Effets indésirables: Somnolence, 
+-Effets indésirables: Somnolence,
 -Contre-indication: Nourrissons <2 ans, rétention urinaire, troubles prostatiques, glaucome à angle fermé
 -Ex: Toplexil®
 **Antitussifs Non-Opiacés Non-Histaminiques**: Oxéladine
 -ex: Paxeladine®
 **Homéopathie Toux Sèche** : Bryonia alba 5 CH, Drosera 5 CH, spécialités comme Stodal®.
-**Phytothérapie Toux Sèche** : 
--Mauve, Guimauve, Plantain: adoucissantes et antitussives 
+**Phytothérapie Toux Sèche** :
+-Mauve, Guimauve, Plantain: adoucissantes et antitussives
 -Thym: antiseptique
 -Lierre grimpant: antispasmodique, expectorant
 -ex: Tussiben®, Biocalm®
 
-
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3430,7 +3375,7 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
   R: Irritative, non-productive, sans expectorations, souvent fatigante et nocturne.
 - Q: Quelle famille de médicament peut-elle provoquer une toux ?
   R: Les inhibiteurs de l'enzyme de conversion (IEC) peuvent causer une toux sèche chez les patients.
-- Q: Citez deux maladies virales pouvant être associées à une toux. 
+- Q: Citez deux maladies virales pouvant être associées à une toux.
   R: La Rhino-pharyngite (Rhume) , La Bronchite.
 - Q: Quel est le principe de traitement d'une toux sèche ?
   R: Bloquer la toux sèche par utilisation des antitussifs (opiacés, antihistaminiques, non-opiacés).
@@ -3453,11 +3398,7 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Nouvelle Section (Custom)
 
-
-
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3492,8 +3433,6 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Conseils Traitement
 
-
-
 ### Flashcards (Révision)
 
 - Q: Qu'est-ce que le Diabète de Type 2 ?
@@ -3508,8 +3447,8 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
   R: Maladie coronarienne, accident vasculaire cérébral (AVC) ou artériopathie des membres inférieurs.
 - Q: Nommez deux complications microvasculaires du Diabète de Type 2.
   R: Rétinopathie diabétique, néphropathie diabétique ou neuropathie diabétique.
-- Q:  Quelles sont les complications à court terme du diabète du type 2 ?
-  R: L'Hypoglycémie, Le Coma Hyperosmolaire. 
+- Q: Quelles sont les complications à court terme du diabète du type 2 ?
+  R: L'Hypoglycémie, Le Coma Hyperosmolaire.
 - Q: Quel est l'objectif principal du traitement du Diabète de Type 2 ?
   R: Maintenir la glycémie à des niveaux cibles pour prévenir les complications à long terme.
 - Q: Pourquoi la détection précoce du Diabète de Type 2 est-elle importante ?
@@ -3526,8 +3465,6 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 > Cette mémofiche détaille la prise en charge individualisée et globale du Diabète de Type 2 (DT2), incluant les objectifs glycémiques, tensionnels et pondéraux, ainsi que la stratégie thérapeutique de première ligne et les traitements médicamenteux conventionnels.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3554,15 +3491,13 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ---
 
-# Diabète Type2: Mémofiche 3:  Nouveaux Traitements 
+# Diabète Type2: Mémofiche 3: Nouveaux Traitements
 
 **Type:** pharmacologie | **Thème:** Pharmacologie | **Système:** Diabète | **Niveau:** Facile
 
 > L'approche thérapeutique du diabète a évolué depuis 2015, intégrant la protection cardiovasculaire (CV) et rénale. Il est recommandé d'ajouter ou de remplacer par un antihyperglycémiant aux bénéfices CV ou rénaux démontrés en cas d'HbA1c non atteinte ou de comorbidités CV/rénales.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -3599,14 +3534,12 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Aperçu Pathologie
 
-**-****La rhinopharyngite** (rhume) est une infection **virale** **bénigne** de la muqueuse du nez et du pharynx.
-**-**Elle est causée **exclusivement** par des **virus** (rhinovirus, coronavirus, etc.). 
+**-\*\***La rhinopharyngite** (rhume) est une infection **virale\*\* **bénigne** de la muqueuse du nez et du pharynx.
+**-**Elle est causée **exclusivement** par des **virus** (rhinovirus, coronavirus, etc.).
 **-**C'est la pathologie infectieuse **la plus fréquente** chez l'**enfant**, qui peut en contracter **jusqu'à dix** par an avant 2 ans en raison de l'**immaturité** de leur **système immunitaire**.
-**-****Symptômes Clés** : 
--Fièvre **modérée** (souvent < 38,5), ne durant pas plus de 3 jours.
--**Obstruction** (nez bouché) ou **écoulement nasal** (nez qui coule)
--**Éternuements**, **toux** (pouvant durer jusqu'à **10** jours et parfois causer des vomissements), et **léger** mal de gorge.
-**-****Évolution et Facteurs Favorisants** : 
+**-\*\***Symptômes Clés** :
+-Fièvre **modérée** (souvent < 38,5), ne durant pas plus de 3 jours. -**Obstruction** (nez bouché) ou **écoulement nasal** (nez qui coule) -**Éternuements**, **toux** (pouvant durer jusqu'à **10** jours et parfois causer des vomissements), et **léger** mal de gorge.
+**-\***\*Évolution et Facteurs Favorisants** :
 -Le rhume guérit **spontanément** en **7** à **10** jours. Il est **favorisé** par la vie en communauté (crèche), le tabagisme passif, et la sécheresse de l'air.
 
 ### Questions Clés
@@ -3630,8 +3563,8 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Traitement Principal
 
-- • **Désobstruction Rhino-Pharyngée (DRP)** (Hygiène nasale) : 
-- **-**Lavage par du **sérum physiologique** ou de l'**eau de mer isotonique**. 
+- • **Désobstruction Rhino-Pharyngée (DRP)** (Hygiène nasale) :
+- **-**Lavage par du **sérum physiologique** ou de l'**eau de mer isotonique**.
 - **-**Réaliser aussi souvent que nécessaire, surtout avant les repas et au coucher, en position allongée tête penchée sur le côté.
 - Les bénéfices:
 - **-**Décongestionner le nez bouché pour une meilleure respiration et une tétée plus facile.
@@ -3639,21 +3572,21 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Produits Associés
 
-- **-****Eau de mer hypertonique** Utiliser ponctuellement pour décongestionner par effet osmotique.
-- **-****Paracétamol**: 60 mg/kg/jour, réparti en 4-6 prises (15 mg/kg toutes les 6h ou 10 mg/kg toutes les 4h). - Indiqué si fièvre > 38.5°C, douleur, ou irritabilité. Utiliser la dose efficace la plus faible et la durée la plus courte.
-- **-****Ibuprofène** : Uniquement chez l'enfant de plus de 3 mois et en cas de contre-indication au paracétamol. - Risque de complications infectieuses
-- **-****Aspirine** Formellement contre-indiquée chez l'enfant sans avis médical (Risque de syndrome de Reye) 
-- **-****Mouche-bébé** : Pour aider à éliminer les sécrétions après lavage nasal 
-- **-****Sirop pour toux sèche**
+- **-\*\***Eau de mer hypertonique\*\* Utiliser ponctuellement pour décongestionner par effet osmotique.
+- **-\*\***Paracétamol\*\*: 60 mg/kg/jour, réparti en 4-6 prises (15 mg/kg toutes les 6h ou 10 mg/kg toutes les 4h). - Indiqué si fièvre > 38.5°C, douleur, ou irritabilité. Utiliser la dose efficace la plus faible et la durée la plus courte.
+- **-\*\***Ibuprofène\*\* : Uniquement chez l'enfant de plus de 3 mois et en cas de contre-indication au paracétamol. - Risque de complications infectieuses
+- **-\*\***Aspirine\*\* Formellement contre-indiquée chez l'enfant sans avis médical (Risque de syndrome de Reye)
+- **-\*\***Mouche-bébé\*\* : Pour aider à éliminer les sécrétions après lavage nasal
+- **-\*\***Sirop pour toux sèche\*\*
 - **Guimauve**: dès 3 ans
 - **Plantain lancéolé** : dès 3 ans
-- **Thym** : dès 4 ans 
+- **Thym** : dès 4 ans
 - -Ex: Humer toux sèche®
-- **-****Sirop pour toux grasse**
+- **-\*\***Sirop pour toux grasse\*\*
 - **Lierre grimpant** :dès 2 ans
-- **Fenouil** : dès 4 ans 
+- **Fenouil** : dès 4 ans
 - -Ex: Baumix toux grasse®
-- **Baumes pour confort respiratoire (aromathérapie)** Eucalyptus radié, Romarin à Verbénone dès 3 mois 
+- **Baumes pour confort respiratoire (aromathérapie)** Eucalyptus radié, Romarin à Verbénone dès 3 mois
 - -Ex: Baumix baume®
 
 ### Conseils Hygiène de Vie
@@ -3673,8 +3606,6 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Conseils Traitement
 
-
-
 ### Flashcards (Révision)
 
 - Q: Qu'est-ce que le rhume (rhinopharyngite) chez l'enfant?
@@ -3683,12 +3614,12 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
   R: 60 mg/kg/jour, répartie en 4 à 6 prises.
 - Q: Quel est le geste essentiel d'hygiène nasale en cas de rhume chez l'enfant?
   R: La Désobstruction Rhino-Pharyngée (DRP) avec sérum physiologique isotonique ou eau de mer isotonique.
-- Q: Jusqu'à quelle quantité de sérum physiologique peut-on utiliser par narine pour une DRP? 
+- Q: Jusqu'à quelle quantité de sérum physiologique peut-on utiliser par narine pour une DRP?
   R: Jusqu'à 2ml par narine.
 - Q: Dans quel cas l'eau de mer hypertonique est-elle indiquée pour le rhume de l'enfant?
   R: Pour une obstruction nasale importante, ponctuellement et pour une courte durée, afin de décongestionner par effet osmotique.
 - Q: Pourquoi l'aspirine est-elle contre-indiquée chez l'enfant en cas de rhume sans avis médical?
-  R: En raison du risque de syndrome de Reye. 
+  R: En raison du risque de syndrome de Reye.
 - Q: Pourquoi doit-on envoyer l'enfant enrhumé de moins de 3 mois au médecin?
   R: Car il y a risque de détresse respiratoire.
 - Q: Quels sont les signes de détresse respiratoire à surveiller chez un enfant enrhumé?
@@ -3706,19 +3637,11 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Nouvelle Section (Custom)
 
-
+### Nouvelle Section (Custom)
 
 ### Nouvelle Section (Custom)
 
-
-
 ### Nouvelle Section (Custom)
-
-
-
-### Nouvelle Section (Custom)
-
-
 
 ### Ordonnance
 
@@ -3732,37 +3655,37 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 
 ### Analyse de l'Ordonnance
 
-- -**Objectif** : 
+- -**Objectif** :
 - -Contrôler les symptômes
-- -Réduire rapidement l'inflammation et les squames. 
+- -Réduire rapidement l'inflammation et les squames.
 - -**Profil du patient**
 - -**Motif de consultation**:
 - -Vérifier s'il s'agit d'une **initiation** de traitement ou d'un **renouvellement** suite à une **poussée** pour adapter les conseils.
-- -**Antécédents**: 
+- -**Antécédents**:
 - -Vérifier les médicaments prescrits et les antécédents médicaux (pathologies, traitements en cours, automédication) pour identifier d'éventuelles contre-indications ou interactions médicamenteuses.
-- -**Localisation**: 
+- -**Localisation**:
 - -Vérifier qu'elles sont les zones **atteintes**
 
 ### Conseils Traitement
 
 **Calcipotriol/Bétaméthasone**:
+
 - -Dermocorticoïde et analogue de la vitamine D combinés
-- - **Application** : 
+- - **Application** :
 - -Appliquer une **fine** couche **1** fois par jour, le **soir** de préférence, **uniquement** sur les **plaques**.
-- - **Hygiène** : 
+- - **Hygiène** :
 - -Se laver les mains après application (sauf si les mains sont traitées).
-- - **Effets secondaires** : 
-- Risque d'**irritation** en **début** de traitement. 
-- - **Contre-indications** : 
+- - **Effets secondaires** :
+- Risque d'**irritation** en **début** de traitement.
+- - **Contre-indications** :
 - -Ne pas appliquer sur le visage.
-- - **Arrêt** : 
+- - **Arrêt** :
 - -Ne pas arrêter **brutalement** le traitement pour **éviter** un **effet rebond**.
-- - **Quantités** : 
+- - **Quantités** :
 - -La dose maximale **journalière** ne doit pas dépasser **15** g
 - -La dose maximale **hebdomadaire** **100**g/semaine
-- - **Durée** : 
+- - **Durée** :
 - -Éviter l'utilisation prolongée sur de grandes surfaces risque de tachyphylaxie (Diminution rapide de l'effet d'un médicament lors d'administrations successives)
-
 
 ### Flashcards (Révision)
 
@@ -3794,10 +3717,10 @@ Un patient âgé de 25 ans se présente au comptoir en disant : « Je tousse, qu
 **Type:** le-medicament | **Thème:** Pharmacologie | **Système:** N/A | **Niveau:** Facile
 
 > Les Antibiotiques
-I. Définition des antibiotiques
-Définition
-Qu'est-ce qu'un antibiotique ?
-Les ...
+> I. Définition des antibiotiques
+> Définition
+> Qu'est-ce qu'un antibiotique ?
+> Les ...
 
 ### Situation Patient / Cas Comptoir
 
@@ -3806,11 +3729,12 @@ I. Définition des antibiotiques
 Définition
 Qu'est-ce qu'un antibiotique ?
 Les antibiotiques sont des médicaments destinés à traiter les infections bactériennes
- Ils agissent soit en empêchant le développement des bactéries (bactériostatiques), soit en les tuant (bactéricides)
+Ils agissent soit en empêchant le développement des bactéries (bactériostatiques), soit en les tuant (bactéricides)
 Qu’est ce qu’une bactérie?
 Micro-organisme, généralement unicellulaire, caractérisé par la structure de son noyau procaryote, son mode de division cellulaire par scissiparité (ou fission binaire) et sa paroi contenant des peptidoglycanes.
 
-II. Les grandes familles d’antibiotiques : 
+II. Les grandes familles d’antibiotiques :
+
 1. β-lactamines (Pénicillines et Céphalosporines): Bactéricides
 
 Mécanisme
@@ -3824,7 +3748,7 @@ Allergies : C'est le risque le plus fréquent. Elles sont croisées avec les cé
 Autres EI
 Troubles digestifs (nausées, vomissements, diarrhées). Risque de colite pseudo-membraneuse (CPM) possible, bien qu'exceptionnel.
 Interactions
-Potentialisation de l'activité des anticoagulants coumariniques (risque hémorragique). 
+Potentialisation de l'activité des anticoagulants coumariniques (risque hémorragique).
 L'association avec le méthotrexate est déconseillée (augmentation de sa toxicité hématologique).
 Prise
 Amoxicilline: pendant ou en dehors
@@ -3832,9 +3756,7 @@ Amoxicilline+ Ac.clavulanique: après repas pour limiter les EI digestifs
 Céfuroxime axétil: pendant les repas pour une meilleure absorption
 Pénicilline V: Phénoxyméthylpénicilline: À jeun (Min. 1h avant ou 2h après le repas): la nourriture diminue l’absorption
 
-
 2. Macrolides et apparentés: Bactériostatiques
-
 
 Mécanisme
 Inhibition de la synthèse protéique bactérienne en se fixant sur la sous-unité 50S des ribosomes.
@@ -3843,20 +3765,18 @@ Azithromycine, Clarithromycine, Érythromycine (le plus ancien). Les Lincosamide
 Indications
 Infections ORL, respiratoires, cutanées, et certaines IST. Utiles en cas d'allergie à la pénicilline (ex: angine bactérienne). La Clarithromycine est utilisée dans le traitement d'Helicobacter pylori.
 Prise
-Clarithromycine:  recommandé avec les repas pour améliorer la tolérance digestive.
+Clarithromycine: recommandé avec les repas pour améliorer la tolérance digestive.
 Azithromycine, Spiramycine: Absorption généralement peu affectée.
 Érythromycine: à jeun: Absorption diminuée par la nourriture
 EI/Risques
 Généralement bien tolérés, avec des effets indésirables mineurs, principalement digestifs (nausées, vomissements, diarrhées). Risque d'allongement de l’espace QT (Érythromycine, Clarithromycine).
 Interactions
 Inhibition enzymatique (cytochrome P450 3A4) entraînant un risque important d'interactions médicamenteuses. L'Azithromycine et la Spiramycine ont un pouvoir inhibiteur moindre.
-Exp: La clarithromycine associée à l’atorvastatine peut majorer la rhabdomyolyse 
+Exp: La clarithromycine associée à l’atorvastatine peut majorer la rhabdomyolyse
 Note Lincosamides
 La Clindamycine (un lincosamide) est parmi les antibiotiques les plus impliqués dans la survenue de colites pseudo-membraneuses (CPM) graves à Clostridium difficile, nécessitant l'arrêt immédiat du traitement en cas de diarrhée.
 
-
 3. Fluoroquinolones: Bactéricides
-
 
 Mécanisme
 Inhibent le fonctionnement de l'ADN, spécifiquement par inhibition de l’ADN-gyrase bactérienne.
@@ -3873,26 +3793,22 @@ Utilisation prudente chez les patients ayant des antécédents de convulsions.
 Prise
 Absorption diminuée par les produits laitiers
 
-
-
 4. Tétracyclines (Cyclines): Bactériostatiques
-Mécanisme
-Inhibition de la synthèse protéique bactérienne en se fixant sur la sous-unité 30S des ribosomes.
-Exemples
-Doxycycline, Tétracycline
-Indications
-Infections pulmonaires atypiques, acné, maladie de Lyme, Rickettsioses, Fièvre Q. La Doxycycline est aussi utilisée pour la prophylaxie du paludisme dans les régions de forte résistance.
-EI Majeurs
-Coloration dentaire permanente : Formation de complexes calcium/cycline, causant une coloration anormale (jaune à brun) et une fragilité des dents. Contre-indiquées chez l’enfant de moins de 8 ans et chez la femme enceinte ou allaitante. Photosensibilisation : Fréquente (Doxycycline et Minocycline), nécessité d'éviter l'exposition solaire et de se protéger 
-Prise
-Doit être prise à distance des produits laitiers (lait et dérivés) ainsi que des sels de fer ou des topiques gastro-intestinaux, car les cations (Fe²⁺, Al²⁺, Ca²⁺, Mg²⁺) diminuent l'absorption digestive (formation de chélates).
-La prise doit se faire avec une quantité suffisante de liquide, loin du coucher, pour éviter les ulcérations de l'œsophage
-Interactions
-Association contre-indiquée avec les rétinoïdes (risque d’hypertension intracrânienne).
-
+   Mécanisme
+   Inhibition de la synthèse protéique bactérienne en se fixant sur la sous-unité 30S des ribosomes.
+   Exemples
+   Doxycycline, Tétracycline
+   Indications
+   Infections pulmonaires atypiques, acné, maladie de Lyme, Rickettsioses, Fièvre Q. La Doxycycline est aussi utilisée pour la prophylaxie du paludisme dans les régions de forte résistance.
+   EI Majeurs
+   Coloration dentaire permanente : Formation de complexes calcium/cycline, causant une coloration anormale (jaune à brun) et une fragilité des dents. Contre-indiquées chez l’enfant de moins de 8 ans et chez la femme enceinte ou allaitante. Photosensibilisation : Fréquente (Doxycycline et Minocycline), nécessité d'éviter l'exposition solaire et de se protéger
+   Prise
+   Doit être prise à distance des produits laitiers (lait et dérivés) ainsi que des sels de fer ou des topiques gastro-intestinaux, car les cations (Fe²⁺, Al²⁺, Ca²⁺, Mg²⁺) diminuent l'absorption digestive (formation de chélates).
+   La prise doit se faire avec une quantité suffisante de liquide, loin du coucher, pour éviter les ulcérations de l'œsophage
+   Interactions
+   Association contre-indiquée avec les rétinoïdes (risque d’hypertension intracrânienne).
 
 5. Aminosides (Aminoglycosides): Bactéricides
-
 
 Mécanisme
 Inhibition de la synthèse protéique (fixation sur la sous-unité 30S des ribosomes). Ils sont bactéricides.
@@ -3903,11 +3819,10 @@ Réservés aux infections généralement sévères. Souvent associés à une bê
 Prise
 Principalement par voie parentérale (IM, IV), car ils sont très peu absorbés par voie digestive. L’insuffisance rénale nécessite une adaptation de posologie individualisée.
 EI Majeurs
-Ototoxicité : Atteintes irréversibles de l'oreille interne, pouvant causer vertiges et altération de l’audition (cumulative). 
+Ototoxicité : Atteintes irréversibles de l'oreille interne, pouvant causer vertiges et altération de l’audition (cumulative).
 Néphrotoxicité : Touche environ 20 % des patients traités (néphropathie tubulaire proximale, généralement réversible). La Gentamicine est considérée comme la molécule la plus toxique dans cette classe.
 Précautions
 Les risques toxiques (néphro et oto) sont majorés lors de l’association avec des médicaments néphrotoxiques ou ototoxiques (ex: Amphotéricine B, certaines céphalosporines, diurétiques de l’anse).
-
 
 III. Focus sur le Microbiote et la Diarrhée Associée aux Antibiotiques (DAA) 🦠
 Impact des antibiotiques sur le microbiote
@@ -3917,7 +3832,7 @@ La DAA est définie par l’émission d’au moins trois selles très molles à 
 Les mécanismes de la DAA sont doubles :
 Une prolifération de micro-organismes pathogènes (perte de l’effet de "barrière").
 Une altération des fonctions métaboliques du microbiote.
-Facteurs de risque de DAA 
+Facteurs de risque de DAA
 Le risque de DAA augmente avec :
 La largeur du spectre de l’antibiotique.
 La durée de l’antibiothérapie (plusieurs semaines).
@@ -3940,8 +3855,7 @@ Poursuivre la prise pendant toute la durée du traitement et éventuellement que
 Efficacité
 Ils permettent de réduire la fréquence des récidives chez les patients présentant une infection à Clostridium difficile.
 
-
- IV. L’antibiorésistance et Rôle de l’équipe officinale 🛡️
+IV. L’antibiorésistance et Rôle de l’équipe officinale 🛡️
 L'antibiorésistance est la capacité des bactéries à survivre et à se multiplier en présence d'antibiotiques qui étaient auparavant efficaces pour les combattre
 Cela se produit lorsqu'une bactérie se transforme et développe des mécanismes de défense, diminuant ou annulant l'action des antibiotiques
 Cette résistance rend les infections plus difficiles à guérir, même les plus courantes
@@ -3975,11 +3889,7 @@ Buxeraud, J., & Faure, S. (2022). Les macrolides et apparentés. Actualités Pha
 Les effets indésirables des antibiotiques. (2014). Actualités Pharmaceutiques, 53(Suppl. 1), S10.
 Vernhet, A., Licznar-Fajardo, P., & Jumas-Bilak, E. (2016). Antibiorésistance, quels rôles pour le pharmacien d’officine ? Actualités Pharmaceutiques, 55(556), 37–40. https://doi.org/10.1016/j.actpha.2016.03.009
 
-
-
 ### Conseils Traitement
-
-
 
 ---
 
@@ -3993,32 +3903,32 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 
 ### Aperçu Pathologie
 
-• **.Pulicose**: **البرغوث**:Infestation par des puces hématophages 
+• **.Pulicose**: **البرغوث**:Infestation par des puces hématophages
 **-**Signes: **prurit intense**, petits **points noirs** dans le pelage,**lésions cutanées** et même la DAPP
 **-**Attention: **95%** du cycle parasitaire se déroule dans l'**Environnement**.
-• **.Poux**: **القمل**: Infestation par des insectes parasites broyeurs 
-**-**Signes: **prurit**, **irritation cutanée**, dégradation du pelage. 
+• **.Poux**: **القمل**: Infestation par des insectes parasites broyeurs
+**-**Signes: **prurit**, **irritation cutanée**, dégradation du pelage.
 **-**Les **poux adultes** et les **lentes** attachées aux poils sont visibles.
 • **.Tiques**: **القراد**: Acariens hématophages se fixant à la peau, entraînent une anémie si infestation massive.
-**-**Peuvent **transmettre** la **Maladie de Lyme** et la **Piroplasmose**. 
+**-**Peuvent **transmettre** la **Maladie de Lyme** et la **Piroplasmose**.
 • **.Aoûtats **: Acarien fréquent en fin d'été chez les animaux ayant accès à l'extérieur, causant des piqûres sans gravité particulière.
 • **.Gale des oreilles**: Infestation du conduit auditif par un acarien, surtout chez les jeunes animaux.
 **-**Signes: un **prurit auriculaire intense**, secouement de tête et un **exsudat cérumineux noirâtre**.
 • **.Gale**: Affection cutanée **contagieuse** due à Sarcoptes scabiei canis (chien) ou Notoedres cati (chat)
-**-**Signes:** prurit intense**débute à partir de la tête, lésions cutanées étendues et perte de poils. 
+**-**Signes:** prurit intense**débute à partir de la tête, lésions cutanées étendues et perte de poils.
 **-**Zoonose **transmissible à l'homme**.
 
 • **Démodécie canine**: Prolifération anormale de l'acarien Demodex canis dans les follicules pileux, fréquente chez les **chiots** (3 mois-2 ans)
-**-**Signes:  des **pertes de poils** surtout **localisées**, parfois  **généralisées** et **prurigineuses**.
+**-**Signes: des **pertes de poils** surtout **localisées**, parfois **généralisées** et **prurigineuses**.
 
 ### Questions Clés
 
-- • **Concernant l'Animal**: 
+- • **Concernant l'Animal**:
 - **-**Est-ce un **chat** ou un **chien**, quel est son âge et son poids?
 - • **-**A-t-il accès à l'**extérieur** (jardin, promenades)?
 - • **-**Est-ce le seul animal de compagnie? Si non, quels sont les autres animaux et sont-ils traités?
 - • **-Foyer**: Y a-t-il des enfants en bas âge dans le foyer qui pourraient être en contact avec l'animal traité?
-- • **En cas d'infestation**: 
+- • **En cas d'infestation**:
 - **-**Quels **signes** avez-vous remarqué (démangeaisons, rougeurs, pertes de poils, autres symptômes)?
 - • **-**Depuis combien de temps ces symptômes sont-ils présents?
 - • **-**Avez-vous vu des **puces**, des **tiques** ou d'autres parasites sur l'animal?
@@ -4026,7 +3936,7 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 - • **-**Si tiques, depuis quand les avez-vous remarquées?
 - • **-**Pour les chats, se gratte-t-il les oreilles ou y a-t-il un dépôt noir?
 - • **-T**Avez-vous déjà utilisé un traitement antiparasitaire? Si oui, lequel et avec quelle efficacité?
-- • **En Prévention**: 
+- • **En Prévention**:
 - **-**Contre quoi souhaitez-vous protéger votre animal principalement (puces, tiques, autres)?
 - • **-**Votre animal est-il exposé à des risques particuliers (contact avec d'autres animaux infestés)?
 - • **-**Quelle forme d'antiparasitaire préférez-vous (spot-on, spray, collier, shampooing)?
@@ -4037,30 +3947,30 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 - • **-Première** infestation ou infestation **sévère**
 - • **-Animaux sensibles**: Animaux très jeunes (moins de 8 semaines), âgés, gestantes, allaitantes ou malades nécessitent un avis vétérinaire avant tout traitement.
 - • **-** Présence de **symptômes généraux**: fièvre, abattement, perte d'appétit, indiquant une potentielle complication.
-- • **-** Présence de lésions cutanées **étendues** ou **purulentes**. 
-- • **-** Suspicion de **gale** en raison de sa nature contagieuse et zoonotique. 
-- • **-Inefficacité** d'un traitement antiparasitaire antérieur. 
+- • **-** Présence de lésions cutanées **étendues** ou **purulentes**.
+- • **-** Suspicion de **gale** en raison de sa nature contagieuse et zoonotique.
+- • **-Inefficacité** d'un traitement antiparasitaire antérieur.
 
 ### Traitement Principal
 
 - • **PRODUITS A CONSEILLER**
 - **-Fipronil en Spot-on**
-- **.** **Fipronil**: Acaricide et Insecticide. 
-- **.** Exemples: FRONTLINE® Spot-on Chat/Chien** et  **EFFIPRO® Spot-on**
+- **.** **Fipronil**: Acaricide et Insecticide.
+- **.** Exemples: FRONTLINE® Spot-on Chat/Chien** et **EFFIPRO® Spot-on\*\*
 - **.**Appliquer **1** pipette par animal entre les omoplates ou à la base du cou. **.**Protection contre les **puces** et les **tiques** pendant **4 semaines**.
-- • ** -Association Fipronil et Perméthrine en Spot-on**:  
+- • ** -Association Fipronil et Perméthrine en Spot-on**:
 - **.**Acaricide, Insecticide avec un effet Répulsif.
 - **.** Exemples: **FRONTLINE® TriAct Spot-on** et **EFFITIX® Spot-on**
 - **.**Pour chiens uniquement, Toxique pour les chats.
-- **.**Protection contre les puces, les tiques et effet répulsif contre les phlébotomes et moustiques pendant 3 semaines. 
+- **.**Protection contre les puces, les tiques et effet répulsif contre les phlébotomes et moustiques pendant 3 semaines.
 - • ** Fipronil en Spray**:
-- **.** **Fipronil**: Acaricide et Insecticide. 
+- **.** **Fipronil**: Acaricide et Insecticide.
 - **.** Exemples: **FRONTLINE® Spray Pompe**, **FIPROSPRAY®**, **EFFIPRO® Spray**
-- **.**Pulvériser uniformément sur tout le corps de l'animal à rebrousse-poil, en évitant les yeux. 
+- **.**Pulvériser uniformément sur tout le corps de l'animal à rebrousse-poil, en évitant les yeux.
 - • **-Deltaméthrine en Collier**:
-- **.**Deltaméthrine: Protection de **6 mois** contre les **tiques** et les **moustiques**, et de **12 mois** contre les **phlébotomes** (vecteurs de la leishmaniose). 
+- **.**Deltaméthrine: Protection de **6 mois** contre les **tiques** et les **moustiques**, et de **12 mois** contre les **phlébotomes** (vecteurs de la leishmaniose).
 - **.**Deltaméthrine: **Toxique** pour les** chats**.
-- **.**Exemple: **SCALIBOR® Collier Chien** 
+- **.**Exemple: **SCALIBOR® Collier Chien**
 
 ### Produits Associés
 
@@ -4077,7 +3987,7 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 - • **-Prévenir le léchage**: Surveiller l'animal après l'application d'un **spot-on** ou d'un **spray**; isoler l'animal traité des autres animaux du foyer si nécessaire.
 - • **-**Traitement de tous les animaux de compagnie du foyer pour éviter les recontaminations croisées.
 - • **-**Conseiller une **vermifugation régulière** de l'animal, car les puces peuvent être vectrices de parasites internes (ténias).
-- • **-**Recommander l'usage d'un **tire-tique** pour retirer les tiques de manière sûre et efficace. 
+- • **-**Recommander l'usage d'un **tire-tique** pour retirer les tiques de manière sûre et efficace.
 - • **-Vérification régulière du pelage**: Brosser attentivement l'animal, surtout après les promenades, pour détecter la présence de parasites.
 
 ### Conseils Hygiène de vie: Le Propriétaire (Custom)
@@ -4088,15 +3998,12 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 • **-**Maintenir tous les produits antiparasitaires hors de portée des enfants.
 • **-Contact post-traitement**: Éviter que les enfants jouent avec les animaux traités tant que le site d'application n'est pas **complètement sec**.
 
-
 ### Cas Comptoir (DM)
 
-• **Cas comptoir 1**: Un monsieur se présente à l'officine: «Mon chat se gratte beaucoup et j'ai vu de petits insectes noirs dans son pelage, qu’est ce que vous me conseillez comme produit?». 
+• **Cas comptoir 1**: Un monsieur se présente à l'officine: «Mon chat se gratte beaucoup et j'ai vu de petits insectes noirs dans son pelage, qu’est ce que vous me conseillez comme produit?».
 • **Cas comptoir 2**: Une jeune fille se présente à l’officine: «Je veux un produit répulsif pour protéger mon chien, aujourd’hui il est revenu de sa promenade avec des tiques accrochées à la peau.»
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -4104,7 +4011,7 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
   R: Les Poux, Les Puces, Les Tiques
 - Q: Quelle est la maladie parasitaire transmissible à l'homme?
   R: La Gale
-- Q: Quel est le parasite qui contamine énormément l'environnement de l'animal infesté? 
+- Q: Quel est le parasite qui contamine énormément l'environnement de l'animal infesté?
   R: Les Puces: On estime que 95% des puces (toutes formes comprises) se trouvent dans l'environnement de l'animal.
 - Q: Quels sont les parasites hématophages des chats et des chiens?
   R: Les Puces et Les Tiques sont hématophages: Ils se nourrissent du sang de l'animal infesté, ce qui explique l'intérêt des antiparasitaires externes sous forme de comprimés.
@@ -4119,7 +4026,7 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 - Q: Quel est la forme galénique offrant une protection de longue durée contre les parasites externes? ?
   R: Les Colliers
 - Q: Parmi les médicaments Anti parasitaires Externes, quelle est la forme galénique qui n'a pas d'effet répulsif?
-  R: Les Comprimés: n'ont pas d'effet répulsifs, ils sont principalement prescrits comme curatifs en cas d'infestation importante. 
+  R: Les Comprimés: n'ont pas d'effet répulsifs, ils sont principalement prescrits comme curatifs en cas d'infestation importante.
 
 ---
 
@@ -4129,47 +4036,47 @@ Un jeune homme se présente à l'officine et demande votre conseil: "Je veux un 
 
 ### Ordonnance
 
-- •  **Patient**: Nourrisson de 18 mois
-- •  **Motif de consultation**: Poussée d'eczéma avec plaques rouges et démangeaisons au niveau du visage
-- •  **Locapred® crème 0,1%**: 1 tube
-- •  **Posologie Locapred®**: 1 application par jour sur les lésions jusqu’à amélioration, puis 1 application 1 jour/2 pendant une semaine, puis 2 applications par semaine pendant une semaine.
-- •  **Allergus sirop 0.5mg/ml**:
-- •  **Posologie Allergus**: 2.5 ml/jour pendant une semaine.
+- • **Patient**: Nourrisson de 18 mois
+- • **Motif de consultation**: Poussée d'eczéma avec plaques rouges et démangeaisons au niveau du visage
+- • **Locapred® crème 0,1%**: 1 tube
+- • **Posologie Locapred®**: 1 application par jour sur les lésions jusqu’à amélioration, puis 1 application 1 jour/2 pendant une semaine, puis 2 applications par semaine pendant une semaine.
+- • **Allergus sirop 0.5mg/ml**:
+- • **Posologie Allergus**: 2.5 ml/jour pendant une semaine.
 
 ### Analyse de l'Ordonnance
 
-- **Objectif du traitement**: 
+- **Objectif du traitement**:
 - -Il est **symptomatique** et vise à restaurer la qualité de vie, traiter les symptômes lors des **poussées** et **prévenir les récurrences** en espaçant et réduisant leur intensité et durée.
-- **Profil du patient**: 
-- Nourrisson de 18 mois présentant une **poussée d'eczéma**. 
-- **Motif de consultation**: 
+- **Profil du patient**:
+- Nourrisson de 18 mois présentant une **poussée d'eczéma**.
+- **Motif de consultation**:
 - Vérifier s'il s'agit d'une **initiation** de traitement ou d'un **renouvellement** suite à une poussée pour adapter les conseils.
-- **Localisation**: 
+- **Localisation**:
 - Vérifier qu'elles sont les **zones atteintes**
 
 ### Conseils Traitement
 
 **Locapred® crème 0,1%**:
-- -Ce médicament est un **dermocorticoïde** d'activité modérée. 
-- -Il possède des propriétés **anti-inflammatoires**, **immunosuppressives** et **vasoconstrictrices**.
-- **Application**: 
-- -Appliquer une fois par jour, de préférence le **soir**, sur les **zones** présentant des **lésions** (plaques rouges, démangeaisons).
-- **Mode d'emploi**: 
-- -Il n'est pas nécessaire de masser ni d'appliquer une couche épaisse, **juste assez pour blanchir la lésion**.
-- **Durée**: 
-- -Le traitement doit être poursuivi jusqu'à **disparition complète** des lésions, généralement 1 à 2 semaines. Il est impératif de l'arrêter **progressivement** selon les indications de l'ordonnance pour éviter un **effet rebond**.
-- **Précautions**: 
-- -Respecter la **durée** et le **mode** d'application pour éviter les effets secondaires liés aux corticoïdes topiques (atrophie cutanée). 
-**Allergus® sirop 0.5mg/ml**:
-- -Ce médicament est un **antihistaminique**. 
-- -Aide à réduire les **démangeaisons**.
-- **Administration**: 
-- -Administrer **2.5 ml** par jour de préférence le soir, pendant une semaine.
-- **Effets indésirables**: 
-- -Peut provoquer une **somnolence**. Il est important d'observer l'enfant après l'administration.
-- **Respect de la posologie**: 
-- -Toujours respecter la dose prescrite par le médecin
 
+- -Ce médicament est un **dermocorticoïde** d'activité modérée.
+- -Il possède des propriétés **anti-inflammatoires**, **immunosuppressives** et **vasoconstrictrices**.
+- **Application**:
+- -Appliquer une fois par jour, de préférence le **soir**, sur les **zones** présentant des **lésions** (plaques rouges, démangeaisons).
+- **Mode d'emploi**:
+- -Il n'est pas nécessaire de masser ni d'appliquer une couche épaisse, **juste assez pour blanchir la lésion**.
+- **Durée**:
+- -Le traitement doit être poursuivi jusqu'à **disparition complète** des lésions, généralement 1 à 2 semaines. Il est impératif de l'arrêter **progressivement** selon les indications de l'ordonnance pour éviter un **effet rebond**.
+- **Précautions**:
+- -Respecter la **durée** et le **mode** d'application pour éviter les effets secondaires liés aux corticoïdes topiques (atrophie cutanée).
+  **Allergus® sirop 0.5mg/ml**:
+- -Ce médicament est un **antihistaminique**.
+- -Aide à réduire les **démangeaisons**.
+- **Administration**:
+- -Administrer **2.5 ml** par jour de préférence le soir, pendant une semaine.
+- **Effets indésirables**:
+- -Peut provoquer une **somnolence**. Il est important d'observer l'enfant après l'administration.
+- **Respect de la posologie**:
+- -Toujours respecter la dose prescrite par le médecin
 
 ### Flashcards (Révision)
 
@@ -4206,18 +4113,16 @@ Un patient âgé de 32 ans se présente à la pharmacie en déclarant : "Je me s
 
 ### Aperçu Pathologie
 
--**Définition:** 
-**Lésion** d'**un** ou **plusieurs** ligaments de la cheville, causée par un mouvement **forcé** (**étirement** à **rupture**).
--**Mécanisme:** 
-**Torsion** en varus équin, affectant souvent le ligament collatéral externe.
--**Symptômes** 
+-**Définition:**
+**Lésion** d'**un** ou **plusieurs** ligaments de la cheville, causée par un mouvement **forcé** (**étirement** à **rupture**). -**Mécanisme:**
+**Torsion** en varus équin, affectant souvent le ligament collatéral externe. -**Symptômes**
 Douleur, gonflement, ecchymose et difficulté à poser le pied.
 -Il existe plusieurs degrés de gravité de l'entorse:
 --**Entorse Bénigne**:
 **Simple étirement** ligamentaire, **douleur** atténuée puis **récurrente**, gonflement **sans** ecchymose. Guérison en ~**10** jours.
---**Entorse Moyenne**: 
+--**Entorse Moyenne**:
 Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout de quelques heures, douleur à l'**appui**. Guérison en **4**-**6** semaines.
---**Entorse Grave**: 
+--**Entorse Grave**:
 **Rupture complète** des ligaments, **craquement**, œdème **précoce**, **ecchymose**, **impossibilité** d'appui. Guérison sur **plusieurs mois**.
 
 ### Questions Clés
@@ -4233,7 +4138,7 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 
 ### Signaux d'Alerte (Red Flags)
 
-- -**Douleur**  intense avec **impossibilité d'appui**.
+- -**Douleur** intense avec **impossibilité d'appui**.
 - -**Traumatisme:** Craquement audible lors de l'accident.
 - -Présence d'un **hématome** significatif.
 - -Patient: **enfant** ou âgé de plus de **55** ans.
@@ -4245,18 +4150,18 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 ### Traitement Principal
 
 - **.Protocole GREC**:
-- **-Glaçage**: 
+- **-Glaçage**:
 - Appliquer pendant 20 minutes toutes les 2 heures - Réduit l'œdème et soulage la douleur.
-- **-Repos**: 
-- Arrêt de l'activité physique, éviter l'appui 
+- **-Repos**:
+- Arrêt de l'activité physique, éviter l'appui
 - L'utilisation de béquilles peut être nécessaire.
-- **-Élévation**: 
-- Surélever la jambe 
+- **-Élévation**:
+- Surélever la jambe
 - Favorise le retour veineux et limite l'œdème.
 - **-Compression**:
 - -Appliquer une contention à l'aide d'un bandage élastique (sans trop serrer pour ne pas gêner la circulation) ou d'une chevillère pour limiter le gonflement.
-- **.Paracétamol** (Antalgique Palier I) : 
-- -1 g par prise, jusqu'à 3-4 fois par jour 
+- **.Paracétamol** (Antalgique Palier I) :
+- -1 g par prise, jusqu'à 3-4 fois par jour
 - -Traitement de première intention pour la douleur.
 - **.Ibuprofène** (AINS oral) : Non systématique
 - -Action anti-inflammatoire et antalgique, pour limiter l'inflammation.
@@ -4265,16 +4170,16 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 
 ### Produits Associés
 
-- **.Gels/Pommades AINS** (Anti-inflammatoire topique): 
-- -À base d'ibuprofène ou de diclofénac 
-- -Appliquer sans masser pour soulager douleur et inflammation. 
+- **.Gels/Pommades AINS** (Anti-inflammatoire topique):
+- -À base d'ibuprofène ou de diclofénac
+- -Appliquer sans masser pour soulager douleur et inflammation.
 - **.Poche de froid**:
 - - Réduire l'inflammation et le gonflement : application de froid limite le développement de l'œdème et minimise la constitution d'un hématome
-- -Soulager la douleur 
+- -Soulager la douleur
 - -ex: Physiogel®
 - **.Chevillère simple** devant une entorse bénigne (foulure):
 - -Soulager la douleur et limiter l'œdème
-- -Stabiliser et soutenir l'articulation 
+- -Stabiliser et soutenir l'articulation
 - -Prévenir de nouvelles blessures en limitant les mouvements excessifs et les torsions
 - **.Cannes anglaises** (béquilles)
 
@@ -4294,8 +4199,6 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 - -**Limiter** la consommation d'**alcool**, susceptible d'augmenter l'inflammation.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -4329,8 +4232,6 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 > Synthèse des évolutions du Programme National de Vaccination (PNV) tunisien pour 2025, incluant l'intégration du vaccin HPV, les recommandations pour les seniors et femmes enceintes, et le rôle clé du pharmacien.
 
 ### Conseils Traitement
-
-
 
 ### Flashcards (Révision)
 
@@ -4405,8 +4306,6 @@ Déchirure **partielle**, **œdème rapide**, **ecchymose** apparaissant au bout
 
 ### Conseils Traitement
 
-
-
 ### Flashcards (Révision)
 
 - Q: Qu'est-ce que la rage?
@@ -4445,11 +4344,9 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
 ### Aperçu Pathologie
 
 -**La lombalgie aiguë, le lumbago** , est une douleur fréquente dans le **bas du dos**.
--Elle survient **souvent** de manière **brutale** suite à un **effort**, un **faux mouvement**, une **mauvaise posture**, les métiers qui nécessitent de faire de **longs trajets**…
--**La douleur** peut être **intense** et provoquer un **blocage** du bas du dos
--Elle peut **irradier** dans les **fesses** ou à la **face postérieure des cuisses**, mais généralement pas au-delà des genoux. 
--Dans la majorité des cas (neuf sur dix), **la lombalgie aiguë est bénigne** et s'améliore en **quelques jours** ou **semaines**
--**Des contractures musculaires** peuvent également être une cause de la **douleur**.
+-Elle survient **souvent** de manière **brutale** suite à un **effort**, un **faux mouvement**, une **mauvaise posture**, les métiers qui nécessitent de faire de **longs trajets**… -**La douleur** peut être **intense** et provoquer un **blocage** du bas du dos
+-Elle peut **irradier** dans les **fesses** ou à la **face postérieure des cuisses**, mais généralement pas au-delà des genoux.
+-Dans la majorité des cas (neuf sur dix), **la lombalgie aiguë est bénigne** et s'améliore en **quelques jours** ou **semaines** -**Des contractures musculaires** peuvent également être une cause de la **douleur**.
 
 ### Questions Clés
 
@@ -4482,10 +4379,10 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
 - **.1** g par prise, jusqu'à 3-4 fois par jour (max **4**g/jour)
 - **.4** heures **au minimum** entre les prises
 - **.**À privilégier en**première intention**
-- **-AINS**: **Ibuprofène** : 
-- **.200** à **400** mg par prise, **2** à **3** fois par jour, sur une courte durée (5 jours). 
+- **-AINS**: **Ibuprofène** :
+- **.200** à **400** mg par prise, **2** à **3** fois par jour, sur une courte durée (5 jours).
 - **.CI**: ulcère gastroduodénal, insuffisance rénale, cardiaque, hépatique, grossesse > 6 mois( 24Semaines d'Aménorrhée) et les interactions médicamenteuses: anticoagulants
-- **-Méphénésine**: **Myorelaxant**: 
+- **-Méphénésine**: **Myorelaxant**:
 - **.500**mg à **1**g par prise **3** fois par jour.
 - **.**Généralement sur une **courte** période (moins d'une semaine).
 - **.**À conseiller si les contractures musculaires sont **intenses**, en complément des antalgiques
@@ -4497,7 +4394,7 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
 - **.**Appliquer directement sur la zone douloureuse toutes les 12 heures, en évitant les peaux lésées.
 - **-Gels/Pommade anti-inflammatoires** :Ibuprofène ou diclofénac
 - **.**Soulagement localisé des douleurs et des contractures musculaires
-- **-Ceinture de contention lombaire** : 
+- **-Ceinture de contention lombaire** :
 - **.**Soulager la douleur, soutenir et stabiliser la région lombaire.
 - **.**Permet le maintien de l'activité, en réduisant la tension musculaire et limitant les mouvements excessifs.
 - **-Magnésium**:
@@ -4506,19 +4403,19 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
 - **-Oméga-3**
 - **.** Contribuent à réduire l'inflammation et la douleur associées à la lombalgie.
 - **-Harpagophytum**:
-- **.**Anti-inflammatoire et Antalgique. 
+- **.**Anti-inflammatoire et Antalgique.
 - **.CI**: Reflux gastro-œsophagien, Ulcère de l'estomac ou du duodénum, Calculs biliaires
 - **.**Ex: RhumatylⓇ, Dolo-softⓇ
-- **-Poche de chaud/froid**: 
+- **-Poche de chaud/froid**:
 - **.**La chaleur détend les muscles contractés, le froid soulage l'inflammation aigue.
-- **-Saule Blanc**: 
+- **-Saule Blanc**:
 - **.**Antalgiques et anti-inflammatoire.
 - **.CI**: Allergie aux dérivés salicylés. Ex: SoulagelⓇ
-- **-Curcuma**: 
+- **-Curcuma**:
 - **.**Anti-inflammatoire et antioxydant.
 - **.**Ex: Phytoflore CurcumaⓇ
-- **-Cassis**: 
-- **.**Anti-inflammatoire et diurétique. 
+- **-Cassis**:
+- **.**Anti-inflammatoire et diurétique.
 - **.**Attention: Peut interagir avec les plantes et médicaments diurétiques et présenter un risque d'hypotension. Ex: Etno-CassisⓇ
 
 ### Conseils Hygiène de Vie
@@ -4541,12 +4438,10 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
 
 ### Conseils Traitement
 
-
-
 ### Flashcards (Révision)
 
 - Q: Quelle est la définition d'un Lumbago?
-  R:  C'est une douleur musculaire au niveau du bas du dos, pouvant aller jusqu'au blocage du dos.
+  R: C'est une douleur musculaire au niveau du bas du dos, pouvant aller jusqu'au blocage du dos.
 - Q: Citez trois questions clés à poser concernant l'historique et le type de la douleur lors d'un lumbago.
   R: Depuis combien de temps la douleur est-elle présente ? Comment est-elle apparue ? Où se situe-t-elle et irradie-t-elle ?
 - Q: Citez 3 signaux d'alerte nécessitant une consultation médicale pour un lumbago
@@ -4567,4 +4462,3 @@ Une patiente de 40 ans se présente au comptoir avec une demande directe de napr
   R: Pratiquer une activité physique modérée et régulière, adopter de bonnes postures au quotidien, éviter la station assisse de façon prolongée.
 
 ---
-

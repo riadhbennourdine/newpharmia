@@ -39,7 +39,9 @@ const ConvertToClientModal: React.FC<ConvertToClientModalProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Échec de la conversion du prospect en client.');
+        throw new Error(
+          errorData.message || 'Échec de la conversion du prospect en client.',
+        );
       }
 
       alert('Prospect converti en client avec succès !');
@@ -56,10 +58,17 @@ const ConvertToClientModal: React.FC<ConvertToClientModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Convertir en Client</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">
+          Convertir en Client
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="subscriptionEndDate" className="block text-sm font-medium text-slate-700">Date de fin d'abonnement</label>
+            <label
+              htmlFor="subscriptionEndDate"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Date de fin d'abonnement
+            </label>
             <input
               type="date"
               id="subscriptionEndDate"
@@ -70,7 +79,12 @@ const ConvertToClientModal: React.FC<ConvertToClientModalProps> = ({
             />
           </div>
           <div>
-            <label htmlFor="planName" className="block text-sm font-medium text-slate-700">Nom du plan</label>
+            <label
+              htmlFor="planName"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Nom du plan
+            </label>
             <input
               type="text"
               id="planName"

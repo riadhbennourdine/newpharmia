@@ -6,7 +6,8 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 // --- Configuration ---
 const ALGOLIA_APP_ID = process.env.VITE_ALGOLIA_APP_ID || 'U8M4DQYZUH';
-const ALGOLIA_SEARCH_KEY = process.env.VITE_ALGOLIA_SEARCH_KEY || '2b79ffdfe77107245e684764280f339a';
+const ALGOLIA_SEARCH_KEY =
+  process.env.VITE_ALGOLIA_SEARCH_KEY || '2b79ffdfe77107245e684764280f339a';
 const ALGOLIA_INDEX_NAME = 'memofiches';
 
 // --- Algolia Client Initialization ---
@@ -16,18 +17,24 @@ const index = searchClient.initIndex(ALGOLIA_INDEX_NAME);
 // --- Hit Component ---
 const Hit = ({ hit }: { hit: any }) => {
   return (
-    <Link to={`/memofiche/${hit.objectID}`} className="block p-4 border-b border-slate-200 hover:bg-slate-50">
+    <Link
+      to={`/memofiche/${hit.objectID}`}
+      className="block p-4 border-b border-slate-200 hover:bg-slate-50"
+    >
       <h4 className="font-bold text-teal-700">{hit.title}</h4>
-      <p className="text-sm text-slate-600 mt-1">{hit.theme} - {hit.system}</p>
+      <p className="text-sm text-slate-600 mt-1">
+        {hit.theme} - {hit.system}
+      </p>
       {hit.keyPoints && (
         <ul className="list-disc pl-5 mt-2 text-xs text-slate-500">
-          {hit.keyPoints.slice(0, 2).map((point: string, i: number) => <li key={i}>{point}</li>)}
+          {hit.keyPoints.slice(0, 2).map((point: string, i: number) => (
+            <li key={i}>{point}</li>
+          ))}
         </ul>
       )}
     </Link>
   );
 };
-
 
 // --- Main Search Component ---
 const AlgoliaSearch = () => {
@@ -45,12 +52,13 @@ const AlgoliaSearch = () => {
     if (query.length > 1) {
       setIsLoading(true);
       searchTimeout.current = setTimeout(() => {
-        index.search(query)
+        index
+          .search(query)
           .then(({ hits }) => {
             setHits(hits);
             setIsLoading(false);
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
             setIsLoading(false);
           });
@@ -71,7 +79,7 @@ const AlgoliaSearch = () => {
     <div className="w-full max-w-2xl mx-auto my-8 relative">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon className="h-5 w-5 text-slate-400" />
+          <MagnifyingGlassIcon className="h-5 w-5 text-slate-400" />
         </div>
         <input
           type="search"
@@ -90,15 +98,15 @@ const AlgoliaSearch = () => {
       {hits.length > 0 && (
         <div className="relative mt-4 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden z-10">
           <ul className="divide-y divide-slate-200">
-            {hits.map(hit => (
+            {hits.map((hit) => (
               <li key={hit.objectID}>
                 <Hit hit={hit} />
               </li>
             ))}
           </ul>
-           <div className="p-2 bg-slate-50 text-right text-xs text-slate-400">
-              Recherche fournie par Algolia
-            </div>
+          <div className="p-2 bg-slate-50 text-right text-xs text-slate-400">
+            Recherche fournie par Algolia
+          </div>
         </div>
       )}
     </div>

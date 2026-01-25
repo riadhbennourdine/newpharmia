@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CaseStudy, User } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -16,7 +22,15 @@ interface DataContextType {
   isLoading: boolean;
   error: string | null;
   team: User[];
-  fetchFiches: (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string; }) => Promise<void>;
+  fetchFiches: (params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    theme?: string;
+    system?: string;
+    sortBy?: string;
+    status?: string;
+  }) => Promise<void>;
   getCaseStudyById: (id: string) => Promise<CaseStudy | undefined>;
   saveCaseStudy: (caseStudy: CaseStudy) => Promise<CaseStudy>;
   deleteCaseStudy: (id: string) => Promise<void>;
@@ -27,7 +41,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const DataProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [fiches, setFiches] = useState<CaseStudy[]>([]);
   const [team, setTeam] = useState<User[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -36,81 +52,109 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
   const { user, token, isAuthenticated } = useAuth(); // Moved useAuth() call here
 
-  const fetchFiches = useCallback(async (params: { page?: number; limit?: number; search?: string; theme?: string; system?: string; sortBy?: string; status?: string }) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append('page', String(params.page));
-      if (params.limit) queryParams.append('limit', String(params.limit));
-      if (params.search) queryParams.append('search', params.search);
-      if (params.theme) queryParams.append('theme', params.theme);
-      if (params.system) queryParams.append('system', params.system);
-      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-      if (params.status) queryParams.append('selectedStatus', params.status);
+  const fetchFiches = useCallback(
+    async (params: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      theme?: string;
+      system?: string;
+      sortBy?: string;
+      status?: string;
+    }) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const queryParams = new URLSearchParams();
+        if (params.page) queryParams.append('page', String(params.page));
+        if (params.limit) queryParams.append('limit', String(params.limit));
+        if (params.search) queryParams.append('search', params.search);
+        if (params.theme) queryParams.append('theme', params.theme);
+        if (params.system) queryParams.append('system', params.system);
+        if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+        if (params.status) queryParams.append('selectedStatus', params.status);
 
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`/api/memofiches?${queryParams.toString()}`, { headers });
-      if (!response.ok) throw new Error('Échec de la récupération des mémofiches.');
-      const data = await response.json();
-      setFiches(data.data);
-      setPagination(data.pagination);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const getPharmacistTeam = useCallback(async (pharmacistId: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const response = await fetch(`/api/users/pharmacists/${pharmacistId}/team`, { headers });
-      if (!response.ok) throw new Error('Échec de la récupération de l\'équipe.');
-      const data = await response.json();
-      setTeam(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
-
-
-  const getCaseStudyById = useCallback(async (id: string): Promise<CaseStudy | undefined> => {
-    try {
-      const headers: HeadersInit = {};
-      if (isAuthenticated && token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Always retrieve from API to ensure the most up-to-date version
-      const response = await fetch(`/api/memofiches/${id}`, { headers });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          throw new Error('Unauthorized');
-        } else if (response.status === 404) {
-          throw new Error('Mémofiche non trouvée.');
-        } else {
-          throw new Error('Échec de la récupération de la mémofiche.');
+        const headers: HeadersInit = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
         }
-      }
-      return await response.json();
-    } catch (err: any) {
-      console.error("getCaseStudyById: Erreur lors de la récupération de l'ID:", id, err);
 
-      return undefined;
-    }
-  }, [user, navigate, token, isAuthenticated]);
+        const response = await fetch(
+          `/api/memofiches?${queryParams.toString()}`,
+          { headers },
+        );
+        if (!response.ok)
+          throw new Error('Échec de la récupération des mémofiches.');
+        const data = await response.json();
+        setFiches(data.data);
+        setPagination(data.pagination);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user],
+  );
+
+  const getPharmacistTeam = useCallback(
+    async (pharmacistId: string) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const headers: HeadersInit = {};
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const response = await fetch(
+          `/api/users/pharmacists/${pharmacistId}/team`,
+          { headers },
+        );
+        if (!response.ok)
+          throw new Error("Échec de la récupération de l'équipe.");
+        const data = await response.json();
+        setTeam(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token],
+  );
+
+  const getCaseStudyById = useCallback(
+    async (id: string): Promise<CaseStudy | undefined> => {
+      try {
+        const headers: HeadersInit = {};
+        if (isAuthenticated && token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // Always retrieve from API to ensure the most up-to-date version
+        const response = await fetch(`/api/memofiches/${id}`, { headers });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            throw new Error('Unauthorized');
+          } else if (response.status === 404) {
+            throw new Error('Mémofiche non trouvée.');
+          } else {
+            throw new Error('Échec de la récupération de la mémofiche.');
+          }
+        }
+        return await response.json();
+      } catch (err: any) {
+        console.error(
+          "getCaseStudyById: Erreur lors de la récupération de l'ID:",
+          id,
+          err,
+        );
+
+        return undefined;
+      }
+    },
+    [user, navigate, token, isAuthenticated],
+  );
 
   const saveCaseStudy = async (caseStudy: CaseStudy): Promise<CaseStudy> => {
     const isNew = !caseStudy._id;
@@ -119,21 +163,22 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const headers: HeadersInit = { 'Content-Type': 'application/json' };
     if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     const response = await fetch(url, {
-        method,
-        headers,
-        body: JSON.stringify(caseStudy),
+      method,
+      headers,
+      body: JSON.stringify(caseStudy),
     });
 
-    if (!response.ok) throw new Error('Échec de la sauvegarde de la mémofiche.');
+    if (!response.ok)
+      throw new Error('Échec de la sauvegarde de la mémofiche.');
     const savedFiche = await response.json();
-    
+
     // Refresh the list after saving to reflect changes
     if (pagination) {
-        fetchFiches({ page: pagination.page, limit: pagination.limit });
+      fetchFiches({ page: pagination.page, limit: pagination.limit });
     }
 
     return savedFiche;
@@ -142,14 +187,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const deleteCaseStudy = async (id: string): Promise<void> => {
     const headers: HeadersInit = {};
     if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
-    const response = await fetch(`/api/memofiches/${id}`, { method: 'DELETE', headers });
-    if (!response.ok) throw new Error('Échec de la suppression de la mémofiche.');
-    
+    const response = await fetch(`/api/memofiches/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (!response.ok)
+      throw new Error('Échec de la suppression de la mémofiche.');
+
     // Refresh the list after deleting
     if (pagination) {
-        fetchFiches({ page: pagination.page, limit: pagination.limit });
+      fetchFiches({ page: pagination.page, limit: pagination.limit });
     }
   };
 
@@ -173,7 +222,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     deleteCaseStudy,
     getPharmacistTeam,
     startQuiz,
-    editCaseStudy
+    editCaseStudy,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

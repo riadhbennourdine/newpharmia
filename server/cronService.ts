@@ -12,13 +12,14 @@ export function initCronJobs() {
     try {
       const filePath = await generateKnowledgeBase();
       console.log(`[Cron] Knowledge Base generated at ${filePath}`);
-      
+
       await refreshKnowledgeBaseCache(filePath);
-      
     } catch (error) {
       console.error('[Cron] Error generating Knowledge Base:', error);
     }
   });
 
-  console.log('Cron jobs initialized: Knowledge Base generation scheduled for 03:00 AM daily.');
+  console.log(
+    'Cron jobs initialized: Knowledge Base generation scheduled for 03:00 AM daily.',
+  );
 }

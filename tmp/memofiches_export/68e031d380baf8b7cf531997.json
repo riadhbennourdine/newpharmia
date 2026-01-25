@@ -177,36 +177,21 @@
     {
       "questionType": "QCM",
       "question": "Pour des lésions d'intertrigo suintantes, quelle forme galénique d'antifongique local est la plus appropriée?",
-      "options": [
-        "Crème",
-        "Pommade",
-        "Poudre ou lotion",
-        "Gel"
-      ],
+      "options": ["Crème", "Pommade", "Poudre ou lotion", "Gel"],
       "correctAnswerIndex": 2,
       "explanation": "La mémofiche recommande les poudres ou lotions pour les lésions suintantes afin de réduire l'humidité et la macération."
     },
     {
       "questionType": "QCM",
       "question": "Quelle est la durée de traitement recommandée pour la terbinafine en cas d'intertrigo mycosique, selon la mémofiche?",
-      "options": [
-        "2-3 semaines",
-        "10 jours",
-        "5 jours",
-        "4 semaines"
-      ],
+      "options": ["2-3 semaines", "10 jours", "5 jours", "4 semaines"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche mentionne spécifiquement une durée de 10 jours pour la terbinafine, tandis que l'éconazole/ciclopirox est de 2-3 semaines."
     },
     {
       "questionType": "QCM",
       "question": "Parmi les molécules suivantes, laquelle est un imidazolé mentionné pour le traitement de l'intertrigo?",
-      "options": [
-        "Terbinafine",
-        "Ciclopirox",
-        "Éconazole",
-        "Amphotéricine B"
-      ],
+      "options": ["Terbinafine", "Ciclopirox", "Éconazole", "Amphotéricine B"],
       "correctAnswerIndex": 2,
       "explanation": "L'éconazole est cité comme un imidazolé, tandis que la terbinafine est une allylamine et le ciclopirox un dérivé de pyridone."
     },
@@ -225,40 +210,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les lésions d'intertrigo sont toujours causées par des champignons.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche indique que l'intertrigo peut être causé par des champignons (Candida, dermatophytes) OU par des bactéries."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est conseillé d'arrêter le traitement antifongique dès la disparition des symptômes pour éviter un surdosage.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche insiste sur l'importance de respecter la durée du traitement même si une amélioration est observée, pour prévenir les récidives."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un patient diabétique présentant un intertrigo doit être considéré comme un signal d'alerte nécessitant une vigilance particulière.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Le diabète est listé comme un facteur de risque et 'Patient diabétique' est un signal d'alerte dans la mémofiche."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les antibiotiques peuvent être un facteur favorisant le développement de l'intertrigo.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche mentionne les antibiotiques comme un 'Autre facteur' de risque, car ils peuvent déséquilibrer la flore cutanée et favoriser la prolifération de champignons."
     }

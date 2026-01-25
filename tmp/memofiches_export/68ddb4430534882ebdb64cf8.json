@@ -189,12 +189,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la durée maximale recommandée pour l'utilisation de crèmes topiques anesthésiques locales pour les hémorroïdes?",
-      "options": [
-        "48 heures.",
-        "4 semaines.",
-        "8 jours.",
-        "1 mois."
-      ],
+      "options": ["48 heures.", "4 semaines.", "8 jours.", "1 mois."],
       "correctAnswerIndex": 2,
       "explanation": "Les traitements topiques à base d'anesthésiques locaux doivent être utilisés sur une courte durée, spécifiquement 8 jours maximum, afin d'éviter les effets secondaires liés à une utilisation prolongée."
     },
@@ -225,40 +220,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les hémorroïdes sont généralement plus douloureuses qu'une fissure anale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Les hémorroïdes sont généralement moins douloureuses qu'une fissure anale, sauf en cas de thrombose hémorroïdaire où la douleur peut être intense."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La présence de fièvre associée aux symptômes hémorroïdaires est un signal d'alerte nécessitant une consultation médicale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. La fièvre associée aux symptômes est un signal d'alerte qui doit faire consulter un médecin pour investiguer la cause et écarter une infection ou autre complication."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un patient de 28 ans avec des symptômes persistants après 48h de traitement doit immédiatement consulter un médecin.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. La persistance des symptômes après 48 heures de traitement est un signal d'alerte, indépendamment de l'âge du patient. C'est l'un des critères pour une exploration médicale."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le prolapsus permanent et irréductible manuellement correspond à un stade 2 des hémorroïdes.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Le prolapsus permanent et irréductible manuellement correspond à un stade 4 des hémorroïdes. Le stade 2 se caractérise par un prolapsus lors de la défécation avec réintégration spontanée."
     }

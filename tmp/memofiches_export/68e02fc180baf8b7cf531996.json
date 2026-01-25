@@ -225,40 +225,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Le diagnostic de la mycose des mains est toujours réalisé par un prélèvement mycologique.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le diagnostic est 'Généralement clinique' et le prélèvement mycologique n'est effectué qu'en cas de doute, d'échec thérapeutique ou de besoin d'identification précise."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'épaississement cutané fait partie des symptômes possibles de la mycose des mains.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche liste 'épaississement cutané' parmi les symptômes possibles de la mycose des mains."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La terbinafine est un antifongique local qui s'applique une fois par jour pendant 10 jours et est disponible sans ordonnance.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Bien que la terbinafine s'applique 1x/jour pendant 10 jours, la mémofiche précise qu'elle est 'Prescrit', ce qui signifie qu'elle n'est pas disponible sans ordonnance."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'apparition de nouvelles lésions pendant un traitement antifongique local n'est pas un signal d'alerte.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'apparition de nouvelles lésions pendant le traitement est explicitement listée comme un 'Signal d'alerte' nécessitant une attention médicale."
     }

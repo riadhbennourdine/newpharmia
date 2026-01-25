@@ -191,12 +191,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la dose minimale de Proanthocyanidines de type A (PAC A) recommandée par jour pour l'action de la canneberge ?",
-      "options": [
-        "10 mg",
-        "24 mg",
-        "36 mg",
-        "50 mg"
-      ],
+      "options": ["10 mg", "24 mg", "36 mg", "50 mg"],
       "correctAnswerIndex": 2,
       "explanation": "La mémofiche indique un minimum de 36 mg de PAC A par jour pour une efficacité préventive ou d'aide au traitement."
     },
@@ -215,12 +210,7 @@
     {
       "questionType": "QCM",
       "question": "Un échec thérapeutique est suspecté si les symptômes d'une cystite persistent après combien de temps de traitement ?",
-      "options": [
-        "12 heures",
-        "24-48 heures",
-        "3 jours",
-        "1 semaine"
-      ],
+      "options": ["12 heures", "24-48 heures", "3 jours", "1 semaine"],
       "correctAnswerIndex": 1,
       "explanation": "La persistance des symptômes au-delà de 24-48 heures malgré le traitement est un signal d'alerte pour un échec thérapeutique."
     },
@@ -239,40 +229,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La pyélonéphrite est une forme de cystite plus grave qui touche les reins.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La pyélonéphrite est une infection urinaire haute et grave, touchant les reins, contrairement à la cystite qui est une infection basse de la vessie."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une cystite chez un homme est toujours considérée comme un signal d'alerte nécessitant une prise en charge particulière.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Chez l'homme, la cystite est un signal d'alerte en raison du risque de complications comme une prostatite ou une épididymite."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'hématurie (sang dans les urines) est un symptôme normal et sans gravité en cas de cystite.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'hématurie est mentionnée comme un 'signal d'alerte' dans la mémofiche, ce qui indique qu'elle doit être considérée avec attention."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La grossesse est un facteur de risque qui rend la patiente plus vulnérable en cas de cystite.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La grossesse est explicitement mentionnée comme une 'population vulnérable' en cas de cystite."
     }

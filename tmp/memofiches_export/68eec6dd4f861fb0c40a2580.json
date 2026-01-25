@@ -270,40 +270,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "L'asthme est une maladie contagieuse.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'asthme est une maladie inflammatoire chronique non contagieuse."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le pharmacien doit conseiller le patient sur la surveillance de son débit expiratoire de pointe (Peak Flow).",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Le pharmacien peut éduquer le patient sur l'importance et la technique de mesure du Peak Flow pour le suivi de son asthme à domicile."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un patient asthmatique doit arrêter son traitement de fond dès qu'il se sent mieux.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le traitement de fond doit être pris régulièrement, même en l'absence de symptômes, pour maintenir le contrôle de l'asthme et prévenir les crises. L'arrêt ne doit se faire que sur avis médical."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les antibiotiques sont le traitement de première intention pour une crise d'asthme.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les antibiotiques ne traitent pas l'asthme qui est une inflammation bronchique. Le traitement de première intention pour une crise est un bronchodilatateur de courte durée d'action. Les antibiotiques sont prescrits uniquement en cas de surinfection bactérienne avérée."
     }

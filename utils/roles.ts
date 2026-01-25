@@ -6,7 +6,9 @@ import { UserRole } from '../types';
  * @param role The user role to check.
  * @returns True if the role is PHARMACIEN or ADMIN_WEBINAR, false otherwise.
  */
-export const isPharmacienOrAdminWebinar = (role: UserRole | undefined): boolean => {
+export const isPharmacienOrAdminWebinar = (
+  role: UserRole | undefined,
+): boolean => {
   if (!role) {
     return false;
   }

@@ -241,40 +241,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les DPI sont généralement recommandés pour les nourrissons et les jeunes enfants.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Les DPI nécessitent un flux inspiratoire suffisant et une capacité de coopération que les nourrissons et jeunes enfants n'ont généralement pas. Les MDI avec chambre d'inhalation sont souvent préférés pour cette population."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le pharmacien a un rôle clé dans l'éducation du patient sur la bonne utilisation de son DPI.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. Le pharmacien est souvent le dernier professionnel de santé à voir le patient avant qu'il n'utilise son médicament et est idéalement placé pour enseigner et vérifier la technique d'inhalation."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un DPI doit être nettoyé régulièrement avec de l'eau savonneuse.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. La plupart des DPI ne doivent pas être nettoyés avec de l'eau, car l'humidité peut endommager la poudre et le mécanisme. Un nettoyage avec un chiffon sec est généralement suffisant pour l'extérieur du dispositif."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est important d'expirer complètement *dans* le DPI avant d'inspirer le médicament.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Il faut expirer complètement *loin* du DPI avant d'inspirer pour éviter d'expulser la poudre hors du dispositif et pour pouvoir prendre une inspiration profonde."
     }

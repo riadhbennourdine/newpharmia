@@ -247,20 +247,14 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La carbocistéine est le produit de choix en cas de toux chez les patients qui souffrent d'un ulcère gastro-duodénal.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La carbocistéine peut entrainer des effets indésirables gastriques type gastralgie, elle doit être évitée chez les patients ulcéreux."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La dernière prise des mucolytiques ne doit pas être au delà de 18h pour éviter les douleurs gastriques durant la nuit.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "On déconseille les prises tardives des mucolytiques pour éviter l'encombrement bronchique et les crises de toux nocturnes pouvant altérer la qualité de sommeil du patient. "
     },

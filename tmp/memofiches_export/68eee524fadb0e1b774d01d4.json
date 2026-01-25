@@ -234,40 +234,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Une demande initiale vague d'un patient permet au professionnel de fournir un conseil précis sans exploration supplémentaire.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche stipule qu'une demande vague nécessite une \"découverte structurée\" pour comprendre les besoins du patient et proposer un conseil pertinent."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le budget du patient est un facteur à considérer lors du conseil en pharmacie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche inclut le \"budget\" parmi les éléments à prendre en compte pour adapter le conseil."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La mémofiche suggère que la \"communication efficace\" est une clé pour optimiser la découverte client.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Le titre de la mémofiche est \"Optimiser la Découverte Client en Pharmacie: Les Clés d'une Communication Efficace\", ce qui le confirme."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La mémofiche détaille une pathologie spécifique de la peau sèche avec des traitements et signaux d'alerte.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La section \"Pathologie\" est explicitement marquée comme \"undefined\", et les sections \"Traitements\" et \"Signaux d'alerte\" sont vides."
     }

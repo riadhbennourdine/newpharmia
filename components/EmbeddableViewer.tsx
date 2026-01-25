@@ -4,7 +4,11 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import getAbsoluteImageUrl from '../utils/image';
 import { useResizeDetector } from 'react-resize-detector';
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon,
+  DocumentArrowDownIcon,
+} from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
 
 // Configure pdfjs worker source
@@ -18,7 +22,10 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Case 1: Raw HTML Embed Code
-  if (source && (source.trim().startsWith('<iframe') || source.trim().startsWith('<div'))) {
+  if (
+    source &&
+    (source.trim().startsWith('<iframe') || source.trim().startsWith('<div'))
+  ) {
     return (
       <div
         ref={containerRef}
@@ -47,9 +54,13 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
       // A more robust solution might require the user to provide the correct share link.
       embedUrl = baseUrl.replace('/edit', '/view') + '?embed';
     }
-    
+
     return (
-      <div ref={containerRef} className="relative w-full rounded-lg shadow-md overflow-hidden" style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
+      <div
+        ref={containerRef}
+        className="relative w-full rounded-lg shadow-md overflow-hidden"
+        style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}
+      >
         <iframe
           loading="lazy"
           className="absolute top-0 left-0 w-full h-full border-0"
@@ -63,10 +74,14 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
   }
 
   // Case 3: YouTube URL
-  if (absoluteUrl && (absoluteUrl.includes('youtube.com') || absoluteUrl.includes('youtu.be'))) {
+  if (
+    absoluteUrl &&
+    (absoluteUrl.includes('youtube.com') || absoluteUrl.includes('youtu.be'))
+  ) {
     const getYouTubeVideoId = (url: string) => {
       let videoId = '';
-      const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const youtubeRegex =
+        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
       const match = url.match(youtubeRegex);
       if (match && match[1]) {
         videoId = match[1];
@@ -77,7 +92,11 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
 
     if (videoId) {
       return (
-        <div ref={containerRef} className="relative w-full rounded-lg shadow-md overflow-hidden" style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
+        <div
+          ref={containerRef}
+          className="relative w-full rounded-lg shadow-md overflow-hidden"
+          style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}
+        >
           <iframe
             loading="lazy"
             className="absolute top-0 left-0 w-full h-full border-0"
@@ -89,16 +108,30 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
         </div>
       );
     } else {
-        return <p className="text-red-500 text-center p-4">URL YouTube invalide. Veuillez vérifier le lien.</p>;
+      return (
+        <p className="text-red-500 text-center p-4">
+          URL YouTube invalide. Veuillez vérifier le lien.
+        </p>
+      );
     }
   }
 
   // Case 4: Image URL - Check BEFORE PDF to prevent images from being proxied as PDFs
   const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
-  if (absoluteUrl && imageExtensions.some(ext => absoluteUrl.toLowerCase().endsWith(ext))) {
+  if (
+    absoluteUrl &&
+    imageExtensions.some((ext) => absoluteUrl.toLowerCase().endsWith(ext))
+  ) {
     return (
-      <div ref={containerRef} className="flex justify-center items-center w-full h-full p-4">
-        <img src={absoluteUrl} alt="Embedded Image" className="max-w-full max-h-full object-contain rounded-lg shadow-md" />
+      <div
+        ref={containerRef}
+        className="flex justify-center items-center w-full h-full p-4"
+      >
+        <img
+          src={absoluteUrl}
+          alt="Embedded Image"
+          className="max-w-full max-h-full object-contain rounded-lg shadow-md"
+        />
       </div>
     );
   }
@@ -114,14 +147,17 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
   };
 
   const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
-  const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages || 1));
+  const goToNextPage = () =>
+    setPageNumber((prev) => Math.min(prev + 1, numPages || 1));
 
   const toggleFullScreen = () => {
     const elem = containerRef.current;
     if (elem) {
       if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-          console.error(`Error attempting to enable full-screen: ${err.message} (${err.name})`);
+        elem.requestFullscreen().catch((err) => {
+          console.error(
+            `Error attempting to enable full-screen: ${err.message} (${err.name})`,
+          );
         });
       } else {
         document.exitFullscreen();
@@ -131,37 +167,57 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
 
   let fileToLoad = absoluteUrl;
   // ONLY proxy if it's explicitly a PDF and an http(s) URL
-  if (absoluteUrl && absoluteUrl.toLowerCase().endsWith('.pdf') && absoluteUrl.startsWith('http')) {
-      fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absoluteUrl)}`;
-  } else if (absoluteUrl && absoluteUrl.startsWith('http') && !absoluteUrl.toLowerCase().endsWith('.pdf')) {
-      // If it's an http(s) link but not a PDF (and not handled by other cases like YouTube, Canva, Image),
-      // we don't want to try rendering it as a PDF. Force it to trigger a "Format non supporté" message.
-      fileToLoad = ''; // This will be caught by the !fileToLoad check below.
+  if (
+    absoluteUrl &&
+    absoluteUrl.toLowerCase().endsWith('.pdf') &&
+    absoluteUrl.startsWith('http')
+  ) {
+    fileToLoad = `/api/proxy-pdf?pdfUrl=${encodeURIComponent(absoluteUrl)}`;
+  } else if (
+    absoluteUrl &&
+    absoluteUrl.startsWith('http') &&
+    !absoluteUrl.toLowerCase().endsWith('.pdf')
+  ) {
+    // If it's an http(s) link but not a PDF (and not handled by other cases like YouTube, Canva, Image),
+    // we don't want to try rendering it as a PDF. Force it to trigger a "Format non supporté" message.
+    fileToLoad = ''; // This will be caught by the !fileToLoad check below.
   }
 
-
   if (!source) {
-    return <p className="text-red-500 text-center p-4">Source invalide ou manquante.</p>;
+    return (
+      <p className="text-red-500 text-center p-4">
+        Source invalide ou manquante.
+      </p>
+    );
   }
 
   // If fileToLoad is empty here (because it was a non-PDF URL that fell through), it means it's not handled as a PDF.
   if (!fileToLoad) {
-      return <p className="text-red-500 text-center p-4">Format de fichier non supporté pour l'affichage.</p>;
+    return (
+      <p className="text-red-500 text-center p-4">
+        Format de fichier non supporté pour l'affichage.
+      </p>
+    );
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md">
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-full group bg-slate-100 rounded-lg shadow-md"
+    >
       <Document
         file={fileToLoad}
         onLoadSuccess={onDocumentLoadSuccess}
-        onLoadError={(error) => console.error('Error while loading document:', error)}
+        onLoadError={(error) =>
+          console.error('Error while loading document:', error)
+        }
         className="flex justify-center"
       >
-        <Page 
-          pageNumber={pageNumber} 
-          width={width} 
-          renderTextLayer={false} 
-          renderAnnotationLayer={false} 
+        <Page
+          pageNumber={pageNumber}
+          width={width}
+          renderTextLayer={false}
+          renderAnnotationLayer={false}
           className="max-w-full h-auto"
         />
       </Document>
@@ -203,7 +259,11 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
               className="p-1"
               title="Activer/Désactiver le plein écran"
             >
-              {document.fullscreenElement ? <ArrowsPointingInIcon className="h-5 w-5" /> : <ArrowsPointingOutIcon className="h-5 w-5" />}
+              {document.fullscreenElement ? (
+                <ArrowsPointingInIcon className="h-5 w-5" />
+              ) : (
+                <ArrowsPointingOutIcon className="h-5 w-5" />
+              )}
             </button>
           </div>
         </>

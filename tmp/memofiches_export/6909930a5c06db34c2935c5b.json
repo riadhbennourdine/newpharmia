@@ -211,40 +211,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "L'insulinorésistance est une caractéristique clé du diabète de type 2.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Oui, le diabète de type 2 est initialement caractérisé par une insulinorésistance, souvent associée à un déficit relatif de sécrétion d'insuline par le pancréas."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La metformine est contre-indiquée en cas d'insuffisance rénale sévère.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai, en raison du risque d'acidose lactique, la metformine est contre-indiquée ou nécessite une adaptation posologique en cas d'insuffisance rénale, et est formellement contre-indiquée en cas de sévérité."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les inhibiteurs de DPP-4 (gliptines) agissent en stimulant directement la sécrétion d'insuline par le pancréas.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux, les inhibiteurs de DPP-4 agissent indirectement en empêchant la dégradation des incrétines (GLP-1 et GIP), qui stimulent ensuite la sécrétion d'insuline de manière glucose-dépendante."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une alimentation riche en sucres rapides est recommandée pour un patient diabétique de type 2.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux, une alimentation équilibrée et la limitation des sucres rapides sont essentielles dans la gestion du diabète de type 2 pour maintenir une glycémie stable et prévenir les pics glycémiques."
     }

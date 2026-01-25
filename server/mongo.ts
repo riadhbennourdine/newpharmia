@@ -6,7 +6,9 @@ if (!uri) {
   // FIX: Replaced console.error and process.exit with a thrown error.
   // This is a more standard way to handle fatal configuration errors in a module,
   // stops execution, and resolves the TypeScript error regarding `process.exit`.
-  throw new Error('FATAL ERROR: MONGO_URL environment variable is not defined.\nPlease set the MONGO_URL environment variable to your MongoDB connection string.');
+  throw new Error(
+    'FATAL ERROR: MONGO_URL environment variable is not defined.\nPlease set the MONGO_URL environment variable to your MongoDB connection string.',
+  );
 }
 
 export let client: MongoClient;

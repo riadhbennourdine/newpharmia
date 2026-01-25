@@ -34,7 +34,12 @@ const ClientList = () => {
     navigate(`/admin/crm/clients/${clientId}`);
   };
 
-  const handleAddProspect = async (prospect: { email: string; firstName: string; lastName: string; companyName: string }) => {
+  const handleAddProspect = async (prospect: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    companyName: string;
+  }) => {
     try {
       const response = await fetch('/api/admin/crm/prospects', {
         method: 'POST',
@@ -66,28 +71,49 @@ const ClientList = () => {
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-100">
             <tr>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Nom</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Statut</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Equipe</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Ville</th>
-              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Nom
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Email
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Statut
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Equipe
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Ville
+              </th>
+              <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {clients.map((client) => (
-              <tr key={client._id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                <td className="py-3 px-4 text-gray-800 font-medium">{client.firstName} {client.lastName}</td>
+              <tr
+                key={client._id}
+                className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+              >
+                <td className="py-3 px-4 text-gray-800 font-medium">
+                  {client.firstName} {client.lastName}
+                </td>
                 <td className="py-3 px-4 text-gray-600">{client.email}</td>
                 <td className="py-3 px-4 text-gray-600">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${client.status === ClientStatus.ACTIVE_CLIENT ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${client.status === ClientStatus.ACTIVE_CLIENT ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                  >
                     {client.status || 'N/A'}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-gray-600">{client.teamSize}</td>
-                <td className="py-3 px-4 text-gray-600">{client.city || 'N/A'}</td>
+                <td className="py-3 px-4 text-gray-600">
+                  {client.city || 'N/A'}
+                </td>
                 <td className="py-3 px-4">
-                  <button 
+                  <button
                     onClick={() => handleViewClient(client._id)}
                     className="text-teal-600 hover:text-teal-800"
                   >
@@ -100,13 +126,13 @@ const ClientList = () => {
         </table>
       </div>
     );
-  }
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Clients Pharmaciens</h1>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
         >
@@ -114,7 +140,7 @@ const ClientList = () => {
         </button>
       </div>
       {renderClientTable()}
-      <AddProspectModal 
+      <AddProspectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddProspect={handleAddProspect}

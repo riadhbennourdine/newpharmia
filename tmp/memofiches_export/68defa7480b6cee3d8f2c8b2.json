@@ -246,40 +246,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La dysménorrhée secondaire est plus fréquente vers la trentaine.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche indique que l'apparition de la dysménorrhée secondaire est plus fréquente vers la trentaine."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Il est conseillé de prendre les AINS uniquement après plusieurs jours de douleurs pour évaluer la sévérité.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Il est conseillé de prendre les AINS dès le premier jour des règles ou dès le début des douleurs."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'Ibuprofène peut être pris sans dépasser 1200 mg par jour, avec une durée maximale de 5 jours.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche stipule une dose maximale de 1200 mg par jour pour l'Ibuprofène et une durée la plus courte possible (max 5 jours) pour les AINS en général."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Des saignements en dehors des menstruations (intercycliques) ne sont pas considérés comme un signal d'alerte.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les saignements intercycliques sont explicitement mentionnés comme un signal d'alerte dans la mémofiche."
     }

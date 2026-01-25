@@ -209,12 +209,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la durée de traitement recommandée pour un antifongique comme l'éconazole en cas de pied d'athlète?",
-      "options": [
-        "1 semaine",
-        "2 à 3 jours",
-        "2 à 3 semaines",
-        "6 mois"
-      ],
+      "options": ["1 semaine", "2 à 3 jours", "2 à 3 semaines", "6 mois"],
       "correctAnswerIndex": 2,
       "explanation": "Pour l'éconazole, le traitement est de 1 application 2 fois par jour pendant 2 à 3 semaines, même après amélioration des symptômes."
     },
@@ -233,40 +228,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les antifongiques locaux peuvent être arrêtés dès la disparition des démangeaisons et des rougeurs pour éviter une rechute.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Il est crucial de respecter la durée complète du traitement prescrit, même après l'amélioration des symptômes, pour éradiquer complètement l'infection et prévenir les rechutes."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une atteinte des ongles (onychomycose) est un signal d'alerte qui nécessite une consultation médicale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. L'onychomycose, une infection des ongles, est un signal d'alerte car elle peut être plus difficile à traiter et nécessiter une approche différente ou un traitement oral."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le pied d'athlète ne peut pas s'étendre au-delà des orteils et de la plante du pied.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Le pied d'athlète peut s'étendre aux autres orteils, à la plante du pied, et même aux ongles (onychomycose)."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les patients diabétiques atteints de pied d'athlète doivent être référés à un médecin.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. Les comorbidités comme le diabète, les maladies neurologiques ou l'artérite des membres inférieurs sont des signaux d'alerte qui justifient une consultation médicale en raison du risque accru de complications."
     }

@@ -9,7 +9,7 @@ interface PricingConfirmationModalProps {
 }
 
 const VAT_RATE = 0.19; // 19%
-const FIXED_TAX = 1.000; // 1.000 TND
+const FIXED_TAX = 1.0; // 1.000 TND
 
 const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
   planName,
@@ -25,8 +25,14 @@ const PricingConfirmationModal: React.FC<PricingConfirmationModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4 animate-fade-in-up">
-        <h3 className="text-2xl font-bold mb-4 text-gray-800">Confirmation de l'Abonnement</h3>
-        <p className="text-gray-700 mb-2">Vous avez choisi le plan <span className="font-semibold">{planName}</span> ({isAnnual ? 'Annuel' : 'Mensuel'}).</p>
+        <h3 className="text-2xl font-bold mb-4 text-gray-800">
+          Confirmation de l'Abonnement
+        </h3>
+        <p className="text-gray-700 mb-2">
+          Vous avez choisi le plan{' '}
+          <span className="font-semibold">{planName}</span> (
+          {isAnnual ? 'Annuel' : 'Mensuel'}).
+        </p>
 
         <div className="mt-6 p-4 bg-gray-50 rounded-md">
           <div className="flex justify-between py-1">

@@ -7,19 +7,24 @@ interface SendEmailOptions {
   attachment?: { content: string; name: string }[];
 }
 
-export const sendSingleEmail = async ({ to, subject, htmlContent, attachment }: SendEmailOptions) => {
+export const sendSingleEmail = async ({
+  to,
+  subject,
+  htmlContent,
+  attachment,
+}: SendEmailOptions) => {
   const BREVO_API_KEY = process.env.BREVO_API_KEY;
   const SENDER_EMAIL = process.env.SENDER_EMAIL || 'no-reply@pharmia.com';
   const SENDER_NAME = process.env.SENDER_NAME || 'PharmIA';
 
   if (!BREVO_API_KEY) {
-    console.error("BREVO_API_KEY is not set in environment variables.");
-    throw new Error("Brevo API key not configured.");
+    console.error('BREVO_API_KEY is not set in environment variables.');
+    throw new Error('Brevo API key not configured.');
   }
 
   const url = 'https://api.brevo.com/v3/smtp/email';
   const headers = {
-    'accept': 'application/json',
+    accept: 'application/json',
     'api-key': BREVO_API_KEY,
     'content-type': 'application/json',
   };
@@ -35,25 +40,31 @@ export const sendSingleEmail = async ({ to, subject, htmlContent, attachment }: 
     const response = await fetch(url, { method: 'POST', headers, body });
     let data;
     try {
-        data = await response.json();
+      data = await response.json();
     } catch (jsonError) {
-        const textResponse = await response.text();
-        console.error("Failed to parse Brevo API response as JSON. Raw response:", textResponse);
-        throw new Error(`Brevo API returned non-JSON response. Status: ${response.status}`);
+      const textResponse = await response.text();
+      console.error(
+        'Failed to parse Brevo API response as JSON. Raw response:',
+        textResponse,
+      );
+      throw new Error(
+        `Brevo API returned non-JSON response. Status: ${response.status}`,
+      );
     }
 
     if (!response.ok) {
-      console.error("Brevo API error:", response.status, data);
-      const errorMessage = (data && typeof data === 'object' && 'message' in data) 
-        ? String(data.message) 
-        : 'Failed to send email via Brevo.';
+      console.error('Brevo API error:', response.status, data);
+      const errorMessage =
+        data && typeof data === 'object' && 'message' in data
+          ? String(data.message)
+          : 'Failed to send email via Brevo.';
       throw new Error(errorMessage);
     }
 
     // console.log("Email sent successfully via Brevo:", response.status, data); // Too verbose for single emails
     return data;
   } catch (error) {
-    console.error("Error sending email via Brevo:", error);
+    console.error('Error sending email via Brevo:', error);
     if (error instanceof Error) {
       throw error;
     }
@@ -83,7 +94,7 @@ export const sendBulkEmails = async (messages: BulkEmailMessage[]) => {
     await Promise.all(sendPromises);
     console.log(`Successfully sent ${messages.length} bulk emails.`);
   } catch (error) {
-    console.error("Error in sendBulkEmails:", error);
+    console.error('Error in sendBulkEmails:', error);
     throw error;
   }
 };

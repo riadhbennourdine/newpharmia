@@ -236,30 +236,21 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La Désobstruction Rhino-Pharyngée (DRP) doit être réalisée uniquement le soir avant le coucher.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La DRP doit être réalisée aussi souvent que nécessaire, surtout avant les repas et au coucher, et non uniquement le soir."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'ibuprofène peut être utilisé de manière systématique en cas de rhume chez un enfant de plus de 3 mois.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'ibuprofène n'est recommandé qu'en cas de contre-indication au paracétamol et nécessite un avis médical en contexte infectieux en raison des risques de complications graves."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "En cas d'écoulement de l'oreille (otorrhée) chez un enfant enrhumé, il est inutile de consulter un médecin.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'otorrhée est un nouveau signe d'alerte qui nécessite un avis médical car il peut indiquer une complication comme une otite."
     },

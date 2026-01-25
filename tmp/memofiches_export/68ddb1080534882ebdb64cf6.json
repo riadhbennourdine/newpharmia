@@ -236,40 +236,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La Solution de Réhydratation Orale (SRO) doit être prise après tout autre liquide.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche indique que la SRO doit être prise 'avant tout autre liquide, précocement'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le Lopéramide est contre-indiqué en cas de diarrhée fébrile.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche mentionne que le Lopéramide est contre-indiqué en cas de diarrhée sanglante, glaireuse ou fébrile."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une diarrhée d'origine médicamenteuse (iatrogène) n'est pas considérée comme un signal d'alerte.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche liste la 'Diarrhée d'origine médicamenteuse' comme un signal d'alerte nécessitant un avis médical."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une diarrhée persistant plus de 2 jours chez un adulte est un signal d'alerte justifiant un avis médical.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche indique 'Persistance Diarrhée > 2 jours' comme un signal d'alerte."
     }

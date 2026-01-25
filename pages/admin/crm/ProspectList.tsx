@@ -9,7 +9,9 @@ const ProspectList = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProspectId, setSelectedProspectId] = useState<string | null>(null);
+  const [selectedProspectId, setSelectedProspectId] = useState<string | null>(
+    null,
+  );
   const navigate = useNavigate();
 
   const fetchProspects = async () => {
@@ -54,11 +56,18 @@ const ProspectList = () => {
     if (!searchTerm) {
       return prospects;
     }
-    return prospects.filter(prospect =>
-      `${prospect.firstName} ${prospect.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prospect.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (prospect.companyName && prospect.companyName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (prospect.city && prospect.city.toLowerCase().includes(searchTerm.toLowerCase()))
+    return prospects.filter(
+      (prospect) =>
+        `${prospect.firstName} ${prospect.lastName}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        prospect.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (prospect.companyName &&
+          prospect.companyName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())) ||
+        (prospect.city &&
+          prospect.city.toLowerCase().includes(searchTerm.toLowerCase())),
     );
   }, [prospects, searchTerm]);
 
@@ -86,29 +95,50 @@ const ProspectList = () => {
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Nom</th>
-                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
-                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Société</th>
-                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Ville</th>
-                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                  Nom
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                  Société
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                  Ville
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredProspects.map((prospect) => (
-                <tr key={prospect._id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-800 font-medium">{prospect.firstName} {prospect.lastName}</td>
+                <tr
+                  key={prospect._id}
+                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                >
+                  <td className="py-3 px-4 text-gray-800 font-medium">
+                    {prospect.firstName} {prospect.lastName}
+                  </td>
                   <td className="py-3 px-4 text-gray-600">{prospect.email}</td>
-                  <td className="py-3 px-4 text-gray-600">{prospect.companyName || 'N/A'}</td>
-                  <td className="py-3 px-4 text-gray-600">{prospect.city || 'N/A'}</td>
+                  <td className="py-3 px-4 text-gray-600">
+                    {prospect.companyName || 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-gray-600">
+                    {prospect.city || 'N/A'}
+                  </td>
                   <td className="py-3 px-4 flex space-x-2">
-                    <button 
+                    <button
                       onClick={() => handleViewClient(prospect._id)}
                       className="text-teal-600 hover:text-teal-800 text-sm"
                     >
                       Voir la fiche
                     </button>
                     <button
-                      onClick={() => handleOpenConvertModal(prospect._id as string)}
+                      onClick={() =>
+                        handleOpenConvertModal(prospect._id as string)
+                      }
                       className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
                     >
                       Convertir en Client
@@ -132,4 +162,4 @@ const ProspectList = () => {
   );
 };
 
-export default ProspectList; 
+export default ProspectList;

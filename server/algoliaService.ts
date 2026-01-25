@@ -3,20 +3,24 @@ const require = createRequire(import.meta.url);
 const algoliasearch = require('algoliasearch');
 import { MemoFiche } from '../types.js';
 
-if (!process.env.ALGOLIA_APP_ID || !process.env.ALGOLIA_WRITE_KEY || !process.env.ALGOLIA_SEARCH_KEY) {
+if (
+  !process.env.ALGOLIA_APP_ID ||
+  !process.env.ALGOLIA_WRITE_KEY ||
+  !process.env.ALGOLIA_SEARCH_KEY
+) {
   throw new Error('Algolia App ID, Search Key and Write API Key are required.');
 }
 
 // Search client (public/search operations)
 const searchClient = algoliasearch(
   process.env.ALGOLIA_APP_ID,
-  process.env.ALGOLIA_SEARCH_KEY
+  process.env.ALGOLIA_SEARCH_KEY,
 );
 
 // Admin client (index/write operations)
 const adminClient = algoliasearch(
   process.env.ALGOLIA_APP_ID,
-  process.env.ALGOLIA_WRITE_KEY
+  process.env.ALGOLIA_WRITE_KEY,
 );
 
 const index = searchClient.initIndex('memofiches');
@@ -30,12 +34,15 @@ export function extractTextFromMemoFiche(fiche: MemoFiche): string {
     if (typeof content === 'string') {
       fullText += ` ${content}`;
     } else if (Array.isArray(content)) {
-      content.forEach(item => appendContent(item));
+      content.forEach((item) => appendContent(item));
     } else if (typeof content === 'object' && content !== null) {
       if (content.value && typeof content.value === 'string') {
         fullText += ` ${content.value}`;
       }
-      if (content.content && (Array.isArray(content.content) || typeof content.content === 'string')) {
+      if (
+        content.content &&
+        (Array.isArray(content.content) || typeof content.content === 'string')
+      ) {
         appendContent(content.content);
       }
       if (content.conseils && Array.isArray(content.conseils)) {
@@ -59,27 +66,30 @@ export function extractTextFromMemoFiche(fiche: MemoFiche): string {
   appendContent(fiche.dietaryAdvice);
   appendContent(fiche.references);
 
-  fiche.memoSections?.forEach(section => {
+  fiche.memoSections?.forEach((section) => {
     fullText += ` ${section.title || ''}`;
     appendContent(section.content);
   });
-  fiche.customSections?.forEach(section => {
+  fiche.customSections?.forEach((section) => {
     fullText += ` ${section.title || ''}`;
     appendContent(section.content);
   });
-  
+
   appendContent(fiche.ordonnance);
   appendContent(fiche.analyseOrdonnance);
   appendContent(fiche.conseilsTraitement);
   appendContent(fiche.informationsMaladie);
   appendContent(fiche.conseilsHygieneDeVie);
   appendContent(fiche.conseilsAlimentaires);
-  
-  if (fiche.ventesAdditionnelles && typeof fiche.ventesAdditionnelles === 'object') {
-      appendContent((fiche.ventesAdditionnelles as any).complementsAlimentaires);
-      appendContent((fiche.ventesAdditionnelles as any).accessoires);
-      appendContent((fiche.ventesAdditionnelles as any).dispositifs);
-      appendContent((fiche.ventesAdditionnelles as any).cosmetiques);
+
+  if (
+    fiche.ventesAdditionnelles &&
+    typeof fiche.ventesAdditionnelles === 'object'
+  ) {
+    appendContent((fiche.ventesAdditionnelles as any).complementsAlimentaires);
+    appendContent((fiche.ventesAdditionnelles as any).accessoires);
+    appendContent((fiche.ventesAdditionnelles as any).dispositifs);
+    appendContent((fiche.ventesAdditionnelles as any).cosmetiques);
   }
 
   return fullText.replace(/\s+/g, ' ').trim();
@@ -91,19 +101,21 @@ export const indexMemoFiches = async (fiches: MemoFiche[]) => {
     return;
   }
 
-  const objectsToIndex = fiches.map(fiche => {
+  const objectsToIndex = fiches.map((fiche) => {
     const fullContent = extractTextFromMemoFiche(fiche);
     const truncatedContent = fullContent.substring(0, 8000); // Truncate to 8000 characters
     if (fullContent.length > 8000) {
-        console.warn(`Fiche ${fiche._id} content truncated from ${fullContent.length} to 8000 characters.`);
+      console.warn(
+        `Fiche ${fiche._id} content truncated from ${fullContent.length} to 8000 characters.`,
+      );
     }
 
     return {
-        objectID: fiche._id.toString(),
-        title: fiche.title,
-        theme: fiche.theme,
-        system: fiche.system,
-        fullContent: truncatedContent,
+      objectID: fiche._id.toString(),
+      title: fiche.title,
+      theme: fiche.theme,
+      system: fiche.system,
+      fullContent: truncatedContent,
     };
   });
 
@@ -120,7 +132,9 @@ export const indexMemoFiches = async (fiches: MemoFiche[]) => {
 export const removeMemoFicheFromIndex = async (ficheId: string) => {
   try {
     const { objectIDs } = await adminIndex.deleteObjects([ficheId]);
-    console.log(`Successfully removed memofiche with ID: ${objectIDs[0]} from index.`);
+    console.log(
+      `Successfully removed memofiche with ID: ${objectIDs[0]} from index.`,
+    );
     return objectIDs;
   } catch (error) {
     console.error('Error removing fiche from Algolia index:', error);
@@ -143,11 +157,33 @@ export const clearIndex = async () => {
  * Removes common French stop words and verbs.
  */
 function cleanQuery(query: string): string {
-  const stopWords = ['comment', 'traiter', 'le', 'la', 'les', 'de', 'du', 'des', 'un', 'une', 'pour', 'est', 'ce', 'que', 'quel', 'quels', 'quelle', 'quelles', 'dans', 'sur', 'avec'];
+  const stopWords = [
+    'comment',
+    'traiter',
+    'le',
+    'la',
+    'les',
+    'de',
+    'du',
+    'des',
+    'un',
+    'une',
+    'pour',
+    'est',
+    'ce',
+    'que',
+    'quel',
+    'quels',
+    'quelle',
+    'quelles',
+    'dans',
+    'sur',
+    'avec',
+  ];
   return query
     .toLowerCase()
     .split(/\s+/)
-    .filter(word => !stopWords.includes(word) && word.length > 1)
+    .filter((word) => !stopWords.includes(word) && word.length > 1)
     .join(' ');
 }
 
@@ -160,7 +196,7 @@ export const searchMemoFiches = async (query: string) => {
   try {
     const cleaned = cleanQuery(query);
     console.log(`[Algolia] Original: "${query}" | Cleaned: "${cleaned}"`);
-    
+
     // If the query is empty after cleaning (e.g., "Bonjour"), don't search
     if (!cleaned) return [];
 

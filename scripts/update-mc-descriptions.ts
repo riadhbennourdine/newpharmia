@@ -837,181 +837,226 @@ const masterClassMarkdown = `
 `;
 
 interface ParsedMasterClass {
-    date: Date;
-    title: string;
-    description: string;
+  date: Date;
+  title: string;
+  description: string;
 }
 
 const parseMasterClassMarkdown = (markdown: string): ParsedMasterClass[] => {
-    const masterClasses: ParsedMasterClass[] = [];
-    const lines = markdown.split('\n');
-    
-    let currentYear: number | null = null;
-    let currentMonth: number | null = null; // 0-indexed month
-    let currentDay: number | null = null;
-    let currentDate: Date | null = null;
-    let currentTitle: string | null = null;
-    let currentDescriptionLines: string[] = [];
+  const masterClasses: ParsedMasterClass[] = [];
+  const lines = markdown.split('\n');
 
-    const monthMap: { [key: string]: number } = {
-        'JANVIER': 0, 'FÉVRIER': 1, 'MARS': 2, 'AVRIL': 3, 'MAI': 4, 'JUIN': 5,
-        'JUILLET': 6, 'AOÛT': 7, 'SEPTEMBRE': 8, 'OCTOBRE': 9, 'NOVEMBRE': 10, 'DÉCEMBRE': 11
-    };
+  let currentYear: number | null = null;
+  let currentMonth: number | null = null; // 0-indexed month
+  let currentDay: number | null = null;
+  let currentDate: Date | null = null;
+  let currentTitle: string | null = null;
+  let currentDescriptionLines: string[] = [];
 
-    const flushCurrentMasterClass = () => {
-        if (currentDate && currentTitle) {
-            masterClasses.push({
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), // Ensure no time component
-                title: currentTitle,
-                description: currentDescriptionLines.join('\n').trim(),
-            });
-        }
-        currentDate = null;
-        currentTitle = null;
-        currentDescriptionLines = [];
-    };
+  const monthMap: { [key: string]: number } = {
+    JANVIER: 0,
+    FÉVRIER: 1,
+    MARS: 2,
+    AVRIL: 3,
+    MAI: 4,
+    JUIN: 5,
+    JUILLET: 6,
+    AOÛT: 7,
+    SEPTEMBRE: 8,
+    OCTOBRE: 9,
+    NOVEMBRE: 10,
+    DÉCEMBRE: 11,
+  };
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-
-        // Month heading: ### **DÉCEMBRE 2025**
-        const monthMatch = line.match(/^### \*\*(JANVIER|FÉVRIER|MARS|AVRIL|MAI|JUIN|JUILLET|AOÛT|SEPTEMBRE|OCTOBRE|NOVEMBRE|DÉCEMBRE) (\d{4})\*\*$/i);
-        if (monthMatch) {
-            flushCurrentMasterClass(); // Flush previous MC before new month
-            currentMonth = monthMap[monthMatch[1].toUpperCase()];
-            currentYear = parseInt(monthMatch[2], 10);
-            continue;
-        }
-
-        // Date heading: #### Mercredi 18 décembre 2025
-        const dateMatch = line.match(/^#### (Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche) (\d{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\d{4})( \(Reprise\))?$/i);
-        if (dateMatch) {
-            flushCurrentMasterClass(); // Flush previous MC before new date
-            currentDay = parseInt(dateMatch[2], 10);
-            const monthName = dateMatch[3].toUpperCase(); 
-            const year = parseInt(dateMatch[4], 10);
-            
-            // Adjust year if month is December and currentYear is for the next year (e.g., Dec 2025 in a block for 2026)
-            // This logic is simplified; a more robust date parser would be better.
-            // For this specific data set (Dec 2025 - Jun 2026), this is sufficient.
-            currentDate = new Date(year, monthMap[monthName], currentDay);
-            
-            // Handle cases like "Mercredi 30 avril / Mercredi 7 mai 2026"
-            // This parser assumes one date per entry, if multiple dates are present in the heading
-            // only the last one will be used. The given markdown uses single dates for each MC.
-            continue;
-        }
-
-        // Title line: - **Titre:** "Rhume, grippe, Sinusite, Angines..."
-        const titleMatch = line.match(/^- \*\*Titre:\*\* "(.*?)"$/);
-        if (titleMatch) {
-            currentTitle = titleMatch[1];
-            // Clear description lines for new MC, but keep description from previous line (Theme)
-            currentDescriptionLines = [];
-            continue;
-        }
-
-        // Description lines: capture anything after title until next MC/month/horizontal rule
-        if (currentTitle && line !== '---' && !line.startsWith('####') && !line.startsWith('###') && !line.startsWith('**⚠️ CONGÉS')) {
-            currentDescriptionLines.push(line);
-        }
+  const flushCurrentMasterClass = () => {
+    if (currentDate && currentTitle) {
+      masterClasses.push({
+        date: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate(),
+        ), // Ensure no time component
+        title: currentTitle,
+        description: currentDescriptionLines.join('\n').trim(),
+      });
     }
-    flushCurrentMasterClass(); // Flush the very last master class
+    currentDate = null;
+    currentTitle = null;
+    currentDescriptionLines = [];
+  };
 
-    return masterClasses;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // Month heading: ### **DÉCEMBRE 2025**
+    const monthMatch = line.match(
+      /^### \*\*(JANVIER|FÉVRIER|MARS|AVRIL|MAI|JUIN|JUILLET|AOÛT|SEPTEMBRE|OCTOBRE|NOVEMBRE|DÉCEMBRE) (\d{4})\*\*$/i,
+    );
+    if (monthMatch) {
+      flushCurrentMasterClass(); // Flush previous MC before new month
+      currentMonth = monthMap[monthMatch[1].toUpperCase()];
+      currentYear = parseInt(monthMatch[2], 10);
+      continue;
+    }
+
+    // Date heading: #### Mercredi 18 décembre 2025
+    const dateMatch = line.match(
+      /^#### (Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche) (\d{1,2}) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (\d{4})( \(Reprise\))?$/i,
+    );
+    if (dateMatch) {
+      flushCurrentMasterClass(); // Flush previous MC before new date
+      currentDay = parseInt(dateMatch[2], 10);
+      const monthName = dateMatch[3].toUpperCase();
+      const year = parseInt(dateMatch[4], 10);
+
+      // Adjust year if month is December and currentYear is for the next year (e.g., Dec 2025 in a block for 2026)
+      // This logic is simplified; a more robust date parser would be better.
+      // For this specific data set (Dec 2025 - Jun 2026), this is sufficient.
+      currentDate = new Date(year, monthMap[monthName], currentDay);
+
+      // Handle cases like "Mercredi 30 avril / Mercredi 7 mai 2026"
+      // This parser assumes one date per entry, if multiple dates are present in the heading
+      // only the last one will be used. The given markdown uses single dates for each MC.
+      continue;
+    }
+
+    // Title line: - **Titre:** "Rhume, grippe, Sinusite, Angines..."
+    const titleMatch = line.match(/^- \*\*Titre:\*\* "(.*?)"$/);
+    if (titleMatch) {
+      currentTitle = titleMatch[1];
+      // Clear description lines for new MC, but keep description from previous line (Theme)
+      currentDescriptionLines = [];
+      continue;
+    }
+
+    // Description lines: capture anything after title until next MC/month/horizontal rule
+    if (
+      currentTitle &&
+      line !== '---' &&
+      !line.startsWith('####') &&
+      !line.startsWith('###') &&
+      !line.startsWith('**⚠️ CONGÉS')
+    ) {
+      currentDescriptionLines.push(line);
+    }
+  }
+  flushCurrentMasterClass(); // Flush the very last master class
+
+  return masterClasses;
 };
 
 const updateMasterClassDescriptions = async () => {
-    let client: MongoClient | undefined;
-    try {
-        console.log('Connecting to MongoDB...');
-        client = await MongoClient.connect(MONGO_URL);
-        const db = client.db();
-        const webinarsCollection = db.collection<Webinar>('webinars');
+  let client: MongoClient | undefined;
+  try {
+    console.log('Connecting to MongoDB...');
+    client = await MongoClient.connect(MONGO_URL);
+    const db = client.db();
+    const webinarsCollection = db.collection<Webinar>('webinars');
 
-        console.log('Parsing Markdown content...');
-        const parsedMasterClasses = parseMasterClassMarkdown(masterClassMarkdown);
-        console.log(`Found ${parsedMasterClasses.length} MasterClasses in Markdown.`);
+    console.log('Parsing Markdown content...');
+    const parsedMasterClasses = parseMasterClassMarkdown(masterClassMarkdown);
+    console.log(
+      `Found ${parsedMasterClasses.length} MasterClasses in Markdown.`,
+    );
 
-        const existingWebinars = await webinarsCollection.find({}).project({ title: 1, date: 1, group: 1 }).toArray();
-        console.log(`Found ${existingWebinars.length} existing webinars in DB.`);
-        existingWebinars.forEach(w => console.log(`  - ${w.title} (${w.date.toLocaleDateString()}) [Group: ${w.group || 'N/A'}]`));
+    const existingWebinars = await webinarsCollection
+      .find({})
+      .project({ title: 1, date: 1, group: 1 })
+      .toArray();
+    console.log(`Found ${existingWebinars.length} existing webinars in DB.`);
+    existingWebinars.forEach((w) =>
+      console.log(
+        `  - ${w.title} (${w.date.toLocaleDateString()}) [Group: ${w.group || 'N/A'}]`,
+      ),
+    );
 
-        console.log('Fetching all existing MasterClass webinars...');
-        const existingMasterClassWebinars = await webinarsCollection.find({
-            group: WebinarGroup.MASTER_CLASS
-        }).toArray();
-        console.log(`Found ${existingMasterClassWebinars.length} existing MasterClass webinars in DB.`);
+    console.log('Fetching all existing MasterClass webinars...');
+    const existingMasterClassWebinars = await webinarsCollection
+      .find({
+        group: WebinarGroup.MASTER_CLASS,
+      })
+      .toArray();
+    console.log(
+      `Found ${existingMasterClassWebinars.length} existing MasterClass webinars in DB.`,
+    );
 
-        for (const parsedMc of parsedMasterClasses) {
-            // Find a matching webinar in memory
-            const matchedWebinar = existingMasterClassWebinars.find(webinar => {
-                const dbDate = new Date(webinar.date);
-                const parsedDate = parsedMc.date;
+    for (const parsedMc of parsedMasterClasses) {
+      // Find a matching webinar in memory
+      const matchedWebinar = existingMasterClassWebinars.find((webinar) => {
+        const dbDate = new Date(webinar.date);
+        const parsedDate = parsedMc.date;
 
-                // Compare year, month, and day
-                const dateMatches = dbDate.getFullYear() === parsedDate.getFullYear() &&
-                                   dbDate.getMonth() === parsedDate.getMonth() &&
-                                   dbDate.getDate() === parsedDate.getDate();
+        // Compare year, month, and day
+        const dateMatches =
+          dbDate.getFullYear() === parsedDate.getFullYear() &&
+          dbDate.getMonth() === parsedDate.getMonth() &&
+          dbDate.getDate() === parsedDate.getDate();
 
-                // Compare title (case-insensitive and trim whitespace for robustness)
-                const titleMatches = webinar.title.trim().toLowerCase() === parsedMc.title.trim().toLowerCase();
-                
-                return dateMatches && titleMatches;
-            });
+        // Compare title (case-insensitive and trim whitespace for robustness)
+        const titleMatches =
+          webinar.title.trim().toLowerCase() ===
+          parsedMc.title.trim().toLowerCase();
 
-            if (matchedWebinar) {
-                const result = await webinarsCollection.updateOne(
-                    { _id: matchedWebinar._id },
-                    { $set: { description: parsedMc.description } }
-                );
+        return dateMatches && titleMatches;
+      });
 
-                if (result.matchedCount > 0) {
-                    console.log(`Updated description for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()})`);
-                } else {
-                    console.warn(`Failed to update (matched but not modified) for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()})`);
-                }
-            } else {
-                console.warn(`No matching MasterClass found for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()}).`);
-                // Optional: log details of parsedMc and existing webinars for debugging
-                // console.warn('Parsed MC details:', parsedMc);
-                // console.warn('Existing MC webinars for comparison:', existingMasterClassWebinars.map(w => ({ title: w.title, date: w.date })));
-            }
+      if (matchedWebinar) {
+        const result = await webinarsCollection.updateOne(
+          { _id: matchedWebinar._id },
+          { $set: { description: parsedMc.description } },
+        );
+
+        if (result.matchedCount > 0) {
+          console.log(
+            `Updated description for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()})`,
+          );
+        } else {
+          console.warn(
+            `Failed to update (matched but not modified) for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()})`,
+          );
         }
-        console.log('MasterClass descriptions update complete.');
-
-    } catch (error) {
-        console.error('Error updating MasterClass descriptions:', error);
-    } finally {
-        if (client) {
-            await client.close();
-            console.log('MongoDB connection closed.');
-        }
+      } else {
+        console.warn(
+          `No matching MasterClass found for: "${parsedMc.title}" (${parsedMc.date.toLocaleDateString()}).`,
+        );
+        // Optional: log details of parsedMc and existing webinars for debugging
+        // console.warn('Parsed MC details:', parsedMc);
+        // console.warn('Existing MC webinars for comparison:', existingMasterClassWebinars.map(w => ({ title: w.title, date: w.date })));
+      }
     }
+    console.log('MasterClass descriptions update complete.');
+  } catch (error) {
+    console.error('Error updating MasterClass descriptions:', error);
+  } finally {
+    if (client) {
+      await client.close();
+      console.log('MongoDB connection closed.');
+    }
+  }
 };
 
 const listUniqueWebinarGroups = async () => {
-    let client: MongoClient | undefined;
-    try {
-        console.log('Connecting to MongoDB to list unique groups...');
-        client = await MongoClient.connect(MONGO_URL);
-        const db = client.db();
-        const webinarsCollection = db.collection<Webinar>('webinars');
+  let client: MongoClient | undefined;
+  try {
+    console.log('Connecting to MongoDB to list unique groups...');
+    client = await MongoClient.connect(MONGO_URL);
+    const db = client.db();
+    const webinarsCollection = db.collection<Webinar>('webinars');
 
-        const uniqueGroups = await webinarsCollection.distinct('group', {}); // Get all unique group names
-        console.log('All unique webinar groups found in database:', uniqueGroups);
-    } catch (error) {
-        console.error('Error listing unique webinar groups:', error);
-    } finally {
-        if (client) {
-            await client.close();
-            console.log('MongoDB connection closed after listing groups.');
-        }
+    const uniqueGroups = await webinarsCollection.distinct('group', {}); // Get all unique group names
+    console.log('All unique webinar groups found in database:', uniqueGroups);
+  } catch (error) {
+    console.error('Error listing unique webinar groups:', error);
+  } finally {
+    if (client) {
+      await client.close();
+      console.log('MongoDB connection closed after listing groups.');
     }
+  }
 };
 
 // Call both functions
 (async () => {
-    await listUniqueWebinarGroups();
-    await updateMasterClassDescriptions();
+  await listUniqueWebinarGroups();
+  await updateMasterClassDescriptions();
 })();

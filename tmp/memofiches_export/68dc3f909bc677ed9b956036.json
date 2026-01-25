@@ -187,12 +187,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle est la cause principale du rhume ?",
-      "options": [
-        "Bactéries",
-        "Champignons",
-        "Virus",
-        "Allergènes"
-      ],
+      "options": ["Bactéries", "Champignons", "Virus", "Allergènes"],
       "correctAnswerIndex": 2,
       "explanation": "Le rhume est une infection virale des voies respiratoires supérieures, principalement causée par des rhinovirus."
     },
@@ -259,40 +254,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La pseudoéphédrine est le produit de choix pour traiter le nez bouché.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La pseudoéphédrine permet de soulager l'obstruction nasale, mais elle est à éviter à cause de son effet vasoconstricteur expliquant ses nombreuses contre-indications."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "En période de rhume, on conseille le zinc à raison de 25mg/jour.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La posologie du zinc chez les patients présentant des symptômes de rhume est 25 à 50 mg/ jour.  "
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "En période de rhume, la dose quotidienne maximale de vitamine C est de 1 g/jour.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "En période de rhume, la posologie de vitamine C à conseiller est: 1g à 2g /jour."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les compléments alimentaires à base d'échinacée sont les produits de choix à conseiller pour stimuler l'immunité chez les personnes allergiques.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les produits à base d'échinacée sont reconnus pour leur effet immunostimulant, mais ils peuvent induire des réactions allergiques; ils doivent être donc évités chez les individus à terrain allergique."
     }

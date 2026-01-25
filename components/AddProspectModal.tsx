@@ -4,10 +4,19 @@ import { ClientStatus, UserRole } from '../../types';
 interface AddProspectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProspect: (prospect: { email: string; firstName: string; lastName: string; companyName: string }) => void;
+  onAddProspect: (prospect: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    companyName: string;
+  }) => void;
 }
 
-const AddProspectModal: React.FC<AddProspectModalProps> = ({ isOpen, onClose, onAddProspect }) => {
+const AddProspectModal: React.FC<AddProspectModalProps> = ({
+  isOpen,
+  onClose,
+  onAddProspect,
+}) => {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -65,7 +74,9 @@ const AddProspectModal: React.FC<AddProspectModalProps> = ({ isOpen, onClose, on
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Société (Pharmacie)</label>
+            <label className="block text-gray-700 mb-1">
+              Société (Pharmacie)
+            </label>
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-md"
@@ -74,8 +85,19 @@ const AddProspectModal: React.FC<AddProspectModalProps> = ({ isOpen, onClose, on
             />
           </div>
           <div className="flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Annuler</button>
-            <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded-md">Ajouter</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 rounded-md"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md"
+            >
+              Ajouter
+            </button>
           </div>
         </form>
       </div>

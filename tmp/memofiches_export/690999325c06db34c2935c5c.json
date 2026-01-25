@@ -139,12 +139,7 @@
     {
       "questionType": "QCM",
       "question": "Quelle classe de médicaments antidiabétiques agit en augmentant l'excrétion de glucose dans les urines ?",
-      "options": [
-        "Gliptines",
-        "AR GLP-1",
-        "Gliflozines",
-        "Sulfonylurées"
-      ],
+      "options": ["Gliptines", "AR GLP-1", "Gliflozines", "Sulfonylurées"],
       "correctAnswerIndex": 2,
       "explanation": "Les Gliflozines (inhibiteurs du SGLT2) bloquent la réabsorption rénale du glucose, entraînant son excrétion dans les urines."
     },
@@ -163,12 +158,7 @@
     {
       "questionType": "QCM",
       "question": "Les Gliptines agissent en inhibant quelle enzyme clé ?",
-      "options": [
-        "SGLT2",
-        "DPP-4",
-        "Glucokinase",
-        "Alpha-glucosidase"
-      ],
+      "options": ["SGLT2", "DPP-4", "Glucokinase", "Alpha-glucosidase"],
       "correctAnswerIndex": 1,
       "explanation": "Les Gliptines sont des inhibiteurs de la dipeptidyl peptidase-4 (DPP-4), qui dégrade les hormones incrétines."
     },
@@ -211,40 +201,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Les Gliflozines sont généralement contre-indiquées chez les patients présentant une insuffisance rénale sévère.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "L'efficacité des Gliflozines diminue avec la réduction de la fonction rénale et leur utilisation est souvent limitée ou contre-indiquée en cas d'insuffisance rénale sévère."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La plupart des AR GLP-1 sont administrés par voie orale.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La majorité des AR GLP-1 sont des peptides qui sont administrés par injection sous-cutanée. Seul le sémaglutide existe aussi sous forme orale, mais ce n'est pas le cas général."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les Gliptines stimulent directement la sécrétion d'insuline par le pancréas.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Les Gliptines n'agissent pas directement sur les cellules pancréatiques, mais prolongent l'action des incrétines endogènes (GLP-1 et GIP) qui, elles, stimulent la sécrétion d'insuline."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les nouveaux traitements antidiabétiques (Gliflozines, AR GLP-1, Gliptines) sont toujours utilisés en monothérapie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Ces traitements peuvent être utilisés seuls (monothérapie) ou en association avec d'autres antidiabétiques oraux ou l'insuline, selon la stratégie thérapeutique individualisée du patient."
     }

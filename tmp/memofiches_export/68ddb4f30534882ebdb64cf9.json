@@ -236,40 +236,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Un foie surchargé peut améliorer la qualité de la bile produite.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Un foie surchargé peut diminuer la production ou altérer la qualité de la bile, rendant la digestion des graisses plus difficile."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La Boldine est contre-indiquée en cas d'obstruction des voies biliaires.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. L'obstruction des voies biliaires est une contre-indication à la Boldine, tout comme une maladie du foie."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La dysphagie (difficulté à avaler) est un signal d'alerte en cas de dyspepsie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. La dysphagie fait partie des signaux d'alerte qui doivent inciter à une consultation médicale."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le Syndrome de l'Intestin Irritable (SII) est une cause aiguë de dyspepsie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. Le SII est mentionné comme une cause chronique de dyspepsie, pas une cause aiguë."
     }

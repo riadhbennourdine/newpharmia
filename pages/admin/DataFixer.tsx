@@ -29,11 +29,11 @@ const DataFixerPage = () => {
     try {
       const [brokenLinksRes, volumeFilesRes] = await Promise.all([
         fetch('/api/debug/broken-links', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }),
         fetch('/api/debug/list-volume', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       if (!brokenLinksRes.ok || !volumeFilesRes.ok) {
@@ -83,16 +83,18 @@ const DataFixerPage = () => {
         body = { paymentProofUrl: newUrl };
         break;
       case 'MemoFiche':
-         endpoint = `/api/memofiches/${currentItem.id}`;
-         // Handling nested fields for memofiches might be complex,
-         // for now, we assume simple field updates.
-         // A more robust solution might need a dedicated backend endpoint.
-         if (currentItem.field.includes('[')) {
-             alert("La mise à jour des champs de contenu complexes n'est pas encore implémentée via cet outil.");
-             setIsUpdating(false);
-             return;
-         }
-         body = { [currentItem.field]: newUrl };
+        endpoint = `/api/memofiches/${currentItem.id}`;
+        // Handling nested fields for memofiches might be complex,
+        // for now, we assume simple field updates.
+        // A more robust solution might need a dedicated backend endpoint.
+        if (currentItem.field.includes('[')) {
+          alert(
+            "La mise à jour des champs de contenu complexes n'est pas encore implémentée via cet outil.",
+          );
+          setIsUpdating(false);
+          return;
+        }
+        body = { [currentItem.field]: newUrl };
         break;
       default:
         setIsUpdating(false);
@@ -104,9 +106,9 @@ const DataFixerPage = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -116,7 +118,6 @@ const DataFixerPage = () => {
 
       // Refresh data
       await fetchData();
-
     } catch (err: any) {
       alert(`Error updating item: ${err.message}`);
     } finally {
@@ -128,13 +129,17 @@ const DataFixerPage = () => {
 
   const filteredVolumeFiles = useMemo(() => {
     if (!searchTerm) return volumeFiles;
-    return volumeFiles.filter(file =>
-      file.toLowerCase().includes(searchTerm.toLowerCase())
+    return volumeFiles.filter((file) =>
+      file.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [searchTerm, volumeFiles]);
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-64"><Spinner /></div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {
@@ -145,15 +150,29 @@ const DataFixerPage = () => {
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Outil de Réparation des Liens</h1>
       {brokenLinks.length === 0 ? (
-        <p className="text-green-600 font-semibold">✅ Aucune URL cassée n'a été trouvée. Tout est à jour !</p>
+        <p className="text-green-600 font-semibold">
+          ✅ Aucune URL cassée n'a été trouvée. Tout est à jour !
+        </p>
       ) : (
         <div className="space-y-4">
-          <p className="text-slate-700">Il y a {brokenLinks.length} lien(s) cassé(s) à réparer.</p>
+          <p className="text-slate-700">
+            Il y a {brokenLinks.length} lien(s) cassé(s) à réparer.
+          </p>
           {brokenLinks.map((item, index) => (
-            <div key={`${item.id}-${item.field}-${index}`} className="bg-white p-4 rounded-lg shadow-sm border flex justify-between items-center">
+            <div
+              key={`${item.id}-${item.field}-${index}`}
+              className="bg-white p-4 rounded-lg shadow-sm border flex justify-between items-center"
+            >
               <div>
-                <p className="font-bold text-slate-800">{item.name} <span className="text-sm font-normal text-slate-500">({item.type})</span></p>
-                <p className="text-sm text-red-600 truncate">URL Cassée: {item.brokenUrl}</p>
+                <p className="font-bold text-slate-800">
+                  {item.name}{' '}
+                  <span className="text-sm font-normal text-slate-500">
+                    ({item.type})
+                  </span>
+                </p>
+                <p className="text-sm text-red-600 truncate">
+                  URL Cassée: {item.brokenUrl}
+                </p>
               </div>
               <button
                 onClick={() => handleOpenModal(item)}
@@ -169,20 +188,25 @@ const DataFixerPage = () => {
       {isModalOpen && currentItem && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Associer un Fichier pour "{currentItem.name}"</h3>
+            <h3 className="text-xl font-bold mb-4">
+              Associer un Fichier pour "{currentItem.name}"
+            </h3>
             <input
               type="text"
               placeholder="Rechercher un fichier dans le volume..."
               className="w-full p-2 border rounded-md mb-4"
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <div className="overflow-y-auto flex-grow border rounded-md">
               <ul className="divide-y">
-                {filteredVolumeFiles.map(file => (
-                  <li key={file} className="p-2 hover:bg-teal-50 flex justify-between items-center">
+                {filteredVolumeFiles.map((file) => (
+                  <li
+                    key={file}
+                    className="p-2 hover:bg-teal-50 flex justify-between items-center"
+                  >
                     <span>{file}</span>
-                    <button 
+                    <button
                       onClick={() => handleConfirmMatch(file)}
                       disabled={isUpdating}
                       className="bg-blue-500 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-600 disabled:bg-gray-400"
@@ -193,7 +217,10 @@ const DataFixerPage = () => {
                 ))}
               </ul>
             </div>
-            <button onClick={() => setIsModalOpen(false)} className="mt-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="mt-4 bg-gray-200 text-gray-800 px-4 py-2 rounded-md"
+            >
               Annuler
             </button>
           </div>

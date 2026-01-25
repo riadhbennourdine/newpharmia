@@ -14,19 +14,21 @@ const UnsubscribePage: React.FC = () => {
       setEmail(emailFromQuery);
       handleUnsubscribe(emailFromQuery);
     } else {
-        setIsInitialCheckDone(true);
+      setIsInitialCheckDone(true);
     }
   }, [searchParams]);
 
   const handleUnsubscribe = async (emailToUnsubscribe: string) => {
     try {
-      console.log("Unsubscribing (mock):", { email: emailToUnsubscribe });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMessage(`L'adresse ${emailToUnsubscribe} a été désabonnée avec succès (simulation).`);
+      console.log('Unsubscribing (mock):', { email: emailToUnsubscribe });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setMessage(
+        `L'adresse ${emailToUnsubscribe} a été désabonnée avec succès (simulation).`,
+      );
     } catch (error) {
       setMessage('Impossible de se connecter au serveur (simulation).');
     } finally {
-        setIsInitialCheckDone(true);
+      setIsInitialCheckDone(true);
     }
   };
 
@@ -43,9 +45,9 @@ const UnsubscribePage: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg text-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Se désabonner</h1>
-        
+
         {!isInitialCheckDone ? (
-            <p className="text-gray-600">Vérification en cours...</p>
+          <p className="text-gray-600">Vérification en cours...</p>
         ) : message ? (
           <div>
             <p className="text-gray-700 mb-6">{message}</p>
@@ -58,7 +60,10 @@ const UnsubscribePage: React.FC = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <p className="text-gray-600 mb-4">Entrez votre adresse e-mail pour vous désabonner de notre newsletter.</p>
+            <p className="text-gray-600 mb-4">
+              Entrez votre adresse e-mail pour vous désabonner de notre
+              newsletter.
+            </p>
             <div className="flex flex-col gap-3">
               <input
                 type="email"

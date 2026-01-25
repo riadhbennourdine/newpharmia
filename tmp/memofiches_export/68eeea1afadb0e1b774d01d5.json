@@ -189,12 +189,7 @@
     {
       "questionType": "QCM",
       "question": "Que représente le \"B\" dans l'acronyme CAB ?",
-      "options": [
-        "Caractéristiques",
-        "Avantages",
-        "Bénéfices",
-        "Besoin"
-      ],
+      "options": ["Caractéristiques", "Avantages", "Bénéfices", "Besoin"],
       "correctAnswerIndex": 2,
       "explanation": "Dans la méthode CAB, \"B\" signifie Bénéfices, qui sont les gains personnels pour le client."
     },
@@ -225,12 +220,7 @@
     {
       "questionType": "QCM",
       "question": "Quel est l'âge de l'enfant dans le cas de la toux sèche ?",
-      "options": [
-        "1 an",
-        "2 ans",
-        "3 ans",
-        "4 ans"
-      ],
+      "options": ["1 an", "2 ans", "3 ans", "4 ans"],
       "correctAnswerIndex": 2,
       "explanation": "L'enfant a 3 ans, comme mentionné dans le Cas 2."
     },
@@ -261,40 +251,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La méthode CAB sert uniquement à vendre des produits et ne prend pas en compte les besoins du client.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La méthode CAB est conçue pour structurer l'argumentation en mettant en avant les bénéfices personnalisés, donc elle prend en compte les besoins du client."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Dans le cas de l'écran solaire, la cliente était satisfaite de la facilité d'application de son écran solaire habituel.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La cliente trouvait l'application répétée contraignante par manque de temps, elle n'était donc pas satisfaite de la facilité."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un antihistaminique antitussif peut potentiellement avoir un effet secondaire de somnolence.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Oui, les antihistaminiques de première génération, souvent utilisés comme antitussifs, peuvent avoir un effet sédatif, qui est même recherché dans le cas de la toux nocturne."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'argumentation éthique en officine implique de toujours proposer le traitement le moins cher au patient.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'argumentation éthique implique de proposer le traitement le plus adapté et pertinent pour le patient, qui n'est pas toujours le moins cher, mais qui répond au mieux à ses besoins et à sa pathologie."
     }

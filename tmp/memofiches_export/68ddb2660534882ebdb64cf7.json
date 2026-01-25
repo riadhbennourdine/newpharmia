@@ -255,40 +255,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La grossesse est un facteur de risque reconnu pour la constipation.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche mentionne explicitement la grossesse parmi les facteurs de risque de constipation."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'huile de paraffine peut être utilisée sans précaution particulière chez les patients alités.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Faux. La mémofiche indique d'éviter l'huile de paraffine chez les patients alités ou ayant un reflux en raison du risque d'inhalation."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une poussée hémorroïdaire est une contre-indication à l'utilisation des laxatifs rectaux.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. Les laxatifs rectaux sont contre-indiqués en cas de poussée hémorroïdaire ou de fissure anale."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'abus de laxatifs fait partie des facteurs comportementaux pouvant entraîner la constipation.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Vrai. La mémofiche liste l'abus de laxatifs comme un facteur comportemental de la constipation."
     }

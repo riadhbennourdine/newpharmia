@@ -214,40 +214,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "L'oxyurose est une parasitose intestinale rare chez l'enfant.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'oxyurose est décrite comme une parasitose intestinale très fréquente chez l'enfant."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "En cas d'oxyurose, seul l'enfant infecté doit être traité pour éviter la réinfestation.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Il est recommandé de traiter toute la famille vivant sous le même toit pour briser le cycle de transmission et éviter les réinfestations."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Les œufs d'oxyures éclosent dans l'estomac avant que les larves ne migrent vers l'intestin grêle.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "Selon la mémofiche, les œufs éclosent dans l'estomac et les larves migrent ensuite vers l'intestin grêle."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le Pyrantel peut causer des troubles digestifs tels que l'anorexie, les nausées et les vomissements.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche liste l'anorexie, les nausées, les vomissements, les douleurs abdominales et la diarrhée comme des effets secondaires possibles du Pyrantel."
     }

@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GoogleAIFileManager } from "@google/generative-ai/server";
-import * as fs from "fs";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleAIFileManager } from '@google/generative-ai/server';
+import * as fs from 'fs';
 
 const getApiKey = () => {
   const API_KEY = process.env.GEMINI_API_KEY;
@@ -30,11 +30,14 @@ export const uploadFileToGemini = async (path: string, mimeType: string) => {
  * @param files An array of Gemini File API objects to search within.
  * @returns The search results as a string.
  */
-export const searchInFiles = async (query: string, files: { name: string; uri: string; mimeType: string; }[]) => {
+export const searchInFiles = async (
+  query: string,
+  files: { name: string; uri: string; mimeType: string }[],
+) => {
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-  const fileParts = files.map(file => ({
+  const fileParts = files.map((file) => ({
     fileData: {
       mimeType: file.mimeType,
       fileUri: file.uri,

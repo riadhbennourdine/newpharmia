@@ -189,40 +189,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La prise des médicaments antidiabétiques pendant plusieurs années explique la survenue des complications à moyen et à long terme.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "En effet, c'est l'augmentation constante du taux de glucose dans le sang qui est responsable des lésions des petits vaisseaux sanguins, de l'accélération de l'athérosclérose et de l'altération des nerfs d'où les complications.   "
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le Diabète de Type 2 se caractérise toujours par un début brutal et des symptômes très intenses.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le Diabète de Type 2 a souvent un début insidieux, se développant progressivement sur de nombreuses années, et les symptômes peuvent être légers ou absents pendant longtemps."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Equilibrer et surveiller son alimentation et faire de l'exercice physique régulièrement peut suffire pour abaisser la glycémie .",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "L'adoption d'un mode vie sain, comprenant une alimentation équilibrée et une activité physique régulière, sont fondamentales pour la gestion du Diabète de Type 2 et peuvent souvent suffire à contrôler la glycémie dans les stades précoces."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Sinon, dans les stades les plus avancé, seuls les médicaments sont efficaces pour gérer le Diabète de Type 2 ; l'alimentation n'a qu'un rôle mineur.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "L'alimentation équilibrée est une composante essentielle et fondamentale de la gestion du Diabète de Type 2, souvent aussi importante que les médicaments, pour contrôler la glycémie et prévenir les complications."
     },

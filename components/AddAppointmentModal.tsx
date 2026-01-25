@@ -4,12 +4,24 @@ import { User } from '../../types';
 interface AddAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAppointment: (appointment: { clientId: string; clientName: string; date: string; title: string; notes: string }) => void;
+  onAddAppointment: (appointment: {
+    clientId: string;
+    clientName: string;
+    date: string;
+    title: string;
+    notes: string;
+  }) => void;
   clientId?: string;
   clientName?: string;
 }
 
-const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClose, onAddAppointment, clientId, clientName }) => {
+const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
+  isOpen,
+  onClose,
+  onAddAppointment,
+  clientId,
+  clientName,
+}) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [notes, setNotes] = useState('');
@@ -43,13 +55,13 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
 
     let finalClientName = clientName;
     if (!finalClientName) {
-        const selectedClient = clients.find(c => c._id === finalClientId);
-        if (selectedClient) {
-            finalClientName = `${selectedClient.firstName} ${selectedClient.lastName}`;
-        } else {
-            setError('Client non valide.');
-            return;
-        }
+      const selectedClient = clients.find((c) => c._id === finalClientId);
+      if (selectedClient) {
+        finalClientName = `${selectedClient.firstName} ${selectedClient.lastName}`;
+      } else {
+        setError('Client non valide.');
+        return;
+      }
     }
 
     onAddAppointment({
@@ -65,7 +77,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
     setDate('');
     setNotes('');
     if (!clientId) {
-        setSelectedClientId('');
+      setSelectedClientId('');
     }
     setError(null);
   };
@@ -79,8 +91,10 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
         <form onSubmit={handleSubmit}>
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Client / Prospect</label>
-            <select 
+            <label className="block text-gray-700 mb-1">
+              Client / Prospect
+            </label>
+            <select
               className="w-full px-3 py-2 border rounded-md bg-gray-100 disabled:cursor-not-allowed"
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
@@ -91,8 +105,10 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
                 <option value={clientId}>{clientName}</option>
               ) : (
                 <>
-                  <option value="" disabled>Sélectionnez un client</option>
-                  {clients.map(client => (
+                  <option value="" disabled>
+                    Sélectionnez un client
+                  </option>
+                  {clients.map((client) => (
                     <option key={client._id} value={client._id}>
                       {client.firstName} {client.lastName} ({client.email})
                     </option>
@@ -102,7 +118,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
             </select>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Titre du rendez-vous</label>
+            <label className="block text-gray-700 mb-1">
+              Titre du rendez-vous
+            </label>
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-md"
@@ -131,8 +149,19 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({ isOpen, onClo
             />
           </div>
           <div className="flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Annuler</button>
-            <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded-md">Planifier</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 rounded-md"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md"
+            >
+              Planifier
+            </button>
           </div>
         </form>
       </div>

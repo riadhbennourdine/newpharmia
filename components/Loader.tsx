@@ -1,17 +1,17 @@
 import React from 'react';
 
 const Loader = () => {
-    return (
-        <div className="flex justify-center items-center h-screen">
-            <div className="grid gap-2">
-                <div className="flex items-center justify-center space-x-2 animate-pulse">
-                    <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
-                    <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
-                    <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
-                </div>
-            </div>
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="grid gap-2">
+        <div className="flex items-center justify-center space-x-2 animate-pulse">
+          <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
+          <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
+          <div className="w-8 h-8 bg-teal-500 rounded-full"></div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Loader;

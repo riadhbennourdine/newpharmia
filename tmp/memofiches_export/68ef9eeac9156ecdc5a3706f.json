@@ -263,40 +263,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "Face à une objection, il faut toujours contredire le patient pour lui montrer qu'il a tort.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le réflexe recommandé est de 'Ne pas contredire immédiatement, mais plutôt accueillir son doute'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Le prix est la seule source possible d'hésitation pour un patient en pharmacie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le texte mentionne le prix, l'efficacité passée, la peur des effets secondaires et le manque d'information comme sources d'hésitation."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Une objection est toujours un signe que le patient n'est absolument pas intéressé par le produit.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le texte suggère qu'une objection est une 'opportunité d'échange' pour identifier la véritable source de l'hésitation, ce qui implique que l'intérêt peut être présent malgré l'objection."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "La gestion des objections est un moyen de valider l'expertise du professionnel de la pharmacie.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche indique explicitement : 'Une objection bien gérée (...) valide l'expertise du professionnel.'"
     }

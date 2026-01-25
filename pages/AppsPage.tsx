@@ -9,7 +9,8 @@ const AppsPage: React.FC = () => {
     {
       id: 'dermo-guide',
       title: 'DermoGuide',
-      description: 'L\'application d\'aide au triage dermatologique. Identifiez les lésions, accédez aux protocoles et lancez des simulations.',
+      description:
+        "L'application d'aide au triage dermatologique. Identifiez les lésions, accédez aux protocoles et lancez des simulations.",
       icon: '🧴',
       route: '/apps/dermo',
       status: 'BETA',
@@ -18,7 +19,8 @@ const AppsPage: React.FC = () => {
     {
       id: 'dermo-generator',
       title: 'Générateur DermoGuide',
-      description: '[OUTIL ADMIN] Créez vos fiches à partir de vos atlas grâce à l\'IA.',
+      description:
+        "[OUTIL ADMIN] Créez vos fiches à partir de vos atlas grâce à l'IA.",
       icon: '🧬',
       route: '/apps/dermoguide-generator',
       status: 'BETA',
@@ -34,7 +36,8 @@ const AppsPage: React.FC = () => {
             Apps PharmIA
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            Des outils spécialisés conçus pour simplifier votre quotidien à l'officine et sécuriser vos conseils.
+            Des outils spécialisés conçus pour simplifier votre quotidien à
+            l'officine et sécuriser vos conseils.
           </p>
         </div>
 
@@ -43,7 +46,9 @@ const AppsPage: React.FC = () => {
             <div
               key={app.id}
               className={`relative flex flex-col p-8 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group cursor-pointer ${app.status === 'COMING_SOON' ? 'opacity-75 cursor-not-allowed' : ''}`}
-              onClick={() => app.status !== 'COMING_SOON' && navigate(app.route)}
+              onClick={() =>
+                app.status !== 'COMING_SOON' && navigate(app.route)
+              }
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-4xl">{app.icon}</span>
@@ -58,19 +63,18 @@ const AppsPage: React.FC = () => {
                   </span>
                 )}
               </div>
-              
+
               <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">
                 {app.title}
               </h3>
-              
-              <p className="text-gray-600 mb-6 flex-grow">
-                {app.description}
-              </p>
+
+              <p className="text-gray-600 mb-6 flex-grow">{app.description}</p>
 
               <div className="flex items-center text-teal-600 font-semibold group-hover:translate-x-2 transition-transform duration-300">
                 {app.status !== 'COMING_SOON' ? (
                   <>
-                    Ouvrir l\'application <ArrowRightIcon className="ml-2 h-5 w-5" />
+                    Ouvrir l\'application{' '}
+                    <ArrowRightIcon className="ml-2 h-5 w-5" />
                   </>
                 ) : (
                   <span className="text-gray-400">En développement...</span>

@@ -243,40 +243,28 @@
     {
       "questionType": "VRAI_FAUX",
       "question": "La mémofiche suggère qu'un client doit attendre que l'équipe soit totalement libre avant de se sentir pris en charge.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le texte indique qu'il est crucial qu'il se sente pris en charge 'dès son entrée', même si l'équipe est 'déjà en contact avec un autre patient'."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'accueil optimal en officine ne concerne que les clients ayant une ordonnance.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "La mémofiche mentionne un client 'avec une ordonnance à la main, ou juste pour un conseil', indiquant que l'accueil concerne tous les types de besoins."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "Un simple contact visuel peut suffire à mettre un client en confiance dès son arrivée.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 0,
       "explanation": "La mémofiche implique que se sentir 'vu, reconnu et pris en charge, sans même avoir prononcé un mot' est crucial, ce qui peut être réalisé par un contact visuel ou un signe non verbal."
     },
     {
       "questionType": "VRAI_FAUX",
       "question": "L'objectif de la fidélisation client est secondaire par rapport à la délivrance des médicaments.",
-      "options": [
-        "Vrai",
-        "Faux"
-      ],
+      "options": ["Vrai", "Faux"],
       "correctAnswerIndex": 1,
       "explanation": "Le titre 'L'Accueil Optimal en Officine : Clé de la Relation Client et de la Fidélisation' positionne la fidélisation comme un objectif clé, aussi important que la délivrance."
     }
