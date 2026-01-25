@@ -487,27 +487,26 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
       const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
       const learningTools = await generateLearningTools(draft);
 
-      setCaseStudy((prevCaseStudy) => ({
-        ...prevCaseStudy, // Keep existing manual fields
-        ...draft,
-        ...learningTools,
-        _id: prevCaseStudy._id,
-        id: prevCaseStudy.id,
-        type: memoFicheType,
-        status: MemoFicheStatus.DRAFT,
-        theme: draft.theme || currentTheme,
-        system: draft.system || currentSystem,
-        coverImageUrl: draft.coverImageUrl || prevCaseStudy.coverImageUrl,
-        youtubeLinks: draft.youtubeLinks || prevCaseStudy.youtubeLinks,
-        sourceText: aiPromptInput, // Store the AI prompt as source text
-        flashcards: learningTools.flashcards || [],
-        glossary: learningTools.glossary || [],
-        quiz: learningTools.quiz || [],
-        // Preserve manual fields from the current caseStudy
-        youtubeExplainerUrl: prevCaseStudy.youtubeExplainerUrl,
-        infographicImageUrl: prevCaseStudy.infographicImageUrl,
-        pdfSlideshowUrl: prevCaseStudy.pdfSlideshowUrl,
-      }));
+      setCaseStudy((prevCaseStudy) => {
+          const newCaseStudy = {
+              // Base properties to preserve
+              _id: prevCaseStudy._id,
+              id: prevCaseStudy.id,
+              type: memoFicheType,
+              title: draft.title || aiPromptInput, // Use AI title or the input prompt
+              shortDescription: draft.shortDescription || '',
+              theme: draft.theme || prevCaseStudy.theme,
+              system: draft.system || prevCaseStudy.system,
+              status: MemoFicheStatus.DRAFT,
+              sourceText: aiPromptInput,
+              
+              // The generated content itself
+              ...draft,
+              ...learningTools,
+          };
+          // Ensure the final object is 'safe' and has all required arrays initialized
+          return createSafeCaseStudy(newCaseStudy as CaseStudy);
+      });
 
       setIsGenModalOpen(false);
       setAiPromptInput(''); // Clear prompt input
