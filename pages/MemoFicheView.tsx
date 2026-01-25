@@ -558,17 +558,30 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
           { id: "references", title: "Références bibliographiques", icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
         ];
         return content;
+      } else if (caseStudy.type === 'dermocosmetique') {
+        const sections = [
+            { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation },
+            { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', data: caseStudy.keyQuestions },
+            { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview },
+            { id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"},
+        ];
+        return sections.map((section, index) => ({
+            ...section,
+            icon: <img src={getAbsoluteImageUrl(getIconUrl(section.id))} className="h-6 w-6 mr-3" alt={section.title} />,
+            content: renderContentWithKeywords(section.data, section.isAlert),
+            startOpen: index === 0,
+        }));
       }
   
       const mainSections = [
-        { id: 'patientSituation', title: 'Cas comptoir', icon: <img src={getAbsoluteImageUrl(getIconUrl('patientSituation'))} className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
-        { id: 'keyQuestions', title: 'Questions clés à poser', icon: <img src={getAbsoluteImageUrl(getIconUrl('keyQuestions'))} className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
-        { id: 'pathologyOverview', title: "Aperçu pathologie", icon: <img src={getAbsoluteImageUrl(getIconUrl('pathologyOverview'))} className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : caseStudy.pathologyOverview?.content, isAlert: false },
-        { id: 'redFlags', title: "Signaux d'alerte", icon: <img src={getAbsoluteImageUrl(getIconUrl('redFlags'))} className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, data: caseStudy.redFlags, isAlert: true },
-        { id: 'mainTreatment', title: 'Traitement principal', icon: <img src={getAbsoluteImageUrl(getIconUrl('mainTreatment'))} className="h-6 w-6 mr-3" alt="Traitement principal" />, data: (caseStudy.mainTreatment && caseStudy.mainTreatment.length > 0) ? caseStudy.mainTreatment : caseStudy.recommendations?.mainTreatment, isAlert: false },
-        { id: 'associatedProducts', title: 'Produits associés', icon: <img src={getAbsoluteImageUrl(getIconUrl('associatedProducts'))} className="h-6 w-6 mr-3" alt="Produits associés" />, data: (caseStudy.associatedProducts && caseStudy.associatedProducts.length > 0) ? caseStudy.associatedProducts : caseStudy.recommendations?.associatedProducts, isAlert: false },
-        { id: 'lifestyleAdvice', title: 'Hygiène de vie', icon: <img src={getAbsoluteImageUrl(getIconUrl('lifestyleAdvice'))} className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: (caseStudy.lifestyleAdvice && caseStudy.lifestyleAdvice.length > 0) ? caseStudy.lifestyleAdvice : caseStudy.recommendations?.lifestyleAdvice, isAlert: false },
-        { id: 'dietaryAdvice', title: 'Conseils alimentaires', icon: <img src={getAbsoluteImageUrl(getIconUrl('dietaryAdvice'))} className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: (caseStudy.dietaryAdvice && caseStudy.dietaryAdvice.length > 0) ? caseStudy.dietaryAdvice : caseStudy.recommendations?.dietaryAdvice, isAlert: false },
+        { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', icon: <img src={getAbsoluteImageUrl(getIconUrl('patientSituation'))} className="h-6 w-6 mr-3" alt="Cas comptoir" />, data: typeof caseStudy.patientSituation === 'string' ? caseStudy.patientSituation : caseStudy.patientSituation?.content, isAlert: false },
+        { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', icon: <img src={getAbsoluteImageUrl(getIconUrl('keyQuestions'))} className="h-6 w-6 mr-3" alt="Questions clés" />, data: caseStudy.keyQuestions, isAlert: false },
+        { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || "Aperçu pathologie", icon: <img src={getAbsoluteImageUrl(getIconUrl('pathologyOverview'))} className="h-6 w-6 mr-3" alt="Aperçu pathologie" />, data: typeof caseStudy.pathologyOverview === 'string' ? caseStudy.pathologyOverview : caseStudy.pathologyOverview?.content, isAlert: false },
+        { id: 'redFlags', title: caseStudy.redFlagsTitle || "Signaux d'alerte", icon: <img src={getAbsoluteImageUrl(getIconUrl('redFlags'))} className="h-6 w-6 mr-3" alt="Signaux d'alerte" />, data: caseStudy.redFlags, isAlert: true },
+        { id: 'mainTreatment', title: caseStudy.mainTreatmentTitle || 'Traitement principal', icon: <img src={getAbsoluteImageUrl(getIconUrl('mainTreatment'))} className="h-6 w-6 mr-3" alt="Traitement principal" />, data: (caseStudy.mainTreatment && caseStudy.mainTreatment.length > 0) ? caseStudy.mainTreatment : caseStudy.recommendations?.mainTreatment, isAlert: false },
+        { id: 'associatedProducts', title: caseStudy.associatedProductsTitle || 'Produits associés', icon: <img src={getAbsoluteImageUrl(getIconUrl('associatedProducts'))} className="h-6 w-6 mr-3" alt="Produits associés" />, data: (caseStudy.associatedProducts && caseStudy.associatedProducts.length > 0) ? caseStudy.associatedProducts : caseStudy.recommendations?.associatedProducts, isAlert: false },
+        { id: 'lifestyleAdvice', title: caseStudy.lifestyleAdviceTitle || 'Hygiène de vie', icon: <img src={getAbsoluteImageUrl(getIconUrl('lifestyleAdvice'))} className="h-6 w-6 mr-3" alt="Hygiène de vie" />, data: (caseStudy.lifestyleAdvice && caseStudy.lifestyleAdvice.length > 0) ? caseStudy.lifestyleAdvice : caseStudy.recommendations?.lifestyleAdvice, isAlert: false },
+        { id: 'dietaryAdvice', title: caseStudy.dietaryAdviceTitle || 'Conseils alimentaires', icon: <img src={getAbsoluteImageUrl(getIconUrl('dietaryAdvice'))} className="h-6 w-6 mr-3" alt="Conseils alimentaires" />, data: (caseStudy.dietaryAdvice && caseStudy.dietaryAdvice.length > 0) ? caseStudy.dietaryAdvice : caseStudy.recommendations?.dietaryAdvice, isAlert: false },
       ];
   
     const memoSectionsForDisplay = (caseStudy.memoSections || [])
