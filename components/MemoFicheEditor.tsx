@@ -27,6 +27,7 @@ import ImageUploadModal from './ImageUploadModal';
 import { buildAIPrompt } from '../utils/aiPromptBuilder'; // Import AI prompt builder
 import {
   generateCaseStudyDraft,
+  generateDermoCaseStudy,
   generateLearningTools,
 } from '../services/geminiService'; // Import AI services
 
@@ -471,24 +472,30 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
     setAiGenerationError(null);
 
     try {
-      const memoFicheType = caseStudy.type || 'maladie'; // Use current type
+      const memoFicheType = caseStudy.type || 'maladie';
       const currentTheme = caseStudy.theme || TOPIC_CATEGORIES[0].topics[0];
       const currentSystem = caseStudy.system || TOPIC_CATEGORIES[1].topics[0];
 
       const aiPrompt = buildAIPrompt(
         memoFicheType,
         aiPromptInput,
-        currentTheme, // selectedTheme
-        currentSystem, // selectedSystem
-        currentTheme, // pharmaTheme (re-using currentTheme for simplicity, adjust if specific pharmaTheme logic is needed)
-        currentSystem, // pharmaPathology (re-using currentSystem for simplicity, adjust if specific pharmaPathology logic is needed)
+        currentTheme,
+        currentSystem,
+        currentTheme,
+        currentSystem,
       );
 
-      const draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
+      let draft: Partial<CaseStudy>;
+      if (memoFicheType === 'dermocosmetique') {
+        draft = await generateDermoCaseStudy(aiPrompt);
+      } else {
+        draft = await generateCaseStudyDraft(aiPrompt, memoFicheType);
+      }
+      
       const learningTools = await generateLearningTools(draft);
 
       setCaseStudy((prevCaseStudy) => ({
-        ...prevCaseStudy, // Keep existing manual fields
+        ...prevCaseStudy,
         ...draft,
         ...learningTools,
         _id: prevCaseStudy._id,
@@ -499,18 +506,17 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
         system: draft.system || currentSystem,
         coverImageUrl: draft.coverImageUrl || prevCaseStudy.coverImageUrl,
         youtubeLinks: draft.youtubeLinks || prevCaseStudy.youtubeLinks,
-        sourceText: aiPromptInput, // Store the AI prompt as source text
+        sourceText: aiPromptInput,
         flashcards: learningTools.flashcards || [],
         glossary: learningTools.glossary || [],
         quiz: learningTools.quiz || [],
-        // Preserve manual fields from the current caseStudy
         youtubeExplainerUrl: prevCaseStudy.youtubeExplainerUrl,
         infographicImageUrl: prevCaseStudy.infographicImageUrl,
         pdfSlideshowUrl: prevCaseStudy.pdfSlideshowUrl,
       }));
 
       setIsGenModalOpen(false);
-      setAiPromptInput(''); // Clear prompt input
+      setAiPromptInput('');
     } catch (error) {
       console.error('Error generating AI memo fiche:', error);
       setAiGenerationError(
