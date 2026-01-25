@@ -532,7 +532,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
 };
   
       const memoContent = useMemo(() => {
-      if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
+      if (caseStudy.type === 'savoir') {
         // For these types, content can be in memoSections (new) or customSections (legacy).
         const memoSections = (caseStudy.memoSections || [])
             .filter(section => !isMemoFicheSectionContentEmpty(section.content))
