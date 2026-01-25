@@ -533,19 +533,47 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
   
       const memoContent = useMemo(() => {
       if (caseStudy.type === 'savoir' || caseStudy.type === 'pharmacologie') {
-        const content = (caseStudy.memoSections || [])
-            .filter(section => !isMemoFicheSectionContentEmpty(section.content)) // Filter out empty memo sections
+        // For these types, the main content is within memoSections.
+        const sectionsToDisplay = (caseStudy.memoSections || [])
+            .filter(section => !isMemoFicheSectionContentEmpty(section.content))
             .map((section, index) => ({
-          id: section.id || `memoSection-${index}`,
-          title: section.title,
-          icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-teal-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
-          content: renderContentWithKeywords(section.content),
-          startOpen: index === 0,
+                id: section.id || `memoSection-${index}`,
+                title: section.title,
+                icon: <div className="flex items-center justify-center h-6 w-6 mr-3 bg-purple-600 text-white rounded-full font-bold text-sm">{index + 1}</div>,
+                data: section.content,
+                isMemoSection: true,
+            }));
+
+        // Add references if they exist and are not already in another section
+        if (!sectionsToDisplay.some(s => s.id === 'references') && caseStudy.references && caseStudy.references.length > 0) {
+            sectionsToDisplay.push({ 
+                id: "references", 
+                title: "Références bibliographiques", 
+                icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />,
+                data: caseStudy.references, 
+                contentClassName: "text-sm",
+                isMemoSection: false
+            });
+        }
+        
+        // Handle sectionOrder if it exists
+        const effectiveSectionOrder = ensureArray(caseStudy.sectionOrder);
+        let finalSections = sectionsToDisplay;
+
+        if (effectiveSectionOrder.length > 0) {
+            const sorted = effectiveSectionOrder
+                .map(id => sectionsToDisplay.find(s => s.id === id))
+                .filter(s => s !== undefined) as typeof sectionsToDisplay;
+            
+            const remaining = sectionsToDisplay.filter(s => !effectiveSectionOrder.includes(s.id));
+            finalSections = [...sorted, ...remaining];
+        }
+
+        return finalSections.map((section, index) => ({
+            ...section,
+            content: renderContentWithKeywords(section.data, section.isAlert),
+            startOpen: index === 0,
         }));
-        content.push(
-          { id: "references", title: "Références bibliographiques", icon: <img src={getAbsoluteImageUrl(getIconUrl('references'))} className="h-6 w-6 mr-3" alt="Références" />, content: renderContentWithKeywords(caseStudy.references), contentClassName: "text-sm", startOpen: false},
-        );
-        return content;
       } else if (caseStudy.type === 'ordonnances') {
         const content = [
           { id: 'ordonnance', title: 'Ordonnance', icon: <img src={getAbsoluteImageUrl(getIconUrl('ordonnance'))} className="h-6 w-6 mr-3" alt="Ordonnance" />, content: renderContentWithKeywords(caseStudy.ordonnance), startOpen: true },

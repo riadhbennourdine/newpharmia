@@ -99,7 +99,14 @@ Voici le plan détaillé à suivre OBLIGATOIREMENT :
 
         ${formattingInstructions}`;
   } else if (memoFicheType === 'pharmacologie') {
-    prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".${pharmacologieFormattingInstructions}`;
+    prompt = `Génère une mémofiche de pharmacologie sur le principe actif ou la classe : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et la pathologie cible est "${pharmaPathology}".
+
+Instructions de formatage impératives :
+- Le contenu doit être concis, pertinent et facile à lire pour un professionnel de la pharmacie.
+- Vous devez générer UNIQUEMENT un tableau de sections dans le champ "memoSections". Chaque section doit avoir un "title" et un "content".
+- Les titres des sections DOIVENT être exactement les suivants et dans cet ordre : "La Pathologie", "Contexte tunisien", "Pharmacologie", "Les traitements et mécanismes d'action", "Effets indésirables", "Rôle du pharmacien", "Conseils Hygiène de vie", "Conseils alimentaires", "Micronutrition".
+- Le contenu de chaque section doit être une liste à puces (commençant par "- "), où chaque ligne commence par un mot-clé pertinent mis en évidence avec des doubles astérisques (par exemple, **Mot-clé**).
+`;
   } else if (memoFicheType === 'dispositifs-medicaux') {
     prompt = `Génère une mémofiche sur le dispositif médical : "${sourceText}". Le thème de la mémofiche est "${pharmaTheme}" et l'indication principale est "${pharmaPathology}".${dispositifsMedicauxFormattingInstructions}`;
   } else if (memoFicheType === 'dermocosmetique') {
