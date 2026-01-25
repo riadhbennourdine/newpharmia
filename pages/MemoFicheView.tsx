@@ -560,9 +560,9 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
         return content;
       } else if (caseStudy.type === 'dermocosmetique') {
         const baseSections = [
-            { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation },
+            { id: 'patientSituation', title: caseStudy.patientSituationTitle || 'Cas comptoir', data: caseStudy.patientSituation?.content },
             { id: 'keyQuestions', title: caseStudy.keyQuestionsTitle || 'Questions clés à poser', data: caseStudy.keyQuestions },
-            { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview },
+            { id: 'pathologyOverview', title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique', data: caseStudy.pathologyOverview?.content },
             { id: 'mainTreatment', title: caseStudy.mainTreatmentTitle || 'Dermocosmétique principal', data: caseStudy.mainTreatment },
             { id: 'associatedProducts', title: caseStudy.associatedProductsTitle || 'Produits associés', data: caseStudy.associatedProducts },
             { id: 'lifestyleAdvice', title: caseStudy.lifestyleAdviceTitle || 'Conseils Hygiène de vie', data: caseStudy.lifestyleAdvice },
@@ -575,23 +575,33 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                 id: section.id || `memoSection-${index}`,
                 title: section.title,
                 data: section.content,
-                isMemoSection: true, // Flag to identify memo sections
+                isMemoSection: true,
             }));
 
-        const allSections = [...baseSections, ...memoSectionsForDisplay];
+        let allSections = [...baseSections, ...memoSectionsForDisplay];
 
-        allSections.push({ id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"});
+        // Prevent duplicate references section
+        if (!allSections.some(s => s.id === 'references') && caseStudy.references && caseStudy.references.length > 0) {
+            allSections.push({ id: "references", title: "Références bibliographiques", data: caseStudy.references, contentClassName: "text-sm"});
+        }
 
-        // Use sectionOrder if available to sort, otherwise use the natural order
+        // Use sectionOrder if available to sort
         const effectiveSectionOrder = ensureArray(caseStudy.sectionOrder);
         
+        // Filter out sections with no data to display
+        allSections = allSections.filter(section => {
+            if (!section.data) return false;
+            if (Array.isArray(section.data) && section.data.length === 0) return false;
+            if (typeof section.data === 'object' && !Array.isArray(section.data) && isMemoFicheSectionContentEmpty(section.data)) return false;
+            return true;
+        });
+
         const sortedSections = effectiveSectionOrder.length > 0
             ? effectiveSectionOrder
                 .map(id => allSections.find(s => s.id === id))
                 .filter(s => s !== undefined)
             : allSections;
         
-        // Add any sections that might not be in the order to the end
         const remainingSections = allSections.filter(s => !sortedSections.some(ss => ss.id === s.id));
         const finalSections = [...sortedSections, ...remainingSections];
 
