@@ -210,7 +210,8 @@ export const generateCaseStudyDraft = async (
   prompt: string,
   memoFicheType: string,
 ): Promise<Partial<CaseStudy>> => {
-  const caseStudySchema: ObjectSchema = {
+  // Default schema for 'maladie', 'dermocosmetique', etc.
+  const defaultCaseStudySchema: ObjectSchema = {
     type: SchemaType.OBJECT,
     properties: {
       title: {
@@ -293,6 +294,27 @@ export const generateCaseStudyDraft = async (
     ],
   };
 
+  const pharmacologieSchema: ObjectSchema = {
+    type: SchemaType.OBJECT,
+    properties: {
+        memoSections: {
+            type: SchemaType.ARRAY,
+            description: "Tableau des sections de la mémofiche.",
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    title: { type: SchemaType.STRING },
+                    content: { type: SchemaType.STRING, description: "Contenu de la section en format Markdown (liste à puces)." }
+                },
+                required: ["title", "content"]
+            }
+        }
+    },
+    required: ["memoSections"]
+  };
+
+  const schemaToUse = memoFicheType === 'pharmacologie' ? pharmacologieSchema : defaultCaseStudySchema;
+
   return globalQueue.add(async () => {
     let attempts = 0;
     const maxAttempts = 3;
@@ -305,7 +327,7 @@ export const generateCaseStudyDraft = async (
           model: modelName,
           generationConfig: {
             responseMimeType: 'application/json',
-            responseSchema: caseStudySchema,
+            responseSchema: schemaToUse,
           },
         });
 
