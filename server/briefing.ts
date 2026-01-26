@@ -33,9 +33,8 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
     const { groupsCollection } = await getCollections();
 
     if (!user.groupId) {
-      return res
-        .status(400)
-        .json({ message: 'User has no group or group not found.' });
+      // Instead of 400, return 200 with empty briefing
+      return res.json({ script: null, actions: [], instruction: null, message: 'User has no group assigned.' });
     }
 
     const group = await groupsCollection.findOne({

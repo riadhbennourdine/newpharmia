@@ -154,9 +154,12 @@ router.post(
       }
 
       const isAdmin = req.user?.role === 'ADMIN';
-      const initialStatus = isAdmin
-        ? OrderStatus.CONFIRMED
-        : OrderStatus.PENDING_PAYMENT;
+      let initialStatus = OrderStatus.PENDING_PAYMENT;
+      
+      // Auto-confirm orders for admins or if the total is zero
+      if (isAdmin || totalAmount === 0) {
+        initialStatus = OrderStatus.CONFIRMED;
+      }
 
       const newOrder: Omit<Order, '_id'> = {
         userId: new ObjectId(userId),
@@ -169,8 +172,8 @@ router.post(
 
       const result = await ordersCollection.insertOne(newOrder as Order);
 
-      // AUTO-CONFIRM LOGIC FOR ADMINS
-      if (isAdmin) {
+      // AUTO-CONFIRM LOGIC FOR ADMINS or FREE orders
+      if (initialStatus === OrderStatus.CONFIRMED) {
         // 1. Register for Webinars
         const webinarItems = processedItems.filter(
           (i) => i.type === ProductType.WEBINAR && i.webinarId,

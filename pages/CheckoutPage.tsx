@@ -200,13 +200,11 @@ const CheckoutPage: React.FC = () => {
         throw new Error('Échec de la soumission de la preuve de paiement.');
       }
 
-      alert(
-        'Preuve de paiement soumise avec succès ! Votre inscription est en attente de confirmation.',
-      );
-      navigate('/dashboard');
+      // On success, redirect to a thank you page with the order ID
+      navigate(`/thank-you?orderId=${order._id}`);
     } catch (err: any) {
-      setError(err.message);
-      alert(`Erreur: ${err.message}`);
+      console.error('Payment submission failed:', err.message);
+      alert(`La soumission du paiement a échoué : ${err.message}`);
     } finally {
       setIsSubmitting(false);
     }
