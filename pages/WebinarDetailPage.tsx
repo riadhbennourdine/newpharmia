@@ -572,13 +572,151 @@ const AddToCartForm: React.FC<{
 
 
 
-  // Rendu pour les webinaires gratuits ou déjà dans le panier/mis à jour
+    // Rendu pour les webinaires gratuits ou déjà dans le panier/mis à jour
 
-  return (
 
-    <div>
 
-      {!isMasterClass && isFree && !isUpdateMode && (
+    return (
+
+
+
+      <div>
+
+
+
+        {!isMasterClass && !isFree && !isUpdateMode && (
+
+
+
+          <div className="mb-6">
+
+
+
+            <h3 className="text-lg font-semibold text-slate-800 mb-3">
+
+
+
+              Choisissez vos créneaux de participation :
+
+
+
+            </h3>
+
+
+
+            <div className="space-y-3">
+
+
+
+              {(webinar.group === WebinarGroup.PHARMIA
+
+
+
+                ? [WebinarTimeSlot.PHARMIA_TUESDAY, WebinarTimeSlot.PHARMIA_FRIDAY]
+
+
+
+                : [
+
+
+
+                    WebinarTimeSlot.MORNING,
+
+
+
+                    WebinarTimeSlot.LATE_MORNING,
+
+
+
+                    WebinarTimeSlot.AFTERNOON,
+
+
+
+                    WebinarTimeSlot.EVENING,
+
+
+
+                  ]
+
+
+
+              ).map((slot) => (
+
+
+
+                <label
+
+
+
+                  key={slot}
+
+
+
+                  className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-teal-500 hover:shadow-sm"
+
+
+
+                >
+
+
+
+                  <input
+
+
+
+                    type="checkbox"
+
+
+
+                    className="h-5 w-5 rounded-full border-gray-300 text-teal-600 focus:ring-teal-500"
+
+
+
+                    checked={selectedSlots.includes(slot)}
+
+
+
+                    onChange={() => handleCheckboxChange(slot)}
+
+
+
+                  />
+
+
+
+                  <span className="ml-4 text-md font-medium text-slate-800">
+
+
+
+                    {slot}
+
+
+
+                  </span>
+
+
+
+                </label>
+
+
+
+              ))}
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+        )}
+
+
+
+        {!isMasterClass && isFree && !isUpdateMode && (
 
         <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
 
