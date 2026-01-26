@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import {
   Webinar,
@@ -49,6 +49,8 @@ const WebinarsPage: React.FC = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation(); // Add useLocation here
+
   const [view, setView] = useState<
     | 'hub'
     | WebinarGroup
@@ -82,6 +84,14 @@ const WebinarsPage: React.FC = () => {
         console.error('Failed to load Master Class description', err),
       );
   }, []);
+
+  useEffect(() => {
+    if (location.state?.openProgramModal) {
+      setIsProgramModalOpen(true);
+      // Clear the state to prevent the modal from reopening if the user navigates back to /webinars
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state?.openProgramModal, navigate, location.pathname]);
 
   // States for displaying content
   const [liveWebinars, setLiveWebinars] = useState<Webinar[]>([]);

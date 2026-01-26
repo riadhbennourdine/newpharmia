@@ -888,6 +888,12 @@ const WebinarDetailPage: React.FC = () => {
                 <>Wébinaires - {webinar.group}</>
               )}
             </h1>
+            <button
+              onClick={() => navigate('/webinars', { state: { openProgramModal: true } })}
+              className="text-teal-600 hover:text-teal-800 font-medium py-2 px-4 rounded-lg border border-teal-600 hover:border-teal-800 transition-colors mt-2"
+            >
+              Voir le Programme Annuel Complet
+            </button>
             {user?.role === UserRole.ADMIN && (
               <button
                 onClick={() =>
@@ -1005,30 +1011,7 @@ const WebinarDetailPage: React.FC = () => {
                   }
                 />
               </div>
-              {webinar.group === WebinarGroup.MASTER_CLASS &&
-                !registeredAttendee && (
-                  <div className="mt-6">
-                    <WebinarActionButtons
-                      webinar={webinar}
-                      userMasterClassCredits={user?.masterClassCredits || 0}
-                      onUseCredit={handleUseCreditForMasterClass}
-                      isAdded={isAdded}
-                      handleGoToCart={() => navigate('/cart')}
-                      handleAction={async () => {
-                        /* no action here, buttons handle their own */
-                      }}
-                      buttonClassName="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
-                      buttonText="S'inscrire" // Generic text, actual text comes from WebinarActionButtons
-                      buttonOnClick={async () => {
-                        /* no action here */
-                      }}
-                      selectedSlots={[]}
-                      isMasterClass={true}
-                      isUpdateMode={false}
-                      addToCart={addToCart} // Pass addToCart here
-                    />
-                  </div>
-                )}
+
 
               {(webinar.calculatedStatus === 'PAST' || registeredAttendee) &&
                 webinar.resources &&
