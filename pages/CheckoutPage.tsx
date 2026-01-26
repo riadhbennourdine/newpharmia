@@ -68,6 +68,20 @@ const CheckoutPage: React.FC = () => {
         const orderData: Order = await orderResponse.json();
         setOrder(orderData);
 
+        // Redirect if order is already processed or cancelled
+        if (
+          orderData.status === 'CONFIRMED' ||
+          orderData.status === 'PAYMENT_SUBMITTED'
+        ) {
+          navigate(`/thank-you?orderId=${orderData._id}`);
+          return; // Stop further processing
+        }
+        if (orderData.status === 'CANCELLED') {
+          setError('Cette commande a été annulée.');
+          setIsLoading(false);
+          return;
+        }
+
         // Fetch webinar details for webinar items only
         const webinarIds = orderData.items
           .filter(
