@@ -558,7 +558,7 @@ const WebinarsPage: React.FC = () => {
               Master Class Officine 2026
             </h3>
             <p className="text-base font-bold text-teal-700 mb-2">
-              1 Master Class : 240 DT HT
+              Cycle Master Class (3 sessions) : 240 DT HT
             </p>
             <p className="text-sm font-semibold text-teal-600 mb-4">
               Pour Pharmaciens

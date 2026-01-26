@@ -966,7 +966,7 @@ const WebinarDetailPage: React.FC = () => {
           {webinar.group === WebinarGroup.MASTER_CLASS && (
             <div className="text-right mb-4">
               <p className="text-xl font-bold text-teal-600">
-                Prix du Master Class : 240 DT HT
+                Prix du cycle Master Class (3 sessions) : 240 DT HT
               </p>
             </div>
           )}
