@@ -608,39 +608,67 @@ const AddToCartForm: React.FC<{
 
 
 
-              {(webinar.group === WebinarGroup.PHARMIA
+                            {(() => {
 
 
 
-                ? [WebinarTimeSlot.PHARMIA_TUESDAY, WebinarTimeSlot.PHARMIA_FRIDAY]
+                              if (webinar.group === WebinarGroup.PHARMIA) {
 
 
 
-                : [
+                                return [
 
 
 
-                    WebinarTimeSlot.MORNING,
+                                  WebinarTimeSlot.PHARMIA_TUESDAY,
 
 
 
-                    WebinarTimeSlot.LATE_MORNING,
+                                  WebinarTimeSlot.PHARMIA_FRIDAY,
 
 
 
-                    WebinarTimeSlot.AFTERNOON,
+                                ];
 
 
 
-                    WebinarTimeSlot.EVENING,
+                              } else if (webinar.group === WebinarGroup.CROP_TUNIS) {
 
 
 
-                  ]
+                                return [
 
 
 
-              ).map((slot) => (
+                                  WebinarTimeSlot.MORNING,
+
+
+
+                                  WebinarTimeSlot.AFTERNOON,
+
+
+
+                                  WebinarTimeSlot.EVENING,
+
+
+
+                                ];
+
+
+
+                              } else {
+
+
+
+                                return []; // No default slots for other groups to avoid confusion
+
+
+
+                              }
+
+
+
+                            })().map((slot) => (
 
 
 
@@ -1060,12 +1088,16 @@ const WebinarDetailPage: React.FC = () => {
                 <>Wébinaires - {webinar.group}</>
               )}
             </h1>
-            <button
-              onClick={() => navigate('/webinars', { state: { openProgramModal: true } })}
-              className="text-teal-600 hover:text-teal-800 font-medium py-2 px-4 rounded-lg border border-teal-600 hover:border-teal-800 transition-colors mt-2"
-            >
-              Voir le Programme Annuel Complet
-            </button>
+                        {webinar.group === WebinarGroup.MASTER_CLASS && (
+                          <button
+                            onClick={() =>
+                              navigate('/webinars', { state: { openProgramModal: true } })
+                            }
+                            className="text-teal-600 hover:text-teal-800 font-medium py-2 px-4 rounded-lg border border-teal-600 hover:border-teal-800 transition-colors mt-2"
+                          >
+                            Voir le Programme Annuel Complet
+                          </button>
+                        )}
             {user?.role === UserRole.ADMIN && (
               <button
                 onClick={() =>
