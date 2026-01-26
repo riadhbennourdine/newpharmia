@@ -348,6 +348,7 @@ export interface Webinar {
   createdAt: Date;
   updatedAt: Date;
   group: WebinarGroup;
+  masterClassTheme?: string; // NEW: To group sessions of the same masterclass
   price?: number;
   registrationStatus?: 'PENDING' | 'PAYMENT_SUBMITTED' | 'CONFIRMED';
   calculatedStatus?: WebinarStatus; // Nouveau champ pour le statut calculé
