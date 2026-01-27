@@ -356,6 +356,7 @@ export interface Webinar {
   publicationStatus?: 'DRAFT' | 'PUBLISHED';
   targetAudience?: 'Pharmacien' | 'Préparateur' | 'Tous';
   linkedMemofiches?: (ObjectId | string)[]; // NOUVEAU CHAMP
+  kahootUrl?: string;
 }
 
 export interface Image {

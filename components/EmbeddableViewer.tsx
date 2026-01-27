@@ -116,7 +116,27 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
     }
   }
 
-  // Case 4: Image URL - Check BEFORE PDF to prevent images from being proxied as PDFs
+  // Case 4: Kahoot URL
+  if (absoluteUrl && absoluteUrl.includes('kahoot.it')) {
+    return (
+      <div
+        ref={containerRef}
+        className="relative w-full rounded-lg shadow-md overflow-hidden"
+        style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}
+      >
+        <iframe
+          loading="lazy"
+          className="absolute top-0 left-0 w-full h-full border-0"
+          src={absoluteUrl}
+          allowFullScreen
+          allow="fullscreen"
+          title="Kahoot Embed"
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Case 5: Image URL - Check BEFORE PDF to prevent images from being proxied as PDFs
   const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
   if (
     absoluteUrl &&

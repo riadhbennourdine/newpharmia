@@ -812,6 +812,7 @@ const WebinarDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [newUserEmail, setNewUserEmail] = useState('');
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [isKahootModalOpen, setIsKahootModalOpen] = useState(false);
 
   // Effect to update isAdded state when webinar or cart items change
   useEffect(() => {
@@ -1218,12 +1219,12 @@ const WebinarDetailPage: React.FC = () => {
 
 
               {(webinar.calculatedStatus === 'PAST' || registeredAttendee) &&
-                webinar.resources &&
-                webinar.resources.length > 0 && (
-                  <div className="mt-8 pt-6 border-t">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4">
-                      Ressources du Webinaire
-                    </h3>
+              (webinar.resources?.length || webinar.kahootUrl) ? (
+                <div className="mt-8 pt-6 border-t">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                    Ressources du Webinaire
+                  </h3>
+                  {webinar.resources && webinar.resources.length > 0 && (
                     <div className="space-y-6">
                       {webinar.resources.map((resource, index) => (
                         <div key={index} className="border rounded-lg p-4">
@@ -1245,8 +1246,66 @@ const WebinarDetailPage: React.FC = () => {
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  {webinar.kahootUrl && (
+                    <div className="mt-6 border rounded-lg p-4 bg-purple-50">
+                      <h4 className="text-xl font-semibold mb-2 text-purple-800">
+                        Testez vos connaissances !
+                      </h4>
+                      <p className="text-purple-700 mb-4">
+                        Participez à notre quiz Kahoot pour réviser les points
+                        clés de ce webinaire de manière ludique.
+                      </p>
+                      <button
+                        onClick={() => setIsKahootModalOpen(true)}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                      >
+                        Lancer le Quiz Kahoot
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {isKahootModalOpen && webinar.kahootUrl && (
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+                  onClick={() => setIsKahootModalOpen(false)}
+                >
+                  <div
+                    className="relative bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-center p-4 border-b">
+                      <h3 className="text-xl font-bold text-slate-800">
+                        Quiz Kahoot
+                      </h3>
+                      <button
+                        onClick={() => setIsKahootModalOpen(false)}
+                        className="p-2 rounded-full text-slate-500 hover:bg-slate-100"
+                      >
+                        <svg
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="flex-grow">
+                      <EmbeddableViewer source={webinar.kahootUrl} />
+                    </div>
                   </div>
-                )}
+                </div>
+              )}
 
               <div className="bg-slate-50 p-6 rounded-lg mt-8">
                 <h2 className="text-2xl font-bold text-slate-800 mb-4">
