@@ -25,6 +25,7 @@ import {
 
 import EmbeddableViewer from '../components/EmbeddableViewer';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal'; // Import the modal
 
 const isHtmlString = (str: string | null | undefined): boolean => {
   if (!str) return false;
@@ -813,6 +814,7 @@ const WebinarDetailPage: React.FC = () => {
   const [newUserEmail, setNewUserEmail] = useState('');
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [isKahootModalOpen, setIsKahootModalOpen] = useState(false);
+  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] = useState(false); // State for the new modal
 
   // Effect to update isAdded state when webinar or cart items change
   useEffect(() => {
@@ -1123,10 +1125,32 @@ const WebinarDetailPage: React.FC = () => {
                   />
                 </svg>
                 Modifier (Admin)
-              </button>
-            )}
-          </div>
-
+                                </button>
+                              )}
+                              {(user?.role === UserRole.ADMIN ||
+                                user?.role === UserRole.ADMIN_WEBINAR) && (
+                                <button
+                                  onClick={() => setIsManageResourcesModalOpen(true)}
+                                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition-colors"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-4 h-4"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375H12a2.25 2.25 0 0 1-2.25-2.25V6.75m3.75 0-3.75-3.75M9 16.5v-4.725A2.25 2.25 0 0 1 11.25 9H15m1.5 1.5.75.75M17.25 21v-2.625a3.375 3.375 0 0 0-3.375-3.375H12a2.25 2.25 0 0 1-2.25-2.25V10.5m3.75 0-3.75-3.75"
+                                    />
+                                  </svg>
+                                  Gérer les ressources
+                                </button>
+                              )}
+                            </div>
           <div className="relative mb-6 pb-[56.25%] rounded-lg overflow-hidden shadow-lg">
             {' '}
             {/* 16:9 Aspect Ratio */}
@@ -1448,6 +1472,61 @@ const WebinarDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {isManageResourcesModalOpen && webinar && (
+        <ManageWebinarResourcesModal
+          webinarId={webinar._id as string}
+          resources={webinar.resources || []}
+          linkedMemofiches={webinar.linkedMemofiches || []}
+          kahootUrl={webinar.kahootUrl} // Pass existing kahootUrl
+          onClose={() => setIsManageResourcesModalOpen(false)}
+          onSave={async (
+            id,
+            newResources,
+            newLinkedMemofiches,
+            newKahootUrl,
+          ) => {
+            try {
+              const response = await fetch(`/api/webinars/${id}/resources`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  resources: newResources,
+                  linkedMemofiches: newLinkedMemofiches,
+                  kahootUrl: newKahootUrl, // Include kahootUrl
+                }),
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                  errorData.message ||
+                    'Erreur lors de la mise à jour des ressources.',
+                );
+              }
+
+              alert('Ressources du webinaire mises à jour avec succès !');
+              setIsManageResourcesModalOpen(false);
+              // Refresh webinar data
+              const refreshedWebinarResponse = await fetch(
+                `/api/webinars/${id}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                },
+              );
+              if (!refreshedWebinarResponse.ok)
+                throw new Error('Failed to refetch webinar after update.');
+              const updatedWebinar = await refreshedWebinarResponse.json();
+              setWebinar(updatedWebinar); // Update the state with new webinar data
+            } catch (err: any) {
+              alert(`Erreur: ${err.message}`);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

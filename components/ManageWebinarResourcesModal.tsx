@@ -12,13 +12,15 @@ interface ManageWebinarResourcesModalProps {
     webinarId: string,
     resources: WebinarResource[],
     linkedMemofiches: (ObjectId | string)[],
+    kahootUrl?: string, // Add kahootUrl here
   ) => void;
 }
 
 const ManageWebinarResourcesModal: React.FC<
   ManageWebinarResourcesModalProps
-> = ({ webinarId, resources, linkedMemofiches, onClose, onSave }) => {
+> = ({ webinarId, resources, linkedMemofiches, onClose, onSave, kahootUrl }) => {
   const { token } = useAuth(); // Récupérer le token
+  const [localKahootUrl, setLocalKahootUrl] = useState(kahootUrl || '');
 
   const migratedResources = (resources || []).map((r: any) => ({
     type: r.type,
@@ -138,7 +140,7 @@ const ManageWebinarResourcesModal: React.FC<
   };
 
   const handleSave = () => {
-    onSave(webinarId, localResources, localLinkedMemofiches);
+    onSave(webinarId, localResources, localLinkedMemofiches, localKahootUrl);
     onClose();
   };
 
@@ -306,6 +308,28 @@ const ManageWebinarResourcesModal: React.FC<
             >
               Ajouter un média
             </button>
+          </div>
+
+          {/* Section Kahoot URL */}
+          <div className="mb-6 border-t pt-6 mt-6">
+            <h4 className="text-lg font-semibold mb-2 text-slate-700">
+              Lien du Quiz Kahoot
+            </h4>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                URL Kahoot
+              </label>
+              <input
+                type="url"
+                value={localKahootUrl}
+                onChange={(e) => setLocalKahootUrl(e.target.value)}
+                placeholder="Ex: https://create.kahoot.it/details/..."
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Collez ici l'URL complète de votre quiz Kahoot.
+              </p>
+            </div>
           </div>
         </div>
 

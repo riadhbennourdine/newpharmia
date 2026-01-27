@@ -1428,114 +1428,123 @@ router.put(
 );
 
 // PUT to manage resources for a webinar (Admin only for past, Admin & Webinar Admin for others)
-router.put(
-  '/:id/resources',
-  authenticateToken,
-  async (req: AuthenticatedRequest, res) => {
-    try {
-      const { id } = req.params;
-      // On récupère les ressources ET les linkedMemofiches du body
-      const { resources, linkedMemofiches } = req.body;
+  router.put(
+    '/:id/resources',
+    authenticateToken,
+    async (req: AuthenticatedRequest, res) => {
+      try {
+        const { id } = req.params;
+        // On récupère les ressources ET les linkedMemofiches du body
+        const { resources, linkedMemofiches, kahootUrl } = req.body;
 
-      console.log(`[DEBUG] Updating resources for webinar ${id}.`);
-      console.log(
-        `[DEBUG] Received resources:`,
-        JSON.stringify(resources, null, 2),
-      );
-      console.log(
-        `[DEBUG] Received linkedMemofiches:`,
-        JSON.stringify(linkedMemofiches, null, 2),
-      );
-
-      if (!ObjectId.isValid(id)) {
-        return res.status(400).json({ message: 'Invalid webinar ID.' });
-      }
-
-      const client = await clientPromise;
-      const db = client.db('pharmia');
-      const webinarsCollection = db.collection<Webinar>('webinars');
-
-      const webinar = await webinarsCollection.findOne({
-        _id: new ObjectId(id),
-      });
-
-      if (!webinar) {
-        return res.status(404).json({ message: 'Webinar not found.' });
-      }
-
-      // Authorization Logic
-      const userRole = req.user?.role;
-
-      if (userRole !== UserRole.ADMIN) {
-        return res
-          .status(403)
-          .json({
-            message: 'You do not have permission to perform this action.',
-          });
-      }
-
-      // The rest of the logic remains the same
-      if (!Array.isArray(resources)) {
-        return res.status(400).json({ message: 'Resources must be an array.' });
-      }
-      // Validation pour linkedMemofiches
-      if (linkedMemofiches !== undefined && !Array.isArray(linkedMemofiches)) {
-        return res
-          .status(400)
-          .json({ message: 'Linked memofiches must be an array of IDs.' });
-      }
-      if (
-        linkedMemofiches &&
-        linkedMemofiches.some((mfId: any) => !ObjectId.isValid(mfId))
-      ) {
-        return res
-          .status(400)
-          .json({ message: 'Invalid ObjectId found in linked memofiches.' });
-      }
-
-      // Basic validation for each resource (reste inchangé)
-      for (const resource of resources) {
-        if (!resource.type) {
-          return res
-            .status(400)
-            .json({ message: 'Each resource must have a type.' });
-        }
-        if (typeof resource.source !== 'string') {
-          return res
-            .status(400)
-            .json({
-              message: `Resource source must be a string, but it is ${typeof resource.source}.`,
-            });
-        }
-        const allowedTypes = [
-          'Replay',
-          'Vidéo explainer',
-          'Infographie',
-          'Diaporama',
-          'pdf',
-          'link',
-          'youtube',
-        ];
-        if (!allowedTypes.includes(resource.type)) {
-          return res
-            .status(400)
-            .json({
-              message: `Invalid resource type: '${resource.type}'. Must be one of: ${allowedTypes.join(', ')}`,
-            });
-        }
-      }
-
-      // Mettre à jour les deux champs: resources ET linkedMemofiches
-      const updateDoc: any = {
-        resources: resources,
-        updatedAt: new Date(),
-      };
-      if (linkedMemofiches !== undefined) {
-        updateDoc.linkedMemofiches = linkedMemofiches.map(
-          (id: string) => new ObjectId(id),
+        console.log(`[DEBUG] Updating resources for webinar ${id}.`);
+        console.log(
+          `[DEBUG] Received resources:`,
+          JSON.stringify(resources, null, 2),
         );
-      }
+        console.log(
+          `[DEBUG] Received linkedMemofiches:`,
+          JSON.stringify(linkedMemofiches, null, 2),
+        );
+        console.log(`[DEBUG] Received kahootUrl:`, kahootUrl);
 
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).json({ message: 'Invalid webinar ID.' });
+        }
+
+        const client = await clientPromise;
+        const db = client.db('pharmia');
+        const webinarsCollection = db.collection<Webinar>('webinars');
+
+        const webinar = await webinarsCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!webinar) {
+          return res.status(404).json({ message: 'Webinar not found.' });
+        }
+
+        // Authorization Logic
+        const userRole = req.user?.role;
+
+        if (userRole !== UserRole.ADMIN) {
+          return res
+            .status(403)
+            .json({
+              message: 'You do not have permission to perform this action.',
+            });
+        }
+
+        // The rest of the logic remains the same
+        if (!Array.isArray(resources)) {
+          return res.status(400).json({ message: 'Resources must be an array.' });
+        }
+        // Validation pour linkedMemofiches
+        if (linkedMemofiches !== undefined && !Array.isArray(linkedMemofiches)) {
+          return res
+            .status(400)
+            .json({ message: 'Linked memofiches must be an array of IDs.' });
+        }
+        if (
+          linkedMemofiches &&
+          linkedMemofiches.some((mfId: any) => !ObjectId.isValid(mfId))
+        ) {
+          return res
+            .status(400)
+            .json({ message: 'Invalid ObjectId found in linked memofiches.' });
+        }
+        // Validation pour kahootUrl
+        if (kahootUrl !== undefined && typeof kahootUrl !== 'string') {
+          return res
+            .status(400)
+            .json({ message: 'Kahoot URL must be a string if provided.' });
+        }
+
+        // Basic validation for each resource (reste inchangé)
+        for (const resource of resources) {
+          if (!resource.type) {
+            return res
+              .status(400)
+              .json({ message: 'Each resource must have a type.' });
+          }
+          if (typeof resource.source !== 'string') {
+            return res
+              .status(400)
+              .json({
+                message: `Resource source must be a string, but it is ${typeof resource.source}.`,
+              });
+          }
+          const allowedTypes = [
+            'Replay',
+            'Vidéo explainer',
+            'Infographie',
+            'Diaporama',
+            'pdf',
+            'link',
+            'youtube',
+          ];
+          if (!allowedTypes.includes(resource.type)) {
+            return res
+              .status(400)
+              .json({
+                message: `Invalid resource type: '${resource.type}'. Must be one of: ${allowedTypes.join(', ')}`,
+              });
+          }
+        }
+
+        // Mettre à jour les deux champs: resources ET linkedMemofiches
+        const updateDoc: any = {
+          resources: resources,
+          updatedAt: new Date(),
+        };
+        if (linkedMemofiches !== undefined) {
+          updateDoc.linkedMemofiches = linkedMemofiches.map(
+            (id: string) => new ObjectId(id),
+          );
+        }
+        if (kahootUrl !== undefined) {
+          updateDoc.kahootUrl = kahootUrl;
+        }
       console.log(
         `[DEBUG] Update document:`,
         JSON.stringify(updateDoc, null, 2),
