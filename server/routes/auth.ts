@@ -200,6 +200,7 @@ router.post('/forgot-password', async (req, res) => {
             <p>Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail.</p>
         `;
 
+    console.log(`[DEBUG] BREVO_API_KEY is ${process.env.BREVO_API_KEY ? 'set' : 'not set'}`);
     await sendSingleEmail({
       to: user.email,
       subject: 'Réinitialisation de mot de passe PharmIA',
