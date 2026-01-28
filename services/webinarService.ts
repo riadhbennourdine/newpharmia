@@ -1,4 +1,4 @@
-import { Webinar } from '../types';
+import { Webinar, WebinarResource, ObjectId } from '../types';
 
 const BASE_URL = '/api/webinars';
 
@@ -49,13 +49,15 @@ export const fetchMyWebinars = async (token: string): Promise<Webinar[]> => {
 // Updates the resources for a specific webinar
 export const updateWebinarResources = async (
   webinarId: string,
-  resources: { type: string; source: string }[],
+  resources: WebinarResource[],
+  linkedMemofiches: (ObjectId | string)[],
+  kahootUrl: string | undefined,
   token: string,
 ): Promise<{ message: string }> => {
   const response = await fetch(`${BASE_URL}/${webinarId}/resources`, {
     method: 'PUT',
     headers: createAuthHeaders(token),
-    body: JSON.stringify({ resources }),
+    body: JSON.stringify({ resources, linkedMemofiches, kahootUrl }),
   });
   return handleResponse(response);
 };

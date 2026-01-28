@@ -15,6 +15,7 @@ import {
   WebinarResource,
   ProductType,
   Pack,
+  ObjectId,
 } from '../types';
 import {
   MASTER_CLASS_PACKS,
@@ -312,6 +313,8 @@ const WebinarsPage: React.FC = () => {
   const handleSaveResources = async (
     webinarId: string,
     resources: WebinarResource[],
+    linkedMemofiches: (ObjectId | string)[],
+    kahootUrl: string | undefined,
   ) => {
     if (!token) {
       setError('Vous devez être connecté pour sauvegarder les ressources.');
@@ -326,7 +329,13 @@ const WebinarsPage: React.FC = () => {
       return;
     }
     try {
-      await updateWebinarResources(webinarId, resources, token);
+      await updateWebinarResources(
+        webinarId,
+        resources,
+        linkedMemofiches,
+        kahootUrl,
+        token,
+      );
       const allCROPWebinars = await fetchWebinars(
         token,
         WebinarGroup.CROP_TUNIS,
@@ -1387,6 +1396,8 @@ const WebinarsPage: React.FC = () => {
         <ManageWebinarResourcesModal
           webinarId={selectedWebinarForResources._id as string}
           resources={selectedWebinarForResources.resources || []}
+          linkedMemofiches={selectedWebinarForResources.linkedMemofiches || []}
+          kahootUrl={selectedWebinarForResources.kahootUrl}
           onClose={handleCloseResourcesModal}
           onSave={handleSaveResources}
         />
