@@ -57,6 +57,7 @@ const WebinarsPage: React.FC = () => {
     | WebinarGroup
     | 'MY_WEBINARS_CROP'
     | 'MY_WEBINARS_PHARMIA'
+    | 'MY_WEBINARS_MASTER_CLASS'
     | 'PHARMIA_PHARMACIEN'
     | 'PHARMIA_PREPARATEUR'
   >('hub');
@@ -270,7 +271,8 @@ const WebinarsPage: React.FC = () => {
           const filteredMyW = myW.filter(
             (w) =>
               w.group === WebinarGroup.CROP_TUNIS ||
-              w.group === WebinarGroup.PHARMIA,
+              w.group === WebinarGroup.PHARMIA ||
+              w.group === WebinarGroup.MASTER_CLASS,
           );
           setMyRegisteredWebinars(processWebinars(filteredMyW));
         } else {
@@ -971,6 +973,14 @@ const WebinarsPage: React.FC = () => {
                   Actions Master Class
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3">
+                  {user && (
+                    <button
+                      onClick={() => setView('MY_WEBINARS_MASTER_CLASS')}
+                      className="w-full sm:w-auto text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors border border-slate-400"
+                    >
+                      Mes Master Class
+                    </button>
+                  )}
                   <button
                     onClick={() => setIsProgramModalOpen(true)}
                     className="w-full sm:w-auto text-slate-600 hover:text-slate-800 font-medium py-2 px-4 rounded-lg hover:bg-slate-100 transition-colors border border-slate-400"
@@ -1059,9 +1069,30 @@ const WebinarsPage: React.FC = () => {
               </p>
             </div>
           )
-        ) : view === WebinarGroup.MASTER_CLASS ? (
-          renderMasterClassList(
-            allWebinars.filter((w) => w.group === WebinarGroup.MASTER_CLASS),
+        ) : view === 'MY_WEBINARS_MASTER_CLASS' ? (
+          myRegisteredWebinars.filter(
+            (w) => w.group === WebinarGroup.MASTER_CLASS,
+          ).length > 0 ? (
+            <div className="space-y-12">
+              <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                Mes Master Class
+              </h2>
+              {renderWebinarList(
+                myRegisteredWebinars.filter(
+                  (w) => w.group === WebinarGroup.MASTER_CLASS,
+                ),
+                true,
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold text-slate-700">
+                Vous n'êtes inscrit à aucune Master Class pour le moment
+              </h3>
+              <p className="text-slate-500 mt-2">
+                Découvrez nos prochaines Master Class et inscrivez-vous !
+              </p>
+            </div>
           )
         ) : view === 'PHARMIA_PHARMACIEN' ? (
           renderWebinarList(
