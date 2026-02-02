@@ -71,6 +71,38 @@ const VideoCard: React.FC<{ resource: WebinarResource, onPlay: (resource: Webina
     );
 };
 
+const SlideshowCard: React.FC<{ resource: WebinarResource, onOpen: (resource: WebinarResource) => void }> = ({ resource, onOpen }) => {
+    const titleParts = resource.title?.split('-').map(part => part.trim()) || [];
+    const mainTitle = titleParts[0] || 'Diaporama';
+    const tags = titleParts.slice(1);
+
+    return (
+        <div 
+            onClick={() => onOpen(resource)}
+            className="group relative cursor-pointer p-6 bg-white border border-slate-200 rounded-lg hover:shadow-lg transition-shadow flex flex-col h-full"
+        >
+            <div className="flex-shrink-0 mb-4">
+                <BookOpenIcon className="h-10 w-10 text-teal-600" />
+            </div>
+            <div className="flex-grow">
+                <h3 className="text-xl font-bold text-slate-800 mb-3">{mainTitle}</h3>
+                {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {tags.map((tag, index) => (
+                            <span key={index} className="px-2 py-1 bg-teal-100 text-teal-800 text-xs font-medium rounded-full">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
+             <p className="mt-4 text-sm text-slate-400 truncate group-hover:text-teal-600 transition-colors">
+                {resource.source}
+            </p>
+        </div>
+    );
+};
+
 
 const MyMasterClassesPage: React.FC = () => {
   const { user, token } = useAuth();
@@ -207,8 +239,8 @@ const MyMasterClassesPage: React.FC = () => {
       case 'slides':
          const slides = resources.filter(r => r.type === 'Diaporama');
          return slides.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {slides.map((res, i) => <ResourceCard key={i} resource={res} onResourceClick={handleResourceClick} />)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {slides.map((res, i) => <SlideshowCard key={i} resource={res} onOpen={handleResourceClick} />)}
             </div>
         ) : <p className="text-center text-slate-500 py-12">Aucun diaporama disponible pour ce thème.</p>;
 
