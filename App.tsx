@@ -76,6 +76,7 @@ const DermoSimulationPage = lazy(
 // Other
 import NotFoundPage from './pages/NotFoundPage';
 import { Spinner } from './components/Icons';
+import MyMasterClassesPage from './pages/MyMasterClassesPage';
 
 const App: React.FC = () => (
   <HashRouter>
@@ -136,6 +137,7 @@ const App: React.FC = () => (
                 />
                 <Route path="/my-dashboard" element={<LegacyDashboard />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/my-master-classes" element={<MyMasterClassesPage />} />
 
                 {/* Routes for Formateurs & Admins */}
                 <Route element={<FormateurOrAdminRoute />}>
