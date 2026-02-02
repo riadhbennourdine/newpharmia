@@ -1305,50 +1305,80 @@ router.post(
       const db = client.db('pharmia');
       const webinarsCollection = db.collection<Webinar>('webinars');
       const usersCollection = db.collection('users');
+      
+      const newAttendeeId = new ObjectId(userId);
 
-      const webinar = await webinarsCollection.findOne({
+      const primaryWebinar = await webinarsCollection.findOne({
         _id: new ObjectId(webinarId),
       });
-      if (!webinar) {
+
+      if (!primaryWebinar) {
         return res.status(404).json({ message: 'Webinar not found.' });
       }
 
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      const user = await usersCollection.findOne({ _id: newAttendeeId });
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
 
-      const isRegistered = webinar.attendees.some(
-        (att) => att.userId.toString() === userId.toString(),
-      );
-      if (isRegistered) {
-        return res
-          .status(409)
-          .json({ message: 'User is already registered for this webinar.' });
+      let webinarsToUpdate: Webinar[] = [primaryWebinar];
+
+      // If it's a Master Class with a theme, find all its sessions
+      if (
+        primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
+        primaryWebinar.masterClassTheme
+      ) {
+        console.log(`[Manual Add] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
+        const themeWebinars = await webinarsCollection
+          .find({
+            group: WebinarGroup.MASTER_CLASS,
+            masterClassTheme: primaryWebinar.masterClassTheme,
+          })
+          .toArray();
+
+        if (themeWebinars.length > 0) {
+          webinarsToUpdate = themeWebinars;
+          console.log(`[Manual Add] Found ${themeWebinars.length} sessions for this theme.`);
+        }
       }
 
-      const newAttendee = {
-        userId: new ObjectId(userId),
-        status: 'CONFIRMED' as const,
-        registeredAt: new Date(),
-        timeSlots: ['ON_DEMAND'],
-        usedCredit: false,
-        email: user.email, // Include email for reference
-      };
+      let sessionsUpdated = 0;
+      for (const webinar of webinarsToUpdate) {
+        const isRegistered = webinar.attendees.some(
+          (att) => att.userId.toString() === userId.toString(),
+        );
 
-      const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(webinarId) },
-        { $push: { attendees: newAttendee as any } },
-      );
+        if (isRegistered) {
+           console.log(`[Manual Add] User ${userId} is already registered for webinar ${webinar._id}. Skipping.`);
+          continue; // Skip if already registered in this session
+        }
 
-      if (result.matchedCount === 0) {
-        return res
-          .status(500)
-          .json({ message: 'Failed to add attendee to webinar.' });
+        const newAttendee = {
+          userId: newAttendeeId,
+          status: 'CONFIRMED' as const,
+          registeredAt: new Date(),
+          timeSlots: ['ON_DEMAND'], // Default for manual add
+          usedCredit: false,
+          email: user.email, // Include email for reference
+        };
+
+        const result = await webinarsCollection.updateOne(
+          { _id: webinar._id },
+          { $push: { attendees: newAttendee as any } },
+        );
+        
+        if (result.modifiedCount > 0) {
+            console.log(`[Manual Add] Successfully added user ${userId} to webinar ${webinar._id}`);
+            sessionsUpdated++;
+        }
       }
 
-      // Return the updated webinar or just a success message
-      res.status(201).json({ message: 'Attendee added successfully.' });
+      if (sessionsUpdated > 0) {
+        res.status(201).json({ message: `Attendee added successfully to ${sessionsUpdated} session(s).` });
+      } else {
+        res.status(409).json({ message: 'User is already registered for all relevant sessions.' });
+      }
+
     } catch (error) {
       console.error('Error manually adding attendee:', error);
       res.status(500).json({ message: 'Erreur interne du serveur.' });
