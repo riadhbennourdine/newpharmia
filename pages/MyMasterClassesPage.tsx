@@ -4,9 +4,11 @@ import { Webinar, WebinarGroup, WebinarResource } from '../types';
 import { fetchMyWebinars } from '../services/webinarService';
 import Loader from '../components/Loader';
 import { Link } from 'react-router-dom';
-import { VideoCameraIcon, BookOpenIcon, PhotoIcon, DocumentTextIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
+import { VideoCameraIcon, BookOpenIcon, PhotoIcon, DocumentTextIcon, PlayCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import MediaViewerModal from '../components/MediaViewerModal';
-
+import ManageMasterClassResourcesModal from '../components/ManageMasterClassResourcesModal';
+import { UserRole, ObjectId } from '../types'; // Import UserRole and ObjectId
+import { updateWebinarResources } from '../services/webinarService'; // Import updateWebinarResources
 
 type Tab = 'replays' | 'slides' | 'gallery' | 'documents';
 
@@ -81,6 +83,9 @@ const MyMasterClassesPage: React.FC = () => {
   const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
 
+  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] = useState(false);
+  const [editingMasterClassWebinar, setEditingMasterClassWebinar] = useState<Webinar | null>(null);
+
   const handleResourceClick = (resource: WebinarResource) => {
     setSelectedResource(resource);
     setIsMediaViewerOpen(true);
@@ -89,6 +94,48 @@ const MyMasterClassesPage: React.FC = () => {
   const handleCloseMediaViewer = () => {
     setSelectedResource(null);
     setIsMediaViewerOpen(false);
+  };
+
+  const handleOpenManageResourcesModal = (webinar: Webinar) => {
+    setEditingMasterClassWebinar(webinar);
+    setIsManageResourcesModalOpen(true);
+  };
+
+  const handleCloseManageResourcesModal = () => {
+    setEditingMasterClassWebinar(null);
+    setIsManageResourcesModalOpen(false);
+  };
+
+  const handleSaveManagedResources = async (
+    webinarId: string,
+    resources: WebinarResource[],
+    linkedMemofiches: (ObjectId | string)[],
+    kahootUrl: string | undefined,
+  ) => {
+    if (!token) {
+      setError('Vous devez être connecté pour sauvegarder les ressources.');
+      return;
+    }
+    // Note: Authorization check for ADMIN role is done on the backend
+    try {
+      await updateWebinarResources(
+        webinarId,
+        resources,
+        linkedMemofiches,
+        kahootUrl,
+        token,
+      );
+      // Refresh data after saving
+      const allMyWebinars = await fetchMyWebinars(token);
+      const mcs = allMyWebinars.filter(
+        (w) => w.group === WebinarGroup.MASTER_CLASS,
+      );
+      setMyMasterClasses(mcs);
+      handleCloseManageResourcesModal();
+    } catch (err: any) {
+      console.error('Failed to save resources:', err);
+      setError('Erreur lors de la sauvegarde des ressources.');
+    }
   };
 
 
@@ -222,22 +269,33 @@ const MyMasterClassesPage: React.FC = () => {
           <h1 className="text-3xl font-bold mb-6 text-slate-800">Mes Master Class</h1>
 
           {/* Theme Selector */}
-          <div className="mb-8">
-            <label htmlFor="theme-select" className="block text-sm font-medium text-slate-700 mb-2">
-                Thème de la Master Class
-            </label>
-            <select
-              id="theme-select"
-              value={selectedTheme || ''}
-              onChange={(e) => setSelectedTheme(e.target.value)}
-              className="w-full max-w-md p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500"
-            >
-              {themes.map((theme) => (
-                <option key={theme._id.toString()} value={theme.masterClassTheme || theme.title}>
-                  {theme.masterClassTheme || theme.title}
-                </option>
-              ))}
-            </select>
+          <div className="mb-8 flex items-end gap-4">
+            <div className="flex-1">
+                <label htmlFor="theme-select" className="block text-sm font-medium text-slate-700 mb-2">
+                    Thème de la Master Class
+                </label>
+                <select
+                  id="theme-select"
+                  value={selectedTheme || ''}
+                  onChange={(e) => setSelectedTheme(e.target.value)}
+                  className="w-full max-w-md p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                >
+                  {themes.map((theme) => (
+                    <option key={theme._id.toString()} value={theme.masterClassTheme || theme.title}>
+                      {theme.masterClassTheme || theme.title}
+                    </option>
+                  ))}
+                </select>
+            </div>
+            {user?.role === UserRole.ADMIN && selectedMasterClass && (
+                <button
+                    onClick={() => handleOpenManageResourcesModal(selectedMasterClass)}
+                    className="flex items-center gap-2 text-sm bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-3 py-2 rounded-md transition-colors"
+                >
+                    <PencilSquareIcon className="h-4 w-4" />
+                    Gérer les ressources
+                </button>
+            )}
           </div>
 
           {/* Tab Navigation */}
@@ -268,6 +326,17 @@ const MyMasterClassesPage: React.FC = () => {
             <MediaViewerModal
             resource={selectedResource}
             onClose={handleCloseMediaViewer}
+            />
+        )}
+
+        {isManageResourcesModalOpen && editingMasterClassWebinar && (
+            <ManageMasterClassResourcesModal
+                webinarId={editingMasterClassWebinar._id.toString()}
+                resources={editingMasterClassWebinar.resources || []}
+                linkedMemofiches={editingMasterClassWebinar.linkedMemofiches || []}
+                kahootUrl={editingMasterClassWebinar.kahootUrl}
+                onClose={handleCloseManageResourcesModal}
+                onSave={handleSaveManagedResources}
             />
         )}
     </>
