@@ -462,6 +462,7 @@ router.post(
             primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
             primaryWebinar.masterClassTheme
           ) {
+            console.log(`[Submit Payment] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
             const themeWebinars = await webinarsCollection
               .find({
                 group: WebinarGroup.MASTER_CLASS,
@@ -471,16 +472,18 @@ router.post(
 
             if (themeWebinars.length > 0) {
               webinarsToRegister = themeWebinars;
+               console.log(`[Submit Payment] Found ${themeWebinars.length} sessions for this theme.`);
             }
           }
 
           // Register user for all webinars in the list (either 1 or all themed sessions)
           for (const webinarToRegister of webinarsToRegister) {
-            const alreadyRegistered = webinarToRegister.attendees.some(
+            const attendeeIndex = webinarToRegister.attendees.findIndex(
               (att) => att.userId.toString() === userId.toString(),
             );
 
-            if (!alreadyRegistered) {
+            if (attendeeIndex === -1) {
+              console.log(`[Submit Payment] Adding user ${userId} to webinar ${webinarToRegister._id}`);
               await webinarsCollection.updateOne(
                 { _id: webinarToRegister._id },
                 {
@@ -490,7 +493,6 @@ router.post(
                       status: 'PAYMENT_SUBMITTED' as const,
                       proofUrl: proofUrl,
                       registeredAt: new Date(),
-                      // Note: The time slot from the cart might only apply to one session
                       timeSlots: item.slots,
                     },
                   },
@@ -498,6 +500,7 @@ router.post(
               );
             } else {
               // Update existing pending registration with new proof
+              console.log(`[Submit Payment] Updating user ${userId} in webinar ${webinarToRegister._id}`);
               await webinarsCollection.updateOne(
                 {
                   _id: webinarToRegister._id,
@@ -588,19 +591,25 @@ router.post(
         } else if (!item.type || item.type === ProductType.WEBINAR) {
           if (item.webinarId) {
             const primaryWebinarId = new ObjectId(item.webinarId);
+            console.log(`[Confirm Order] Processing webinar item: ${primaryWebinarId}`);
+
             const primaryWebinar = await webinarsCollection.findOne({
               _id: primaryWebinarId,
             });
 
-            if (!primaryWebinar) continue;
+            if (!primaryWebinar) {
+                console.warn(`[Confirm Order] Webinar ${primaryWebinarId} not found. Skipping.`);
+                continue;
+            }
 
-            let webinarsToRegister: Webinar[] = [primaryWebinar];
+            let webinarsToConfirm: Webinar[] = [primaryWebinar];
 
             // If it's a Master Class with a theme, find all its sessions
             if (
               primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
               primaryWebinar.masterClassTheme
             ) {
+              console.log(`[Confirm Order] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
               const themeWebinars = await webinarsCollection
                 .find({
                   group: WebinarGroup.MASTER_CLASS,
@@ -609,37 +618,42 @@ router.post(
                 .toArray();
 
               if (themeWebinars.length > 0) {
-                webinarsToRegister = themeWebinars;
+                webinarsToConfirm = themeWebinars;
+                console.log(`[Confirm Order] Found ${themeWebinars.length} sessions for this theme.`);
               }
             }
 
-            for (const webinarToRegister of webinarsToRegister) {
-              const alreadyRegistered = webinarToRegister.attendees.some(
+            for (const webinar of webinarsToConfirm) {
+              const attendeeIndex = webinar.attendees.findIndex(
                 (att) => att.userId.toString() === order.userId.toString(),
               );
 
-              if (!alreadyRegistered) {
+              if (attendeeIndex > -1) {
+                // User is already in the list, update their status
+                console.log(`[Confirm Order] Updating user ${order.userId} to CONFIRMED for webinar ${webinar._id}`);
                 await webinarsCollection.updateOne(
-                  { _id: webinarToRegister._id },
+                  { 
+                    _id: webinar._id,
+                    'attendees.userId': new ObjectId(order.userId) 
+                  },
+                  { $set: { 'attendees.$.status': 'CONFIRMED' } },
+                );
+              } else {
+                // User is not in the list, add them
+                 console.log(`[Confirm Order] Adding user ${order.userId} as CONFIRMED to webinar ${webinar._id}`);
+                await webinarsCollection.updateOne(
+                  { _id: webinar._id },
                   {
                     $push: {
                       attendees: {
                         userId: new ObjectId(order.userId),
                         status: 'CONFIRMED' as const,
                         registeredAt: new Date(),
-                        proofUrl: 'ADMIN_CONFIRM',
-                        timeSlots: item.slots,
+                        proofUrl: 'ADMIN_CONFIRM', // Confirmed by admin
+                        timeSlots: item.slots, // Use slots from the purchased item
                       },
                     },
                   },
-                );
-              } else {
-                await webinarsCollection.updateOne(
-                  {
-                    _id: webinarToRegister._id,
-                    'attendees.userId': new ObjectId(order.userId),
-                  },
-                  { $set: { 'attendees.$.status': 'CONFIRMED' } },
                 );
               }
             }
