@@ -106,13 +106,6 @@ const LandingPage: React.FC = () => {
       email: 'yahiasenda92@gmail.com',
     },
     {
-      name: 'Ghassen Khalaf',
-      imageUrl: 'https://pharmaconseilbmb.com/photos/site/formateur/4.png',
-      title: 'Pharmacien Formateur',
-      phone: '+216 27 775 315',
-      email: '',
-    },
-    {
       name: 'Kmar Ben Abdessalem',
       imageUrl: 'https://pharmaconseilbmb.com/photos/site/formateur/5.png',
       title: 'Pharmacienne Formatrice',
