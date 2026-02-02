@@ -4,16 +4,22 @@ import { Webinar, WebinarGroup, WebinarResource } from '../types';
 import { fetchMyWebinars } from '../services/webinarService';
 import Loader from '../components/Loader';
 import { Link } from 'react-router-dom';
-import { VideoCameraIcon, BookOpenIcon, PhotoIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { VideoCameraIcon, BookOpenIcon, PhotoIcon, DocumentTextIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
+import MediaViewerModal from '../components/MediaViewerModal';
+
 
 type Tab = 'replays' | 'slides' | 'gallery' | 'documents';
 
-const ResourceCard: React.FC<{ resource: WebinarResource }> = ({ resource }) => {
+const getYoutubeVideoId = (url: string): string | null => {
+    if (!url) return null;
+    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(youtubeRegex);
+    return match ? match[1] : null;
+};
+
+const ResourceCard: React.FC<{ resource: WebinarResource, onResourceClick: (resource: WebinarResource) => void }> = ({ resource, onResourceClick }) => {
     const getIcon = () => {
         switch (resource.type) {
-            case 'Replay':
-            case 'youtube':
-                return <VideoCameraIcon className="h-8 w-8 text-teal-600" />;
             case 'Diaporama':
                 return <BookOpenIcon className="h-8 w-8 text-teal-600" />;
             case 'Infographie':
@@ -24,11 +30,9 @@ const ResourceCard: React.FC<{ resource: WebinarResource }> = ({ resource }) => 
     };
 
     return (
-        <a 
-            href={resource.source} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow bg-white"
+        <button 
+            onClick={() => onResourceClick(resource)}
+            className="w-full text-left block p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow bg-white"
         >
             <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
@@ -39,7 +43,29 @@ const ResourceCard: React.FC<{ resource: WebinarResource }> = ({ resource }) => 
                     <p className="text-sm text-slate-500 truncate">{resource.source}</p>
                 </div>
             </div>
-        </a>
+        </button>
+    );
+};
+
+const VideoCard: React.FC<{ resource: WebinarResource, onPlay: (resource: WebinarResource) => void }> = ({ resource, onPlay }) => {
+    const videoId = getYoutubeVideoId(resource.source);
+    if (!videoId) return null;
+
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+    return (
+        <div 
+            onClick={() => onPlay(resource)}
+            className="group relative cursor-pointer"
+        >
+            <div className="relative w-full aspect-video bg-slate-200 rounded-lg overflow-hidden">
+                 <img src={thumbnailUrl} alt={resource.title} className="w-full h-full object-cover" />
+                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
+                    <PlayCircleIcon className="h-16 w-16 text-white text-opacity-80 transform group-hover:scale-110 transition-transform" />
+                 </div>
+            </div>
+            <h3 className="mt-2 text-lg font-semibold text-slate-800">{resource.title}</h3>
+        </div>
     );
 };
 
@@ -51,6 +77,20 @@ const MyMasterClassesPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('replays');
+
+  const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<WebinarResource | null>(null);
+
+  const handleResourceClick = (resource: WebinarResource) => {
+    setSelectedResource(resource);
+    setIsMediaViewerOpen(true);
+  };
+
+  const handleCloseMediaViewer = () => {
+    setSelectedResource(null);
+    setIsMediaViewerOpen(false);
+  };
+
 
   useEffect(() => {
     const loadMyMasterClasses = async () => {
@@ -65,8 +105,9 @@ const MyMasterClassesPage: React.FC = () => {
         );
         setMyMasterClasses(mcs);
         if (mcs.length > 0) {
-          // Auto-select the first theme
-          setSelectedTheme(mcs[0].masterClassTheme || mcs[0].title);
+          // Auto-select the first theme based on date
+          const sortedMcs = [...mcs].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          setSelectedTheme(sortedMcs[0].masterClassTheme || sortedMcs[0].title);
         }
       } catch (err: any) {
         setError(err.message || 'Failed to load your Master Classes.');
@@ -79,7 +120,8 @@ const MyMasterClassesPage: React.FC = () => {
 
   const themes = useMemo(() => {
     const themeMap: { [key: string]: Webinar } = {};
-    myMasterClasses.forEach((mc) => {
+    const sortedMcs = [...myMasterClasses].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    sortedMcs.forEach((mc) => {
       const themeName = mc.masterClassTheme || mc.title;
       if (!themeMap[themeName]) {
         themeMap[themeName] = mc;
@@ -110,8 +152,8 @@ const MyMasterClassesPage: React.FC = () => {
       case 'replays':
         const replays = resources.filter(r => r.type === 'Replay' || r.type === 'youtube');
         return replays.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {replays.map((res, i) => <ResourceCard key={i} resource={res} />)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {replays.map((res, i) => <VideoCard key={i} resource={res} onPlay={handleResourceClick} />)}
             </div>
         ) : <p className="text-center text-slate-500 py-12">Aucun replay disponible pour ce thème.</p>;
       
@@ -119,7 +161,7 @@ const MyMasterClassesPage: React.FC = () => {
          const slides = resources.filter(r => r.type === 'Diaporama');
          return slides.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {slides.map((res, i) => <ResourceCard key={i} resource={res} />)}
+                {slides.map((res, i) => <ResourceCard key={i} resource={res} onResourceClick={handleResourceClick} />)}
             </div>
         ) : <p className="text-center text-slate-500 py-12">Aucun diaporama disponible pour ce thème.</p>;
 
@@ -128,14 +170,14 @@ const MyMasterClassesPage: React.FC = () => {
         return images.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {images.map((res, i) => (
-                    <a key={i} href={res.source} target="_blank" rel="noopener noreferrer" className="group block">
+                    <div key={i} onClick={() => handleResourceClick(res)} className="group block cursor-pointer">
                         <img 
                             src={res.source} 
                             alt={res.title || 'Lésion élémentaire'}
                             className="w-full h-40 object-cover rounded-lg group-hover:opacity-80 transition-opacity"
                         />
                         <p className="text-center text-sm mt-2 text-slate-700">{res.title}</p>
-                    </a>
+                    </div>
                 ))}
             </div>
         ) : <p className="text-center text-slate-500 py-12">Aucune photo disponible pour ce thème.</p>;
@@ -144,7 +186,7 @@ const MyMasterClassesPage: React.FC = () => {
          const documents = resources.filter(r => r.type === 'pdf' || r.type === 'link');
          return documents.length > 0 ? (
             <div className="space-y-4">
-                {documents.map((res, i) => <ResourceCard key={i} resource={res} />)}
+                {documents.map((res, i) => <ResourceCard key={i} resource={res} onResourceClick={handleResourceClick} />)}
             </div>
         ) : <p className="text-center text-slate-500 py-12">Aucun document disponible pour ce thème.</p>;
 
@@ -175,52 +217,60 @@ const MyMasterClassesPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-slate-800">Mes Master Class</h1>
+    <>
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 min-h-screen">
+          <h1 className="text-3xl font-bold mb-6 text-slate-800">Mes Master Class</h1>
 
-      {/* Theme Selector */}
-      <div className="mb-8">
-        <label htmlFor="theme-select" className="block text-sm font-medium text-slate-700 mb-2">
-            Thème de la Master Class
-        </label>
-        <select
-          id="theme-select"
-          value={selectedTheme || ''}
-          onChange={(e) => setSelectedTheme(e.target.value)}
-          className="w-full max-w-md p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500"
-        >
-          {themes.map((theme) => (
-            <option key={theme._id.toString()} value={theme.masterClassTheme || theme.title}>
-              {theme.masterClassTheme || theme.title}
-            </option>
-          ))}
-        </select>
-      </div>
+          {/* Theme Selector */}
+          <div className="mb-8">
+            <label htmlFor="theme-select" className="block text-sm font-medium text-slate-700 mb-2">
+                Thème de la Master Class
+            </label>
+            <select
+              id="theme-select"
+              value={selectedTheme || ''}
+              onChange={(e) => setSelectedTheme(e.target.value)}
+              className="w-full max-w-md p-3 border border-slate-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500"
+            >
+              {themes.map((theme) => (
+                <option key={theme._id.toString()} value={theme.masterClassTheme || theme.title}>
+                  {theme.masterClassTheme || theme.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-slate-200 mb-8">
-          <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-              <button onClick={() => setActiveTab('replays')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'replays' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
-                  Vidéos Replay
-              </button>
-               <button onClick={() => setActiveTab('slides')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'slides' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
-                  Diaporamas
-              </button>
-               <button onClick={() => setActiveTab('gallery')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'gallery' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
-                  Galerie Photos
-              </button>
-               <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'documents' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
-                  Documents
-              </button>
-          </nav>
-      </div>
-      
-      {/* Tab Content */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-          {renderContent()}
-      </div>
+          {/* Tab Navigation */}
+          <div className="border-b border-slate-200 mb-8">
+              <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                  <button onClick={() => setActiveTab('replays')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'replays' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
+                      Vidéos Replay
+                  </button>
+                   <button onClick={() => setActiveTab('slides')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'slides' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
+                      Diaporamas
+                  </button>
+                   <button onClick={() => setActiveTab('gallery')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'gallery' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
+                      Galerie Photos
+                  </button>
+                   <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'documents' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}>
+                      Documents
+                  </button>
+              </nav>
+          </div>
+          
+          {/* Tab Content */}
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+              {renderContent()}
+          </div>
+        </div>
 
-    </div>
+        {isMediaViewerOpen && selectedResource && (
+            <MediaViewerModal
+            resource={selectedResource}
+            onClose={handleCloseMediaViewer}
+            />
+        )}
+    </>
   );
 };
 
