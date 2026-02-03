@@ -1244,7 +1244,7 @@ router.get(
       ]).toArray();
 
       const registrationsByMonth = await usersCollection.aggregate([
-        { $match: { createdAt: { $exists: true } } },
+        { $match: { createdAt: { $exists: true, $type: "date" } } },
         {
           $group: {
             _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
