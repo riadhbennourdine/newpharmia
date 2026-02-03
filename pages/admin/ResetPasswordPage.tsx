@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 const AdminResetPasswordPage: React.FC = () => {
   const { user, token } = useAuth();
