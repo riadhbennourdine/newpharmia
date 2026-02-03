@@ -76,6 +76,7 @@ import memofichesRouter from './server/routes/memofiches.js';
 import briefingRouter from './server/briefing.js';
 import campaignsRouter from './server/routes/campaigns.js';
 import adminSubscriptionsRouter from './server/routes/adminSubscriptions.js';
+import adminAnalyticsRouter from './server/routes/adminAnalytics.js';
 
 // FIX: Define __filename and __dirname for ES module scope
 const __filename = fileURLToPath(import.meta.url);
@@ -219,6 +220,7 @@ app.use('/api', apiLimiter);
 app.use('/api/admin/crm', crmRoutes);
 app.use('/api/admin/groups', adminGroupsRouter);
 app.use('/api/admin/subscriptions', adminSubscriptionsRouter);
+app.use('/api/admin/analytics', adminAnalyticsRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/webinars', webinarsRouter);
