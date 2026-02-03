@@ -18,6 +18,7 @@ import {
   indexMemoFiches,
   removeMemoFicheFromIndex,
 } from '../algoliaService.js';
+import { trackEvent, AnalyticEvent } from '../analyticsService.js';
 
 const router = express.Router();
 
@@ -240,6 +241,17 @@ router.get(
       if (!ObjectId.isValid(id)) {
         return res.status(404).json({ message: 'ID de mémofiche invalide.' });
       }
+
+      // Track the view event
+      trackEvent({
+        type: AnalyticEvent.FICHE_VIEW,
+        userId: user._id.toString(),
+        details: {
+          ficheId: id,
+          userRole: user.role,
+        }
+      });
+
       const fiche = await memofichesCollection.findOne({ _id: new ObjectId(id) });
 
       if (!fiche) {

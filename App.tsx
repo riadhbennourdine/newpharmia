@@ -73,6 +73,7 @@ const DermoSimulationPage = lazy(
   () => import('./pages/apps/DermoSimulationPage'),
 );
 const AdminResetPasswordPage = lazy(() => import('./pages/admin/ResetPasswordPage'));
+const StatisticsDashboard = lazy(() => import('./pages/admin/StatisticsDashboard'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -217,6 +218,10 @@ const App: React.FC = () => (
                   <Route
                     path="/admin/reset-password"
                     element={<AdminResetPasswordPage />}
+                  />
+                  <Route
+                    path="/admin/statistics"
+                    element={<StatisticsDashboard />}
                   />
                 </Route>
               </Route>

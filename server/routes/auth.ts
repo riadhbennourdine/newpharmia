@@ -7,6 +7,7 @@ import clientPromise from '../mongo.js';
 import { User, UserRole } from '../../types.js';
 import { sendSingleEmail } from '../emailService.js';
 import { authenticateToken, AuthenticatedRequest } from '../authMiddleware.js';
+import { trackEvent, AnalyticEvent } from '../analyticsService.js';
 
 const router = express.Router();
 
@@ -50,6 +51,17 @@ router.post('/login', async (req, res) => {
           process.env.JWT_SECRET as string,
           { expiresIn: '7d' },
         );
+
+        // Track login event
+        trackEvent({
+          type: AnalyticEvent.USER_LOGIN,
+          userId: user._id.toString(),
+          details: {
+            userRole: user.role,
+            userCity: user.city,
+          }
+        });
+
         res.json({ token, user });
       } else {
         // Passwords do not match

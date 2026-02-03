@@ -1230,4 +1230,78 @@ router.post(
   },
 );
 
+router.get(
+  '/admin/retrospective-stats',
+  authenticateToken,
+  checkRole([UserRole.ADMIN]),
+  async (req, res) => {
+    try {
+      const { usersCollection, memofichesCollection } = await getCollections();
+
+      const usersByRole = await usersCollection.aggregate([
+        { $group: { _id: '$role', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ]).toArray();
+
+      const registrationsByMonth = await usersCollection.aggregate([
+        { $match: { createdAt: { $exists: true } } },
+        {
+          $group: {
+            _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { '_id.year': 1, '_id.month': 1 } }
+      ]).toArray();
+
+      const ficheReads = await usersCollection.aggregate([
+        { $unwind: '$readFiches' },
+        { $group: { _id: null, totalReads: { $sum: 1 } } }
+      ]).toArray();
+      const totalReads = ficheReads.length > 0 ? ficheReads[0].totalReads : 0;
+
+      const topFichesAgg = await usersCollection.aggregate([
+        { $unwind: '$readFiches' },
+        { $group: { _id: '$readFiches.ficheId', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 }
+      ]).toArray();
+
+      const validFicheIds = topFichesAgg
+        .map(f => f._id)
+        .filter(id => ObjectId.isValid(id))
+        .map(id => new ObjectId(id));
+      
+      const fichesDetails = await memofichesCollection.find(
+          { _id: { $in: validFicheIds } },
+          { projection: { title: 1 } }
+      ).toArray();
+
+      const fichesDetailsMap = fichesDetails.reduce((map, fiche) => {
+        map[fiche._id.toString()] = fiche.title;
+        return map;
+      }, {} as Record<string, string>);
+
+      const topFiches = topFichesAgg.map(f => ({
+        ficheId: f._id,
+        title: fichesDetailsMap[f._id] || 'Titre non trouvé',
+        count: f.count
+      }));
+      
+
+      res.json({
+        usersByRole,
+        registrationsByMonth,
+        totalFicheReads: totalReads,
+        topFiches
+      });
+
+    } catch (error) {
+      console.error('Error generating retrospective stats:', error);
+      res.status(500).json({ message: 'Erreur interne du serveur lors de la génération des statistiques.' });
+    }
+  }
+);
+
+
 export default router;

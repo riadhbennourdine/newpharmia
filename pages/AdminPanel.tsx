@@ -101,6 +101,12 @@ const AdminPanel: React.FC = () => {
                   >
                       Réinitialiser un mot de passe
                   </NavLink>
+                  <NavLink
+                      to="/admin/statistics"
+                      className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
+                  >
+                      Voir les statistiques
+                  </NavLink>
               </div>
           </div>
       )}
