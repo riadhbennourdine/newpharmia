@@ -91,6 +91,20 @@ const AdminPanel: React.FC = () => {
         </div>
       </div>
 
+      {isAdmin && (
+          <div className="mb-6 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Outils d'administration</h3>
+              <div className="flex flex-wrap gap-4">
+                  <NavLink
+                      to="/admin/reset-password"
+                      className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                      Réinitialiser un mot de passe
+                  </NavLink>
+              </div>
+          </div>
+      )}
+
       <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-md min-h-[400px]">
         {activeTab === 'crm' && <CRMDashboard />}
         {activeTab === 'users' && <SubscriberManager />}

@@ -70,7 +70,7 @@ router.put(
 
       await usersCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { passwordHash } },
+        { $set: { passwordHash, passwordIsTemporary: false } },
       );
 
       res.json({ message: 'Password updated successfully' });

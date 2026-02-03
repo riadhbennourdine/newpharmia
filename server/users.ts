@@ -1179,4 +1179,55 @@ router.delete(
   },
 );
 
+router.post(
+  '/admin/reset-password',
+  authenticateToken,
+  checkRole([UserRole.ADMIN]),
+  async (req: AuthenticatedRequest, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "L'email est requis." });
+    }
+
+    try {
+      const { usersCollection } = await getCollections();
+      const user = await usersCollection.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+      }
+
+      const { default: crypto } = await import('crypto');
+      const { default: bcrypt } = await import('bcryptjs');
+
+      const newPassword = crypto.randomBytes(8).toString('hex');
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(newPassword, salt);
+
+      await usersCollection.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            passwordHash: passwordHash,
+            resetPasswordToken: undefined,
+            resetPasswordExpires: undefined,
+            passwordIsTemporary: true, // Marquer le mot de passe comme temporaire
+          },
+        },
+      );
+
+      res.json({
+        message: 'Le mot de passe a été réinitialisé avec succès.',
+        newPassword: newPassword,
+      });
+    } catch (error) {
+      console.error("Error in admin password reset:", error);
+      res.status(500).json({
+        message: 'Erreur interne du serveur lors de la réinitialisation du mot de passe.',
+      });
+    }
+  },
+);
+
 export default router;

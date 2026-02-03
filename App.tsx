@@ -72,6 +72,7 @@ const DermoFicheGenerator = lazy(
 const DermoSimulationPage = lazy(
   () => import('./pages/apps/DermoSimulationPage'),
 );
+const AdminResetPasswordPage = lazy(() => import('./pages/admin/ResetPasswordPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -213,6 +214,10 @@ const App: React.FC = () => (
                   />
                   <Route path="/admin/data-fixer" element={<DataFixerPage />} />
                   <Route path="/admin/orders" element={<OrderManager />} />
+                  <Route
+                    path="/admin/reset-password"
+                    element={<AdminResetPasswordPage />}
+                  />
                 </Route>
               </Route>
 

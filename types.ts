@@ -90,6 +90,7 @@ export interface User {
   paymentProofUrl?: string;
   masterClassCredits?: number;
   pharmiaCredits?: number;
+  passwordIsTemporary?: boolean;
 }
 
 export interface Group {
