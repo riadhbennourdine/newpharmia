@@ -212,12 +212,12 @@ router.post('/forgot-password', async (req, res) => {
         'Si un compte existe, un email de réinitialisation a été envoyé.',
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('[FORGOT PASSWORD ERROR] Failed to send reset email:', error);
     res
       .status(500)
       .json({
         message:
-          'Erreur interne du serveur lors de la demande de réinitialisation de mot de passe.',
+          "Le serveur a rencontré un problème lors de l'envoi de l'email de réinitialisation. Veuillez contacter l'administrateur. Le problème est probablement lié à la configuration du service d'email.",
       });
   }
 });
