@@ -479,7 +479,7 @@ const WebinarsPage: React.FC = () => {
     );
   }, [allWebinars]);
 
-  const shouldShowPricingButton = isMasterClassPublished || isSuperAdmin;
+  const shouldShowPricingButton = true;
 
   const renderHub = () => (
     <div className="space-y-12">
