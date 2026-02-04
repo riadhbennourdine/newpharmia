@@ -430,5 +430,3 @@ const ManageMasterClassResourcesModal: React.FC<
 };
 
 export default ManageMasterClassResourcesModal;
-
-export default ManageMasterClassResourcesModal;
