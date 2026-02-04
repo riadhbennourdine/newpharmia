@@ -74,6 +74,10 @@ const DermoSimulationPage = lazy(
 );
 const AdminResetPasswordPage = lazy(() => import('./pages/admin/ResetPasswordPage'));
 const StatisticsDashboard = lazy(() => import('./pages/admin/StatisticsDashboard'));
+const EventManagement = lazy(() => import('./pages/admin/EventManagement'));
+const EventEditor = lazy(() => import('./pages/admin/EventEditor'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
+const EventDetailPage = lazy(() => import('./pages/EventDetailPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -106,6 +110,8 @@ const App: React.FC = () => (
                 <Route path="/webinars/:id" element={<WebinarDetailPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/thank-you" element={<ThankYouPage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/events/:slug" element={<EventDetailPage />} />
               </Route>
               <Route path="/login" element={<LoginView />} />
               <Route path="/register" element={<RegisterView />} />
@@ -223,6 +229,9 @@ const App: React.FC = () => (
                     path="/admin/statistics"
                     element={<StatisticsDashboard />}
                   />
+                  <Route path="/admin/events" element={<EventManagement />} />
+                  <Route path="/admin/events/new" element={<EventEditor />} />
+                  <Route path="/admin/events/edit/:id" element={<EventEditor />} />
                 </Route>
               </Route>
 

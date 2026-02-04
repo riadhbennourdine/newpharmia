@@ -427,3 +427,18 @@ export interface AdCampaign {
   impressions?: number;
   clicks?: number;
 }
+
+export interface PharmiaEvent {
+  _id: ObjectId | string;
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  imageUrl: string;
+  slidesUrl?: string;
+  youtubeUrls?: { title: string; url: string }[];
+  artifacts?: { type: 'gemini-quiz' | 'link'; title: string; data: any }[];
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
