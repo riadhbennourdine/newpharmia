@@ -17,6 +17,128 @@ interface ManageMasterClassResourcesModalProps {
   ) => void;
 }
 
+// Nouveau sous-composant pour gérer un seul élément de ressource
+const ResourceItem: React.FC<{
+  resource: WebinarResource;
+  index: number;
+  uploadingStates: Record<number, boolean>;
+  token: string | null;
+  handleResourceChange: (index: number, field: keyof WebinarResource, value: string) => void;
+  handleRemoveResource: (index: number) => void;
+  setUploadingStates: React.Dispatch<React.SetStateAction<Record<number, boolean>>>;
+  setUploadError: React.Dispatch<React.SetStateAction<string | null>>;
+}> = ({
+  resource,
+  index,
+  uploadingStates,
+  token,
+  handleResourceChange,
+  handleRemoveResource,
+  setUploadingStates,
+  setUploadError,
+}) => {
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    setUploadingStates(prev => ({ ...prev, [index]: true }));
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/api/upload/file', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Échec de l\'upload.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      handleResourceChange(index, 'source', data.fileUrl);
+    })
+    .catch(err => {
+      setUploadError(err.message || 'Une erreur est survenue lors de l\'upload.');
+    })
+    .finally(() => {
+      setUploadingStates(prev => ({ ...prev, [index]: false }));
+    });
+  }, [token, index, handleResourceChange, setUploadingStates, setUploadError]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': ['.jpeg', '.png', '.jpg', '.gif', '.webp'] },
+    multiple: false,
+  });
+
+  return (
+    <div key={index} className="border p-4 rounded-md">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Type</label>
+          <select
+            value={resource.type}
+            onChange={(e) => handleResourceChange(index, 'type', e.target.value)}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="Replay">Replay</option>
+            <option value="youtube">Vidéo YouTube</option>
+            <option value="Infographie">Infographie</option>
+            <option value="Diaporama">Diaporama (Canva)</option>
+            <option value="pdf">PDF</option>
+            <option value="link">Lien externe</option>
+            <option value="googledoc">Google Doc</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Titre</label>
+          <input
+            type="text"
+            value={resource.title || ''}
+            onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+        <div className="md:col-span-2">
+          {resource.type === 'Infographie' && (
+            <div {...getRootProps()} className={`mt-2 p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${isDragActive ? 'border-teal-500 bg-teal-50' : 'border-gray-300 hover:border-gray-400'}`}>
+              <input {...getInputProps()} />
+              {uploadingStates[index] ? (
+                <Spinner />
+              ) : (
+                <div className="flex flex-col items-center">
+                  <CloudArrowUpIcon className="h-8 w-8 text-gray-400 mb-2"/>
+                  <p className="text-sm text-gray-600">Glissez-déposez une image ici, ou cliquez pour sélectionner</p>
+                </div>
+              )}
+            </div>
+          )}
+          <label className="block text-sm font-medium text-gray-700 mt-2">Source (URL)</label>
+          <textarea
+            value={resource.source}
+            onChange={(e) => handleResourceChange(index, 'source', e.target.value)}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            rows={2}
+            placeholder={resource.type === 'Infographie' ? "L'URL apparaîtra ici après l'upload" : "Collez l'URL de la ressource"}
+          />
+        </div>
+      </div>
+      <div className="flex justify-end mt-4">
+        <button onClick={() => handleRemoveResource(index)} className="text-red-500 hover:text-red-700 text-sm">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const ManageMasterClassResourcesModal: React.FC<
   ManageMasterClassResourcesModalProps
 > = ({ webinarId, resources, linkedMemofiches, onClose, onSave, kahootUrl }) => {
@@ -243,107 +365,19 @@ const ManageMasterClassResourcesModal: React.FC<
             </h4>
             {uploadError && <p className="text-red-500 text-sm mb-2">{uploadError}</p>}
             <div className="space-y-4">
-              {localResources.map((resource, index) => {
-                const handleImageUpload = (acceptedFiles: File[]) => {
-                  const file = acceptedFiles[0];
-                  if (!file) return;
-
-                  setUploadingStates(prev => ({ ...prev, [index]: true }));
-                  setUploadError(null);
-
-                  const formData = new FormData();
-                  formData.append('file', file);
-
-                  fetch('/api/upload/file', {
-                    method: 'POST',
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                  })
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error('Échec de l\'upload.');
-                    }
-                    return response.json();
-                  })
-                  .then(data => {
-                    handleResourceChange(index, 'source', data.fileUrl);
-                  })
-                  .catch(err => {
-                    setUploadError(err.message || 'Une erreur est survenue lors de l\'upload.');
-                  })
-                  .finally(() => {
-                    setUploadingStates(prev => ({ ...prev, [index]: false }));
-                  });
-                };
-
-                const { getRootProps, getInputProps, isDragActive } = useDropzone({
-                  onDrop: handleImageUpload,
-                  accept: { 'image/*': ['.jpeg', '.png', '.jpg', '.gif', '.webp'] },
-                  multiple: false,
-                });
-
-                return (
-                  <div key={index} className="border p-4 rounded-md">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Type</label>
-                        <select
-                          value={resource.type}
-                          onChange={(e) => handleResourceChange(index, 'type', e.target.value)}
-                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                        >
-                          <option value="Replay">Replay</option>
-                          <option value="youtube">Vidéo YouTube</option>
-                          <option value="Infographie">Infographie</option>
-                          <option value="Diaporama">Diaporama (Canva)</option>
-                          <option value="pdf">PDF</option>
-                          <option value="link">Lien externe</option>
-                          <option value="googledoc">Google Doc</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Titre</label>
-                        <input
-                          type="text"
-                          value={resource.title || ''}
-                          onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
-                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        {resource.type === 'Infographie' && (
-                          <div {...getRootProps()} className={`mt-2 p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${isDragActive ? 'border-teal-500 bg-teal-50' : 'border-gray-300 hover:border-gray-400'}`}>
-                            <input {...getInputProps()} />
-                            {uploadingStates[index] ? (
-                              <Spinner />
-                            ) : (
-                              <div className="flex flex-col items-center">
-                                <CloudArrowUpIcon className="h-8 w-8 text-gray-400 mb-2"/>
-                                <p className="text-sm text-gray-600">Glissez-déposez une image ici, ou cliquez pour sélectionner</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        <label className="block text-sm font-medium text-gray-700 mt-2">Source (URL)</label>
-                        <textarea
-                          value={resource.source}
-                          onChange={(e) => handleResourceChange(index, 'source', e.target.value)}
-                          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                          rows={2}
-                          placeholder={resource.type === 'Infographie' ? "L'URL apparaîtra ici après l'upload" : "Collez l'URL de la ressource"}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end mt-4">
-                      <button onClick={() => handleRemoveResource(index)} className="text-red-500 hover:text-red-700 text-sm">
-                        Supprimer
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+              {localResources.map((resource, index) => (
+                <ResourceItem
+                  key={index}
+                  resource={resource}
+                  index={index}
+                  uploadingStates={uploadingStates}
+                  token={token}
+                  handleResourceChange={handleResourceChange}
+                  handleRemoveResource={handleRemoveResource}
+                  setUploadingStates={setUploadingStates}
+                  setUploadError={setUploadError}
+                />
+              ))}
             </div>
             <button
               onClick={handleAddResource}
@@ -394,5 +428,7 @@ const ManageMasterClassResourcesModal: React.FC<
     </div>
   );
 };
+
+export default ManageMasterClassResourcesModal;
 
 export default ManageMasterClassResourcesModal;
