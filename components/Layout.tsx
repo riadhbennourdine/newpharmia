@@ -112,25 +112,20 @@ const Header: React.FC = () => {
               Apps
             </NavLink>
           )}
-          {user?.role !== UserRole.ADMIN && (
-            <NavLink
-              to="/contact"
-              className={navLinkClass}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </NavLink>
-          )}
-          {user?.role !== UserRole.ADMIN &&
-            user?.role !== UserRole.PREPARATEUR && (
-              <NavLink
-                to="/tarifs"
-                className={navLinkClass}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tarifs
-              </NavLink>
-            )}
+          <NavLink
+            to="/contact"
+            className={navLinkClass}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Contact
+          </NavLink>
+          <NavLink
+            to="/tarifs"
+            className={navLinkClass}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Tarifs
+          </NavLink>
           <NavLink
             to="/webinars"
             className={navLinkClass}
@@ -255,25 +250,20 @@ const Header: React.FC = () => {
               Apps
             </NavLink>
           )}
-          {user?.role !== UserRole.ADMIN && (
-            <NavLink
-              to="/contact"
-              className={mobileNavLinkClass}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </NavLink>
-          )}
-          {user?.role !== UserRole.ADMIN &&
-            user?.role !== UserRole.PREPARATEUR && (
-              <NavLink
-                to="/tarifs"
-                className={mobileNavLinkClass}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tarifs
-              </NavLink>
-            )}
+          <NavLink
+            to="/contact"
+            className={mobileNavLinkClass}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Contact
+          </NavLink>
+          <NavLink
+            to="/tarifs"
+            className={mobileNavLinkClass}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Tarifs
+          </NavLink>
           <NavLink
             to="/webinars"
             className={mobileNavLinkClass}
