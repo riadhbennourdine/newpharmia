@@ -254,9 +254,12 @@ const ManageMasterClassResourcesModal: React.FC<
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                       >
                         <option value="Replay">Replay</option>
-                        <option value="Vidéo explainer">Vidéo explainer</option>
+                        <option value="youtube">Vidéo YouTube</option>
                         <option value="Infographie">Infographie</option>
-                        <option value="Diaporama">Diaporama</option>
+                        <option value="Diaporama">Diaporama (Canva)</option>
+                        <option value="pdf">PDF</option>
+                        <option value="link">Lien externe</option>
+                        <option value="googledoc">Google Doc</option>
                       </select>
                     </div>
                     <div>
@@ -274,7 +277,7 @@ const ManageMasterClassResourcesModal: React.FC<
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700">
-                        Source (URL ou code d'intégration)
+                        Source (URL)
                       </label>
                       <textarea
                         value={resource.source}
@@ -282,12 +285,10 @@ const ManageMasterClassResourcesModal: React.FC<
                           handleResourceChange(index, 'source', e.target.value)
                         }
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                        rows={4}
+                        rows={3}
                       />
                       <p className="mt-1 text-xs text-slate-500">
-                        Pour le type "Diaporama", collez une URL (PDF, Canva) ou
-                        un code d'intégration (iframe). Pour les autres, collez
-                        l'URL directe.
+                        Collez l'URL directe de la ressource. Pour un Google Doc, utilisez le lien de partage standard (avec /edit).
                       </p>
                     </div>
                   </div>
