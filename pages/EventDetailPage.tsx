@@ -86,19 +86,17 @@ const EventDetailPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <article>
-        <h1 className="text-4xl font-bold mb-4 text-gray-800">{event.title}</h1>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <h1 className="text-4xl font-bold text-gray-800">{event.title}</h1>
+          <div className="flex-shrink-0 p-2 bg-white rounded-lg shadow-md">
+            <QRCodeSVG value={eventUrl} size={64} />
+          </div>
+        </div>
         <p className="text-lg text-gray-600 mb-6">{event.summary}</p>
         <img src={event.imageUrl} alt={event.title} className="w-full h-96 object-cover rounded-lg mb-8" />
         
         <div className="prose lg:prose-xl max-w-none">
             {renderGatedContent()}
-        </div>
-
-        <div className="mt-12 p-6 bg-gray-50 rounded-lg text-center">
-            <h3 className="text-xl font-bold mb-4">Flashez pour accéder à l'événement !</h3>
-            <div className="inline-block p-2 bg-white rounded-lg shadow-md">
-                <QRCodeSVG value={eventUrl} size={128} />
-            </div>
         </div>
       </article>
     </div>
