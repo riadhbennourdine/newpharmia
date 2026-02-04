@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { QRCode } from 'react-qrcode-logo';
+import { QRCodeSVG } from 'qrcode.react';
 import { PharmiaEvent } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
@@ -97,7 +97,7 @@ const EventDetailPage: React.FC = () => {
         <div className="mt-12 p-6 bg-gray-50 rounded-lg text-center">
             <h3 className="text-xl font-bold mb-4">Flashez pour accéder à l'événement !</h3>
             <div className="inline-block p-2 bg-white rounded-lg shadow-md">
-                <QRCode value={eventUrl} size={128} />
+                <QRCodeSVG value={eventUrl} size={128} />
             </div>
         </div>
       </article>
