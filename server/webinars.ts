@@ -1552,6 +1552,7 @@ router.put(
             'pdf',
             'link',
             'youtube',
+            'googledoc',
           ];
           if (!allowedTypes.includes(resource.type)) {
             return res
