@@ -107,16 +107,26 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
           ></iframe>
         </div>
       );
-    } else {
-      return (
-        <p className="text-red-500 text-center p-4">
-          URL YouTube invalide. Veuillez vérifier le lien.
-        </p>
-      );
-    }
   }
 
-  // Case 4: Kahoot URL
+  // Case 4: Google Doc URL
+  if (absoluteUrl && absoluteUrl.includes('docs.google.com/document')) {
+    const embedUrl = absoluteUrl.replace('/edit', '/preview');
+    return (
+      <div 
+        ref={containerRef}
+        className="w-full h-full"
+      >
+        <iframe
+          src={embedUrl}
+          className="w-full h-full border-0"
+          title="Google Doc Viewer"
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Case 5: Kahoot URL
   if (absoluteUrl && absoluteUrl.includes('kahoot.it')) {
     return (
       <div

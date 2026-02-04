@@ -262,7 +262,7 @@ const MyMasterClassesPage: React.FC = () => {
         ) : <p className="text-center text-slate-500 py-12">Aucune photo disponible pour ce thème.</p>;
 
       case 'documents':
-         const documents = resources.filter(r => r.type === 'pdf' || r.type === 'link');
+         const documents = resources.filter(r => r.type === 'pdf' || r.type === 'link' || r.type === 'googledoc');
          return documents.length > 0 ? (
             <div className="space-y-4">
                 {documents.map((res, i) => <ResourceCard key={i} resource={res} onResourceClick={handleResourceClick} />)}

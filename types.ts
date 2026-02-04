@@ -325,7 +325,7 @@ export interface Pack {
 }
 
 export interface WebinarResource {
-  type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube';
+  type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube' | 'googledoc';
   source: string;
   title?: string;
 }

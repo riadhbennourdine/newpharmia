@@ -22,7 +22,8 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
       resource.type === 'Diaporama' ||
       resource.type === 'pdf' ||
       resource.type === 'link' ||
-      resource.type === 'youtube'
+      resource.type === 'youtube' ||
+      resource.type === 'googledoc'
     ) {
       return <EmbeddableViewer source={resource.source} />;
     }
