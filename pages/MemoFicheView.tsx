@@ -232,7 +232,7 @@ interface DetailedMemoFicheViewProps {
   isPreview?: boolean;
 }
 
-type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot' | 'video-explainer' | 'infographie' | 'diaporama';
+type TabName = 'memo' | 'flashcards' | 'quiz' | 'glossary' | 'media' | 'kahoot' | 'video-explainer' | 'infographie' | 'diaporama' | 'artifact';
 
 
 export const DetailedMemoFicheView: React.FC<DetailedMemoFicheViewProps> = ({ caseStudy, onBack, onStartQuiz, onEdit, onDelete, isPreview = false }) => {
