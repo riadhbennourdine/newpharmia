@@ -737,6 +737,7 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
     const hasFlashcards = caseStudy.flashcards && caseStudy.flashcards.length > 0;
     const hasQuiz = caseStudy.quiz && caseStudy.quiz.length > 0;
     const hasGlossary = caseStudy.glossary && caseStudy.glossary.length > 0;
+    const hasQuizGemini = (caseStudy.type === 'savoir' || caseStudy.type === 'ordonnances') && caseStudy.quizGeminiUrl;
     
     // Check if memoContent actually has content based on caseStudy.memoSections
     const hasMemoContent = caseStudy.memoSections != null;
@@ -779,6 +780,9 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
             }
             if (hasYoutubeLinks) { // Note: this is for youtubeLinks, not youtubeExplainerUrl
                 items.push({ id: 'media' as TabName, label: 'Média', icon: <img src={getAbsoluteImageUrl(getIconUrl('media'))} className="h-8 w-8" alt="Média" /> });
+            }
+            if (hasQuizGemini) {
+                items.push({ id: 'artifact' as TabName, label: 'Quiz Gemini', icon: <SparklesIcon className="h-8 w-8" /> });
             }
         }    
     return items;
@@ -836,6 +840,15 @@ const isMemoFicheSectionContentEmpty = (sectionContent: any): boolean => {
                     <EmbeddableViewer source={caseStudy.pdfSlideshowUrl} />
                 </div>
             ) : <div className="text-center text-slate-500">Aucun diaporama PDF disponible.</div>;
+        case 'artifact':
+            return caseStudy.quizGeminiUrl ? (
+                <div className="text-center bg-white p-8 rounded-lg shadow-md">
+                    <h3 className="text-2xl font-bold text-slate-800 mb-4">Testez vos connaissances avec le Quiz Gemini !</h3>
+                    <a href={caseStudy.quizGeminiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-[#0B8278] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700">
+                        <SparklesIcon className="h-6 w-6 mr-2" /> Démarrer le Quiz Gemini
+                    </a>
+                </div>
+            ) : <div className="text-center text-slate-500">Aucun Quiz Gemini disponible.</div>;
     }
   };
 

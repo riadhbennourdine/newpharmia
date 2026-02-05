@@ -279,9 +279,9 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     coverImageUrl: caseStudy?.coverImageUrl || '',
     coverImagePosition: caseStudy?.coverImagePosition || 'middle', // Added default position
     youtubeLinks: ensureArray(caseStudy?.youtubeLinks),
-    kahootUrl: caseStudy?.kahootUrl || '',
-    status: caseStudy?.status || MemoFicheStatus.DRAFT,
-
+              kahootUrl: caseStudy?.kahootUrl || '',
+              quizGeminiUrl: caseStudy?.quizGeminiUrl || '', // NEW: Quiz Gemini URL
+              status: caseStudy?.status || MemoFicheStatus.DRAFT,
     patientSituation: convertToSection(
       caseStudy?.patientSituation,
       'Cas comptoir',

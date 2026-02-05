@@ -211,6 +211,7 @@ export interface CaseStudy {
   coverImagePosition?: 'top' | 'middle' | 'bottom';
   youtubeLinks?: { url: string; title: string }[];
   kahootUrl?: string;
+  quizGeminiUrl?: string; // NEW: Lien vers un quiz Gemini
   quiz?: QuizQuestion[];
   summary?: string;
   sections?: MemoFicheSection[];
