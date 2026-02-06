@@ -236,8 +236,7 @@ router.get(
       const statsPromises = collections
         .filter(c => !c.name.startsWith('system.'))
         .map(async (collectionInfo) => {
-          const collection = db.collection(collectionInfo.name);
-          const stats = await collection.stats();
+          const stats = await db.command({ collStats: collectionInfo.name });
           const count = stats.count;
           const totalSize = stats.storageSize || stats.size || 0;
           const avgDocSize = count > 0 ? totalSize / count : 0;
