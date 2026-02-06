@@ -897,9 +897,9 @@ TON : Un peu inquiet, utilise des mots simples, ne connais pas le vocabulaire m�
 
 TON CAS (Basé sur cette fiche) :
 TITRE : ${truncateString(fiche.title, 500)}
-ANALYSE : ${truncateString(JSON.stringify(fiche.pathologyOverview || ''), 1000)}
-QUESTIONS CLÉS (PHARMA) : ${truncateString(JSON.stringify(fiche.keyQuestions || ''), 1000)}
-RED FLAGS : ${truncateString(JSON.stringify(fiche.redFlags || ''), 500)}
+ANALYSE : ${truncateString(JSON.stringify(fiche.pathologyOverview || {}), 1000)}
+QUESTIONS CLÉS (PHARMA) : ${truncateString(JSON.stringify(fiche.keyQuestions || []), 1000)}
+RED FLAGS : ${truncateString(JSON.stringify(fiche.redFlags || []), 500)}
 
 CONSIGNES :
 1. RESTE DANS TON RÔLE DE PATIENT. Ne sors JAMAIS du personnage.
