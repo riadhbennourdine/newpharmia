@@ -303,7 +303,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
             </label>
             <input
               type="text"
-              placeholder="Rechercher par nom, email..."
+              placeholder="Rechercher par nom..."
               value={pharmacistSearchTerm}
               onChange={handlePharmacistSearchTermChange}
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mb-2"
@@ -323,7 +323,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
                       htmlFor={`pharmacist-${p._id}`}
                       className="ml-2 block text-sm text-gray-900"
                     >
-                      {p.firstName} {p.lastName} ({p.email})
+                      {p.firstName} {p.lastName}
                     </label>
                   </div>
                 ))}
@@ -349,7 +349,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
                       htmlFor={`preparator-${p._id}`}
                       className="ml-2 block text-sm text-gray-900"
                     >
-                      {p.firstName} {p.lastName} ({p.email})
+                      {p.firstName} {p.lastName}
                     </label>
                   </div>
                 ))}
@@ -363,7 +363,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
             </label>
             <input
               type="text"
-              placeholder="Rechercher par nom, email, ville..."
+              placeholder="Rechercher par nom..."
               value={searchTerm}
               onChange={handleSearchTermChange}
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mb-2"
@@ -382,7 +382,7 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
                     htmlFor={`preparator-${p._id}`}
                     className="ml-2 block text-sm text-gray-900"
                   >
-                    {p.firstName} {p.lastName} ({p.email})
+                    {p.firstName} {p.lastName}
                   </label>
                 </div>
               ))}

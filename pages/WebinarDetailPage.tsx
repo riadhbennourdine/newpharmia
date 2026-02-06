@@ -811,45 +811,51 @@ const WebinarDetailPage: React.FC = () => {
   const { findItem, addToCart } = useCart(); // Access findItem and addToCart from useCart
   const [isAdded, setIsAdded] = useState(false); // New state elevated to WebinarDetailPage
   const navigate = useNavigate();
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [isAddingUser, setIsAddingUser] = useState(false);
-  const [isKahootModalOpen, setIsKahootModalOpen] = useState(false);
-  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] = useState(false); // State for the new modal
+const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Effect to update isAdded state when webinar or cart items change
-  useEffect(() => {
-    if (webinar) {
-      setIsAdded(!!findItem(webinar._id as string));
-    }
-  }, [webinar, findItem]);
-
-  const handleAddAttendee = async () => {
-    if (!newUserEmail) {
-      alert('Veuillez entrer un email.');
+  const handleSearchUsers = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
       return;
     }
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/users/search?q=${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        throw new Error('La recherche a échoué.');
+      }
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (err: any) {
+      alert(`Erreur: ${err.message}`);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      handleSearchUsers(searchQuery);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [searchQuery, handleSearchUsers]);
+
+  const handleAddAttendee = async (userId: string) => {
     if (!webinarId || !token) return;
 
     setIsAddingUser(true);
     try {
-      // 1. Find user by email
-      const userResponse = await fetch(`/api/users/by-email/${newUserEmail}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!userResponse.ok) {
-        throw new Error('Utilisateur non trouvé.');
-      }
-      const userToAdd: User = await userResponse.json();
-
-      // 2. Add user to webinar
       const addResponse = await fetch(`/api/webinars/${webinarId}/attendees`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId: userToAdd._id }),
+        body: JSON.stringify({ userId }),
       });
 
       if (!addResponse.ok) {
@@ -860,7 +866,8 @@ const WebinarDetailPage: React.FC = () => {
       }
 
       alert('Participant ajouté avec succès.');
-      setNewUserEmail('');
+      setSearchQuery('');
+      setSearchResults([]);
       window.location.reload(); // Reload to refresh the list
     } catch (err: any) {
       alert(`Erreur: ${err.message}`);
@@ -1411,20 +1418,28 @@ const WebinarDetailPage: React.FC = () => {
                       </h4>
                       <div className="flex gap-2">
                         <input
-                          type="email"
-                          value={newUserEmail}
-                          onChange={(e) => setNewUserEmail(e.target.value)}
-                          placeholder="Email de l'utilisateur"
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Rechercher un utilisateur par nom..."
                           className="flex-grow p-2 border rounded-md"
                         />
-                        <button
-                          onClick={handleAddAttendee}
-                          disabled={isAddingUser}
-                          className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-                        >
-                          {isAddingUser ? 'Ajout...' : 'Ajouter'}
-                        </button>
                       </div>
+                      {isSearching && <p>Recherche en cours...</p>}
+                      <ul className="list-none mt-2">
+                        {searchResults.map((userResult) => (
+                          <li key={userResult._id} className="flex items-center justify-between p-2 border-b">
+                            <span>{userResult.firstName} {userResult.lastName} ({userResult.email})</span>
+                            <button
+                              onClick={() => handleAddAttendee(userResult._id)}
+                              disabled={isAddingUser}
+                              className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+                            >
+                              {isAddingUser ? 'Ajout...' : 'Ajouter'}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                     <ul className="list-disc list-inside mt-2 text-slate-600">
                       {webinar.attendees.map((attendee) => (
