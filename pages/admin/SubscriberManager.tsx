@@ -231,22 +231,37 @@ const SubscriberManager: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const limit = 20; // Items per page
 
   useEffect(() => {
     const fetchSubscribers = async () => {
       setLoading(true);
+      setError(null);
       try {
         const headers: HeadersInit = token
           ? { Authorization: `Bearer ${token}` }
           : {};
-        // Fetch all users to allow filtering by role
-        const response = await fetch('/api/users', { headers });
+        
+        // Build query parameters for search and role filtering
+        const queryParams = new URLSearchParams();
+        queryParams.append('page', currentPage.toString());
+        queryParams.append('limit', limit.toString());
+        if (searchTerm) queryParams.append('search', searchTerm);
+        if (selectedRole) queryParams.append('role', selectedRole);
+
+        const response = await fetch(`/api/users?${queryParams.toString()}`, { headers });
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
         const data = await response.json();
-        setSubscribers(data);
+        setSubscribers(data.users);
+        setTotalPages(data.totalPages);
+        setTotalUsers(data.totalUsers);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -254,24 +269,19 @@ const SubscriberManager: React.FC = () => {
       }
     };
     fetchSubscribers();
-  }, [token]);
+  }, [token, currentPage, searchTerm, selectedRole]); // Re-fetch on pagination or filter change
 
-  const filteredSubscribers = useMemo(() => {
-    return subscribers.filter(
-      (subscriber) =>
-        (searchTerm === '' ||
-          subscriber.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (subscriber.firstName &&
-            subscriber.firstName
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase())) ||
-          (subscriber.lastName &&
-            subscriber.lastName
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase()))) &&
-        (selectedRole === '' || subscriber.role === selectedRole),
-    );
-  }, [subscribers, searchTerm, selectedRole]);
+  // filteredSubscribers will now just be the 'subscribers' state, as filtering is done on the server
+  // and we also need to add search and role to the backend
+  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on new search
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedRole(e.target.value);
+    setCurrentPage(1); // Reset to first page on new role filter
+  };
 
   const handleUpdateUser = (updatedUser: User) => {
     setSubscribers(
@@ -300,7 +310,27 @@ const SubscriberManager: React.FC = () => {
           throw new Error('Failed to delete user');
         }
 
-        setSubscribers(subscribers.filter((user) => user._id !== userId));
+        // After deletion, re-fetch the current page to ensure correct pagination
+        // or re-fetch all subscribers for simplicity
+        // For now, let's re-fetch to ensure data consistency
+        const headersRefetch: HeadersInit = token
+          ? { Authorization: `Bearer ${token}` }
+          : {};
+        const queryParams = new URLSearchParams();
+        queryParams.append('page', currentPage.toString());
+        queryParams.append('limit', limit.toString());
+        if (searchTerm) queryParams.append('search', searchTerm);
+        if (selectedRole) queryParams.append('role', selectedRole);
+
+        const responseRefetch = await fetch(`/api/users?${queryParams.toString()}`, { headers: headersRefetch });
+        if (!responseRefetch.ok) {
+          throw new Error('Failed to re-fetch users after deletion');
+        }
+        const dataRefetch = await responseRefetch.json();
+        setSubscribers(dataRefetch.users);
+        setTotalPages(dataRefetch.totalPages);
+        setTotalUsers(dataRefetch.totalUsers);
+
       } catch (error) {
         console.error(error);
         alert("Erreur lors de la suppression de l'utilisateur");
@@ -318,19 +348,19 @@ const SubscriberManager: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Gestion des Utilisateurs</h2>
+      <h2 className="text-2xl font-bold mb-4">Gestion des Utilisateurs ({totalUsers} trouvés)</h2>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input
           type="text"
           placeholder="Rechercher par email, nom..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchTermChange}
           className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
         />
         <select
           value={selectedRole}
-          onChange={(e) => setSelectedRole(e.target.value)}
+          onChange={handleRoleChange}
           className="p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
         >
           <option value="">Tous les rôles</option>
@@ -356,8 +386,8 @@ const SubscriberManager: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredSubscribers.length > 0 ? (
-              filteredSubscribers.map((subscriber) => (
+            {subscribers.length > 0 ? (
+              subscribers.map((subscriber) => (
                 <tr key={subscriber._id}>
                   <td className="py-2 px-4 border-b">{subscriber.email}</td>
                   <td className="py-2 px-4 border-b">
@@ -410,6 +440,30 @@ const SubscriberManager: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-4 mt-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+          >
+            Précédent
+          </button>
+          <span>
+            Page {currentPage} sur {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+          >
+            Suivant
+          </button>
+        </div>
+      )}
+
       {selectedUser && (
         <EditSubscriptionModal
           user={selectedUser}
