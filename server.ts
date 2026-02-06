@@ -473,10 +473,10 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
       const client = await clientPromise;
       const db = client.db('pharmia');
       const memofichesCollection = db.collection<CaseStudy>('memofiches');
-      fullFiches = await memofichesCollection
+      fullFiches = (await memofichesCollection
         .find({ _id: { $in: ficheObjectIDs } })
         .project({ title: 1, sourceText: 1, patientSituation: 1, keyQuestions: 1, pathologyOverview: 1, redFlags: 1, mainTreatment: 1, associatedProducts: 1, lifestyleAdvice: 1, dietaryAdvice: 1 }) // Project only necessary fields
-        .toArray();
+        .toArray()) as CaseStudy[];
     }
 
     // 2. Augment: Create a raw context string from the full MongoDB documents
