@@ -219,49 +219,6 @@ router.get(
   },
 );
 
-// Endpoint to get database collection statistics
-router.get(
-  '/db-stats',
-  authenticateToken,
-  async (req: AuthenticatedRequest, res) => {
-    if (req.user?.role !== UserRole.ADMIN) {
-      return res.status(403).json({ message: 'Unauthorized.' });
-    }
-
-    try {
-      const client = await clientPromise;
-      const db = client.db('pharmia');
-      const collections = await db.listCollections().toArray();
-      let totalDbSize = 0;
-      const statsPromises = collections
-        .filter(c => !c.name.startsWith('system.'))
-        .map(async (collectionInfo) => {
-          const stats = await db.command({ collStats: collectionInfo.name });
-          const count = stats.count;
-          const totalSize = stats.storageSize || stats.size || 0;
-          const avgDocSize = count > 0 ? totalSize / count : 0;
-          totalDbSize += totalSize;
-
-          return {
-            collection: collectionInfo.name,
-            documents: count,
-            totalSizeMB: (totalSize / 1024 / 1024).toFixed(2),
-            avgDocSizeKB: (avgDocSize / 1024).toFixed(2),
-          };
-      });
-
-      const results = await Promise.all(statsPromises);
-      
-      res.json({
-          collections: results,
-          totalDatabaseSizeMB: (totalDbSize / 1024 / 1024).toFixed(2),
-      });
-
-    } catch (error: any) {
-      console.error('[Debug] Error getting DB stats:', error);
-      res.status(500).json({ message: 'Failed to get DB stats.', error: error.message });
-    }
-  }
-);
+export default router;
 
 export default router;
