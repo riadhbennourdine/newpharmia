@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installer TOUTES les dépendances (dev et prod) pour construire le projet
-RUN npm install
+RUN npm ci
 
 # Copier le reste du code source
 COPY . .
@@ -27,7 +27,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installer UNIQUEMENT les dépendances de production
-RUN npm prune --production
+RUN npm install --production
 
 # Copier les artefacts de build de l'étape précédente
 COPY --from=builder /app/dist ./dist

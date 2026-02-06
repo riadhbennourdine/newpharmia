@@ -111,7 +111,11 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     res.status(500).json({ message: 'Failed to upload file to FTP.' });
   } finally {
     // Supprimer le fichier temporaire créé par Multer
-    await fs.unlink(tempFilePath);
+    try {
+      await fs.unlink(tempFilePath);
+    } catch (unlinkErr) {
+      console.error(`[CRITICAL] Failed to delete temporary upload file: ${tempFilePath}`, unlinkErr);
+    }
     if (ftpClient) releaseFtpClient(ftpClient);
   }
 });
