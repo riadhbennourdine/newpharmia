@@ -26,6 +26,7 @@
     "axios": "^1.12.2",
     "basic-ftp": "^5.0.5",
     "bcryptjs": "^3.0.2",
+    "chart.js": "^4.4.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
@@ -43,7 +44,6 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.1.1",
     "react-chartjs-2": "^5.2.0",
-    "chart.js": "^4.4.3",
     "react-dom": "^19.1.1",
     "react-dropzone": "^14.3.8",
     "react-helmet": "^6.1.0",
@@ -51,6 +51,7 @@
     "react-resize-detector": "^12.3.0",
     "react-router-dom": "^7.9.3",
     "react-select": "^5.10.2",
+    "sharp": "^0.34.5",
     "url": "^0.11.4",
     "vite": "^7.3.1"
   },

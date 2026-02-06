@@ -49,12 +49,27 @@ router.get(
   authenticateToken,
   checkRole([UserRole.ADMIN]),
   async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
     try {
       const { usersCollection } = await getCollections();
+      
+      const totalUsers = await usersCollection.countDocuments();
       const users = await usersCollection
         .find({}, { projection: { passwordHash: 0 } })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .toArray();
-      res.json(users);
+
+      res.json({
+        users,
+        totalPages: Math.ceil(totalUsers / limit),
+        currentPage: page,
+        totalUsers,
+      });
     } catch (error) {
       console.error('Error fetching users:', error);
       res
@@ -72,6 +87,10 @@ router.get(
   authenticateToken,
   checkRole([UserRole.ADMIN, UserRole.FORMATEUR]),
   async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
     try {
       const { usersCollection } = await getCollections();
       const { searchTerm } = req.query;
@@ -93,11 +112,21 @@ router.get(
           { email: searchRegex },
         ];
       }
-
+      
+      const totalPharmacists = await usersCollection.countDocuments(query);
       const pharmacists = await usersCollection
         .find(query, { projection: { passwordHash: 0 } })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .toArray();
-      res.json(pharmacists);
+
+      res.json({
+        pharmacists,
+        totalPages: Math.ceil(totalPharmacists / limit),
+        currentPage: page,
+        totalPharmacists,
+      });
     } catch (error) {
       console.error('Error fetching pharmacists:', error);
       res
@@ -115,6 +144,10 @@ router.get(
   authenticateToken,
   checkRole([UserRole.ADMIN, UserRole.FORMATEUR]),
   async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
     try {
       const { usersCollection } = await getCollections();
       const { searchTerm } = req.query;
@@ -128,11 +161,21 @@ router.get(
           { email: searchRegex },
         ];
       }
-
+      
+      const totalPreparateurs = await usersCollection.countDocuments(query);
       const preparateurs = await usersCollection
         .find(query, { projection: { passwordHash: 0 } })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .toArray();
-      res.json(preparateurs);
+        
+      res.json({
+        preparateurs,
+        totalPages: Math.ceil(totalPreparateurs / limit),
+        currentPage: page,
+        totalPreparateurs,
+      });
     } catch (error) {
       console.error('Error fetching preparateurs:', error);
       res
