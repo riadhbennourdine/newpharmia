@@ -157,6 +157,13 @@ const cleanJson = (text: string): string => {
   return clean.trim();
 };
 
+// Helper to truncate long strings
+const truncateString = (str: string | undefined, maxLength: number): string => {
+  if (!str) return '';
+  if (str.length <= maxLength) return str;
+  return str.substring(0, maxLength) + '...';
+};
+
 // Helper for executing Gemini calls with retry logic
 const executeGeminiCall = async <T>(
   task: (model: GenerativeModel) => Promise<T>,
@@ -355,14 +362,14 @@ export const generateLearningTools = async (
 ): Promise<Partial<CaseStudy>> => {
   // Construct a context string from the memo content
   const context = `
-    Titre: ${memoContent.title}
-    Sujet/Description: ${memoContent.sourceText || memoContent.shortDescription}
-    Situation Patient: ${typeof memoContent.patientSituation === 'string' ? memoContent.patientSituation : ''}
-    Questions Clés: ${(memoContent.keyQuestions || []).join('\n')}
-    Aperçu Pathologie: ${typeof memoContent.pathologyOverview === 'string' ? memoContent.pathologyOverview : ''}
-    Signaux d'alerte: ${(memoContent.redFlags || []).join('\n')}
-    Traitement: ${(memoContent.mainTreatment || []).join('\n')}
-    Conseils: ${(memoContent.lifestyleAdvice || []).join('\n')}
+    Titre: ${truncateString(memoContent.title, 100)}
+    Sujet/Description: ${truncateString(memoContent.sourceText || memoContent.shortDescription, 500)}
+    Situation Patient: ${truncateString(typeof memoContent.patientSituation === 'string' ? memoContent.patientSituation : '', 1000)}
+    Questions Clés: ${truncateString((memoContent.keyQuestions || []).join('\n'), 500)}
+    Aperçu Pathologie: ${truncateString(typeof memoContent.patientSituation === 'string' ? memoContent.pathologyOverview : '', 1000)}
+    Signaux d'alerte: ${truncateString((memoContent.redFlags || []).join('\n'), 500)}
+    Traitement: ${truncateString((memoContent.mainTreatment || []).join('\n'), 500)}
+    Conseils: ${truncateString((memoContent.lifestyleAdvice || []).join('\n'), 500)}
     `;
 
   const prompt = `À partir du contenu de la mémofiche suivant, génère des outils pédagogiques. La langue de sortie doit être le français.
@@ -534,14 +541,14 @@ RÈGLE D'OR : LA FLUIDITÉ AVANT TOUT.
    - Dis juste : "Très bien, simulation terminée ! Cliquez sur 'Terminer & Évaluer'."
 
 TEXTE BRUT.
-Sujet : ${context || 'Général'}
-Message de l'apprenant : ${userMessage}`;
+Sujet : ${truncateString(context || 'Général', 500)}
+Message de l'apprenant : ${truncateString(userMessage, 500)}`;
 
         let safeHistory: Content[] = chatHistory
           .slice(-10)
           .map((msg) => ({
             role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }],
+            parts: [{ text: truncateString(msg.text, 500) }],
           }));
 
         if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
@@ -550,7 +557,7 @@ Message de l'apprenant : ${userMessage}`;
               role: 'user',
               parts: [
                 {
-                  text: `Je souhaite démarrer une simulation de comptoir sur le sujet : ${context}`,
+                  text: `Je souhaite démarrer une simulation de comptoir sur le sujet : ${truncateString(context, 500)}`,
                 },
               ],
             },
@@ -589,11 +596,11 @@ export const getChatResponse = async (
         const model = genAI.getGenerativeModel({ model: modelName });
         const history: Content[] = chatHistory.map((msg) => ({
           role: msg.role === 'user' ? 'user' : 'model',
-          parts: [{ text: msg.text }],
+          parts: [{ text: truncateString(msg.text, 500) }],
         }));
         const chat = model.startChat({ history });
         const result = await chat.sendMessage(
-          `Tu es PharmIA assistant. Réponds en texte brut. Contexte: ${context}. Question: ${question}`,
+          `Tu es PharmIA assistant. Réponds en texte brut. Contexte: ${truncateString(context, 1000)}. Question: ${truncateString(question, 500)}`,
         );
         return result.response.text().trim();
       } catch (error: any) {
@@ -650,8 +657,8 @@ export const evaluateSimulation = async (
     },
   });
 
-  const prompt = `Tu es un expert évaluateur en pharmacie. Analyse la simulation suivante sur le sujet : ${topic}.
-    Histoire de la conversation : ${JSON.stringify(chatHistory.slice(-15))}.
+  const prompt = `Tu es un expert évaluateur en pharmacie. Analyse la simulation suivante sur le sujet : ${truncateString(topic, 500)}.
+    Histoire de la conversation : ${JSON.stringify(chatHistory.slice(-15).map(msg => ({ ...msg, text: truncateString(msg.text, 2000) })))}.
     Évalue la qualité du questionnement, la justesse du traitement et la pertinence des conseils.`;
 
   try {
@@ -845,7 +852,7 @@ export const generateDermoFicheJSON = async (
         - **System** : Doit contenir "Groupe X" (A, B, C ou D).
 
         SOURCE À TRAITER :
-        "${rawText || 'N/A'}"
+        "${truncateString(rawText || 'N/A', 5000)}"
         NOM DE LA PATHOLOGIE : "${pathologyName}"
 
         Langue : Français.`;
@@ -889,10 +896,10 @@ export const getDermoPatientResponse = async (
 TON : Un peu inquiet, utilise des mots simples, ne connais pas le vocabulaire médical de pointe.
 
 TON CAS (Basé sur cette fiche) :
-TITRE : ${fiche.title}
-ANALYSE : ${JSON.stringify(fiche.pathologyOverview)}
-QUESTIONS CLÉS (PHARMA) : ${JSON.stringify(fiche.keyQuestions)}
-RED FLAGS : ${JSON.stringify(fiche.redFlags)}
+TITRE : ${truncateString(fiche.title, 500)}
+ANALYSE : ${truncateString(JSON.stringify(fiche.pathologyOverview), 1000)}
+QUESTIONS CLÉS (PHARMA) : ${truncateString(JSON.stringify(fiche.keyQuestions), 1000)}
+RED FLAGS : ${truncateString(JSON.stringify(fiche.redFlags), 500)}
 
 CONSIGNES :
 1. RESTE DANS TON RÔLE DE PATIENT. Ne sors JAMAIS du personnage.
@@ -901,13 +908,13 @@ CONSIGNES :
 4. Si le pharmacien te demande de décrire ce qu'il voit (Analyse), utilise des termes de patient : "c'est rouge", "ça gratte beaucoup", "y'a des croûtes", "c'est tout sec", "y'a des petites bulles".
 5. Si une information n'est pas explicitement dans la fiche, invente un détail réaliste pour un patient (ex: "je travaille dehors", "j'ai changé de lessive hier").
 
-Message du pharmacien : ${userMessage}`;
+Message du pharmacien : ${truncateString(userMessage, 500)}`;
 
         let safeHistory: Content[] = chatHistory
           .slice(-10)
           .map((msg) => ({
             role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }],
+            parts: [{ text: truncateString(msg.text, 500) }],
           }));
 
         if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
@@ -966,18 +973,18 @@ TON STYLE :
 - Phrases claires et précises.
 
 STRUCTURE DU SCRIPT (environ 200 mots) :
-1. L'ACCROCHE : Une salutation professionnelle pour l'équipe "${context.groupName}".
-2. LE FOCUS DU JOUR (Priorité absolue) : "${context.instruction || 'Maintenons notre cohésion et notre excellence au service des patients.'}"
+1. L'ACCROCHE : Une salutation professionnelle pour l'équipe "${truncateString(context.groupName, 100)}".
+2. LE FOCUS DU JOUR (Priorité absolue) : "${truncateString(context.instruction || 'Maintenons notre cohésion et notre excellence au service des patients.', 500)}"
 3. LE POULS DE LA FORMATION (Bilan Rapide) :
    - Niveau global de l'équipe : ${context.learningStats?.averageScore ? context.learningStats.averageScore + ' pour cent' : 'Pas encore de données significatives'}.
-   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${context.learningStats.gaps.join(', ')}. Une révision de ces sujets est recommandée.` : ''}
-   ${context.learningStats?.topPerformer ? `- 🏆 Mention spéciale pour la meilleure performance de la semaine : ${context.learningStats.topPerformer}. Félicitations pour cet engagement.` : ''}
+   ${context.learningStats?.gaps && context.learningStats.gaps.length > 0 ? `- ⚠️ Point de vigilance (thèmes à revoir) : ${truncateString(context.learningStats.gaps.join(', '), 200)}. Une révision de ces sujets est recommandée.` : ''}
+   ${context.learningStats?.topPerformer ? `- 🏆 Mention spéciale pour la meilleure performance de la semaine : ${truncateString(context.learningStats.topPerformer, 100)}. Félicitations pour cet engagement.` : ''}
 4. LES RENDEZ-VOUS DU MOMENT :
-   ${context.nextPreparatorWebinar ? `- Pour les préparateurs (CROP) : ${context.nextPreparatorWebinar}` : ''}
-   ${context.nextPharmacistWebinar ? `- Pour les pharmaciens (MasterClass) : ${context.nextPharmacistWebinar}` : ''}
-   ${context.weekendProgram ? `- Ce week-end : ${context.weekendProgram}` : ''}
+   ${context.nextPreparatorWebinar ? `- Pour les préparateurs (CROP) : ${truncateString(context.nextPreparatorWebinar, 100)}` : ''}
+   ${context.nextPharmacistWebinar ? `- Pour les pharmaciens (MasterClass) : ${truncateString(context.nextPharmacistWebinar, 100)}` : ''}
+   ${context.weekendProgram ? `- Ce week-end : ${truncateString(context.weekendProgram, 100)}` : ''}
    (Si rien n'est indiqué ci-dessus, ne dis rien).
-5. L'ASTUCE CLINIQUE : ${context.tip ? 'Le point clinique du jour : ' + context.tip : 'Soyons vigilants sur la qualité de notre conseil.'}
+5. L'ASTUCE CLINIQUE : ${truncateString(context.tip ? 'Le point clinique du jour : ' + context.tip : 'Soyons vigilants sur la qualité de notre conseil.', 200)}
 6. LE MOT DE LA FIN : Une phrase professionnelle et encourageante pour souhaiter une bonne journée.
 
 Génère UNIQUEMENT le texte fluide à lire. Pas de notes, pas de titres.`;

@@ -466,7 +466,7 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
 
     const ficheObjectIDs = algoliaResults.map(
       (hit: any) => new ObjectId(hit.objectID),
-    );
+    ).slice(0, 5); // Limit to top 5 relevant fiches
 
     let fullFiches: CaseStudy[] = [];
     if (ficheObjectIDs.length > 0) {
@@ -475,6 +475,7 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
       const memofichesCollection = db.collection<CaseStudy>('memofiches');
       fullFiches = await memofichesCollection
         .find({ _id: { $in: ficheObjectIDs } })
+        .project({ title: 1, sourceText: 1, patientSituation: 1, keyQuestions: 1, pathologyOverview: 1, redFlags: 1, mainTreatment: 1, associatedProducts: 1, lifestyleAdvice: 1, dietaryAdvice: 1 }) // Project only necessary fields
         .toArray();
     }
 
