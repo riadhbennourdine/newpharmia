@@ -811,6 +811,9 @@ const WebinarDetailPage: React.FC = () => {
   const { findItem, addToCart } = useCart(); // Access findItem and addToCart from useCart
   const [isAdded, setIsAdded] = useState(false); // New state elevated to WebinarDetailPage
   const navigate = useNavigate();
+  const [isAddingUser, setIsAddingUser] = useState(false);
+  const [isKahootModalOpen, setIsKahootModalOpen] = useState(false);
+  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] = useState(false);
 const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
