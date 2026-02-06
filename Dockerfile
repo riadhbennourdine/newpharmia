@@ -1,6 +1,6 @@
 # --- Étape 1: Build (Construction) ---
 # Utilise une image Node.js complète pour installer les dépendances et construire l'application
-FROM node:18 AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN npm run build
 
 # --- Étape 2: Production ---
 # Utilise une image Node.js beaucoup plus légère (alpine) pour l'exécution
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 

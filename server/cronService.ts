@@ -59,7 +59,6 @@ export function initCronJobs() {
     console.log('[CRON] Running scheduled FTP download cache cleanup...');
     cleanupDirectory(FTP_DOWNLOAD_CACHE_DIR, MAX_AGE_HOURS);
   }, {
-    scheduled: true,
     timezone: "UTC"
   });
 
