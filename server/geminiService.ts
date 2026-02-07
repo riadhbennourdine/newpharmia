@@ -366,7 +366,7 @@ export const generateLearningTools = async (
     Sujet/Description: ${truncateString(memoContent.sourceText || memoContent.shortDescription, 500)}
     Situation Patient: ${truncateString(typeof memoContent.patientSituation === 'string' ? memoContent.patientSituation : '', 1000)}
     Questions Clés: ${truncateString((memoContent.keyQuestions || []).join('\n'), 500)}
-    Aperçu Pathologie: ${truncateString(typeof memoContent.patientSituation === 'string' ? memoContent.pathologyOverview : '', 1000)}
+    Aperçu Pathologie: ${truncateString(typeof memoContent.pathologyOverview === 'string' ? memoContent.pathologyOverview : '', 1000)}
     Signaux d'alerte: ${truncateString((memoContent.redFlags || []).join('\n'), 500)}
     Traitement: ${truncateString((memoContent.mainTreatment || []).join('\n'), 500)}
     Conseils: ${truncateString((memoContent.lifestyleAdvice || []).join('\n'), 500)}
