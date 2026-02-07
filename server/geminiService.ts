@@ -892,23 +892,11 @@ export const getDermoPatientResponse = async (
         const genAI = new GoogleGenerativeAI(key);
         const model = genAI.getGenerativeModel({ model: modelName });
 
-        const patientPrompt = `Tu es un PATIENT qui vient à la pharmacie pour un problème de peau.
-TON : Un peu inquiet, utilise des mots simples, ne connais pas le vocabulaire médical de pointe.
+        // const analyseStr = JSON.stringify(fiche.pathologyOverview || {});
+        // const questionsStr = JSON.stringify(fiche.keyQuestions || []);
+        // const redFlagsStr = JSON.stringify(fiche.redFlags || []);
+        const patientPrompt = ''; // Temporarily disabled for debugging
 
-TON CAS (Basé sur cette fiche) :
-TITRE : ${truncateString(fiche.title, 500)}
-ANALYSE : ${truncateString(JSON.stringify(fiche.pathologyOverview || {}), 1000)}
-QUESTIONS CLÉS (PHARMA) : ${truncateString(JSON.stringify(fiche.keyQuestions || []), 1000)}
-RED FLAGS : ${truncateString(JSON.stringify(fiche.redFlags || []), 500)}
-
-CONSIGNES :
-1. RESTE DANS TON RÔLE DE PATIENT. Ne sors JAMAIS du personnage.
-2. Ne donne JAMAIS de conseils médicaux ou de diagnostic toi-même.
-3. Réponds aux questions du pharmacien en te basant sur les informations de ta fiche.
-4. Si le pharmacien te demande de décrire ce qu'il voit (Analyse), utilise des termes de patient : "c'est rouge", "ça gratte beaucoup", "y'a des croûtes", "c'est tout sec", "y'a des petites bulles".
-5. Si une information n'est pas explicitement dans la fiche, invente un détail réaliste pour un patient (ex: "je travaille dehors", "j'ai changé de lessive hier").
-
-Message du pharmacien : ${truncateString(userMessage, 500)}`;
 
         let safeHistory: Content[] = chatHistory
           .slice(-10)
