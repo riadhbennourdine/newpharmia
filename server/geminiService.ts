@@ -991,6 +991,33 @@ Génère UNIQUEMENT le texte fluide à lire. Pas de notes, pas de titres.`;
   });
 };
 
+export const summarizeText = async (text: string): Promise<string> => {
+  return globalQueue.add(async () => {
+    let attempts = 0;
+    const maxAttempts = 3;
+    while (attempts < maxAttempts) {
+      const key = getApiKey();
+      try {
+        const modelName = await getValidModel(key);
+        const genAI = new GoogleGenerativeAI(key);
+        const model = genAI.getGenerativeModel({ model: modelName });
+
+        const prompt = `Résume le texte suivant en une seule phrase courte et percutante, adaptée pour un sous-titre. Le ton doit être informatif mais engageant. Le texte à résumer est : "${truncateString(text, 1000)}"`;
+
+        const result = await model.generateContent(prompt);
+        return result.response.text().trim();
+      } catch (error: any) {
+        if (error.message?.includes('429')) keyManager.markKeyAsExhausted(key);
+        attempts++;
+        if (attempts >= maxAttempts)
+          throw new Error(`Text summarization failed: ${error.message}`);
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+    }
+    return 'Désolé, impossible de générer un résumé pour le moment.';
+  });
+};
+
 export const listModels = async (): Promise<{ name: string }[]> => {
   return [{ name: 'auto-discovered' }];
 };

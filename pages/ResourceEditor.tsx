@@ -19,6 +19,7 @@ const ResourceEditor: React.FC = () => {
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [webinarGroupFilter, setWebinarGroupFilter] = useState<WebinarGroup | 'all'>('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
 
@@ -63,9 +64,31 @@ const ResourceEditor: React.FC = () => {
             ...resourcePage,
             eventId: selectedWebinar._id,
             title: selectedWebinar.title,
-            subtitle: selectedWebinar.description, // Using description for subtitle from Webinar
+            subtitle: 'Génération du résumé en cours...',
             coverImageUrl: selectedWebinar.imageUrl,
         });
+
+        setIsSummarizing(true);
+        fetch('/api/summarize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ text: selectedWebinar.description }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.summary) {
+                setResourcePage(prev => ({ ...prev, subtitle: data.summary }));
+            } else {
+                setResourcePage(prev => ({ ...prev, subtitle: selectedWebinar.description }));
+            }
+        })
+        .catch(() => {
+            setResourcePage(prev => ({ ...prev, subtitle: selectedWebinar.description }));
+        })
+        .finally(() => setIsSummarizing(false));
     }
   };
 
@@ -115,7 +138,7 @@ const ResourceEditor: React.FC = () => {
       if (!response.ok) {
         throw new Error('Échec de la sauvegarde de la page de ressource.');
       }
-      navigate('/admin'); // Redirect to admin panel or a new resource list page
+      navigate('/admin/resources');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -127,7 +150,7 @@ const ResourceEditor: React.FC = () => {
     webinarGroupFilter === 'all' || webinar.group === webinarGroupFilter
   );
 
-  if (isLoading && id) return <div className="text-center p-10"><Loader /></div>;
+  if (isLoading && !id) return <div className="text-center p-10"><Loader /></div>;
 
   return (
     <>
@@ -137,7 +160,8 @@ const ResourceEditor: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-md">
           
           {!id && (
-            <div className="space-y-4">
+            <div className="space-y-4 p-4 border rounded-md bg-slate-50">
+              <h3 className="text-lg font-medium text-gray-900">Hériter d'un webinaire (Optionnel)</h3>
               <div>
                 <label htmlFor="webinarGroup" className="block text-sm font-medium text-gray-700">Filtrer par groupe</label>
                 <select 
@@ -153,11 +177,11 @@ const ResourceEditor: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="event" className="block text-sm font-medium text-gray-700">Hériter d'un webinaire</label>
+                <label htmlFor="event" className="block text-sm font-medium text-gray-700">Sélectionner un webinaire</label>
                 <select id="event" onChange={handleEventSelect} className="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                  <option value="">Sélectionner un webinaire</option>
+                  <option value="">Ne pas hériter</option>
                   {filteredWebinars.map(webinar => (
-                    <option key={webinar._id} value={webinar._id}>{webinar.title}</option>
+                    <option key={webinar._id} value={webinar._id}>{new Date(webinar.date).toLocaleDateString()} - {webinar.title}</option>
                   ))}
                 </select>
               </div>
@@ -166,11 +190,14 @@ const ResourceEditor: React.FC = () => {
 
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Titre</label>
-            <input type="text" name="title" id="title" value={resourcePage.title} onChange={handleChange} required className="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
+            <input type="text" name="title" id="title" value={resourcePage.title || ''} onChange={handleChange} required className="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
           </div>
 
           <div>
-            <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700">Sous-titre</label>
+            <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700">
+              Sous-titre 
+              {isSummarizing && <span className="text-xs text-gray-500 ml-2">(Génération du résumé...)</span>}
+            </label>
             <input type="text" name="subtitle" id="subtitle" value={resourcePage.subtitle || ''} onChange={handleChange} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
           </div>
 
@@ -186,26 +213,26 @@ const ResourceEditor: React.FC = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">Ressources</h3>
             {resourcePage.resources?.map((resource, index) => (
-              <div key={index} className="border p-4 rounded-md space-y-2">
+              <div key={index} className="border p-4 rounded-md space-y-2 bg-gray-50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <input type="text" placeholder="Titre" value={resource.title} onChange={(e) => handleResourceChange(index, 'title', e.target.value)} className="p-2 border border-gray-300 rounded-md" />
+                  <input type="text" placeholder="Titre de la ressource" value={resource.title} onChange={(e) => handleResourceChange(index, 'title', e.target.value)} className="p-2 border border-gray-300 rounded-md" required />
                   <select value={resource.type} onChange={(e) => handleResourceChange(index, 'type', e.target.value)} className="p-2 border border-gray-300 rounded-md">
                     <option value="diaporama">Diaporama</option>
                     <option value="infographie">Infographie</option>
                     <option value="replay">Replay</option>
                     <option value="autre">Autre</option>
                   </select>
-                  <input type="url" placeholder="URL" value={resource.url} onChange={(e) => handleResourceChange(index, 'url', e.target.value)} className="p-2 border border-gray-300 rounded-md" />
+                  <input type="url" placeholder="URL de la ressource" value={resource.url} onChange={(e) => handleResourceChange(index, 'url', e.target.value)} className="p-2 border border-gray-300 rounded-md" required />
                 </div>
-                <button type="button" onClick={() => removeResource(index)} className="text-red-500 hover:text-red-700 text-sm">Supprimer</button>
+                <button type="button" onClick={() => removeResource(index)} className="text-red-500 hover:text-red-700 text-sm font-medium">Supprimer cette ressource</button>
               </div>
             ))}
-            <button type="button" onClick={addResource} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Ajouter une ressource</button>
+            <button type="button" onClick={addResource} className="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 text-sm font-semibold">Ajouter une ressource</button>
           </div>
 
-          <div className="flex justify-end gap-4">
-              <button type="button" onClick={() => navigate('/admin')} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">Annuler</button>
-              <button type="submit" disabled={isLoading} className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 disabled:bg-gray-400">
+          <div className="flex justify-end gap-4 pt-4 border-t">
+              <button type="button" onClick={() => navigate('/admin/resources')} className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 font-semibold">Annuler</button>
+              <button type="submit" disabled={isLoading || isSummarizing} className="bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700 disabled:bg-gray-400 font-semibold">
                   {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
               </button>
           </div>
