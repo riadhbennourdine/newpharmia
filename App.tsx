@@ -78,6 +78,8 @@ const EventManagement = lazy(() => import('./pages/admin/EventManagement'));
 const EventEditor = lazy(() => import('./pages/admin/EventEditor'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage'));
+const ResourceViewer = lazy(() => import('./pages/ResourceViewer'));
+const ResourceEditor = lazy(() => import('./pages/ResourceEditor'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -112,6 +114,7 @@ const App: React.FC = () => (
                 <Route path="/thank-you" element={<ThankYouPage />} />
                 <Route path="/events" element={<EventsPage />} />
                 <Route path="/events/:slug" element={<EventDetailPage />} />
+                <Route path="/resources/:id" element={<ResourceViewer />} />
               </Route>
               <Route path="/login" element={<LoginView />} />
               <Route path="/register" element={<RegisterView />} />
@@ -232,6 +235,8 @@ const App: React.FC = () => (
                   <Route path="/admin/events" element={<EventManagement />} />
                   <Route path="/admin/events/new" element={<EventEditor />} />
                   <Route path="/admin/events/edit/:id" element={<EventEditor />} />
+                  <Route path="/admin/resources/new" element={<ResourceEditor />} />
+                  <Route path="/admin/resources/edit/:id" element={<ResourceEditor />} />
                 </Route>
               </Route>
 

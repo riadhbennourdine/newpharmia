@@ -79,6 +79,7 @@ import campaignsRouter from './server/routes/campaigns.js';
 import adminSubscriptionsRouter from './server/routes/adminSubscriptions.js';
 import adminAnalyticsRouter from './server/routes/adminAnalytics.js';
 import eventsRouter from './server/routes/events.js';
+import resourcePagesRouter from './server/routes/resourcePages.js';
 
 // FIX: Define __filename and __dirname for ES module scope
 const __filename = fileURLToPath(import.meta.url);
@@ -237,6 +238,7 @@ app.use('/api/simulation', simulationRouter);
 app.use('/api/briefing', briefingRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/events', eventsRouter);
+app.use('/api/resource-pages', resourcePagesRouter);
 
 // --- Routes ---
 const fileSearchUpload = multer({ dest: 'tmp/filesearch/' });

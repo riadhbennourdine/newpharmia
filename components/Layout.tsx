@@ -133,13 +133,6 @@ const Header: React.FC = () => {
           >
             Webinaires
           </NavLink>
-          <NavLink
-            to="/events"
-            className={navLinkClass}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Événements
-          </NavLink>
           {cartLink}
           {user?.role === UserRole.ADMIN ||
           user?.role === UserRole.FORMATEUR ? (
@@ -217,13 +210,6 @@ const Header: React.FC = () => {
           >
             Contact
           </NavLink>
-          <NavLink
-            to="/events"
-            className={navLinkClass}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Événements
-          </NavLink>
           {cartLink}
           <Link
             to="/login"
@@ -284,13 +270,6 @@ const Header: React.FC = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Webinaires
-          </NavLink>
-          <NavLink
-            to="/events"
-            className={mobileNavLinkClass}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Événements
           </NavLink>
           {mobileCartLink}
           {user?.role === UserRole.ADMIN ||
@@ -364,13 +343,6 @@ const Header: React.FC = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Contact
-          </NavLink>
-          <NavLink
-            to="/events"
-            className={mobileNavLinkClass}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Événements
           </NavLink>
           {mobileCartLink}
           <Link

@@ -439,7 +439,26 @@ export interface PharmiaEvent {
   slidesUrl?: string;
   youtubeUrls?: { title: string; url: string }[];
   artifacts?: { type: 'gemini-quiz' | 'link'; title: string; data: any }[];
+  resourcePageId?: ObjectId | string;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ResourceLink {
+  type: 'diaporama' | 'infographie' | 'replay' | 'autre';
+  title: string;
+  url: string;
+}
+
+export interface ResourcePage {
+  _id: ObjectId | string;
+  title: string;
+  subtitle?: string;
+  coverImageUrl?: string;
+  eventId?: ObjectId | string;
+  resources: ResourceLink[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+

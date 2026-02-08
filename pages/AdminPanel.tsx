@@ -93,6 +93,14 @@ const AdminPanel: React.FC = () => {
                 >
                   Événements
                 </NavLink>
+                <NavLink
+                  to="/admin/resources/new"
+                  className={({ isActive }) =>
+                    `px-3 sm:px-4 py-2 font-medium text-base rounded-t-lg cursor-pointer transition-colors ${isActive ? 'border-b-2 border-teal-600 text-teal-600' : 'text-gray-500 hover:text-gray-700'}`
+                  }
+                >
+                  Ressources
+                </NavLink>
               </>
             )}
           </nav>
