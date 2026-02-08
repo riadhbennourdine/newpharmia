@@ -358,6 +358,7 @@ export interface Webinar {
   publicationStatus?: 'DRAFT' | 'PUBLISHED';
   targetAudience?: 'Pharmacien' | 'Préparateur' | 'Tous';
   linkedMemofiches?: (ObjectId | string)[]; // NOUVEAU CHAMP
+  resourcePageId?: ObjectId | string;
   kahootUrl?: string;
 }
 
@@ -439,7 +440,6 @@ export interface PharmiaEvent {
   slidesUrl?: string;
   youtubeUrls?: { title: string; url: string }[];
   artifacts?: { type: 'gemini-quiz' | 'link'; title: string; data: any }[];
-  resourcePageId?: ObjectId | string;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;

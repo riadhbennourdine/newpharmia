@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ResourcePage, ResourceLink, PharmiaEvent } from '../types';
+import { ResourcePage, ResourceLink, Webinar, WebinarGroup } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import Loader from '../components/Loader';
 import ImagePickerModal from '../components/ImagePickerModal';
@@ -16,19 +16,20 @@ const ResourceEditor: React.FC = () => {
     resources: [],
     eventId: undefined,
   });
-  const [events, setEvents] = useState<PharmiaEvent[]>([]);
+  const [webinars, setWebinars] = useState<Webinar[]>([]);
+  const [webinarGroupFilter, setWebinarGroupFilter] = useState<WebinarGroup | 'all'>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch events for the dropdown
-    fetch('/api/events/all', {
+    // Fetch webinars for the dropdown
+    fetch('/api/webinars', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
-      .then(data => setEvents(data))
-      .catch(() => setError("Impossible de charger les événements."));
+      .then(data => setWebinars(data))
+      .catch(() => setError("Impossible de charger les webinaires."));
 
     if (id) {
       setIsLoading(true);
@@ -55,15 +56,15 @@ const ResourceEditor: React.FC = () => {
   }, [id, token]);
 
   const handleEventSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedEventId = e.target.value;
-    const selectedEvent = events.find(event => event._id === selectedEventId);
-    if (selectedEvent) {
+    const selectedWebinarId = e.target.value;
+    const selectedWebinar = webinars.find(webinar => webinar._id === selectedWebinarId);
+    if (selectedWebinar) {
         setResourcePage({
             ...resourcePage,
-            eventId: selectedEvent._id,
-            title: selectedEvent.title,
-            subtitle: selectedEvent.summary,
-            coverImageUrl: selectedEvent.imageUrl,
+            eventId: selectedWebinar._id,
+            title: selectedWebinar.title,
+            subtitle: selectedWebinar.description, // Using description for subtitle from Webinar
+            coverImageUrl: selectedWebinar.imageUrl,
         });
     }
   };
@@ -122,6 +123,10 @@ const ResourceEditor: React.FC = () => {
     }
   };
 
+  const filteredWebinars = webinars.filter(webinar => 
+    webinarGroupFilter === 'all' || webinar.group === webinarGroupFilter
+  );
+
   if (isLoading && id) return <div className="text-center p-10"><Loader /></div>;
 
   return (
@@ -132,14 +137,30 @@ const ResourceEditor: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-md">
           
           {!id && (
-            <div>
-              <label htmlFor="event" className="block text-sm font-medium text-gray-700">Hériter d'un événement</label>
-              <select id="event" onChange={handleEventSelect} className="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                <option value="">Sélectionner un événement</option>
-                {events.map(event => (
-                  <option key={event._id} value={event._id}>{event.title}</option>
-                ))}
-              </select>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="webinarGroup" className="block text-sm font-medium text-gray-700">Filtrer par groupe</label>
+                <select 
+                  id="webinarGroup" 
+                  onChange={(e) => setWebinarGroupFilter(e.target.value as WebinarGroup | 'all')} 
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  value={webinarGroupFilter}
+                >
+                  <option value="all">Tous les groupes</option>
+                  <option value={WebinarGroup.CROP_TUNIS}>CROP Tunis</option>
+                  <option value={WebinarGroup.PHARMIA}>PharmIA</option>
+                  <option value={WebinarGroup.MASTER_CLASS}>MasterClass</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="event" className="block text-sm font-medium text-gray-700">Hériter d'un webinaire</label>
+                <select id="event" onChange={handleEventSelect} className="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                  <option value="">Sélectionner un webinaire</option>
+                  {filteredWebinars.map(webinar => (
+                    <option key={webinar._id} value={webinar._id}>{webinar.title}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 

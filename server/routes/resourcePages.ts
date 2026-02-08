@@ -2,7 +2,7 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import { authenticateToken, checkRole } from '../authMiddleware.js';
 import clientPromise from '../mongo.js';
-import { ResourcePage, UserRole, PharmiaEvent } from '../../types.js';
+import { ResourcePage, UserRole, Webinar } from '../../types.js'; // Changed PharmiaEvent to Webinar
 
 const router = express.Router();
 
@@ -68,8 +68,8 @@ router.post('/', authenticateToken, checkRole([UserRole.ADMIN]), async (req, res
     if (eventId && newResourcePageId) {
         const client = await clientPromise;
         const db = client.db('pharmia');
-        const eventsCollection = db.collection<PharmiaEvent>('events');
-        await eventsCollection.updateOne(
+        const webinarsCollection = db.collection<Webinar>('webinars'); // Changed eventsCollection to webinarsCollection
+        await webinarsCollection.updateOne(
             { _id: new ObjectId(eventId) },
             { $set: { resourcePageId: newResourcePageId } }
         );
@@ -111,17 +111,17 @@ router.put('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req, r
 
     const client = await clientPromise;
     const db = client.db('pharmia');
-    const eventsCollection = db.collection<PharmiaEvent>('events');
+    const webinarsCollection = db.collection<Webinar>('webinars'); // Changed eventsCollection to webinarsCollection
 
     if (oldResourcePage && oldResourcePage.eventId?.toString() !== eventId) {
         if (oldResourcePage.eventId) {
-            await eventsCollection.updateOne(
+            await webinarsCollection.updateOne(
                 { _id: new ObjectId(oldResourcePage.eventId) },
                 { $unset: { resourcePageId: "" } }
             );
         }
         if (eventId) {
-            await eventsCollection.updateOne(
+            await webinarsCollection.updateOne(
                 { _id: new ObjectId(eventId) },
                 { $set: { resourcePageId: new ObjectId(id) } }
             );
@@ -153,8 +153,8 @@ router.delete('/:id', authenticateToken, checkRole([UserRole.ADMIN]), async (req
     if (resourcePageToDelete && resourcePageToDelete.eventId) {
         const client = await clientPromise;
         const db = client.db('pharmia');
-        const eventsCollection = db.collection<PharmiaEvent>('events');
-        await eventsCollection.updateOne(
+        const webinarsCollection = db.collection<Webinar>('webinars'); // Changed eventsCollection to webinarsCollection
+        await webinarsCollection.updateOne(
             { _id: new ObjectId(resourcePageToDelete.eventId) },
             { $unset: { resourcePageId: "" } }
         );
