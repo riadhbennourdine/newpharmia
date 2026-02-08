@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Webinar,
   User,
@@ -516,6 +516,16 @@ const [searchQuery, setSearchQuery] = useState('');
                 />
               </div>
 
+              {registeredAttendee && webinar.resourcePageId && (
+                <div className="mt-8 pt-6 border-t">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                    Page de Ressources
+                  </h3>
+                  <Link to={`/resources/${webinar.resourcePageId}`} className="inline-block bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors">
+                    Accéder aux ressources
+                  </Link>
+                </div>
+              )}
 
               {(webinar.calculatedStatus === 'PAST' || registeredAttendee) &&
               (webinar.resources?.length || webinar.kahootUrl) ? (

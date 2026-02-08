@@ -80,6 +80,7 @@ const EventsPage = lazy(() => import('./pages/EventsPage'));
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage'));
 const ResourceViewer = lazy(() => import('./pages/ResourceViewer'));
 const ResourceEditor = lazy(() => import('./pages/ResourceEditor'));
+const ResourceListPage = lazy(() => import('./pages/admin/ResourceListPage'));
 
 // Other
 import NotFoundPage from './pages/NotFoundPage';
@@ -237,6 +238,7 @@ const App: React.FC = () => (
                   <Route path="/admin/events/edit/:id" element={<EventEditor />} />
                   <Route path="/admin/resources/new" element={<ResourceEditor />} />
                   <Route path="/admin/resources/edit/:id" element={<ResourceEditor />} />
+                  <Route path="/admin/resources" element={<ResourceListPage />} />
                 </Route>
               </Route>
 
