@@ -204,7 +204,7 @@ const ResourceEditor: React.FC = () => {
           <div>
             <label htmlFor="coverImageUrl" className="block text-sm font-medium text-gray-700">URL de l'image de couverture</label>
             <div className="flex items-center gap-2">
-                <input type="url" name="coverImageUrl" id="coverImageUrl" value={resourcePage.coverImageUrl || ''} onChange={handleChange} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
+                <input type="text" name="coverImageUrl" id="coverImageUrl" value={resourcePage.coverImageUrl || ''} onChange={handleChange} className="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
                 <button type="button" onClick={() => setIsImagePickerOpen(true)} className="mt-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200">Galerie</button>
             </div>
             {resourcePage.coverImageUrl && <img src={resourcePage.coverImageUrl} alt="Aperçu" className="mt-2 h-32 w-auto rounded"/>}
@@ -222,7 +222,7 @@ const ResourceEditor: React.FC = () => {
                     <option value="replay">Replay</option>
                     <option value="autre">Autre</option>
                   </select>
-                  <input type="url" placeholder="URL de la ressource" value={resource.url} onChange={(e) => handleResourceChange(index, 'url', e.target.value)} className="p-2 border border-gray-300 rounded-md" required />
+                  <input type="text" placeholder="URL de la ressource" value={resource.url} onChange={(e) => handleResourceChange(index, 'url', e.target.value)} className="p-2 border border-gray-300 rounded-md" required />
                 </div>
                 <button type="button" onClick={() => removeResource(index)} className="text-red-500 hover:text-red-700 text-sm font-medium">Supprimer cette ressource</button>
               </div>
