@@ -82,11 +82,14 @@ router.get('/', softAuthenticateToken, async (req, res) => {
     const webinarsCollection = db.collection<Webinar>('webinars');
     const usersCollection = db.collection('users');
 
-    const { group } = req.query;
+    const { group, masterClassTheme } = req.query;
 
     const query: any = {};
     if (group) {
       query.group = group;
+    }
+    if (masterClassTheme) {
+      query.masterClassTheme = masterClassTheme;
     }
 
     const authReq = req as AuthenticatedRequest;
