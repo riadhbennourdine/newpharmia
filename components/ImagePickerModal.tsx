@@ -1,103 +1,119 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { Image } from '../../types';
 import Loader from './Loader';
+import path from 'path-browserify';
+import { getFtpViewUrl } from '../utils/ftp';
 
 interface ImagePickerModalProps {
   onClose: () => void;
   onSelect: (imageUrl: string) => void;
 }
 
+interface FtpItem {
+  name: string;
+  type: 'file' | 'directory';
+  size: number;
+  modifyTime: string;
+}
+
 const ImagePickerModal: React.FC<ImagePickerModalProps> = ({ onClose, onSelect }) => {
-  const [images, setImages] = useState<Image[]>([]);
+  const [items, setItems] = useState<FtpItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalImages, setTotalImages] = useState(0);
-  const limit = 20; // Items per page
+  const [currentPath, setCurrentPath] = useState('/');
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchItems = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const queryParams = new URLSearchParams();
-        queryParams.append('page', currentPage.toString());
-        queryParams.append('limit', limit.toString());
-
-        const response = await fetch(`/api/upload/images?${queryParams.toString()}`, {
+        const response = await fetch(`/api/ftp/list?path=${encodeURIComponent(currentPath)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) {
-          throw new Error('Impossible de charger la galerie d\'images.');
+          throw new Error('Impossible de charger les fichiers.');
         }
-        const data = await response.json();
-        setImages(data.images);
-        setTotalPages(data.totalPages);
-        setTotalImages(data.totalImages);
+        const data: FtpItem[] = await response.json();
+        data.sort((a, b) => {
+          if (a.type === 'directory' && b.type === 'file') return -1;
+          if (a.type === 'file' && b.type === 'directory') return 1;
+          return a.name.localeCompare(b.name);
+        });
+        setItems(data);
       } catch (err: any) {
         setError(err.message);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchImages();
-  }, [token, currentPage]); // Re-fetch on currentPage change
+    fetchItems();
+  }, [token, currentPath]);
 
-  const handleSelectImage = (imageUrl: string) => {
+  const handleSelectImage = (fileName: string) => {
+    const fullPath = path.posix.join(currentPath, fileName);
+    const imageUrl = getFtpViewUrl(fullPath);
     onSelect(imageUrl);
     onClose();
   };
 
+  const handleNavigate = (folderName: string) => {
+    setCurrentPath(path.posix.join(currentPath, folderName));
+  };
+
+  const handleGoUp = () => {
+    if (currentPath === '/') return;
+    setCurrentPath(path.posix.dirname(currentPath));
+  };
+
+  const isImageFile = (fileName: string) => {
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-6 w-full max-w-5xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-6xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">Choisir une image de la galerie ({totalImages} images)</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">&times;</button>
+          <h3 className="text-xl font-bold">Choisir une image</h3>
+          <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">&times;</button>
         </div>
+
+        <div className="bg-slate-100 p-2 rounded-md mb-4 flex items-center gap-4">
+          <button
+            onClick={handleGoUp}
+            disabled={currentPath === '/'}
+            className="px-3 py-1 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 disabled:opacity-50 text-sm font-semibold"
+          >
+            Remonter
+          </button>
+          <p className="text-sm text-slate-600 font-mono flex-grow">
+            {currentPath}
+          </p>
+        </div>
+
         <div className="flex-grow overflow-y-auto">
-          {isLoading && <div className="text-center"><Loader /></div>}
+          {isLoading && <div className="flex justify-center items-center h-full"><Loader /></div>}
           {error && <p className="text-red-500">{error}</p>}
           {!isLoading && !error && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {images.map(image => (
-                <div key={image._id as string} onClick={() => handleSelectImage(image.url)} className="cursor-pointer group">
-                  <img src={image.url} alt={image.name} className="w-full h-32 object-cover rounded-md group-hover:ring-2 ring-teal-500"/>
-                  <p className="text-xs text-center truncate mt-1">{image.name}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {items.map(item => (
+                <div key={item.name} className="group">
+                  {item.type === 'directory' ? (
+                    <div onClick={() => handleNavigate(item.name)} className="cursor-pointer text-center p-4 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors flex flex-col items-center justify-center aspect-square">
+                      <span className="text-5xl">📁</span>
+                      <p className="text-sm font-semibold text-blue-800 mt-2 truncate w-full">{item.name}</p>
+                    </div>
+                  ) : isImageFile(item.name) ? (
+                    <div onClick={() => handleSelectImage(item.name)} className="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent group-hover:border-teal-500 transition-all">
+                      <img src={getFtpViewUrl(path.posix.join(currentPath, item.name))} alt={item.name} className="w-full h-32 object-cover"/>
+                      <p className="text-xs text-center truncate mt-1 p-1 bg-slate-50">{item.name}</p>
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
           )}
         </div>
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center space-x-4 mt-4">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
-            >
-              Précédent
-            </button>
-            <span>
-              Page {currentPage} sur {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
-            >
-              Suivant
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
