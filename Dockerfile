@@ -19,7 +19,7 @@ RUN npm run build
 
 # --- Étape 2: Production ---
 # Utilise une image Node.js beaucoup plus légère (alpine) pour l'exécution
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
 
