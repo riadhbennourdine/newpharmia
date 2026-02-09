@@ -81,6 +81,65 @@ const WebinarDetailPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  const handleUseCreditForMasterClass = async (timeSlots: WebinarTimeSlot[]) => {
+    if (!token || !webinar || !user) return;
+
+    // Optional: Add a more specific loading state if needed for this operation
+    // setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/webinars/${webinar._id}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          timeSlots,
+          useCredit: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Display a user-friendly error message
+        alert(data.message || 'Une erreur est survenue lors de l\'inscription avec crédit.');
+        throw new Error(data.message || 'Failed to register with credit');
+      }
+
+      // Success: Optionally refresh user data to show updated credit count
+      // and refresh webinar data to reflect registration status
+      // You might want to trigger a global context update or a refetch here
+      alert('Inscription confirmée avec succès en utilisant un crédit !');
+      
+      // Refresh webinar data
+      const freshWebinarDataResponse = await fetch(`/api/webinars/${webinar._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache', // Ensure fresh data
+        },
+      });
+      if (!freshWebinarDataResponse.ok) {
+        throw new Error('Failed to refetch webinar data after credit registration.');
+      }
+      const freshWebinarData = await freshWebinarDataResponse.json();
+      setWebinar(freshWebinarData);
+
+      // Refresh auth context user data to update credit count in UI
+      // This might require a method in useAuth context to refresh user data
+      // For now, we'll just reload the window for simplicity, or navigate
+      window.location.reload(); // Simple but effective to refresh all states
+
+    } catch (err: any) {
+      console.error('Error in handleUseCreditForMasterClass:', err);
+      setError(err.message); // Update error state for display on the page
+    } finally {
+      // Optional: Reset specific loading state
+      // setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchWebinarData = async () => {
       if (!id) return;
@@ -120,7 +179,8 @@ const WebinarDetailPage: React.FC = () => {
     };
 
     fetchWebinarData();
-  }, [id, token]);
+  }, [id, token, user]); // Added user to dependencies
+
 
 
   if (isLoading) {
