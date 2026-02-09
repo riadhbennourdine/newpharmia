@@ -68,20 +68,25 @@ const WebinarDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, token } = useAuth();
-  
+
   const [webinar, setWebinar] = useState<Webinar | null>(null);
   const [relatedWebinars, setRelatedWebinars] = useState<Webinar[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [webinarDescription, setWebinarDescription] = useState<string | null>(null);
+  const [webinarDescription, setWebinarDescription] = useState<string | null>(
+    null,
+  );
   const [isAdded, setIsAdded] = useState(false);
   const [isKahootModalOpen, setIsKahootModalOpen] = useState(false);
-  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] = useState(false);
+  const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] =
+    useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleUseCreditForMasterClass = async (timeSlots: WebinarTimeSlot[]) => {
+  const handleUseCreditForMasterClass = async (
+    timeSlots: WebinarTimeSlot[],
+  ) => {
     if (!token || !webinar || !user) return;
 
     // Optional: Add a more specific loading state if needed for this operation
@@ -104,7 +109,10 @@ const WebinarDetailPage: React.FC = () => {
 
       if (!response.ok) {
         // Display a user-friendly error message
-        alert(data.message || 'Une erreur est survenue lors de l\'inscription avec crédit.');
+        alert(
+          data.message ||
+            "Une erreur est survenue lors de l'inscription avec crédit.",
+        );
         throw new Error(data.message || 'Failed to register with credit');
       }
 
@@ -112,16 +120,21 @@ const WebinarDetailPage: React.FC = () => {
       // and refresh webinar data to reflect registration status
       // You might want to trigger a global context update or a refetch here
       alert('Inscription confirmée avec succès en utilisant un crédit !');
-      
+
       // Refresh webinar data
-      const freshWebinarDataResponse = await fetch(`/api/webinars/${webinar._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Cache-Control': 'no-cache', // Ensure fresh data
+      const freshWebinarDataResponse = await fetch(
+        `/api/webinars/${webinar._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache', // Ensure fresh data
+          },
         },
-      });
+      );
       if (!freshWebinarDataResponse.ok) {
-        throw new Error('Failed to refetch webinar data after credit registration.');
+        throw new Error(
+          'Failed to refetch webinar data after credit registration.',
+        );
       }
       const freshWebinarData = await freshWebinarDataResponse.json();
       setWebinar(freshWebinarData);
@@ -130,7 +143,6 @@ const WebinarDetailPage: React.FC = () => {
       // This might require a method in useAuth context to refresh user data
       // For now, we'll just reload the window for simplicity, or navigate
       window.location.reload(); // Simple but effective to refresh all states
-
     } catch (err: any) {
       console.error('Error in handleUseCreditForMasterClass:', err);
       setError(err.message); // Update error state for display on the page
@@ -143,7 +155,7 @@ const WebinarDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchWebinarData = async () => {
       if (!id) return;
-      
+
       setIsLoading(true);
       setError(null);
       setRelatedWebinars([]);
@@ -156,21 +168,26 @@ const WebinarDetailPage: React.FC = () => {
 
         const response = await fetch(`/api/webinars/${id}`, { headers });
         if (!response.ok) throw new Error('Failed to fetch webinar details');
-        
+
         const data: Webinar = await response.json();
         setWebinar(data);
 
         // Fetch related webinars if masterClassTheme is set
         if (data.masterClassTheme) {
-          const relatedResponse = await fetch(`/api/webinars?masterClassTheme=${encodeURIComponent(data.masterClassTheme)}`, { headers });
+          const relatedResponse = await fetch(
+            `/api/webinars?masterClassTheme=${encodeURIComponent(data.masterClassTheme)}`,
+            { headers },
+          );
           if (relatedResponse.ok) {
             const relatedData = await relatedResponse.json();
             // Sort by date ascending
-            relatedData.sort((a: Webinar, b: Webinar) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            relatedData.sort(
+              (a: Webinar, b: Webinar) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime(),
+            );
             setRelatedWebinars(relatedData);
           }
         }
-
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -181,8 +198,6 @@ const WebinarDetailPage: React.FC = () => {
     fetchWebinarData();
   }, [id, token, user]); // Added user to dependencies
 
-
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12 h-screen">
@@ -191,11 +206,18 @@ const WebinarDetailPage: React.FC = () => {
     );
   }
 
-  if (error) return <div className="text-center py-20 bg-red-50 text-red-700">{error}</div>;
-  if (!webinar) return <div className="text-center py-20">Webinar not found.</div>;
+  if (error)
+    return (
+      <div className="text-center py-20 bg-red-50 text-red-700">{error}</div>
+    );
+  if (!webinar)
+    return <div className="text-center py-20">Webinar not found.</div>;
 
   const registeredAttendee = webinar.attendees?.find((att) => {
-    const attendeeId = typeof att.userId === 'object' ? att.userId._id.toString() : att.userId.toString();
+    const attendeeId =
+      typeof att.userId === 'object'
+        ? att.userId._id.toString()
+        : att.userId.toString();
     return attendeeId === user?._id?.toString();
   });
 
@@ -203,11 +225,13 @@ const WebinarDetailPage: React.FC = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
-        
           {/* Tabs for related webinars */}
           {relatedWebinars.length > 1 && webinar.masterClassTheme && (
             <div className="mb-8">
-              <nav className="flex space-x-1 rounded-lg bg-slate-200 p-1" aria-label="Tabs">
+              <nav
+                className="flex space-x-1 rounded-lg bg-slate-200 p-1"
+                aria-label="Tabs"
+              >
                 {relatedWebinars.map((related, index) => (
                   <NavLink
                     key={related._id}
@@ -217,7 +241,11 @@ const WebinarDetailPage: React.FC = () => {
                       ${isActive ? 'bg-white text-teal-700 shadow' : 'text-slate-600 hover:bg-white/60 hover:text-slate-800'}
                     `}
                   >
-                    Session {index + 1}: {new Date(related.date).toLocaleDateString('fr-FR', { month: 'long', day: 'numeric' })}
+                    Session {index + 1}:{' '}
+                    {new Date(related.date).toLocaleDateString('fr-FR', {
+                      month: 'long',
+                      day: 'numeric',
+                    })}
                   </NavLink>
                 ))}
               </nav>
@@ -227,7 +255,10 @@ const WebinarDetailPage: React.FC = () => {
           {/* Header section remains similar */}
           <div className="relative mb-6 pb-[56.25%] rounded-lg overflow-hidden shadow-lg">
             <img
-              src={webinar.imageUrl || 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'}
+              src={
+                webinar.imageUrl ||
+                'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?q=80&w=2071&auto=format&fit=crop'
+              }
               alt={webinar.title}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -238,16 +269,25 @@ const WebinarDetailPage: React.FC = () => {
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg opacity-90 text-white">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-5 w-5" />
-                  <span className="font-medium">{new Date(webinar.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  <span className="font-medium">
+                    {new Date(webinar.date).toLocaleDateString('fr-FR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <UserIcon className="h-5 w-5" />
-                  <span className="font-medium">Animé par {webinar.presenter}</span>
+                  <span className="font-medium">
+                    Animé par {webinar.presenter}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="p-8">
               <div className="prose prose-lg max-w-none text-slate-700 mb-8">
@@ -256,25 +296,40 @@ const WebinarDetailPage: React.FC = () => {
 
               {registeredAttendee && webinar.resourcePageId && (
                 <div className="mt-8 pt-6 border-t">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-4">Page de Ressources</h3>
-                  <Link to={`/resources/${webinar.resourcePageId}`} className="inline-block bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                    Page de Ressources
+                  </h3>
+                  <Link
+                    to={`/resources/${webinar.resourcePageId}`}
+                    className="inline-block bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-teal-700 transition-colors"
+                  >
                     Accéder aux ressources
                   </Link>
                 </div>
               )}
 
-              {(webinar.calculatedStatus === 'PAST' || registeredAttendee) && (webinar.resources?.length || webinar.kahootUrl) ? (
+              {(webinar.calculatedStatus === 'PAST' || registeredAttendee) &&
+              (webinar.resources?.length || webinar.kahootUrl) ? (
                 <div className="mt-8 pt-6 border-t">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-4">Ressources du Webinaire</h3>
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                    Ressources du Webinaire
+                  </h3>
                   {webinar.resources && webinar.resources.length > 0 && (
                     <div className="space-y-6">
                       {webinar.resources.map((resource, index) => (
                         <div key={index} className="border rounded-lg p-4">
-                          <h4 className="text-xl font-semibold mb-2">{resource.title}</h4>
+                          <h4 className="text-xl font-semibold mb-2">
+                            {resource.title}
+                          </h4>
                           {resource.type === 'Diaporama' ? (
                             <EmbeddableViewer source={resource.source} />
                           ) : (
-                            <a href={resource.source} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            <a
+                              href={resource.source}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
                               Accéder à la ressource
                             </a>
                           )}
@@ -285,9 +340,17 @@ const WebinarDetailPage: React.FC = () => {
 
                   {webinar.kahootUrl && (
                     <div className="mt-6 border rounded-lg p-4 bg-purple-50">
-                      <h4 className="text-xl font-semibold mb-2 text-purple-800">Testez vos connaissances !</h4>
-                      <p className="text-purple-700 mb-4">Participez à notre quiz Kahoot pour réviser les points clés de ce webinaire de manière ludique.</p>
-                      <button onClick={() => setIsKahootModalOpen(true)} className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                      <h4 className="text-xl font-semibold mb-2 text-purple-800">
+                        Testez vos connaissances !
+                      </h4>
+                      <p className="text-purple-700 mb-4">
+                        Participez à notre quiz Kahoot pour réviser les points
+                        clés de ce webinaire de manière ludique.
+                      </p>
+                      <button
+                        onClick={() => setIsKahootModalOpen(true)}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                      >
                         Lancer le Quiz Kahoot
                       </button>
                     </div>
@@ -296,13 +359,34 @@ const WebinarDetailPage: React.FC = () => {
               ) : null}
 
               {isKahootModalOpen && webinar.kahootUrl && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={() => setIsKahootModalOpen(false)}>
-                  <div className="relative bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+                  onClick={() => setIsKahootModalOpen(false)}
+                >
+                  <div
+                    className="relative bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className="flex justify-between items-center p-4 border-b">
-                      <h3 className="text-xl font-bold text-slate-800">Quiz Kahoot</h3>
-                      <button onClick={() => setIsKahootModalOpen(false)} className="p-2 rounded-full text-slate-500 hover:bg-slate-100">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <h3 className="text-xl font-bold text-slate-800">
+                        Quiz Kahoot
+                      </h3>
+                      <button
+                        onClick={() => setIsKahootModalOpen(false)}
+                        className="p-2 rounded-full text-slate-500 hover:bg-slate-100"
+                      >
+                        <svg
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -314,18 +398,34 @@ const WebinarDetailPage: React.FC = () => {
               )}
 
               <div className="bg-slate-50 p-6 rounded-lg mt-8">
-                <h2 className="text-2xl font-bold text-slate-800 mb-4">INSCRIPTION</h2>
+                <h2 className="text-2xl font-bold text-slate-800 mb-4">
+                  INSCRIPTION
+                </h2>
                 {registeredAttendee ? (
                   <div>
-                    <p className={`font-semibold text-center mb-4 ${registeredAttendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}>
-                      {registeredAttendee.status === 'CONFIRMED' ? 'Votre inscription est confirmée !' : 'Votre inscription est en attente de validation.'}
+                    <p
+                      className={`font-semibold text-center mb-4 ${registeredAttendee.status === 'CONFIRMED' ? 'text-green-600' : 'text-orange-500'}`}
+                    >
+                      {registeredAttendee.status === 'CONFIRMED'
+                        ? 'Votre inscription est confirmée !'
+                        : 'Votre inscription est en attente de validation.'}
                     </p>
-                    {registeredAttendee.status === 'CONFIRMED' && webinar.googleMeetLink && (
-                      <a href={formatUrl(webinar.googleMeetLink)} target="_blank" rel="noopener noreferrer" className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors">
-                        <span className="mr-2">Rejoindre la conférence</span>
-                        <img src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png" alt="Google Meet Logo" className="h-6" />
-                      </a>
-                    )}
+                    {registeredAttendee.status === 'CONFIRMED' &&
+                      webinar.googleMeetLink && (
+                        <a
+                          href={formatUrl(webinar.googleMeetLink)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full mt-4 inline-flex items-center justify-center bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition-colors"
+                        >
+                          <span className="mr-2">Rejoindre la conférence</span>
+                          <img
+                            src="https://logos-world.net/wp-content/uploads/2022/05/Google-Meet-Symbol.png"
+                            alt="Google Meet Logo"
+                            className="h-6"
+                          />
+                        </a>
+                      )}
                   </div>
                 ) : (
                   <AddToCartForm
@@ -341,14 +441,19 @@ const WebinarDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
-       {isManageResourcesModalOpen && webinar && (
+      {isManageResourcesModalOpen && webinar && (
         <ManageWebinarResourcesModal
           webinarId={webinar._id as string}
           resources={webinar.resources || []}
           linkedMemofiches={webinar.linkedMemofiches || []}
           kahootUrl={webinar.kahootUrl}
           onClose={() => setIsManageResourcesModalOpen(false)}
-          onSave={async (id, newResources, newLinkedMemofiches, newKahootUrl) => {
+          onSave={async (
+            id,
+            newResources,
+            newLinkedMemofiches,
+            newKahootUrl,
+          ) => {
             // This logic should be here or handled via a refetch
           }}
         />

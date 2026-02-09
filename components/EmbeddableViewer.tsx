@@ -90,39 +90,36 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
     };
     const videoId = getYouTubeVideoId(absoluteUrl);
 
-        if (videoId) {
-          return (
-            <div
-              ref={containerRef}
-              className="relative w-full rounded-lg shadow-md overflow-hidden"
-              style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}
-            >
-              <iframe
-                loading="lazy"
-                className="absolute top-0 left-0 w-full h-full border-0"
-                src={`https://www.youtube.com/embed/${videoId}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title="YouTube Video Player"
-              ></iframe>
-            </div>
-          );
-        } else {
-          return (
-            <p className="text-red-500 text-center p-4">
-              URL YouTube invalide. Veuillez vérifier le lien.
-            </p>
-          );
-        }
-      }
+    if (videoId) {
+      return (
+        <div
+          ref={containerRef}
+          className="relative w-full rounded-lg shadow-md overflow-hidden"
+          style={{ paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}
+        >
+          <iframe
+            loading="lazy"
+            className="absolute top-0 left-0 w-full h-full border-0"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="YouTube Video Player"
+          ></iframe>
+        </div>
+      );
+    } else {
+      return (
+        <p className="text-red-500 text-center p-4">
+          URL YouTube invalide. Veuillez vérifier le lien.
+        </p>
+      );
+    }
+  }
   // Case 4: Google Doc URL
   if (absoluteUrl && absoluteUrl.includes('docs.google.com/document')) {
     const embedUrl = absoluteUrl.replace('/edit', '/preview');
     return (
-      <div 
-        ref={containerRef}
-        className="w-full h-full"
-      >
+      <div ref={containerRef} className="w-full h-full">
         <iframe
           src={embedUrl}
           className="w-full h-full border-0"

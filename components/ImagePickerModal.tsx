@@ -16,7 +16,10 @@ interface FtpItem {
   modifyTime: string;
 }
 
-const ImagePickerModal: React.FC<ImagePickerModalProps> = ({ onClose, onSelect }) => {
+const ImagePickerModal: React.FC<ImagePickerModalProps> = ({
+  onClose,
+  onSelect,
+}) => {
   const [items, setItems] = useState<FtpItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,9 +31,12 @@ const ImagePickerModal: React.FC<ImagePickerModalProps> = ({ onClose, onSelect }
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/ftp/list?path=${encodeURIComponent(currentPath)}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await fetch(
+          `/api/ftp/list?path=${encodeURIComponent(currentPath)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         if (!response.ok) {
           throw new Error('Impossible de charger les fichiers.');
         }
@@ -75,7 +81,12 @@ const ImagePickerModal: React.FC<ImagePickerModalProps> = ({ onClose, onSelect }
       <div className="bg-white rounded-lg p-6 w-full max-w-6xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold">Choisir une image</h3>
-          <button onClick={onClose} className="p-2 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">&times;</button>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full text-slate-500 hover:bg-slate-200 transition-colors"
+          >
+            &times;
+          </button>
         </div>
 
         <div className="bg-slate-100 p-2 rounded-md mb-4 flex items-center gap-4">
@@ -92,21 +103,41 @@ const ImagePickerModal: React.FC<ImagePickerModalProps> = ({ onClose, onSelect }
         </div>
 
         <div className="flex-grow overflow-y-auto">
-          {isLoading && <div className="flex justify-center items-center h-full"><Loader /></div>}
+          {isLoading && (
+            <div className="flex justify-center items-center h-full">
+              <Loader />
+            </div>
+          )}
           {error && <p className="text-red-500">{error}</p>}
           {!isLoading && !error && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.name} className="group">
                   {item.type === 'directory' ? (
-                    <div onClick={() => handleNavigate(item.name)} className="cursor-pointer text-center p-4 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors flex flex-col items-center justify-center aspect-square">
+                    <div
+                      onClick={() => handleNavigate(item.name)}
+                      className="cursor-pointer text-center p-4 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors flex flex-col items-center justify-center aspect-square"
+                    >
                       <span className="text-5xl">📁</span>
-                      <p className="text-sm font-semibold text-blue-800 mt-2 truncate w-full">{item.name}</p>
+                      <p className="text-sm font-semibold text-blue-800 mt-2 truncate w-full">
+                        {item.name}
+                      </p>
                     </div>
                   ) : isImageFile(item.name) ? (
-                    <div onClick={() => handleSelectImage(item.name)} className="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent group-hover:border-teal-500 transition-all">
-                      <img src={getFtpViewUrl(path.posix.join(currentPath, item.name))} alt={item.name} className="w-full h-32 object-cover"/>
-                      <p className="text-xs text-center truncate mt-1 p-1 bg-slate-50">{item.name}</p>
+                    <div
+                      onClick={() => handleSelectImage(item.name)}
+                      className="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent group-hover:border-teal-500 transition-all"
+                    >
+                      <img
+                        src={getFtpViewUrl(
+                          path.posix.join(currentPath, item.name),
+                        )}
+                        alt={item.name}
+                        className="w-full h-32 object-cover"
+                      />
+                      <p className="text-xs text-center truncate mt-1 p-1 bg-slate-50">
+                        {item.name}
+                      </p>
                     </div>
                   ) : null}
                 </div>

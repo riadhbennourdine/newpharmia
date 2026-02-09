@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -49,9 +48,7 @@ const AdminResetPasswordPage: React.FC = () => {
 
   if (user?.role !== 'ADMIN') {
     return (
-      <div className="p-4 text-center text-red-500">
-        Accès non autorisé.
-      </div>
+      <div className="p-4 text-center text-red-500">Accès non autorisé.</div>
     );
   }
 
@@ -62,7 +59,10 @@ const AdminResetPasswordPage: React.FC = () => {
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Email de l'utilisateur
           </label>
           <input
@@ -80,7 +80,9 @@ const AdminResetPasswordPage: React.FC = () => {
           disabled={isLoading}
           className="w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-gray-400"
         >
-          {isLoading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe'}
+          {isLoading
+            ? 'Réinitialisation en cours...'
+            : 'Réinitialiser le mot de passe'}
         </button>
       </form>
       {error && (

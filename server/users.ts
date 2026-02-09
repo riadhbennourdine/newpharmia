@@ -35,12 +35,10 @@ router.get('/public/pharmacists', async (req, res) => {
     res.json(pharmacists);
   } catch (error) {
     console.error('Error fetching pharmacists for registration:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des pharmaciens.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des pharmaciens.',
+    });
   }
 });
 
@@ -57,12 +55,10 @@ router.get(
       res.json(users);
     } catch (error) {
       console.error('Error fetching users:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des utilisateurs.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des utilisateurs.',
+      });
     }
   },
 );
@@ -100,12 +96,10 @@ router.get(
       res.json(pharmacists);
     } catch (error) {
       console.error('Error fetching pharmacists:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des pharmaciens.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des pharmaciens.',
+      });
     }
   },
 );
@@ -135,12 +129,10 @@ router.get(
       res.json(preparateurs);
     } catch (error) {
       console.error('Error fetching preparateurs:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des préparateurs.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des préparateurs.',
+      });
     }
   },
 );
@@ -166,18 +158,19 @@ router.get(
             role: UserRole.PREPARATEUR,
             pharmacistId: new ObjectId(pharmacistId),
           },
-          { projection: { passwordHash: 0 } }
+          { projection: { passwordHash: 0 } },
         )
         .toArray();
-      
+
       res.json(preparators);
     } catch (error) {
       console.error('Error fetching linked preparators:', error);
       res.status(500).json({
-        message: 'Erreur interne du serveur lors de la récupération des préparateurs liés.',
+        message:
+          'Erreur interne du serveur lors de la récupération des préparateurs liés.',
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -196,12 +189,10 @@ router.get(
       res.json(subscribers);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des abonnés.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des abonnés.',
+      });
     }
   },
 );
@@ -231,12 +222,10 @@ router.get(
         .toArray();
       res.json(managers);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: 'Erreur lors de la récupération des gestionnaires.',
-          error,
-        });
+      res.status(500).json({
+        message: 'Erreur lors de la récupération des gestionnaires.',
+        error,
+      });
     }
   },
 );
@@ -264,12 +253,10 @@ router.get(
         .toArray();
       res.json(preparateurs);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: 'Erreur lors de la récupération des préparateurs.',
-          error,
-        });
+      res.status(500).json({
+        message: 'Erreur lors de la récupération des préparateurs.',
+        error,
+      });
     }
   },
 );
@@ -291,12 +278,10 @@ router.get(
       }
       res.json(user);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: "Erreur lors de la récupération de l'utilisateur.",
-          error,
-        });
+      res.status(500).json({
+        message: "Erreur lors de la récupération de l'utilisateur.",
+        error,
+      });
     }
   },
 );
@@ -364,12 +349,10 @@ router.get(
       res.json(latestUsers);
     } catch (error) {
       console.error('Error fetching latest users:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des derniers inscrits.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des derniers inscrits.',
+      });
     }
   },
 );
@@ -551,12 +534,10 @@ router.get(
       });
     } catch (error) {
       console.error('Error fetching learning journey:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération du parcours.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération du parcours.',
+      });
     }
   },
 );
@@ -684,12 +665,10 @@ router.put(
       res.json({ message: 'Pharmacist assigned successfully.' });
     } catch (error) {
       console.error('Error assigning pharmacist:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de l'assignation du pharmacien.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de l'assignation du pharmacien.",
+      });
     }
   },
 );
@@ -728,12 +707,10 @@ router.get(
       res.json(team);
     } catch (error) {
       console.error('Error fetching pharmacist team:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de la récupération de l'équipe.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de la récupération de l'équipe.",
+      });
     }
   },
 );
@@ -785,12 +762,10 @@ router.put(
       res.json(updatedUser);
     } catch (error) {
       console.error('Error updating subscription:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de la mise à jour de l'abonnement.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de la mise à jour de l'abonnement.",
+      });
     }
   },
 );
@@ -956,12 +931,10 @@ router.put(
       res.json({ message: 'User role updated successfully.' });
     } catch (error) {
       console.error('Error updating user role:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de la mise à jour du rôle de l'utilisateur.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de la mise à jour du rôle de l'utilisateur.",
+      });
     }
   },
 );
@@ -997,12 +970,10 @@ router.get(
       res.json(users);
     } catch (error) {
       console.error('Error fetching users with expired trials:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des utilisateurs.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des utilisateurs.',
+      });
     }
   },
 );
@@ -1041,12 +1012,10 @@ router.put(
       res.json({ message: 'User credits updated successfully.', credits });
     } catch (error) {
       console.error('Error updating user credits:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour des crédits.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour des crédits.',
+      });
     }
   },
 );
@@ -1088,12 +1057,10 @@ router.put(
       });
     } catch (error) {
       console.error('Error updating user PharmIA credits:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour des crédits PharmIA.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour des crédits PharmIA.',
+      });
     }
   },
 );
@@ -1133,12 +1100,9 @@ router.put(
       });
     } catch (error) {
       console.error('Error updating user profile:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour du profil.',
-        });
+      res.status(500).json({
+        message: 'Erreur interne du serveur lors de la mise à jour du profil.',
+      });
     }
   },
 );
@@ -1169,12 +1133,10 @@ router.delete(
       res.json({ message: 'User deleted successfully.' });
     } catch (error) {
       console.error('Error deleting user:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de la suppression de l'utilisateur.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de la suppression de l'utilisateur.",
+      });
     }
   },
 );
@@ -1222,9 +1184,10 @@ router.post(
         newPassword: newPassword,
       });
     } catch (error) {
-      console.error("Error in admin password reset:", error);
+      console.error('Error in admin password reset:', error);
       res.status(500).json({
-        message: 'Erreur interne du serveur lors de la réinitialisation du mot de passe.',
+        message:
+          'Erreur interne du serveur lors de la réinitialisation du mot de passe.',
       });
     }
   },
@@ -1238,70 +1201,83 @@ router.get(
     try {
       const { usersCollection, memofichesCollection } = await getCollections();
 
-      const usersByRole = await usersCollection.aggregate([
-        { $group: { _id: '$role', count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ]).toArray();
+      const usersByRole = await usersCollection
+        .aggregate([
+          { $group: { _id: '$role', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ])
+        .toArray();
 
-      const registrationsByMonth = await usersCollection.aggregate([
-        { $match: { createdAt: { $exists: true, $type: "date" } } },
-        {
-          $group: {
-            _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
-            count: { $sum: 1 }
-          }
-        },
-        { $sort: { '_id.year': 1, '_id.month': 1 } }
-      ]).toArray();
+      const registrationsByMonth = await usersCollection
+        .aggregate([
+          { $match: { createdAt: { $exists: true, $type: 'date' } } },
+          {
+            $group: {
+              _id: {
+                year: { $year: '$createdAt' },
+                month: { $month: '$createdAt' },
+              },
+              count: { $sum: 1 },
+            },
+          },
+          { $sort: { '_id.year': 1, '_id.month': 1 } },
+        ])
+        .toArray();
 
-      const ficheReads = await usersCollection.aggregate([
-        { $unwind: '$readFiches' },
-        { $group: { _id: null, totalReads: { $sum: 1 } } }
-      ]).toArray();
+      const ficheReads = await usersCollection
+        .aggregate([
+          { $unwind: '$readFiches' },
+          { $group: { _id: null, totalReads: { $sum: 1 } } },
+        ])
+        .toArray();
       const totalReads = ficheReads.length > 0 ? ficheReads[0].totalReads : 0;
 
-      const topFichesAgg = await usersCollection.aggregate([
-        { $unwind: '$readFiches' },
-        { $group: { _id: '$readFiches.ficheId', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-      ]).toArray();
+      const topFichesAgg = await usersCollection
+        .aggregate([
+          { $unwind: '$readFiches' },
+          { $group: { _id: '$readFiches.ficheId', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ])
+        .toArray();
 
       const validFicheIds = topFichesAgg
-        .map(f => f._id)
-        .filter(id => ObjectId.isValid(id))
-        .map(id => new ObjectId(id));
-      
-      const fichesDetails = await memofichesCollection.find(
-          { _id: { $in: validFicheIds } },
-          { projection: { title: 1 } }
-      ).toArray();
+        .map((f) => f._id)
+        .filter((id) => ObjectId.isValid(id))
+        .map((id) => new ObjectId(id));
 
-      const fichesDetailsMap = fichesDetails.reduce((map, fiche) => {
-        map[fiche._id.toString()] = fiche.title;
-        return map;
-      }, {} as Record<string, string>);
+      const fichesDetails = await memofichesCollection
+        .find({ _id: { $in: validFicheIds } }, { projection: { title: 1 } })
+        .toArray();
 
-      const topFiches = topFichesAgg.map(f => ({
+      const fichesDetailsMap = fichesDetails.reduce(
+        (map, fiche) => {
+          map[fiche._id.toString()] = fiche.title;
+          return map;
+        },
+        {} as Record<string, string>,
+      );
+
+      const topFiches = topFichesAgg.map((f) => ({
         ficheId: f._id,
         title: fichesDetailsMap[f._id] || 'Titre non trouvé',
-        count: f.count
+        count: f.count,
       }));
-      
 
       res.json({
         usersByRole,
         registrationsByMonth,
         totalFicheReads: totalReads,
-        topFiches
+        topFiches,
       });
-
     } catch (error) {
       console.error('Error generating retrospective stats:', error);
-      res.status(500).json({ message: 'Erreur interne du serveur lors de la génération des statistiques.' });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la génération des statistiques.',
+      });
     }
-  }
+  },
 );
-
 
 export default router;

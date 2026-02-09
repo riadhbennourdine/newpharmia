@@ -99,13 +99,11 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     ftpClient = await getFtpClient();
     const remotePath = path.posix.join(destinationPath, originalname);
     await ftpClient.uploadFrom(tempFilePath, remotePath); // Utilisation du chemin du fichier temporaire
-    res
-      .status(201)
-      .json({
-        message: 'File uploaded successfully.',
-        filename: originalname,
-        remotePath: remotePath,
-      });
+    res.status(201).json({
+      message: 'File uploaded successfully.',
+      filename: originalname,
+      remotePath: remotePath,
+    });
   } catch (err) {
     console.error('FTP upload error:', err);
     res.status(500).json({ message: 'Failed to upload file to FTP.' });
@@ -114,7 +112,10 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     try {
       await fs.unlink(tempFilePath);
     } catch (unlinkErr) {
-      console.error(`[CRITICAL] Failed to delete temporary upload file: ${tempFilePath}`, unlinkErr);
+      console.error(
+        `[CRITICAL] Failed to delete temporary upload file: ${tempFilePath}`,
+        unlinkErr,
+      );
     }
     if (ftpClient) releaseFtpClient(ftpClient);
   }

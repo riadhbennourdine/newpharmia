@@ -75,11 +75,9 @@ nonAdminRouter.put(
         user.role === UserRole.ADMIN || user.role === UserRole.ADMIN_WEBINAR;
 
       if (!isPharmacistInGroup && !isManager && !isAdmin) {
-        return res
-          .status(403)
-          .json({
-            message: 'Non autorisé à modifier le planning de ce groupe.',
-          });
+        return res.status(403).json({
+          message: 'Non autorisé à modifier le planning de ce groupe.',
+        });
       }
 
       // 2. Validate & Sanitize Planning Data
@@ -160,12 +158,10 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
     res.status(200).json({ message: 'Consigne mise à jour avec succès.' });
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la consigne:', error);
-    res
-      .status(500)
-      .json({
-        message: 'Erreur lors de la mise à jour de la consigne.',
-        error,
-      });
+    res.status(500).json({
+      message: 'Erreur lors de la mise à jour de la consigne.',
+      error,
+    });
   }
 });
 
@@ -210,12 +206,10 @@ adminRouter.post('/', async (req, res) => {
       .toArray();
 
     if (pharmacists.length !== pharmacistIds.length) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Un ou plusieurs pharmaciens sont invalides ou n'existent pas.",
-        });
+      return res.status(400).json({
+        message:
+          "Un ou plusieurs pharmaciens sont invalides ou n'existent pas.",
+      });
     }
 
     const newGroup: Group = {
@@ -231,7 +225,9 @@ adminRouter.post('/', async (req, res) => {
     const result = await groupsCollection.insertOne(newGroup);
 
     // Update users with the new group ID
-    const preparatorObjectIds = preparatorIds.map((id: string) => new ObjectId(id));
+    const preparatorObjectIds = preparatorIds.map(
+      (id: string) => new ObjectId(id),
+    );
 
     if (pharmacistObjectIds.length > 0) {
       await usersCollection.updateMany(
@@ -245,7 +241,9 @@ adminRouter.post('/', async (req, res) => {
       if (primaryPharmacistId) {
         await usersCollection.updateMany(
           { _id: { $in: preparatorObjectIds } },
-          { $set: { groupId: newGroup._id, pharmacistId: primaryPharmacistId } },
+          {
+            $set: { groupId: newGroup._id, pharmacistId: primaryPharmacistId },
+          },
         );
       } else {
         // Fallback if a group is created with only preparators
@@ -470,17 +468,21 @@ adminRouter.put('/:id', async (req, res) => {
     }
 
     if (usersToAdd.length > 0) {
-      const preparatorsToAdd = usersToAdd.filter(id =>
-        (updateFields.preparatorIds || []).some((pId: ObjectId) => pId.equals(id))
+      const preparatorsToAdd = usersToAdd.filter((id) =>
+        (updateFields.preparatorIds || []).some((pId: ObjectId) =>
+          pId.equals(id),
+        ),
       );
-      const pharmacistsToAdd = usersToAdd.filter(id =>
-        (updateFields.pharmacistIds || []).some((pId: ObjectId) => pId.equals(id))
+      const pharmacistsToAdd = usersToAdd.filter((id) =>
+        (updateFields.pharmacistIds || []).some((pId: ObjectId) =>
+          pId.equals(id),
+        ),
       );
 
       if (pharmacistsToAdd.length > 0) {
         await usersCollection.updateMany(
           { _id: { $in: pharmacistsToAdd } },
-          { $set: { groupId: groupId } }
+          { $set: { groupId: groupId } },
         );
       }
 
@@ -488,15 +490,20 @@ adminRouter.put('/:id', async (req, res) => {
         const groupPharmacists = updatedGroup.pharmacistIds || [];
         const primaryPharmacistId = groupPharmacists[0];
         if (primaryPharmacistId) {
-            await usersCollection.updateMany(
-                { _id: { $in: preparatorsToAdd } },
-                { $set: { groupId: groupId, pharmacistId: new ObjectId(primaryPharmacistId) } }
-            );
+          await usersCollection.updateMany(
+            { _id: { $in: preparatorsToAdd } },
+            {
+              $set: {
+                groupId: groupId,
+                pharmacistId: new ObjectId(primaryPharmacistId),
+              },
+            },
+          );
         } else {
-            await usersCollection.updateMany(
-                { _id: { $in: preparatorsToAdd } },
-                { $set: { groupId: groupId } }
-            );
+          await usersCollection.updateMany(
+            { _id: { $in: preparatorsToAdd } },
+            { $set: { groupId: groupId } },
+          );
         }
       }
     }
@@ -550,12 +557,10 @@ adminRouter.post('/:id/assign-fiche', async (req, res) => {
 
     res.status(200).json({ message: 'Mémofiche assignée avec succès.' });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de l'assignation de la mémofiche.",
-        error,
-      });
+    res.status(500).json({
+      message: "Erreur lors de l'assignation de la mémofiche.",
+      error,
+    });
   }
 });
 

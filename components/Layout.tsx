@@ -4,8 +4,11 @@ import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext'; // Import useCart
 import { UserRole } from '../types';
 import Footer from './Footer';
-import { ShoppingCartIcon, XCircleIcon, ExclamationTriangleIcon } from './Icons'; // Import ShoppingCartIcon, XCircleIcon, ExclamationTriangleIcon
-
+import {
+  ShoppingCartIcon,
+  XCircleIcon,
+  ExclamationTriangleIcon,
+} from './Icons'; // Import ShoppingCartIcon, XCircleIcon, ExclamationTriangleIcon
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -458,7 +461,10 @@ const AppLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-slate-100">
       <Header />
       {showTemporaryPasswordWarning && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
           <div className="flex">
             <div className="py-1">
               <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500 mr-3" />
@@ -466,8 +472,12 @@ const AppLayout: React.FC = () => {
             <div>
               <p className="font-bold">Mot de passe temporaire</p>
               <p className="text-sm">
-                Votre mot de passe a été réinitialisé par un administrateur. Pour votre sécurité, veuillez le changer dans votre{' '}
-                <Link to="/profile" className="font-semibold underline hover:text-yellow-800">
+                Votre mot de passe a été réinitialisé par un administrateur.
+                Pour votre sécurité, veuillez le changer dans votre{' '}
+                <Link
+                  to="/profile"
+                  className="font-semibold underline hover:text-yellow-800"
+                >
                   profil
                 </Link>
                 .

@@ -59,7 +59,7 @@ router.post('/login', async (req, res) => {
           details: {
             userRole: user.role,
             userCity: user.city,
-          }
+          },
         });
 
         res.json({ token, user });
@@ -115,12 +115,10 @@ router.post('/register', async (req, res) => {
       $or: [{ email }, { username }],
     });
     if (existingUser) {
-      return res
-        .status(409)
-        .json({
-          message:
-            "Un utilisateur avec cet email ou nom d'utilisateur existe déjà.",
-        });
+      return res.status(409).json({
+        message:
+          "Un utilisateur avec cet email ou nom d'utilisateur existe déjà.",
+      });
     }
 
     // Hash password
@@ -150,12 +148,9 @@ router.post('/register', async (req, res) => {
     const result = await usersCollection.insertOne(newUserDocument as User);
 
     if (result.acknowledged) {
-      res
-        .status(201)
-        .json({
-          message:
-            'Inscription réussie. Vous pouvez maintenant vous connecter.',
-        });
+      res.status(201).json({
+        message: 'Inscription réussie. Vous pouvez maintenant vous connecter.',
+      });
     } else {
       res
         .status(500)
@@ -213,7 +208,9 @@ router.post('/forgot-password', async (req, res) => {
             <p>Si vous n'avez pas demandé cela, veuillez ignorer cet e-mail.</p>
         `;
 
-    console.log(`[DEBUG] BREVO_API_KEY is ${process.env.BREVO_API_KEY ? 'set' : 'not set'}`);
+    console.log(
+      `[DEBUG] BREVO_API_KEY is ${process.env.BREVO_API_KEY ? 'set' : 'not set'}`,
+    );
     await sendSingleEmail({
       to: user.email,
       subject: 'Réinitialisation de mot de passe PharmIA',
@@ -226,12 +223,10 @@ router.post('/forgot-password', async (req, res) => {
     });
   } catch (error) {
     console.error('[FORGOT PASSWORD ERROR] Failed to send reset email:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Le serveur a rencontré un problème lors de l'envoi de l'email de réinitialisation. Veuillez contacter l'administrateur. Le problème est probablement lié à la configuration du service d'email.",
-      });
+    res.status(500).json({
+      message:
+        "Le serveur a rencontré un problème lors de l'envoi de l'email de réinitialisation. Veuillez contacter l'administrateur. Le problème est probablement lié à la configuration du service d'email.",
+    });
   }
 });
 
@@ -254,11 +249,9 @@ router.post('/reset-password', async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          message: 'Le jeton de réinitialisation est invalide ou a expiré.',
-        });
+      return res.status(400).json({
+        message: 'Le jeton de réinitialisation est invalide ou a expiré.',
+      });
     }
 
     // Hash new password
@@ -279,12 +272,10 @@ router.post('/reset-password', async (req, res) => {
     res.json({ message: 'Mot de passe réinitialisé avec succès.' });
   } catch (error) {
     console.error('Reset password error:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la réinitialisation du mot de passe.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la réinitialisation du mot de passe.',
+    });
   }
 });
 

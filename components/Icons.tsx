@@ -971,25 +971,8 @@ export const QuestionMarkCircleIcon: React.FC<{ className?: string }> = ({
 );
 
 export const PencilSquareIcon: React.FC<{ className?: string }> = ({
-    className,
+  className,
 }) => (
-    <svg
-        className={className}
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-    >
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 19.5l-4.243 1.243 1.243-4.243L16.862 4.487zm0 0L19.5 7.125M12 15v5.25m0 0l-3.75-3.75M12 20.25l3.75-3.75"
-        />
-    </svg>
-);
-
-export const CloudArrowUpIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     className={className}
     xmlns="http://www.w3.org/2000/svg"
@@ -998,6 +981,29 @@ export const CloudArrowUpIcon: React.FC<{ className?: string }> = ({ className }
     strokeWidth={1.5}
     stroke="currentColor"
   >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3.75 3.75M12 9.75L8.25 13.5m-3.75 6H19.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 19.5l-4.243 1.243 1.243-4.243L16.862 4.487zm0 0L19.5 7.125M12 15v5.25m0 0l-3.75-3.75M12 20.25l3.75-3.75"
+    />
+  </svg>
+);
+
+export const CloudArrowUpIcon: React.FC<{ className?: string }> = ({
+  className,
+}) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 16.5V9.75m0 0l3.75 3.75M12 9.75L8.25 13.5m-3.75 6H19.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
+    />
   </svg>
 );

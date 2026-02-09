@@ -304,23 +304,30 @@ export const generateCaseStudyDraft = async (
   const pharmacologieSchema: ObjectSchema = {
     type: SchemaType.OBJECT,
     properties: {
-        memoSections: {
-            type: SchemaType.ARRAY,
-            description: "Tableau des sections de la mémofiche.",
-            items: {
-                type: SchemaType.OBJECT,
-                properties: {
-                    title: { type: SchemaType.STRING },
-                    content: { type: SchemaType.STRING, description: "Contenu de la section en format Markdown (liste à puces)." }
-                },
-                required: ["title", "content"]
-            }
-        }
+      memoSections: {
+        type: SchemaType.ARRAY,
+        description: 'Tableau des sections de la mémofiche.',
+        items: {
+          type: SchemaType.OBJECT,
+          properties: {
+            title: { type: SchemaType.STRING },
+            content: {
+              type: SchemaType.STRING,
+              description:
+                'Contenu de la section en format Markdown (liste à puces).',
+            },
+          },
+          required: ['title', 'content'],
+        },
+      },
     },
-    required: ["memoSections"]
+    required: ['memoSections'],
   };
 
-  const schemaToUse = memoFicheType === 'pharmacologie' ? pharmacologieSchema : defaultCaseStudySchema;
+  const schemaToUse =
+    memoFicheType === 'pharmacologie'
+      ? pharmacologieSchema
+      : defaultCaseStudySchema;
 
   return globalQueue.add(async () => {
     let attempts = 0;
@@ -544,12 +551,10 @@ TEXTE BRUT.
 Sujet : ${truncateString(context || 'Général', 500)}
 Message de l'apprenant : ${truncateString(userMessage, 500)}`;
 
-        let safeHistory: Content[] = chatHistory
-          .slice(-10)
-          .map((msg) => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: truncateString(msg.text, 500) }],
-          }));
+        let safeHistory: Content[] = chatHistory.slice(-10).map((msg) => ({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: truncateString(msg.text, 500) }],
+        }));
 
         if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
           safeHistory = [
@@ -658,7 +663,7 @@ export const evaluateSimulation = async (
   });
 
   const prompt = `Tu es un expert évaluateur en pharmacie. Analyse la simulation suivante sur le sujet : ${truncateString(topic, 500)}.
-    Histoire de la conversation : ${JSON.stringify(chatHistory.slice(-15).map(msg => ({ ...msg, text: truncateString(msg.text, 2000) })))}.
+    Histoire de la conversation : ${JSON.stringify(chatHistory.slice(-15).map((msg) => ({ ...msg, text: truncateString(msg.text, 2000) })))}.
     Évalue la qualité du questionnement, la justesse du traitement et la pertinence des conseils.`;
 
   try {
@@ -897,13 +902,10 @@ export const getDermoPatientResponse = async (
         // const redFlagsStr = JSON.stringify(fiche.redFlags || []);
         const patientPrompt = ''; // Temporarily disabled for debugging
 
-
-        let safeHistory: Content[] = chatHistory
-          .slice(-10)
-          .map((msg) => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: truncateString(msg.text, 500) }],
-          }));
+        let safeHistory: Content[] = chatHistory.slice(-10).map((msg) => ({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: truncateString(msg.text, 500) }],
+        }));
 
         if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
           safeHistory = [

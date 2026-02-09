@@ -196,12 +196,10 @@ router.get(
       });
     } catch (error) {
       console.error('Error fetching memofiches:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération des mémofiches.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des mémofiches.',
+      });
     }
   },
 );
@@ -215,12 +213,10 @@ router.get('/all', async (req, res) => {
     res.json(fiches);
   } catch (error) {
     console.error('Error fetching all memofiches:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération de toutes les mémofiches.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération de toutes les mémofiches.',
+    });
   }
 });
 
@@ -249,10 +245,12 @@ router.get(
         details: {
           ficheId: id,
           userRole: user.role,
-        }
+        },
       });
 
-      const fiche = await memofichesCollection.findOne({ _id: new ObjectId(id) });
+      const fiche = await memofichesCollection.findOne({
+        _id: new ObjectId(id),
+      });
 
       if (!fiche) {
         return res.status(404).json({ message: 'Mémofiche non trouvée' });
@@ -380,29 +378,23 @@ router.get(
         }
 
         // If none of the above, access is denied
-        return res
-          .status(403)
-          .json({
-            message:
-              'Accès refusé: Abonnement inactif, mémofiche non assignée ou rôle insuffisant.',
-            isLocked: true,
-          });
-      }
-
-      return res
-        .status(403)
-        .json({
-          message: 'Accès refusé: Rôle utilisateur insuffisant.',
+        return res.status(403).json({
+          message:
+            'Accès refusé: Abonnement inactif, mémofiche non assignée ou rôle insuffisant.',
           isLocked: true,
         });
+      }
+
+      return res.status(403).json({
+        message: 'Accès refusé: Rôle utilisateur insuffisant.',
+        isLocked: true,
+      });
     } catch (error) {
       console.error('Error fetching memofiche by ID:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération de la mémofiche.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération de la mémofiche.',
+      });
     }
   },
 );
@@ -444,12 +436,10 @@ router.post(
       }
     } catch (error) {
       console.error('Error creating memofiche:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la création de la mémofiche.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la création de la mémofiche.',
+      });
     }
   },
 );
@@ -476,11 +466,9 @@ router.put(
       if (result.matchedCount === 0) {
         res.status(404).json({ message: 'Mémofiche non trouvée' });
       } else if (result.modifiedCount === 0) {
-        res
-          .status(200)
-          .json({
-            message: 'Mémofiche trouvée mais aucune modification effectuée.',
-          });
+        res.status(200).json({
+          message: 'Mémofiche trouvée mais aucune modification effectuée.',
+        });
       } else {
         const updatedFiche = await memofichesCollection.findOne({
           _id: new ObjectId(id),
@@ -498,12 +486,10 @@ router.put(
       }
     } catch (error) {
       console.error('Error updating memofiche:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour de la mémofiche.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour de la mémofiche.',
+      });
     }
   },
 );
@@ -543,12 +529,10 @@ router.delete(
       }
     } catch (error) {
       console.error('Error deleting memofiche:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la suppression de la mémofiche.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la suppression de la mémofiche.',
+      });
     }
   },
 );
@@ -614,12 +598,10 @@ router.get(
       res.json(fiches);
     } catch (error) {
       console.error('Error searching memofiches for admin:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la recherche des mémofiches.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la recherche des mémofiches.',
+      });
     }
   },
 );

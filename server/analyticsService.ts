@@ -1,4 +1,3 @@
-
 import clientPromise from './mongo.js';
 import { User } from '../types.js';
 

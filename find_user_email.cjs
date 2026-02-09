@@ -15,8 +15,12 @@ if (!firstName || !lastName) {
 // Get the connection string from environment variables
 const uri = process.env.MONGO_URI;
 if (!uri) {
-  console.error('Erreur : La variable d\'environnement MONGO_URI n\'est pas définie.');
-  console.error('Veuillez la définir dans un fichier .env à la racine du projet.');
+  console.error(
+    "Erreur : La variable d'environnement MONGO_URI n'est pas définie.",
+  );
+  console.error(
+    'Veuillez la définir dans un fichier .env à la racine du projet.',
+  );
   process.exit(1);
 }
 
@@ -47,7 +51,9 @@ async function findUser() {
       console.log(`  Email : ${user.email}`);
       console.log('----------------------------------------');
     } else {
-      console.log(`Aucun utilisateur trouvé avec le nom "${firstName} ${lastName}".`);
+      console.log(
+        `Aucun utilisateur trouvé avec le nom "${firstName} ${lastName}".`,
+      );
     }
   } catch (err) {
     console.error('Une erreur est survenue :', err);

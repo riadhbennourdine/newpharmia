@@ -193,12 +193,10 @@ router.get('/', softAuthenticateToken, async (req, res) => {
     res.json(webinarsWithStatus);
   } catch (error) {
     console.error('Error fetching webinars:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des webinaires.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des webinaires.',
+    });
   }
 });
 
@@ -269,12 +267,10 @@ router.get(
       res.json(webinarsWithStatus);
     } catch (error) {
       console.error('Error fetching my-webinars:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la récupération de vos webinaires.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération de vos webinaires.',
+      });
     }
   },
 );
@@ -437,12 +433,10 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
     res.json(webinarResponse);
   } catch (error) {
     console.error('Error fetching webinar:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération du webinaire.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération du webinaire.',
+    });
   }
 });
 
@@ -509,11 +503,9 @@ router.post(
       } = req.body;
 
       if (!title || !description || !date || !presenter) {
-        return res
-          .status(400)
-          .json({
-            message: 'Title, description, date, and presenter are required.',
-          });
+        return res.status(400).json({
+          message: 'Title, description, date, and presenter are required.',
+        });
       }
 
       const client = await clientPromise;
@@ -538,23 +530,18 @@ router.post(
       const result = await webinarsCollection.insertOne(newWebinar as Webinar);
 
       if (result.acknowledged) {
-        res
-          .status(201)
-          .json({
-            message: 'Webinar created successfully.',
-            webinarId: result.insertedId,
-          });
+        res.status(201).json({
+          message: 'Webinar created successfully.',
+          webinarId: result.insertedId,
+        });
       } else {
         res.status(500).json({ message: 'Failed to create webinar.' });
       }
     } catch (error) {
       console.error('Error creating webinar:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la création du webinaire.',
-        });
+      res.status(500).json({
+        message: 'Erreur interne du serveur lors de la création du webinaire.',
+      });
     }
   },
 );
@@ -611,12 +598,10 @@ router.put(
       res.json({ message: 'Webinar updated successfully.' });
     } catch (error) {
       console.error('Error updating webinar:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour du webinaire.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour du webinaire.',
+      });
     }
   },
 );
@@ -749,11 +734,9 @@ router.post(
           );
 
           if (updateResult.modifiedCount === 0) {
-            return res
-              .status(409)
-              .json({
-                message: 'Erreur lors du débit du crédit (concurrence).',
-              });
+            return res.status(409).json({
+              message: 'Erreur lors du débit du crédit (concurrence).',
+            });
           }
 
           status = 'CONFIRMED';
@@ -776,22 +759,18 @@ router.post(
           );
 
           if (updateResult.modifiedCount === 0) {
-            return res
-              .status(409)
-              .json({
-                message: 'Erreur lors du débit du crédit (concurrence).',
-              });
+            return res.status(409).json({
+              message: 'Erreur lors du débit du crédit (concurrence).',
+            });
           }
 
           status = 'CONFIRMED';
           usedCredit = true; // We can reuse this flag
         } else {
-          return res
-            .status(400)
-            .json({
-              message:
-                'Les crédits ne sont pas applicables pour ce type de wébinaire.',
-            });
+          return res.status(400).json({
+            message:
+              'Les crédits ne sont pas applicables pour ce type de wébinaire.',
+          });
         }
       }
 
@@ -883,12 +862,10 @@ router.post(
       }
     } catch (error) {
       console.error('Error registering for webinar:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de l'inscription au webinaire.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de l'inscription au webinaire.",
+      });
     }
   },
 );
@@ -901,12 +878,10 @@ router.post('/:id/public-register', async (req, res) => {
 
     // --- Validation ---
     if (!firstName || !lastName || !email || !timeSlots) {
-      return res
-        .status(400)
-        .json({
-          message:
-            'Tous les champs sont obligatoires (Nom, Prénom, Email, Créneaux).',
-        });
+      return res.status(400).json({
+        message:
+          'Tous les champs sont obligatoires (Nom, Prénom, Email, Créneaux).',
+      });
     }
     if (!Array.isArray(timeSlots) || timeSlots.length === 0) {
       return res
@@ -932,11 +907,9 @@ router.post('/:id/public-register', async (req, res) => {
     // --- FREE WEBINAR LOGIC ---
     if (isFree) {
       if (!phone) {
-        return res
-          .status(400)
-          .json({
-            message: 'Le téléphone est requis pour les wébinaires gratuits.',
-          });
+        return res.status(400).json({
+          message: 'Le téléphone est requis pour les wébinaires gratuits.',
+        });
       }
 
       // Check if user exists
@@ -1111,12 +1084,9 @@ router.post('/:id/public-register', async (req, res) => {
     });
   } catch (error) {
     console.error('Error in public registration for webinar:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de l'inscription au webinaire.",
-      });
+    res.status(500).json({
+      message: "Erreur interne du serveur lors de l'inscription au webinaire.",
+    });
   }
 });
 
@@ -1308,7 +1278,7 @@ router.post(
       const db = client.db('pharmia');
       const webinarsCollection = db.collection<Webinar>('webinars');
       const usersCollection = db.collection('users');
-      
+
       const newAttendeeId = new ObjectId(userId);
 
       const primaryWebinar = await webinarsCollection.findOne({
@@ -1331,7 +1301,9 @@ router.post(
         primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
         primaryWebinar.masterClassTheme
       ) {
-        console.log(`[Manual Add] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
+        console.log(
+          `[Manual Add] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`,
+        );
         const themeWebinars = await webinarsCollection
           .find({
             group: WebinarGroup.MASTER_CLASS,
@@ -1341,7 +1313,9 @@ router.post(
 
         if (themeWebinars.length > 0) {
           webinarsToUpdate = themeWebinars;
-          console.log(`[Manual Add] Found ${themeWebinars.length} sessions for this theme.`);
+          console.log(
+            `[Manual Add] Found ${themeWebinars.length} sessions for this theme.`,
+          );
         }
       }
 
@@ -1352,7 +1326,9 @@ router.post(
         );
 
         if (isRegistered) {
-           console.log(`[Manual Add] User ${userId} is already registered for webinar ${webinar._id}. Skipping.`);
+          console.log(
+            `[Manual Add] User ${userId} is already registered for webinar ${webinar._id}. Skipping.`,
+          );
           continue; // Skip if already registered in this session
         }
 
@@ -1369,19 +1345,24 @@ router.post(
           { _id: webinar._id },
           { $push: { attendees: newAttendee as any } },
         );
-        
+
         if (result.modifiedCount > 0) {
-            console.log(`[Manual Add] Successfully added user ${userId} to webinar ${webinar._id}`);
-            sessionsUpdated++;
+          console.log(
+            `[Manual Add] Successfully added user ${userId} to webinar ${webinar._id}`,
+          );
+          sessionsUpdated++;
         }
       }
 
       if (sessionsUpdated > 0) {
-        res.status(201).json({ message: `Attendee added successfully to ${sessionsUpdated} session(s).` });
+        res.status(201).json({
+          message: `Attendee added successfully to ${sessionsUpdated} session(s).`,
+        });
       } else {
-        res.status(409).json({ message: 'User is already registered for all relevant sessions.' });
+        res.status(409).json({
+          message: 'User is already registered for all relevant sessions.',
+        });
       }
-
     } catch (error) {
       console.error('Error manually adding attendee:', error);
       res.status(500).json({ message: 'Erreur interne du serveur.' });
@@ -1450,135 +1431,127 @@ router.put(
       res.json({ message: 'Time slots updated successfully.' });
     } catch (error) {
       console.error('Error updating attendee time slots:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour des créneaux horaires.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour des créneaux horaires.',
+      });
     }
   },
 );
 
 // PUT to manage resources for a webinar (Admin only for past, Admin & Webinar Admin for others)
-  router.put(
-    '/:id/resources',
-    authenticateToken,
-    async (req: AuthenticatedRequest, res) => {
-      try {
-        const { id } = req.params;
-        // On récupère les ressources ET les linkedMemofiches du body
-        const { resources, linkedMemofiches, kahootUrl } = req.body;
+router.put(
+  '/:id/resources',
+  authenticateToken,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      // On récupère les ressources ET les linkedMemofiches du body
+      const { resources, linkedMemofiches, kahootUrl } = req.body;
 
-        console.log(`[DEBUG] Updating resources for webinar ${id}.`);
-        console.log(
-          `[DEBUG] Received resources:`,
-          JSON.stringify(resources, null, 2),
-        );
-        console.log(
-          `[DEBUG] Received linkedMemofiches:`,
-          JSON.stringify(linkedMemofiches, null, 2),
-        );
-        console.log(`[DEBUG] Received kahootUrl:`, kahootUrl);
+      console.log(`[DEBUG] Updating resources for webinar ${id}.`);
+      console.log(
+        `[DEBUG] Received resources:`,
+        JSON.stringify(resources, null, 2),
+      );
+      console.log(
+        `[DEBUG] Received linkedMemofiches:`,
+        JSON.stringify(linkedMemofiches, null, 2),
+      );
+      console.log(`[DEBUG] Received kahootUrl:`, kahootUrl);
 
-        if (!ObjectId.isValid(id)) {
-          return res.status(400).json({ message: 'Invalid webinar ID.' });
-        }
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid webinar ID.' });
+      }
 
-        const client = await clientPromise;
-        const db = client.db('pharmia');
-        const webinarsCollection = db.collection<Webinar>('webinars');
+      const client = await clientPromise;
+      const db = client.db('pharmia');
+      const webinarsCollection = db.collection<Webinar>('webinars');
 
-        const webinar = await webinarsCollection.findOne({
-          _id: new ObjectId(id),
+      const webinar = await webinarsCollection.findOne({
+        _id: new ObjectId(id),
+      });
+
+      if (!webinar) {
+        return res.status(404).json({ message: 'Webinar not found.' });
+      }
+
+      // Authorization Logic
+      const userRole = req.user?.role;
+
+      if (userRole !== UserRole.ADMIN) {
+        return res.status(403).json({
+          message: 'You do not have permission to perform this action.',
         });
+      }
 
-        if (!webinar) {
-          return res.status(404).json({ message: 'Webinar not found.' });
-        }
+      // The rest of the logic remains the same
+      if (!Array.isArray(resources)) {
+        return res.status(400).json({ message: 'Resources must be an array.' });
+      }
+      // Validation pour linkedMemofiches
+      if (linkedMemofiches !== undefined && !Array.isArray(linkedMemofiches)) {
+        return res
+          .status(400)
+          .json({ message: 'Linked memofiches must be an array of IDs.' });
+      }
+      if (
+        linkedMemofiches &&
+        linkedMemofiches.some((mfId: any) => !ObjectId.isValid(mfId))
+      ) {
+        return res
+          .status(400)
+          .json({ message: 'Invalid ObjectId found in linked memofiches.' });
+      }
+      // Validation pour kahootUrl
+      if (kahootUrl !== undefined && typeof kahootUrl !== 'string') {
+        return res
+          .status(400)
+          .json({ message: 'Kahoot URL must be a string if provided.' });
+      }
 
-        // Authorization Logic
-        const userRole = req.user?.role;
-
-        if (userRole !== UserRole.ADMIN) {
-          return res
-            .status(403)
-            .json({
-              message: 'You do not have permission to perform this action.',
-            });
-        }
-
-        // The rest of the logic remains the same
-        if (!Array.isArray(resources)) {
-          return res.status(400).json({ message: 'Resources must be an array.' });
-        }
-        // Validation pour linkedMemofiches
-        if (linkedMemofiches !== undefined && !Array.isArray(linkedMemofiches)) {
-          return res
-            .status(400)
-            .json({ message: 'Linked memofiches must be an array of IDs.' });
-        }
-        if (
-          linkedMemofiches &&
-          linkedMemofiches.some((mfId: any) => !ObjectId.isValid(mfId))
-        ) {
-          return res
-            .status(400)
-            .json({ message: 'Invalid ObjectId found in linked memofiches.' });
-        }
-        // Validation pour kahootUrl
-        if (kahootUrl !== undefined && typeof kahootUrl !== 'string') {
+      // Basic validation for each resource (reste inchangé)
+      for (const resource of resources) {
+        if (!resource.type) {
           return res
             .status(400)
-            .json({ message: 'Kahoot URL must be a string if provided.' });
+            .json({ message: 'Each resource must have a type.' });
         }
+        if (typeof resource.source !== 'string') {
+          return res.status(400).json({
+            message: `Resource source must be a string, but it is ${typeof resource.source}.`,
+          });
+        }
+        const allowedTypes = [
+          'Replay',
+          'Vidéo explainer',
+          'Infographie',
+          'Diaporama',
+          'pdf',
+          'link',
+          'youtube',
+          'googledoc',
+        ];
+        if (!allowedTypes.includes(resource.type)) {
+          return res.status(400).json({
+            message: `Invalid resource type: '${resource.type}'. Must be one of: ${allowedTypes.join(', ')}`,
+          });
+        }
+      }
 
-        // Basic validation for each resource (reste inchangé)
-        for (const resource of resources) {
-          if (!resource.type) {
-            return res
-              .status(400)
-              .json({ message: 'Each resource must have a type.' });
-          }
-          if (typeof resource.source !== 'string') {
-            return res
-              .status(400)
-              .json({
-                message: `Resource source must be a string, but it is ${typeof resource.source}.`,
-              });
-          }
-          const allowedTypes = [
-            'Replay',
-            'Vidéo explainer',
-            'Infographie',
-            'Diaporama',
-            'pdf',
-            'link',
-            'youtube',
-            'googledoc',
-          ];
-          if (!allowedTypes.includes(resource.type)) {
-            return res
-              .status(400)
-              .json({
-                message: `Invalid resource type: '${resource.type}'. Must be one of: ${allowedTypes.join(', ')}`,
-              });
-          }
-        }
-
-        // Mettre à jour les deux champs: resources ET linkedMemofiches
-        const updateDoc: any = {
-          resources: resources,
-          updatedAt: new Date(),
-        };
-        if (linkedMemofiches !== undefined) {
-          updateDoc.linkedMemofiches = linkedMemofiches.map(
-            (id: string) => new ObjectId(id),
-          );
-        }
-        if (kahootUrl !== undefined) {
-          updateDoc.kahootUrl = kahootUrl;
-        }
+      // Mettre à jour les deux champs: resources ET linkedMemofiches
+      const updateDoc: any = {
+        resources: resources,
+        updatedAt: new Date(),
+      };
+      if (linkedMemofiches !== undefined) {
+        updateDoc.linkedMemofiches = linkedMemofiches.map(
+          (id: string) => new ObjectId(id),
+        );
+      }
+      if (kahootUrl !== undefined) {
+        updateDoc.kahootUrl = kahootUrl;
+      }
       console.log(
         `[DEBUG] Update document:`,
         JSON.stringify(updateDoc, null, 2),
@@ -1599,12 +1572,10 @@ router.put(
       });
     } catch (error) {
       console.error('Error updating webinar resources:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            'Erreur interne du serveur lors de la mise à jour des ressources du webinaire.',
-        });
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la mise à jour des ressources du webinaire.',
+      });
     }
   },
 );

@@ -26,11 +26,9 @@ router.get(
   authenticateToken,
   async (req: AuthenticatedRequest, res) => {
     if (req.user?.role !== UserRole.ADMIN) {
-      return res
-        .status(403)
-        .json({
-          message: 'Unauthorized. Only admins can perform this action.',
-        });
+      return res.status(403).json({
+        message: 'Unauthorized. Only admins can perform this action.',
+      });
     }
 
     try {
@@ -108,12 +106,10 @@ router.get(
       res.json(brokenLinks);
     } catch (error: any) {
       console.error('[Debug] Error finding broken links:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to find broken links.',
-          error: error.message,
-        });
+      res.status(500).json({
+        message: 'Failed to find broken links.',
+        error: error.message,
+      });
     }
   },
 );
@@ -126,11 +122,9 @@ router.get(
   async (req: AuthenticatedRequest, res) => {
     // Ensure only an admin can run this
     if (req.user?.role !== UserRole.ADMIN) {
-      return res
-        .status(403)
-        .json({
-          message: 'Unauthorized. Only admins can perform this action.',
-        });
+      return res.status(403).json({
+        message: 'Unauthorized. Only admins can perform this action.',
+      });
     }
 
     const fileList: string[] = [];
@@ -163,12 +157,10 @@ router.get(
       });
     } catch (error: any) {
       console.error('[Debug] Error listing volume files:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to list files from volume.',
-          error: error.message,
-        });
+      res.status(500).json({
+        message: 'Failed to list files from volume.',
+        error: error.message,
+      });
     }
   },
 );
@@ -181,11 +173,9 @@ router.get(
   async (req: AuthenticatedRequest, res) => {
     // Ensure only an admin can run this
     if (req.user?.role !== UserRole.ADMIN) {
-      return res
-        .status(403)
-        .json({
-          message: 'Unauthorized. Only admins can perform this action.',
-        });
+      return res.status(403).json({
+        message: 'Unauthorized. Only admins can perform this action.',
+      });
     }
 
     const { filePath } = req.query;

@@ -18,7 +18,9 @@ async function cleanupDirectory(directory: string, maxAgeInHours: number) {
     await fs.access(directory);
   } catch (error) {
     // If directory doesn't exist, there's nothing to clean up.
-    console.log(`[CRON] Cleanup directory ${directory} does not exist. Nothing to do.`);
+    console.log(
+      `[CRON] Cleanup directory ${directory} does not exist. Nothing to do.`,
+    );
     return;
   }
 
@@ -43,9 +45,14 @@ async function cleanupDirectory(directory: string, maxAgeInHours: number) {
         console.error(`[CRON] Error processing file ${filePath}:`, err);
       }
     }
-    console.log(`[CRON] Cleanup finished. Deleted ${deletedCount} files from ${directory}.`);
+    console.log(
+      `[CRON] Cleanup finished. Deleted ${deletedCount} files from ${directory}.`,
+    );
   } catch (err) {
-    console.error(`[CRON] Failed to read directory ${directory} for cleanup:`, err);
+    console.error(
+      `[CRON] Failed to read directory ${directory} for cleanup:`,
+      err,
+    );
   }
 }
 
@@ -55,12 +62,18 @@ async function cleanupDirectory(directory: string, maxAgeInHours: number) {
  */
 export function initCronJobs() {
   // Runs every day at 00:00 (midnight)
-  cron.schedule('0 0 * * *', () => {
-    console.log('[CRON] Running scheduled FTP download cache cleanup...');
-    cleanupDirectory(FTP_DOWNLOAD_CACHE_DIR, MAX_AGE_HOURS);
-  }, {
-    timezone: "UTC"
-  });
+  cron.schedule(
+    '0 0 * * *',
+    () => {
+      console.log('[CRON] Running scheduled FTP download cache cleanup...');
+      cleanupDirectory(FTP_DOWNLOAD_CACHE_DIR, MAX_AGE_HOURS);
+    },
+    {
+      timezone: 'UTC',
+    },
+  );
 
-  console.log('[CRON] FTP download cache cleanup job scheduled to run daily at midnight (UTC).');
+  console.log(
+    '[CRON] FTP download cache cleanup job scheduled to run daily at midnight (UTC).',
+  );
 }

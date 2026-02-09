@@ -231,7 +231,7 @@ const SubscriberManager: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -246,7 +246,7 @@ const SubscriberManager: React.FC = () => {
         const headers: HeadersInit = token
           ? { Authorization: `Bearer ${token}` }
           : {};
-        
+
         // Build query parameters for search and role filtering
         const queryParams = new URLSearchParams();
         queryParams.append('page', currentPage.toString());
@@ -254,7 +254,9 @@ const SubscriberManager: React.FC = () => {
         if (searchTerm) queryParams.append('search', searchTerm);
         if (selectedRole) queryParams.append('role', selectedRole);
 
-        const response = await fetch(`/api/users?${queryParams.toString()}`, { headers });
+        const response = await fetch(`/api/users?${queryParams.toString()}`, {
+          headers,
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
@@ -322,7 +324,10 @@ const SubscriberManager: React.FC = () => {
         if (searchTerm) queryParams.append('search', searchTerm);
         if (selectedRole) queryParams.append('role', selectedRole);
 
-        const responseRefetch = await fetch(`/api/users?${queryParams.toString()}`, { headers: headersRefetch });
+        const responseRefetch = await fetch(
+          `/api/users?${queryParams.toString()}`,
+          { headers: headersRefetch },
+        );
         if (!responseRefetch.ok) {
           throw new Error('Failed to re-fetch users after deletion');
         }
@@ -330,7 +335,6 @@ const SubscriberManager: React.FC = () => {
         setSubscribers(dataRefetch.users);
         setTotalPages(dataRefetch.totalPages);
         setTotalUsers(dataRefetch.totalUsers);
-
       } catch (error) {
         console.error(error);
         alert("Erreur lors de la suppression de l'utilisateur");
@@ -348,7 +352,9 @@ const SubscriberManager: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Gestion des Utilisateurs ({totalUsers} trouvés)</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        Gestion des Utilisateurs ({totalUsers} trouvés)
+      </h2>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input
@@ -455,7 +461,9 @@ const SubscriberManager: React.FC = () => {
             Page {currentPage} sur {totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
           >

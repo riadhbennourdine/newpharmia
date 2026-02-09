@@ -155,7 +155,7 @@ router.post(
 
       const isAdmin = req.user?.role === 'ADMIN';
       let initialStatus = OrderStatus.PENDING_PAYMENT;
-      
+
       // Auto-confirm orders for admins or if the total is zero
       if (isAdmin || totalAmount === 0) {
         initialStatus = OrderStatus.CONFIRMED;
@@ -462,7 +462,9 @@ router.post(
             primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
             primaryWebinar.masterClassTheme
           ) {
-            console.log(`[Submit Payment] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
+            console.log(
+              `[Submit Payment] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`,
+            );
             const themeWebinars = await webinarsCollection
               .find({
                 group: WebinarGroup.MASTER_CLASS,
@@ -472,7 +474,9 @@ router.post(
 
             if (themeWebinars.length > 0) {
               webinarsToRegister = themeWebinars;
-               console.log(`[Submit Payment] Found ${themeWebinars.length} sessions for this theme.`);
+              console.log(
+                `[Submit Payment] Found ${themeWebinars.length} sessions for this theme.`,
+              );
             }
           }
 
@@ -483,7 +487,9 @@ router.post(
             );
 
             if (attendeeIndex === -1) {
-              console.log(`[Submit Payment] Adding user ${userId} to webinar ${webinarToRegister._id}`);
+              console.log(
+                `[Submit Payment] Adding user ${userId} to webinar ${webinarToRegister._id}`,
+              );
               await webinarsCollection.updateOne(
                 { _id: webinarToRegister._id },
                 {
@@ -500,7 +506,9 @@ router.post(
               );
             } else {
               // Update existing pending registration with new proof
-              console.log(`[Submit Payment] Updating user ${userId} in webinar ${webinarToRegister._id}`);
+              console.log(
+                `[Submit Payment] Updating user ${userId} in webinar ${webinarToRegister._id}`,
+              );
               await webinarsCollection.updateOne(
                 {
                   _id: webinarToRegister._id,
@@ -525,11 +533,9 @@ router.post(
       });
     } catch (error) {
       console.error('Error submitting payment proof for order:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Internal server error while submitting payment proof.',
-        });
+      res.status(500).json({
+        message: 'Internal server error while submitting payment proof.',
+      });
     }
   },
 );
@@ -591,15 +597,19 @@ router.post(
         } else if (!item.type || item.type === ProductType.WEBINAR) {
           if (item.webinarId) {
             const primaryWebinarId = new ObjectId(item.webinarId);
-            console.log(`[Confirm Order] Processing webinar item: ${primaryWebinarId}`);
+            console.log(
+              `[Confirm Order] Processing webinar item: ${primaryWebinarId}`,
+            );
 
             const primaryWebinar = await webinarsCollection.findOne({
               _id: primaryWebinarId,
             });
 
             if (!primaryWebinar) {
-                console.warn(`[Confirm Order] Webinar ${primaryWebinarId} not found. Skipping.`);
-                continue;
+              console.warn(
+                `[Confirm Order] Webinar ${primaryWebinarId} not found. Skipping.`,
+              );
+              continue;
             }
 
             let webinarsToConfirm: Webinar[] = [primaryWebinar];
@@ -609,7 +619,9 @@ router.post(
               primaryWebinar.group === WebinarGroup.MASTER_CLASS &&
               primaryWebinar.masterClassTheme
             ) {
-              console.log(`[Confirm Order] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`);
+              console.log(
+                `[Confirm Order] Master Class item detected. Theme: ${primaryWebinar.masterClassTheme}`,
+              );
               const themeWebinars = await webinarsCollection
                 .find({
                   group: WebinarGroup.MASTER_CLASS,
@@ -619,7 +631,9 @@ router.post(
 
               if (themeWebinars.length > 0) {
                 webinarsToConfirm = themeWebinars;
-                console.log(`[Confirm Order] Found ${themeWebinars.length} sessions for this theme.`);
+                console.log(
+                  `[Confirm Order] Found ${themeWebinars.length} sessions for this theme.`,
+                );
               }
             }
 
@@ -630,17 +644,21 @@ router.post(
 
               if (attendeeIndex > -1) {
                 // User is already in the list, update their status
-                console.log(`[Confirm Order] Updating user ${order.userId} to CONFIRMED for webinar ${webinar._id}`);
+                console.log(
+                  `[Confirm Order] Updating user ${order.userId} to CONFIRMED for webinar ${webinar._id}`,
+                );
                 await webinarsCollection.updateOne(
-                  { 
+                  {
                     _id: webinar._id,
-                    'attendees.userId': new ObjectId(order.userId) 
+                    'attendees.userId': new ObjectId(order.userId),
                   },
                   { $set: { 'attendees.$.status': 'CONFIRMED' } },
                 );
               } else {
                 // User is not in the list, add them
-                 console.log(`[Confirm Order] Adding user ${order.userId} as CONFIRMED to webinar ${webinar._id}`);
+                console.log(
+                  `[Confirm Order] Adding user ${order.userId} as CONFIRMED to webinar ${webinar._id}`,
+                );
                 await webinarsCollection.updateOne(
                   { _id: webinar._id },
                   {

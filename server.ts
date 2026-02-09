@@ -16,6 +16,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // Cache-busting comment to force a rebuild on Railway
 import express from 'express';
 import path from 'path';
+import * as nodeCrypto from 'crypto';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 // FIX: Added imports for ES module scope __dirname
@@ -96,6 +97,9 @@ import eventsRouter from './server/routes/events.js';
 import resourcePagesRouter from './server/routes/resourcePages.js';
 import summarizeRouter from './server/routes/summarize.js';
 
+// Import Readable for stream conversion
+import { Readable } from 'stream';
+
 // FIX: Define __filename and __dirname for ES module scope
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -166,7 +170,8 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '..', 'dist')));
 }
 
-const upload = multer({ storage: multer.memoryStorage() });
+import multer from 'multer';
+import { sendSingleEmail } from './server/emailService.js';
 
 // AUTHROUTES
 app.use('/api/auth', authRouter);
@@ -246,11 +251,9 @@ app.post(
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
-      res
-        .status(500)
-        .json({
-          message: `Erreur lors de l'upload du fichier vers Gemini: ${error.message}`,
-        });
+      res.status(500).json({
+        message: `Erreur lors de l'upload du fichier vers Gemini: ${error.message}`,
+      });
     }
   },
 );
@@ -265,11 +268,9 @@ app.post(
 
     const { query, files } = req.body;
     if (!query || !files || !Array.isArray(files) || files.length === 0) {
-      return res
-        .status(400)
-        .json({
-          message: 'La requête et une liste de fichiers sont requises.',
-        });
+      return res.status(400).json({
+        message: 'La requête et une liste de fichiers sont requises.',
+      });
     }
 
     try {
@@ -308,11 +309,9 @@ app.get('/api/proxy-pdf', async (req, res) => {
     const response = await fetch(pdfUrl);
 
     if (!response.ok) {
-      return res
-        .status(response.status)
-        .json({
-          message: `Failed to fetch PDF from external source: ${response.statusText}`,
-        });
+      return res.status(response.status).json({
+        message: `Failed to fetch PDF from external source: ${response.statusText}`,
+      });
     }
 
     // Forward all headers from the original response
@@ -339,7 +338,7 @@ app.get('/api/proxy-pdf', async (req, res) => {
     res.setHeader('Expires', new Date(Date.now() + 31536000000).toUTCString()); // 1 year from now
 
     // Pipe the response body directly to the client
-    response.body?.pipe(res);
+    Readable.fromWeb(response.body as any).pipe(res);
   } catch (error) {
     console.error('Error proxying PDF:', error);
     res
@@ -439,9 +438,9 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
       return res.json({ message: text, sources: [] });
     }
 
-    const ficheObjectIDs = algoliaResults.map(
-      (hit: any) => new ObjectId(hit.objectID),
-    ).slice(0, 5); // Limit to top 5 relevant fiches
+    const ficheObjectIDs = algoliaResults
+      .map((hit: any) => new ObjectId(hit.objectID))
+      .slice(0, 5); // Limit to top 5 relevant fiches
 
     let fullFiches: CaseStudy[] = [];
     if (ficheObjectIDs.length > 0) {
@@ -450,7 +449,18 @@ app.post('/api/rag/chat', authenticateToken, async (req, res) => {
       const memofichesCollection = db.collection<CaseStudy>('memofiches');
       fullFiches = (await memofichesCollection
         .find({ _id: { $in: ficheObjectIDs } })
-        .project({ title: 1, sourceText: 1, patientSituation: 1, keyQuestions: 1, pathologyOverview: 1, redFlags: 1, mainTreatment: 1, associatedProducts: 1, lifestyleAdvice: 1, dietaryAdvice: 1 }) // Project only necessary fields
+        .project({
+          title: 1,
+          sourceText: 1,
+          patientSituation: 1,
+          keyQuestions: 1,
+          pathologyOverview: 1,
+          redFlags: 1,
+          mainTreatment: 1,
+          associatedProducts: 1,
+          lifestyleAdvice: 1,
+          dietaryAdvice: 1,
+        }) // Project only necessary fields
         .toArray()) as CaseStudy[];
     }
 
@@ -606,8 +616,7 @@ app.post(
       }
 
       const KONNECT_API_KEY = process.env.KONNECT_API_KEY;
-      const KONNECT_RECEIVER_WALLET_ID =
-        process.env.KONNECT_RECEIVER_WALLET_ID;
+      const KONNECT_RECEIVER_WALLET_ID = process.env.KONNECT_RECEIVER_WALLET_ID;
       const CLIENT_URL = process.env.CLIENT_URL || 'https://pharmia.tn';
 
       if (!KONNECT_API_KEY || !KONNECT_RECEIVER_WALLET_ID) {
@@ -622,8 +631,8 @@ app.post(
         'https://api.konnect.network/api/v2';
       const konnectApiUrl = `${konnectApiBaseUrl}/payments/init-payment`;
 
-      const webhookUrl = `${ 
-        process.env.API_URL || CLIENT_URL 
+      const webhookUrl = `${
+        process.env.API_URL || CLIENT_URL
       }/api/konnect/webhook`;
       const successUrl = `${CLIENT_URL}/thank-you?orderId=${orderId}&status=success`;
       const failUrl = `${CLIENT_URL}/checkout/${orderId}?error=payment_failed`;
@@ -691,8 +700,7 @@ app.get('/api/konnect/webhook', async (req, res) => {
 
     const KONNECT_API_KEY = process.env.KONNECT_API_KEY;
     const konnectApiUrl =
-      process.env.KONNECT_API_BASE_URL ||
-      'https://api.konnect.network/api/v2';
+      process.env.KONNECT_API_BASE_URL || 'https://api.konnect.network/api/v2';
 
     const response = await fetch(`${konnectApiUrl}/payments/${paymentRef}`, {
       headers: { 'x-api-key': KONNECT_API_KEY! },
@@ -840,20 +848,19 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
     // Create signature
     const signatureClear =
       GPG_NUM_SITE + GPG_PASSWORD + transactionId + formattedAmount + currency;
-    const signature = crypto
+    const signature = nodeCrypto
       .createHash('sha1')
       .update(signatureClear)
       .digest('hex');
 
     // Create MD5 password for the form
-    const md5Password = crypto
+    const md5Password = nodeCrypto
       .createHash('md5')
       .update(GPG_PASSWORD)
       .digest('hex');
 
     const paymentUrl =
-      process.env.GPG_MODE === 'test' ||
-      process.env.NODE_ENV !== 'production'
+      process.env.GPG_MODE === 'test' || process.env.NODE_ENV !== 'production'
         ? 'https://preprod.gpgcheckout.com/Paiement_test/Validation_paiement.php'
         : 'https://www.gpgcheckout.com/Paiement/Validation_paiement.php';
 
@@ -899,12 +906,10 @@ app.post('/api/gpg/initiate-payment', async (req, res) => {
     res.json(paymentData);
   } catch (error) {
     console.error('Error initiating GPG payment:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de l'initialisation du paiement GPG.",
-      });
+    res.status(500).json({
+      message:
+        "Erreur interne du serveur lors de l'initialisation du paiement GPG.",
+    });
   }
 });
 
@@ -922,7 +927,7 @@ app.post('/api/gpg/webhook', async (req, res) => {
 
     // Verify signature
     const signatureClear = TransStatus + PAYID + GPG_PASSWORD;
-    const expectedSignature = crypto
+    const expectedSignature = nodeCrypto
       .createHash('sha1')
       .update(signatureClear)
       .digest('hex');
@@ -944,8 +949,8 @@ app.post('/api/gpg/webhook', async (req, res) => {
       // await usersCollection.updateOne({ _id: new ObjectId(orderId) }, { $set: { hasActiveSubscription: true, ... } });
     } else {
       console.log(
-      `GPG Webhook: Payment status for order ${PAYID}: ${TransStatus}`,
-    );
+        `GPG Webhook: Payment status for order ${PAYID}: ${TransStatus}`,
+      );
     }
 
     res.status(200).send('Webhook processed');
@@ -978,7 +983,7 @@ app.post(
     }
 
     try {
-      const finalSubject = subject.replace(/[\[TEST\]]\s*/, '');
+      const finalSubject = subject.replace(/[TEST]\s*/, '');
 
       const client = await clientPromise;
       const db = client.db('pharmia');
@@ -1089,12 +1094,10 @@ app.post(
       });
 
       if (validRecipients.length === 0) {
-        return res
-          .status(404)
-          .json({
-            message:
-              'No recipients with valid email addresses found for the selected criteria.',
-          });
+        return res.status(404).json({
+          message:
+            'No recipients with valid email addresses found for the selected criteria.',
+        });
       }
 
       console.log(
@@ -1141,11 +1144,9 @@ app.post(
 
       await sendBulkEmails(emailMessages);
 
-      res
-        .status(200)
-        .json({
-          message: `Newsletter successfully sent to ${validRecipients.length} recipients.`,
-        });
+      res.status(200).json({
+        message: `Newsletter successfully sent to ${validRecipients.length} recipients.`,
+      });
     } catch (error) {
       console.error('Error sending newsletter:', error);
       res
@@ -1170,12 +1171,10 @@ app.post(
         !Array.isArray(testEmails) ||
         testEmails.length === 0
       ) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "Le sujet, le contenu HTML et une liste d'e-mails de test sont requis.",
-          });
+        return res.status(400).json({
+          message:
+            "Le sujet, le contenu HTML et une liste d'e-mails de test sont requis.",
+        });
       }
 
       let finalHtmlContent = htmlContent;
@@ -1220,64 +1219,63 @@ app.post(
       await Promise.all(sendPromises);
 
       res.json({
-        message: `E-mail de test envoyé à ${testEmails.join(', ')}.`, 
+        message: `E-mail de test envoyé à ${testEmails.join(', ')}.`,
       });
     } catch (error) {
       console.error('Error sending test email:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de l'envoi de l'e-mail de test.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de l'envoi de l'e-mail de test.",
+      });
     }
   },
 );
 
-app.post('/api/contact', upload.single('attachment'), async (req, res) => {
-  try {
-    const { name, email, message } = req.body;
-    const attachment = req.file;
+app.post(
+  '/api/contact',
+  fileSearchUpload.single('attachment'),
+  async (req, res) => {
+    try {
+      const { name, email, message } = req.body;
+      const attachment = req.file;
 
-    if (!name || !email || !message) {
-      return res
-        .status(400)
-        .json({ message: 'Name, email, and message are required.' });
-    }
+      if (!name || !email || !message) {
+        return res
+          .status(400)
+          .json({ message: 'Name, email, and message are required.' });
+      }
 
-    const htmlContent = `
+      const htmlContent = `
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
             <p><strong>Message:</strong></p>
             <p>${message}</p>
         `;
 
-    const attachments = [];
-    if (attachment) {
-      attachments.push({
-        content: attachment.buffer.toString('base64'),
-        name: attachment.originalname,
+      const attachments = [];
+      if (attachment) {
+        attachments.push({
+          content: attachment.buffer.toString('base64'),
+          name: attachment.originalname,
+        });
+      }
+
+      await sendSingleEmail({
+        to: 'rbpharskillseed@gmail.com',
+        subject: `New message from ${name}`,
+        htmlContent,
+        attachment: attachments,
+      });
+
+      res.json({ message: 'Message sent successfully!' });
+    } catch (error) {
+      console.error('Error sending contact message:', error);
+      res.status(500).json({
+        message: "Erreur interne du serveur lors de l'envoi du message.",
       });
     }
-
-    await sendSingleEmail({
-      to: 'rbpharskillseed@gmail.com',
-      subject: `New message from ${name}`,
-      htmlContent,
-      attachment: attachments,
-    });
-
-    res.json({ message: 'Message sent successfully!' });
-  } catch (error) {
-    console.error('Error sending contact message:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de l'envoi du message.",
-      });
-  }
-});
+  },
+);
 
 // SURVEY ROUTES
 app.get(
@@ -1366,12 +1364,10 @@ app.get('/api/newsletter/subscriber-groups', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching subscriber groups:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de la récupération des groupes d'abonnés.",
-      });
+    res.status(500).json({
+      message:
+        "Erreur interne du serveur lors de la récupération des groupes d'abonnés.",
+    });
   }
 });
 app.post('/api/subscribe', handleSubscription);
@@ -1422,7 +1418,7 @@ async function migrateWebinars() {
           update: { $set: { attendees: newAttendees } },
         },
       };
-    });
+    }); // Missing this closing parenthesis and semicolon
 
     const result = await webinarsCollection.bulkWrite(bulkOps);
     console.log(`Successfully migrated ${result.modifiedCount} webinars.`);
@@ -1480,9 +1476,8 @@ const server = app.listen(port, async () => {
     generateKnowledgeBase()
       .then((path) => refreshKnowledgeBaseCache(path))
       .then(() => console.log('[Startup] Knowledge Base updated and cached.'))
-      .catch((err)
-        =>
-          console.error('[Startup] Failed to update Knowledge Base:', err),
+      .catch((err) =>
+        console.error('[Startup] Failed to update Knowledge Base:', err),
       );
   }
 

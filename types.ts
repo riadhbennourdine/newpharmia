@@ -326,7 +326,14 @@ export interface Pack {
 }
 
 export interface WebinarResource {
-  type: 'Replay' | 'Diaporama' | 'Infographie' | 'pdf' | 'link' | 'youtube' | 'googledoc';
+  type:
+    | 'Replay'
+    | 'Diaporama'
+    | 'Infographie'
+    | 'pdf'
+    | 'link'
+    | 'youtube'
+    | 'googledoc';
   source: string;
   title?: string;
 }
@@ -461,4 +468,3 @@ export interface ResourcePage {
   createdAt: Date;
   updatedAt: Date;
 }
-

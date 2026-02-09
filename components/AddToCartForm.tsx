@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Webinar,
-  WebinarTimeSlot,
-  WebinarGroup,
-  ProductType,
-} from '../types';
+import { Webinar, WebinarTimeSlot, WebinarGroup, ProductType } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../context/CartContext';
 
@@ -80,7 +75,7 @@ const AddToCartForm: React.FC<{
       alert('Veuillez sélectionner au moins un créneau.');
       return;
     }
-    
+
     addToCart({
       webinar: webinar,
       type: ProductType.WEBINAR,
@@ -88,10 +83,10 @@ const AddToCartForm: React.FC<{
     });
     setIsAdded(true);
   };
-  
+
   const handleFreeRegistration = async () => {
-     // Public Registration Flow
-     if (!token) {
+    // Public Registration Flow
+    if (!token) {
       if (!firstName || !lastName || !email || !phone) {
         alert("Tous les champs sont obligatoires pour l'inscription.");
         return;
@@ -100,9 +95,7 @@ const AddToCartForm: React.FC<{
       setIsSubmitting(true);
       try {
         const slotsToSubmit =
-          selectedSlots.length > 0
-            ? selectedSlots
-            : [WebinarTimeSlot.MORNING];
+          selectedSlots.length > 0 ? selectedSlots : [WebinarTimeSlot.MORNING];
 
         const response = await fetch(
           `/api/webinars/${webinar._id}/public-register`,
@@ -208,7 +201,7 @@ const AddToCartForm: React.FC<{
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   const handleGoToCart = () => {
     navigate('/cart');
@@ -229,7 +222,7 @@ const AddToCartForm: React.FC<{
         <div className="text-center text-slate-700 font-semibold mb-4">
           Choisissez votre mode de paiement.
         </div>
-        
+
         {userMasterClassCredits > 0 && onUseCredit && (
           <div>
             <button
@@ -243,14 +236,14 @@ const AddToCartForm: React.FC<{
             </p>
           </div>
         )}
-        
+
         {isAdded ? (
-           <button
-           onClick={handleGoToCart}
-           className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-orange-500 text-white hover:bg-orange-600"
-         >
-           Ajouté au panier (Voir le panier)
-         </button>
+          <button
+            onClick={handleGoToCart}
+            className="w-full font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-orange-500 text-white hover:bg-orange-600"
+          >
+            Ajouté au panier (Voir le panier)
+          </button>
         ) : (
           <button
             onClick={handleAddToCart}
@@ -262,63 +255,87 @@ const AddToCartForm: React.FC<{
       </div>
     );
   }
-    return (
-      <div>
-        {!isMasterClass && !isFree && !isUpdateMode && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">
-              Choisissez vos créneaux de participation :
-            </h3>
-            <div className="space-y-3">
-                            {(() => {
-                              if (webinar.group === WebinarGroup.PHARMIA) {
-                                return [
-                                  WebinarTimeSlot.PHARMIA_TUESDAY,
-                                  WebinarTimeSlot.PHARMIA_FRIDAY,
-                                ];
-                              } else if (webinar.group === WebinarGroup.CROP_TUNIS) {
-                                return [
-                                  WebinarTimeSlot.MORNING,
-                                  WebinarTimeSlot.AFTERNOON,
-                                  WebinarTimeSlot.EVENING,
-                                ];
-                              } else {
-                                return []; // No default slots for other groups to avoid confusion
-                              }
-                            })().map((slot) => (
-                <label
-                  key={slot}
-                  className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-teal-500 hover:shadow-sm"
-                >
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-full border-gray-300 text-teal-600 focus:ring-teal-500"
-                    checked={selectedSlots.includes(slot)}
-                    onChange={() => handleCheckboxChange(slot)}
-                  />
-                  <span className="ml-4 text-md font-medium text-slate-800">
-                    {slot}
-                  </span>
-                </label>
-              ))}
-            </div>
+  return (
+    <div>
+      {!isMasterClass && !isFree && !isUpdateMode && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-slate-800 mb-3">
+            Choisissez vos créneaux de participation :
+          </h3>
+          <div className="space-y-3">
+            {(() => {
+              if (webinar.group === WebinarGroup.PHARMIA) {
+                return [
+                  WebinarTimeSlot.PHARMIA_TUESDAY,
+                  WebinarTimeSlot.PHARMIA_FRIDAY,
+                ];
+              } else if (webinar.group === WebinarGroup.CROP_TUNIS) {
+                return [
+                  WebinarTimeSlot.MORNING,
+                  WebinarTimeSlot.AFTERNOON,
+                  WebinarTimeSlot.EVENING,
+                ];
+              } else {
+                return []; // No default slots for other groups to avoid confusion
+              }
+            })().map((slot) => (
+              <label
+                key={slot}
+                className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-teal-500 hover:shadow-sm"
+              >
+                <input
+                  type="checkbox"
+                  className="h-5 w-5 rounded-full border-gray-300 text-teal-600 focus:ring-teal-500"
+                  checked={selectedSlots.includes(slot)}
+                  onChange={() => handleCheckboxChange(slot)}
+                />
+                <span className="ml-4 text-md font-medium text-slate-800">
+                  {slot}
+                </span>
+              </label>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {!isMasterClass && isFree && !isUpdateMode && (
+      {!isMasterClass && isFree && !isUpdateMode && (
         <div className="bg-white p-4 rounded-lg border border-teal-100 shadow-sm mb-4">
           {/* ... (formulaire d'inscription gratuite) ... */}
         </div>
       )}
-      
+
       {isUpdateMode ? (
-        <button onClick={() => onUpdateRegistration && onUpdateRegistration(selectedSlots)} className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-blue-600 text-white hover:bg-blue-700">Modifier les créneaux</button>
+        <button
+          onClick={() =>
+            onUpdateRegistration && onUpdateRegistration(selectedSlots)
+          }
+          className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Modifier les créneaux
+        </button>
       ) : isFree ? (
-        <button onClick={handleFreeRegistration} disabled={isSubmitting} className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700">{isSubmitting ? "Traitement..." : "M'inscrire gratuitement"}</button>
+        <button
+          onClick={handleFreeRegistration}
+          disabled={isSubmitting}
+          className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700"
+        >
+          {isSubmitting ? 'Traitement...' : "M'inscrire gratuitement"}
+        </button>
       ) : isAdded ? (
-        <button onClick={handleGoToCart} className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-orange-500 text-white hover:bg-orange-600">Ajouté (Voir le panier)</button>
+        <button
+          onClick={handleGoToCart}
+          className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-orange-500 text-white hover:bg-orange-600"
+        >
+          Ajouté (Voir le panier)
+        </button>
       ) : (
-        <button onClick={handleAddToCart} disabled={!isFree && selectedSlots.length === 0} className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400">Ajouter au panier</button>
+        <button
+          onClick={handleAddToCart}
+          disabled={!isFree && selectedSlots.length === 0}
+          className="w-full mt-4 font-bold py-3 px-6 rounded-lg shadow-md transition-colors bg-teal-600 text-white hover:bg-teal-700 disabled:bg-gray-400"
+        >
+          Ajouter au panier
+        </button>
       )}
 
       {isAdded && !isUpdateMode && !isFree && (

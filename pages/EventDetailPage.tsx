@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
@@ -34,7 +33,11 @@ const EventDetailPage: React.FC = () => {
   }, [slug]);
 
   if (isLoading) {
-    return <div className="text-center p-10"><Loader /></div>;
+    return (
+      <div className="text-center p-10">
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {
@@ -52,18 +55,44 @@ const EventDetailPage: React.FC = () => {
           <MarkdownRenderer content={event.content} />
           {/* Render Slides, Videos, and Artifacts */}
           <div className="mt-8">
-            {event.slidesUrl && <a href={event.slidesUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Voir le diaporama</a>}
-            {event.youtubeUrls && event.youtubeUrls.map((video, index) => (
-              <div key={index} className="mt-4">
-                <h3 className="font-bold">{video.title}</h3>
-                <iframe width="560" height="315" src={video.url.replace('watch?v=', 'embed/')} title={video.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-              </div>
-            ))}
-            {event.artifacts && event.artifacts.map((artifact, index) => (
+            {event.slidesUrl && (
+              <a
+                href={event.slidesUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Voir le diaporama
+              </a>
+            )}
+            {event.youtubeUrls &&
+              event.youtubeUrls.map((video, index) => (
                 <div key={index} className="mt-4">
-                    <a href={artifact.data.url} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">{artifact.title}</a>
+                  <h3 className="font-bold">{video.title}</h3>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src={video.url.replace('watch?v=', 'embed/')}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
                 </div>
-            ))}
+              ))}
+            {event.artifacts &&
+              event.artifacts.map((artifact, index) => (
+                <div key={index} className="mt-4">
+                  <a
+                    href={artifact.data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-600 hover:underline"
+                  >
+                    {artifact.title}
+                  </a>
+                </div>
+              ))}
           </div>
         </div>
       );
@@ -72,15 +101,28 @@ const EventDetailPage: React.FC = () => {
     return (
       <div className="text-center bg-gray-100 p-8 rounded-lg">
         <h2 className="text-2xl font-bold mb-4">Contenu réservé aux membres</h2>
-        <p className="mb-6">Veuillez vous connecter ou vous inscrire pour accéder au contenu complet de cet événement, y compris les documents et les vidéos.</p>
+        <p className="mb-6">
+          Veuillez vous connecter ou vous inscrire pour accéder au contenu
+          complet de cet événement, y compris les documents et les vidéos.
+        </p>
         <div className="flex justify-center gap-4">
-          <Link to="/login" className="bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700">Se connecter</Link>
-          <Link to="/register" className="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700">S'inscrire</Link>
+          <Link
+            to="/login"
+            className="bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700"
+          >
+            Se connecter
+          </Link>
+          <Link
+            to="/register"
+            className="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700"
+          >
+            S'inscrire
+          </Link>
         </div>
       </div>
     );
   };
-  
+
   const eventUrl = window.location.href;
 
   return (
@@ -93,10 +135,14 @@ const EventDetailPage: React.FC = () => {
           </div>
         </div>
         <p className="text-lg text-gray-600 mb-6">{event.summary}</p>
-        <img src={event.imageUrl} alt={event.title} className="w-full h-96 object-cover rounded-lg mb-8" />
-        
+        <img
+          src={event.imageUrl}
+          alt={event.title}
+          className="w-full h-96 object-cover rounded-lg mb-8"
+        />
+
         <div className="prose lg:prose-xl max-w-none">
-            {renderGatedContent()}
+          {renderGatedContent()}
         </div>
       </article>
     </div>

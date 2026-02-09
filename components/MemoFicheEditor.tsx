@@ -279,9 +279,9 @@ const createSafeCaseStudy = (caseStudy: CaseStudy | undefined): CaseStudy => {
     coverImageUrl: caseStudy?.coverImageUrl || '',
     coverImagePosition: caseStudy?.coverImagePosition || 'middle', // Added default position
     youtubeLinks: ensureArray(caseStudy?.youtubeLinks),
-              kahootUrl: caseStudy?.kahootUrl || '',
-              quizGeminiUrl: caseStudy?.quizGeminiUrl || '', // NEW: Quiz Gemini URL
-              status: caseStudy?.status || MemoFicheStatus.DRAFT,
+    kahootUrl: caseStudy?.kahootUrl || '',
+    quizGeminiUrl: caseStudy?.quizGeminiUrl || '', // NEW: Quiz Gemini URL
+    status: caseStudy?.status || MemoFicheStatus.DRAFT,
     patientSituation: convertToSection(
       caseStudy?.patientSituation,
       'Cas comptoir',
@@ -489,24 +489,24 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
       const learningTools = await generateLearningTools(draft);
 
       setCaseStudy((prevCaseStudy) => {
-          const newCaseStudy = {
-              // Base properties to preserve
-              _id: prevCaseStudy._id,
-              id: prevCaseStudy.id,
-              type: memoFicheType,
-              title: draft.title || aiPromptInput, // Use AI title or the input prompt
-              shortDescription: draft.shortDescription || '',
-              theme: draft.theme || prevCaseStudy.theme,
-              system: draft.system || prevCaseStudy.system,
-              status: MemoFicheStatus.DRAFT,
-              sourceText: aiPromptInput,
-              
-              // The generated content itself
-              ...draft,
-              ...learningTools,
-          };
-          // Ensure the final object is 'safe' and has all required arrays initialized
-          return createSafeCaseStudy(newCaseStudy as CaseStudy);
+        const newCaseStudy = {
+          // Base properties to preserve
+          _id: prevCaseStudy._id,
+          id: prevCaseStudy.id,
+          type: memoFicheType,
+          title: draft.title || aiPromptInput, // Use AI title or the input prompt
+          shortDescription: draft.shortDescription || '',
+          theme: draft.theme || prevCaseStudy.theme,
+          system: draft.system || prevCaseStudy.system,
+          status: MemoFicheStatus.DRAFT,
+          sourceText: aiPromptInput,
+
+          // The generated content itself
+          ...draft,
+          ...learningTools,
+        };
+        // Ensure the final object is 'safe' and has all required arrays initialized
+        return createSafeCaseStudy(newCaseStudy as CaseStudy);
       });
 
       setIsGenModalOpen(false);
@@ -583,7 +583,8 @@ const MemoFicheEditor: React.FC<MemoFicheEditorProps> = ({
           },
           {
             id: 'pathologyOverview',
-            title: caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique',
+            title:
+              caseStudy.pathologyOverviewTitle || 'Besoin Dermo-cosmétique',
             rawContent: caseStudy.pathologyOverview,
           },
           {

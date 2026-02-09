@@ -40,7 +40,6 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
   const [allMemofiches, setAllMemofiches] = useState<CaseStudy[]>([]);
   const [suggestedPreparators, setSuggestedPreparators] = useState<User[]>([]);
 
-
   const [searchTerm, setSearchTerm] = useState('');
   const [pharmacistSearchTerm, setPharmacistSearchTerm] = useState('');
 
@@ -75,9 +74,12 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
 
   const fetchSuggestedPreparators = async (pharmacistId: string) => {
     try {
-      const response = await fetch(`/api/users/pharmacists/${pharmacistId}/preparators`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `/api/users/pharmacists/${pharmacistId}/preparators`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       if (response.ok) {
         setSuggestedPreparators(await response.json());
       } else {
@@ -235,7 +237,9 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
     }, 300); // Debounce for 300ms
   };
 
-  const handlePharmacistSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePharmacistSearchTermChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const value = e.target.value;
     setPharmacistSearchTerm(value);
     if (debounceTimeoutRef.current) {
@@ -309,27 +313,26 @@ const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
               className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mb-2"
             />
             <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto border p-2 rounded-md">
-              {allPharmacists
-                .map((p) => (
-                  <div key={p._id as string} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`pharmacist-${p._id}`}
-                      checked={pharmacistIds.includes(p._id as string)}
-                      onChange={() => handlePharmacistToggle(p._id as string)}
-                      className="h-4 w-4 text-teal-600 border-gray-300 rounded-md focus:ring-teal-500"
-                    />
-                    <label
-                      htmlFor={`pharmacist-${p._id}`}
-                      className="ml-2 block text-sm text-gray-900"
-                    >
-                      {p.firstName} {p.lastName}
-                    </label>
-                  </div>
-                ))}
+              {allPharmacists.map((p) => (
+                <div key={p._id as string} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`pharmacist-${p._id}`}
+                    checked={pharmacistIds.includes(p._id as string)}
+                    onChange={() => handlePharmacistToggle(p._id as string)}
+                    className="h-4 w-4 text-teal-600 border-gray-300 rounded-md focus:ring-teal-500"
+                  />
+                  <label
+                    htmlFor={`pharmacist-${p._id}`}
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    {p.firstName} {p.lastName}
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
-          
+
           {suggestedPreparators.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-slate-700 mt-4">

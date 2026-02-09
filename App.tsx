@@ -72,8 +72,12 @@ const DermoFicheGenerator = lazy(
 const DermoSimulationPage = lazy(
   () => import('./pages/apps/DermoSimulationPage'),
 );
-const AdminResetPasswordPage = lazy(() => import('./pages/admin/ResetPasswordPage'));
-const StatisticsDashboard = lazy(() => import('./pages/admin/StatisticsDashboard'));
+const AdminResetPasswordPage = lazy(
+  () => import('./pages/admin/ResetPasswordPage'),
+);
+const StatisticsDashboard = lazy(
+  () => import('./pages/admin/StatisticsDashboard'),
+);
 const EventManagement = lazy(() => import('./pages/admin/EventManagement'));
 const EventEditor = lazy(() => import('./pages/admin/EventEditor'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
@@ -149,7 +153,10 @@ const App: React.FC = () => (
                 />
                 <Route path="/my-dashboard" element={<LegacyDashboard />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/my-master-classes" element={<MyMasterClassesPage />} />
+                <Route
+                  path="/my-master-classes"
+                  element={<MyMasterClassesPage />}
+                />
 
                 {/* Routes for Formateurs & Admins */}
                 <Route element={<FormateurOrAdminRoute />}>
@@ -235,10 +242,22 @@ const App: React.FC = () => (
                   />
                   <Route path="/admin/events" element={<EventManagement />} />
                   <Route path="/admin/events/new" element={<EventEditor />} />
-                  <Route path="/admin/events/edit/:id" element={<EventEditor />} />
-                  <Route path="/admin/resources/new" element={<ResourceEditor />} />
-                  <Route path="/admin/resources/edit/:id" element={<ResourceEditor />} />
-                  <Route path="/admin/resources" element={<ResourceListPage />} />
+                  <Route
+                    path="/admin/events/edit/:id"
+                    element={<EventEditor />}
+                  />
+                  <Route
+                    path="/admin/resources/new"
+                    element={<ResourceEditor />}
+                  />
+                  <Route
+                    path="/admin/resources/edit/:id"
+                    element={<ResourceEditor />}
+                  />
+                  <Route
+                    path="/admin/resources"
+                    element={<ResourceListPage />}
+                  />
                 </Route>
               </Route>
 

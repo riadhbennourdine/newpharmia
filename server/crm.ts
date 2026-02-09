@@ -52,12 +52,9 @@ router.get('/clients', async (req, res) => {
     res.json(clients);
   } catch (error) {
     console.error('Error fetching CRM clients:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des clients.',
-      });
+    res.status(500).json({
+      message: 'Erreur interne du serveur lors de la récupération des clients.',
+    });
   }
 });
 
@@ -80,11 +77,9 @@ router.get('/clients/:id', async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error('Error fetching client:', error);
-    res
-      .status(500)
-      .json({
-        message: 'Erreur interne du serveur lors de la récupération du client.',
-      });
+    res.status(500).json({
+      message: 'Erreur interne du serveur lors de la récupération du client.',
+    });
   }
 });
 
@@ -114,11 +109,9 @@ router.put('/clients/:id', async (req, res) => {
     res.json({ message: 'Client updated successfully.' });
   } catch (error) {
     console.error('Error updating client:', error);
-    res
-      .status(500)
-      .json({
-        message: 'Erreur interne du serveur lors de la mise à jour du client.',
-      });
+    res.status(500).json({
+      message: 'Erreur interne du serveur lors de la mise à jour du client.',
+    });
   }
 });
 
@@ -152,12 +145,10 @@ router.post('/clients/:id/payment-proof', async (req, res) => {
     res.json({ message: 'Payment proof uploaded successfully.' });
   } catch (error) {
     console.error('Error uploading payment proof:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de l'upload de la preuve de paiement.",
-      });
+    res.status(500).json({
+      message:
+        "Erreur interne du serveur lors de l'upload de la preuve de paiement.",
+    });
   }
 });
 
@@ -195,17 +186,13 @@ router.post('/prospects', async (req, res) => {
         },
       );
       if (result.modifiedCount > 0) {
-        return res
-          .status(200)
-          .json({
-            message: 'User updated to prospect with a trial successfully.',
-          });
+        return res.status(200).json({
+          message: 'User updated to prospect with a trial successfully.',
+        });
       } else {
-        return res
-          .status(200)
-          .json({
-            message: 'User is already a prospect or no changes were needed.',
-          });
+        return res.status(200).json({
+          message: 'User is already a prospect or no changes were needed.',
+        });
       }
     }
 
@@ -244,11 +231,9 @@ router.post('/prospects', async (req, res) => {
     }
   } catch (error) {
     console.error('Error creating prospect:', error);
-    res
-      .status(500)
-      .json({
-        message: 'Erreur interne du serveur lors de la création du prospect.',
-      });
+    res.status(500).json({
+      message: 'Erreur interne du serveur lors de la création du prospect.',
+    });
   }
 });
 
@@ -266,12 +251,10 @@ router.get('/prospects', async (req, res) => {
     res.json(prospects);
   } catch (error) {
     console.error('Error fetching prospects:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des prospects.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des prospects.',
+    });
   }
 });
 
@@ -287,12 +270,10 @@ router.get('/all-contacts', async (req, res) => {
     res.json(contacts);
   } catch (error) {
     console.error('Error fetching all contacts:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des contacts.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des contacts.',
+    });
   }
 });
 
@@ -311,12 +292,10 @@ router.get('/appointments', async (req, res) => {
     res.json(appointments);
   } catch (error) {
     console.error('Error fetching appointments:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des rendez-vous.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des rendez-vous.',
+    });
   }
 });
 
@@ -355,12 +334,9 @@ router.post('/appointments', async (req, res) => {
     }
   } catch (error) {
     console.error('Error creating appointment:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la création du rendez-vous.',
-      });
+    res.status(500).json({
+      message: 'Erreur interne du serveur lors de la création du rendez-vous.',
+    });
   }
 });
 
@@ -390,12 +366,10 @@ router.put('/appointments/:id', async (req, res) => {
     res.json({ message: 'Appointment updated successfully.' });
   } catch (error) {
     console.error('Error updating appointment:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la mise à jour du rendez-vous.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la mise à jour du rendez-vous.',
+    });
   }
 });
 
@@ -417,12 +391,10 @@ router.get('/clients/:id/appointments', async (req, res) => {
     res.json(appointments);
   } catch (error) {
     console.error('Error fetching client appointments:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          'Erreur interne du serveur lors de la récupération des rendez-vous du client.',
-      });
+    res.status(500).json({
+      message:
+        'Erreur interne du serveur lors de la récupération des rendez-vous du client.',
+    });
   }
 });
 

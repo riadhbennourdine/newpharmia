@@ -18,7 +18,14 @@ interface ManageWebinarResourcesModalProps {
 
 const ManageWebinarResourcesModal: React.FC<
   ManageWebinarResourcesModalProps
-> = ({ webinarId, resources, linkedMemofiches, onClose, onSave, kahootUrl }) => {
+> = ({
+  webinarId,
+  resources,
+  linkedMemofiches,
+  onClose,
+  onSave,
+  kahootUrl,
+}) => {
   const { token } = useAuth(); // Récupérer le token
   const [localKahootUrl, setLocalKahootUrl] = useState(kahootUrl || '');
 

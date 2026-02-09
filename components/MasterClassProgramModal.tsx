@@ -61,9 +61,7 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
     setError(null);
     try {
       const response = await fetch(
-        `/api/webinars?group=${encodeURIComponent(
-          WebinarGroup.MASTER_CLASS,
-        )}`,
+        `/api/webinars?group=${encodeURIComponent(WebinarGroup.MASTER_CLASS)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -149,21 +147,18 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.message || 'Failed to save resources',
-        );
+        throw new Error(errorData.message || 'Failed to save resources');
       }
-      
+
       // Refresh data to show changes
       await fetchMasterClasses();
       handleCloseResourcesModal();
-
     } catch (err: any) {
       setError(err.message);
       // Optionally, keep the modal open and show an error message inside it
     }
   };
-  
+
   const isAdmin = user?.role === 'ADMIN';
 
   return (
@@ -203,69 +198,71 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
           <div className="p-6 md:p-8 overflow-y-auto space-y-10">
             {/* SECTION 1: Déroulement (Steps) - Reste statique */}
             <section>
-            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2 border-l-4 border-teal-500 pl-3">
-              <ClockIcon className="h-6 w-6 text-slate-400" />
-              Structure d'une Matinée Type
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Step 1 */}
-              <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-slate-400">
-                  1
+              <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2 border-l-4 border-teal-500 pl-3">
+                <ClockIcon className="h-6 w-6 text-slate-400" />
+                Structure d'une Matinée Type
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Step 1 */}
+                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-slate-400">
+                    1
+                  </div>
+                  <div className="text-teal-600 font-bold text-sm mb-1">
+                    09h00 – 11h00
+                  </div>
+                  <div className="font-bold text-slate-800 mb-1">
+                    Théorie & Analyse
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Fondamentaux, physiopathologie et reconnaissance visuelle.
+                  </p>
                 </div>
-                <div className="text-teal-600 font-bold text-sm mb-1">
-                  09h00 – 11h00
+                {/* Step 2 */}
+                <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-amber-400">
+                    2
+                  </div>
+                  <div className="text-amber-600 font-bold text-sm mb-1">
+                    11h00 – 11h30
+                  </div>
+                  <div className="font-bold text-slate-800 mb-1">
+                    Pause Café
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Moment d'échange convivial et networking.
+                  </p>
                 </div>
-                <div className="font-bold text-slate-800 mb-1">
-                  Théorie & Analyse
+                {/* Step 3 */}
+                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-slate-400">
+                    3
+                  </div>
+                  <div className="text-teal-600 font-bold text-sm mb-1">
+                    11h30 – 13h00
+                  </div>
+                  <div className="font-bold text-slate-800 mb-1">
+                    Pratique & Méthode
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Cas comptoir, Méthode PHARMA et arbres décisionnels.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Fondamentaux, physiopathologie et reconnaissance visuelle.
-                </p>
+                {/* Step 4 */}
+                <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-indigo-400">
+                    4
+                  </div>
+                  <div className="text-indigo-600 font-bold text-sm mb-1">
+                    13h00
+                  </div>
+                  <div className="font-bold text-slate-800 mb-1">Clôture</div>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Remise des supports numériques et fiches pratiques.
+                  </p>
+                </div>
               </div>
-              {/* Step 2 */}
-              <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-amber-400">
-                  2
-                </div>
-                <div className="text-amber-600 font-bold text-sm mb-1">
-                  11h00 – 11h30
-                </div>
-                <div className="font-bold text-slate-800 mb-1">Pause Café</div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Moment d'échange convivial et networking.
-                </p>
-              </div>
-              {/* Step 3 */}
-              <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-slate-400">
-                  3
-                </div>
-                <div className="text-teal-600 font-bold text-sm mb-1">
-                  11h30 – 13h00
-                </div>
-                <div className="font-bold text-slate-800 mb-1">
-                  Pratique & Méthode
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Cas comptoir, Méthode PHARMA et arbres décisionnels.
-                </p>
-              </div>
-              {/* Step 4 */}
-              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-10 text-4xl font-black text-indigo-400">
-                  4
-                </div>
-                <div className="text-indigo-600 font-bold text-sm mb-1">
-                  13h00
-                </div>
-                <div className="font-bold text-slate-800 mb-1">Clôture</div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Remise des supports numériques et fiches pratiques.
-                </p>
-              </div>
-            </div>
-          </section>
+            </section>
 
             {/* SECTION 2: Calendrier (Table) */}
             <section>
@@ -273,7 +270,9 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
                 Planning Annuel 2026
               </h3>
               {isLoading ? (
-                <div className="text-center p-8">Chargement du programme...</div>
+                <div className="text-center p-8">
+                  Chargement du programme...
+                </div>
               ) : error ? (
                 <div className="text-center p-8 text-red-500">{error}</div>
               ) : (
@@ -309,15 +308,19 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
                             </h5>
                             <ul className="space-y-2">
                               {theme.webinars.map((webinar) => (
-                                <li key={webinar._id.toString()} className="flex items-center gap-3">
+                                <li
+                                  key={webinar._id.toString()}
+                                  className="flex items-center gap-3"
+                                >
                                   <CalendarIcon className="h-5 w-5 text-slate-400" />
                                   <span className="text-slate-800 font-medium">
-                                    {new Date(
-                                      webinar.date,
-                                    ).toLocaleDateString('fr-FR', {
-                                      day: '2-digit',
-                                      month: 'long',
-                                    })}
+                                    {new Date(webinar.date).toLocaleDateString(
+                                      'fr-FR',
+                                      {
+                                        day: '2-digit',
+                                        month: 'long',
+                                      },
+                                    )}
                                   </span>
                                 </li>
                               ))}
@@ -325,42 +328,48 @@ const MasterClassProgramModal: React.FC<MasterClassProgramModalProps> = ({
                           </div>
                           {/* Colonne des ressources */}
                           <div>
-                             <h5 className="font-semibold text-slate-600 mb-3 text-sm">
+                            <h5 className="font-semibold text-slate-600 mb-3 text-sm">
                               Ressources et Supports
                             </h5>
-                            {(theme.mainWebinar.resources?.length || 0) > 0 || theme.mainWebinar.kahootUrl ? (
+                            {(theme.mainWebinar.resources?.length || 0) > 0 ||
+                            theme.mainWebinar.kahootUrl ? (
                               <ul className="space-y-2">
-                               {theme.mainWebinar.resources?.map(
+                                {theme.mainWebinar.resources?.map(
                                   (resource, r_idx) => (
-                                    <li key={r_idx} className="flex items-center gap-3">
+                                    <li
+                                      key={r_idx}
+                                      className="flex items-center gap-3"
+                                    >
                                       <ResourceIcon type={resource.type} />
-                                       <a
+                                      <a
                                         href={resource.source}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-slate-800 hover:text-teal-600 transition-colors"
                                       >
-                                        {resource.title || "Lien"}
+                                        {resource.title || 'Lien'}
                                       </a>
                                     </li>
                                   ),
                                 )}
                                 {theme.mainWebinar.kahootUrl && (
-                                   <li className="flex items-center gap-3">
-                                      <QuestionMarkCircleIcon className="h-5 w-5 text-slate-500" />
-                                       <a
-                                        href={theme.mainWebinar.kahootUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-slate-800 hover:text-teal-600 transition-colors"
-                                      >
-                                        Quiz Kahoot
-                                      </a>
-                                    </li>
+                                  <li className="flex items-center gap-3">
+                                    <QuestionMarkCircleIcon className="h-5 w-5 text-slate-500" />
+                                    <a
+                                      href={theme.mainWebinar.kahootUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-slate-800 hover:text-teal-600 transition-colors"
+                                    >
+                                      Quiz Kahoot
+                                    </a>
+                                  </li>
                                 )}
                               </ul>
                             ) : (
-                              <p className="text-sm text-slate-400 italic">Aucune ressource pour le moment.</p>
+                              <p className="text-sm text-slate-400 italic">
+                                Aucune ressource pour le moment.
+                              </p>
                             )}
                           </div>
                         </div>

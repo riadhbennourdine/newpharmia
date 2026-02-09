@@ -35,23 +35,19 @@ router.post(
       );
 
       if (result.acknowledged) {
-        res
-          .status(201)
-          .json({
-            message: 'Image theme created successfully.',
-            themeId: result.insertedId,
-          });
+        res.status(201).json({
+          message: 'Image theme created successfully.',
+          themeId: result.insertedId,
+        });
       } else {
         res.status(500).json({ message: 'Failed to create image theme.' });
       }
     } catch (error) {
       console.error('Error creating image theme:', error);
-      res
-        .status(500)
-        .json({
-          message:
-            "Erreur interne du serveur lors de la création du thème d'image.",
-        });
+      res.status(500).json({
+        message:
+          "Erreur interne du serveur lors de la création du thème d'image.",
+      });
     }
   },
 );
@@ -69,12 +65,10 @@ router.get('/', async (req, res) => {
     res.json(themes);
   } catch (error) {
     console.error('Error fetching image themes:', error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erreur interne du serveur lors de la récupération des thèmes d'image.",
-      });
+    res.status(500).json({
+      message:
+        "Erreur interne du serveur lors de la récupération des thèmes d'image.",
+    });
   }
 });
 

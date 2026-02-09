@@ -23,9 +23,15 @@ const ResourceItem: React.FC<{
   index: number;
   uploadingStates: Record<number, boolean>;
   token: string | null;
-  handleResourceChange: (index: number, field: keyof WebinarResource, value: string) => void;
+  handleResourceChange: (
+    index: number,
+    field: keyof WebinarResource,
+    value: string,
+  ) => void;
   handleRemoveResource: (index: number) => void;
-  setUploadingStates: React.Dispatch<React.SetStateAction<Record<number, boolean>>>;
+  setUploadingStates: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >;
   setUploadError: React.Dispatch<React.SetStateAction<string | null>>;
 }> = ({
   resource,
@@ -37,40 +43,44 @@ const ResourceItem: React.FC<{
   setUploadingStates,
   setUploadError,
 }) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+      setUploadingStates((prev) => ({ ...prev, [index]: true }));
+      setUploadError(null);
 
-    setUploadingStates(prev => ({ ...prev, [index]: true }));
-    setUploadError(null);
+      const formData = new FormData();
+      formData.append('file', file);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch('/api/upload/file', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Échec de l\'upload.');
-      }
-      return response.json();
-    })
-    .then(data => {
-      handleResourceChange(index, 'source', data.fileUrl);
-    })
-    .catch(err => {
-      setUploadError(err.message || 'Une erreur est survenue lors de l\'upload.');
-    })
-    .finally(() => {
-      setUploadingStates(prev => ({ ...prev, [index]: false }));
-    });
-  }, [token, index, handleResourceChange, setUploadingStates, setUploadError]);
+      fetch('/api/upload/file', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Échec de l'upload.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          handleResourceChange(index, 'source', data.fileUrl);
+        })
+        .catch((err) => {
+          setUploadError(
+            err.message || "Une erreur est survenue lors de l'upload.",
+          );
+        })
+        .finally(() => {
+          setUploadingStates((prev) => ({ ...prev, [index]: false }));
+        });
+    },
+    [token, index, handleResourceChange, setUploadingStates, setUploadError],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -82,10 +92,14 @@ const ResourceItem: React.FC<{
     <div key={index} className="border p-4 rounded-md">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Type</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Type
+          </label>
           <select
             value={resource.type}
-            onChange={(e) => handleResourceChange(index, 'type', e.target.value)}
+            onChange={(e) =>
+              handleResourceChange(index, 'type', e.target.value)
+            }
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
           >
             <option value="Replay">Replay</option>
@@ -98,40 +112,60 @@ const ResourceItem: React.FC<{
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Titre</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Titre
+          </label>
           <input
             type="text"
             value={resource.title || ''}
-            onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
+            onChange={(e) =>
+              handleResourceChange(index, 'title', e.target.value)
+            }
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
         <div className="md:col-span-2">
           {resource.type === 'Infographie' && (
-            <div {...getRootProps()} className={`mt-2 p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${isDragActive ? 'border-teal-500 bg-teal-50' : 'border-gray-300 hover:border-gray-400'}`}>
+            <div
+              {...getRootProps()}
+              className={`mt-2 p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${isDragActive ? 'border-teal-500 bg-teal-50' : 'border-gray-300 hover:border-gray-400'}`}
+            >
               <input {...getInputProps()} />
               {uploadingStates[index] ? (
                 <Spinner />
               ) : (
                 <div className="flex flex-col items-center">
-                  <CloudArrowUpIcon className="h-8 w-8 text-gray-400 mb-2"/>
-                  <p className="text-sm text-gray-600">Glissez-déposez une image ici, ou cliquez pour sélectionner</p>
+                  <CloudArrowUpIcon className="h-8 w-8 text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600">
+                    Glissez-déposez une image ici, ou cliquez pour sélectionner
+                  </p>
                 </div>
               )}
             </div>
           )}
-          <label className="block text-sm font-medium text-gray-700 mt-2">Source (URL)</label>
+          <label className="block text-sm font-medium text-gray-700 mt-2">
+            Source (URL)
+          </label>
           <textarea
             value={resource.source}
-            onChange={(e) => handleResourceChange(index, 'source', e.target.value)}
+            onChange={(e) =>
+              handleResourceChange(index, 'source', e.target.value)
+            }
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             rows={2}
-            placeholder={resource.type === 'Infographie' ? "L'URL apparaîtra ici après l'upload" : "Collez l'URL de la ressource"}
+            placeholder={
+              resource.type === 'Infographie'
+                ? "L'URL apparaîtra ici après l'upload"
+                : "Collez l'URL de la ressource"
+            }
           />
         </div>
       </div>
       <div className="flex justify-end mt-4">
-        <button onClick={() => handleRemoveResource(index)} className="text-red-500 hover:text-red-700 text-sm">
+        <button
+          onClick={() => handleRemoveResource(index)}
+          className="text-red-500 hover:text-red-700 text-sm"
+        >
           Supprimer
         </button>
       </div>
@@ -141,10 +175,19 @@ const ResourceItem: React.FC<{
 
 const ManageMasterClassResourcesModal: React.FC<
   ManageMasterClassResourcesModalProps
-> = ({ webinarId, resources, linkedMemofiches, onClose, onSave, kahootUrl }) => {
+> = ({
+  webinarId,
+  resources,
+  linkedMemofiches,
+  onClose,
+  onSave,
+  kahootUrl,
+}) => {
   const { token } = useAuth(); // Récupérer le token
   const [localKahootUrl, setLocalKahootUrl] = useState(kahootUrl || '');
-  const [uploadingStates, setUploadingStates] = useState<Record<number, boolean>>({});
+  const [uploadingStates, setUploadingStates] = useState<
+    Record<number, boolean>
+  >({});
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const migratedResources = (resources || []).map((r: any) => ({
@@ -363,7 +406,9 @@ const ManageMasterClassResourcesModal: React.FC<
             <h4 className="text-lg font-semibold mb-2 text-slate-700">
               Autres Médias
             </h4>
-            {uploadError && <p className="text-red-500 text-sm mb-2">{uploadError}</p>}
+            {uploadError && (
+              <p className="text-red-500 text-sm mb-2">{uploadError}</p>
+            )}
             <div className="space-y-4">
               {localResources.map((resource, index) => (
                 <ResourceItem

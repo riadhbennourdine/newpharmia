@@ -34,7 +34,12 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res) => {
 
     if (!user.groupId) {
       // Instead of 400, return 200 with empty briefing
-      return res.json({ script: null, actions: [], instruction: null, message: 'User has no group assigned.' });
+      return res.json({
+        script: null,
+        actions: [],
+        instruction: null,
+        message: 'User has no group assigned.',
+      });
     }
 
     const group = await groupsCollection.findOne({
