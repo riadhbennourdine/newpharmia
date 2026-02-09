@@ -36,4 +36,4 @@ COPY --from=builder /app/dist-server ./dist-server
 # La commande pour démarrer le serveur de production.
 # Railway utilise par défaut la commande "start" de votre package.json.
 # Assurez-vous que le script "start" exécute le bon fichier, par exemple : "node dist-server/server.js"
-CMD [ "npm", "start" ]
+CMD [ "tail", "-f", "/dev/null" ]
