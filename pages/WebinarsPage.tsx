@@ -1,3 +1,4 @@
+
 import React, {
   useState,
   useEffect,
@@ -6,7 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+
 import {
   Webinar,
   WebinarGroup,
@@ -883,13 +884,11 @@ const WebinarsPage: React.FC = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <Helmet>
-        <title>Webinaires - Pharmia</title>
-        <meta
-          name="description"
-          content="Découvrez nos webinaires pour pharmaciens et préparateurs."
-        />
-      </Helmet>
+      <title>Webinaires - Pharmia</title>
+      <meta
+        name="description"
+        content="Découvrez nos webinaires pour pharmaciens et préparateurs."
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {view !== 'hub' && (
           <div className="mb-8">
