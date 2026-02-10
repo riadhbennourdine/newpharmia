@@ -42,6 +42,54 @@ router.get('/public/pharmacists', async (req, res) => {
   }
 });
 
+// GET /search - Search for users by name or email (Admin only)
+router.get(
+  '/search',
+  authenticateToken,
+  checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]),
+  async (req, res) => {
+    try {
+      const { q } = req.query;
+
+      if (!q || typeof q !== 'string' || q.length < 2) {
+        return res.status(400).json({
+          message: 'A search query of at least 2 characters is required.',
+        });
+      }
+
+      const { usersCollection } = await getCollections();
+      const searchRegex = new RegExp(q, 'i');
+
+      const users = await usersCollection
+        .find(
+          {
+            $or: [
+              { firstName: searchRegex },
+              { lastName: searchRegex },
+              { email: searchRegex },
+              { username: searchRegex },
+            ],
+          },
+          {
+            projection: {
+              _id: 1,
+              firstName: 1,
+              lastName: 1,
+              email: 1,
+            },
+          },
+        )
+        .limit(20) // Limit results for performance
+        .toArray();
+
+      res.json(users);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      res.status(500).json({ message: 'Erreur interne du serveur.' });
+    }
+  },
+);
+
 router.get(
   '/',
   authenticateToken,
