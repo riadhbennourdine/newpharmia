@@ -440,6 +440,76 @@ router.get('/:id', softAuthenticateToken, async (req, res) => {
   }
 });
 
+// GET subscribers for a single webinar (Admin only)
+router.get(
+  '/:id/subscribers',
+  authenticateToken,
+  checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid webinar ID.' });
+      }
+
+      const client = await clientPromise;
+      const db = client.db('pharmia');
+      const webinarsCollection = db.collection<Webinar>('webinars');
+
+      const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!webinar) {
+        return res.status(404).json({ message: 'Webinaire non trouvé.' });
+      }
+
+      if (!webinar.attendees || webinar.attendees.length === 0) {
+        return res.json([]);
+      }
+
+      const userIds = webinar.attendees.map(
+        (a) => new ObjectId(a.userId as string),
+      );
+      if (userIds.length > 0) {
+        const usersCollection = db.collection('users');
+        const users = await usersCollection
+          .find(
+            { _id: { $in: userIds } },
+            {
+              projection: {
+                firstName: 1,
+                lastName: 1,
+                username: 1,
+                email: 1,
+              },
+            },
+          )
+          .toArray();
+        const userMap = new Map(users.map((u) => [u._id.toHexString(), u]));
+
+        const populatedAttendees = webinar.attendees.map((attendee) => {
+          const userDetails = userMap.get(
+            new ObjectId(attendee.userId as string).toHexString(),
+          );
+          return {
+            ...attendee,
+            userId: userDetails || attendee.userId, // Fallback to original ID if user not found
+          };
+        });
+
+        return res.json(populatedAttendees);
+      }
+
+      res.json([]); // Should not be reached if attendees exist, but as a fallback
+    } catch (error) {
+      console.error('Error fetching subscribers for webinar:', error);
+      res.status(500).json({
+        message:
+          'Erreur interne du serveur lors de la récupération des inscrits.',
+      });
+    }
+  },
+);
+
 // POST to get multiple webinars by their IDs
 router.post('/by-ids', async (req, res) => {
   try {

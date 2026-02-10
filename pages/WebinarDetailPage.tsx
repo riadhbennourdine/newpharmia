@@ -28,6 +28,171 @@ import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import ManageWebinarResourcesModal from '../components/ManageWebinarResourcesModal';
 import AddToCartForm from '../components/AddToCartForm';
 
+const AttendeesList: React.FC<{ attendees: any[] }> = ({ attendees }) => {
+  if (!attendees || attendees.length === 0) {
+    return (
+      <div className="mt-8">
+        <h3 className="text-2xl font-bold text-slate-800 mb-4">Participants (0)</h3>
+        <p className="text-slate-500">Aucun participant inscrit pour le moment.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8">
+      <h3 className="text-2xl font-bold text-slate-800 mb-4">
+        Participants ({attendees.length})
+      </h3>
+      <div className="space-y-3 bg-slate-50 p-4 rounded-lg">
+        {attendees.map((attendee) => (
+          <div
+            key={attendee._id}
+            className="p-3 bg-white rounded-md shadow-sm text-sm border"
+          >
+            <p className="font-semibold">
+              {attendee.userId.firstName} {attendee.userId.lastName}
+            </p>
+            <p className="text-slate-600">{attendee.userId.email}</p>
+            <p className="text-slate-500 mt-1">
+              Statut: <span className="font-medium">{attendee.status}</span>
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ManualEnrollmentForm: React.FC<{
+  webinarId: string;
+  onEnroll: (
+    webinarId: string,
+    userId: string,
+    userName: string,
+  ) => Promise<void>;
+  isEnrolling: boolean;
+  token: string | null;
+}> = ({ webinarId, onEnroll, isEnrolling, token }) => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Debounce function
+  const debounce = <F extends (...args: any[]) => any>(
+    func: F,
+    waitFor: number,
+  ) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<F>): void => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), waitFor);
+    };
+  };
+
+  const handleSearch = async (searchQuery: string) => {
+    if (searchQuery.length < 2) {
+      setResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/users/search?q=${searchQuery}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Search failed');
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Failed to search users:', error);
+      setResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const debouncedSearch = useCallback(debounce(handleSearch, 300), [token]);
+
+  useEffect(() => {
+    if (query && !selectedUser) {
+      debouncedSearch(query);
+    } else {
+      setResults([]);
+    }
+  }, [query, debouncedSearch, selectedUser]);
+
+  const handleSelectUser = (user: User) => {
+    setSelectedUser(user);
+    setQuery(`${user.firstName} ${user.lastName}`);
+    setResults([]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser) {
+      alert('Veuillez rechercher et sélectionner un utilisateur.');
+      return;
+    }
+    await onEnroll(
+      webinarId,
+      selectedUser._id.toString(),
+      `${selectedUser.firstName} ${selectedUser.lastName}`,
+    );
+    setSelectedUser(null);
+    setQuery('');
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-6">
+      <h4 className="text-xl font-bold text-slate-800 mb-3">
+        Inscription Manuelle
+      </h4>
+      <div className="flex items-start gap-2 p-4 bg-slate-50 rounded-lg border">
+        <div className="relative w-full max-w-xs">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              if (selectedUser) {
+                setSelectedUser(null);
+              }
+            }}
+            placeholder="Rechercher par nom..."
+            className="input input-bordered w-full"
+            disabled={isEnrolling}
+          />
+          {(isSearching || results.length > 0) && (
+            <ul className="absolute z-10 w-full max-w-xs bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto shadow-lg">
+              {isSearching && (
+                <li className="p-2 text-sm text-gray-500">Recherche...</li>
+              )}
+              {!isSearching &&
+                results.map((user) => (
+                  <li
+                    key={user._id.toString()}
+                    onClick={() => handleSelectUser(user)}
+                    className="p-2 text-sm hover:bg-teal-50 cursor-pointer"
+                  >
+                    {user.firstName} {user.lastName} ({user.email})
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
+        <button
+          type="submit"
+          className="btn btn-primary bg-teal-600 hover:bg-teal-700 text-white"
+          disabled={isEnrolling || !selectedUser}
+        >
+          {isEnrolling ? 'Inscription...' : 'Inscrire'}
+        </button>
+      </div>
+    </form>
+  );
+};
+
+
 const isHtmlString = (str: string | null | undefined): boolean => {
   if (!str) return false;
   return (
@@ -81,8 +246,69 @@ const WebinarDetailPage: React.FC = () => {
   const [isManageResourcesModalOpen, setIsManageResourcesModalOpen] =
     useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+
+  const fetchSubscribers = useCallback(async () => {
+    if (!id || !token || user?.role !== UserRole.ADMIN) return;
+    try {
+      // This endpoint needs to be created.
+      // It should return attendees with populated user details.
+      const response = await fetch(`/api/webinars/${id}/subscribers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        // Don't throw an error, just log it, as the endpoint might not exist yet
+        console.error('Could not fetch subscribers. The endpoint might be missing.');
+        return;
+      }
+      const data = await response.json();
+      setSubscribers(data);
+    } catch (error) {
+      console.error('Failed to fetch subscribers', error);
+    }
+  }, [id, token, user]);
+
+  const handleManualEnrollment = async (
+    webinarId: string,
+    userId: string,
+    userName: string,
+  ) => {
+    if (!token) return;
+    if (
+      !window.confirm(
+        `Êtes-vous sûr de vouloir inscrire ${userName} à ce webinaire ?`,
+      )
+    )
+      return;
+
+    setIsEnrolling(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/webinars/${webinarId}/attendees`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Échec de l'inscription manuelle");
+      }
+
+      await fetchSubscribers(); // Refresh subscribers list
+      alert('Utilisateur inscrit avec succès !');
+    } catch (err: any) {
+      setError(err.message);
+      alert(`Erreur: ${err.message}`);
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
 
   const handleUseCreditForMasterClass = async (
     timeSlots: WebinarTimeSlot[],
@@ -196,7 +422,8 @@ const WebinarDetailPage: React.FC = () => {
     };
 
     fetchWebinarData();
-  }, [id, token, user]); // Added user to dependencies
+    fetchSubscribers();
+  }, [id, token, user, fetchSubscribers]); // Added user to dependencies
 
   if (isLoading) {
     return (
@@ -439,6 +666,17 @@ const WebinarDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
+          {user?.role === UserRole.ADMIN && (
+            <div className="mt-8 bg-white rounded-lg shadow-lg p-8">
+              <AttendeesList attendees={subscribers} />
+              <ManualEnrollmentForm
+                webinarId={webinar._id}
+                onEnroll={handleManualEnrollment}
+                isEnrolling={isEnrolling}
+                token={token}
+              />
+            </div>
+          )}
         </div>
       </div>
       {isManageResourcesModalOpen && webinar && (
