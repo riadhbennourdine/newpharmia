@@ -18,7 +18,10 @@ interface EmbeddableViewerProps {
   source: string;
 }
 
-const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
+const EmbeddableViewer = React.forwardRef<
+  HTMLIFrameElement,
+  EmbeddableViewerProps
+>(({ source }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Case 1: Raw HTML Embed Code
@@ -121,6 +124,7 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
     return (
       <div ref={containerRef} className="w-full h-full">
         <iframe
+          ref={ref}
           src={embedUrl}
           className="w-full h-full border-0"
           title="Google Doc Viewer"
@@ -303,6 +307,6 @@ const EmbeddableViewer: React.FC<EmbeddableViewerProps> = ({ source }) => {
       )}
     </div>
   );
-};
+});
 
 export default EmbeddableViewer;
