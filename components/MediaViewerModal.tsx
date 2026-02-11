@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { WebinarResource } from '../types';
 import {
   XCircleIcon,
-  PrinterIcon,
   DocumentArrowDownIcon,
 } from './Icons';
 import EmbeddableViewer from './EmbeddableViewer';
@@ -16,15 +15,7 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
   resource,
   onClose,
 }) => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const isGoogleDoc = resource.source.includes('docs.google.com/document');
-
-  const handlePrint = () => {
-    const iframe = iframeRef.current;
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.print();
-    }
-  };
 
   const getGoogleDocId = (url: string): string | null => {
     const match = url.match(/document\/d\/([a-zA-Z0-9_-]+)/);
@@ -49,7 +40,7 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
       resource.type === 'youtube' ||
       resource.type === 'googledoc'
     ) {
-      return <EmbeddableViewer source={resource.source} ref={iframeRef} />;
+      return <EmbeddableViewer source={resource.source} />;
     }
 
     // Fallback for any unknown types, though with strict typing this should be rare
@@ -68,13 +59,6 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
           <div className="flex items-center gap-4">
             {isGoogleDoc && (
               <>
-                <button
-                  onClick={handlePrint}
-                  className="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors"
-                  title="Imprimer"
-                >
-                  <PrinterIcon className="h-6 w-6" />
-                </button>
                 <a
                   href={downloadUrl}
                   target="_blank"
