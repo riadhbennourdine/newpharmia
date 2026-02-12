@@ -346,7 +346,7 @@ router.get(
     const userId = req.user?._id;
     const userRole = req.user?.role;
 
-    if (!ObjectId.isValid(orderId)) {
+    if (!ObjectId.isValid(orderId as string)) {
       return res.status(400).json({ message: 'Invalid order ID.' });
     }
 

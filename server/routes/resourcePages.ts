@@ -138,7 +138,7 @@ router.put(
       };
 
       const result = await resourcePagesCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updateData },
       );
 

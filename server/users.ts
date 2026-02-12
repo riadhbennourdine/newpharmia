@@ -641,7 +641,7 @@ router.get(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -678,7 +678,7 @@ router.get(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -720,7 +720,7 @@ router.put(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(preparateurId)) {
+      if (!ObjectId.isValid(preparateurId as string)) {
         return res.status(400).json({ message: 'Invalid preparateurId.' });
       }
 
@@ -772,7 +772,7 @@ router.get(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(pharmacistId)) {
+      if (!ObjectId.isValid(pharmacistId as string)) {
         return res.status(400).json({ message: 'Invalid pharmacistId.' });
       }
 
@@ -814,7 +814,7 @@ router.put(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -824,7 +824,7 @@ router.put(
       const hasActiveSubscription = newSubscriptionEndDate > new Date();
 
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         {
           $set: {
             subscriptionEndDate: newSubscriptionEndDate,
@@ -869,7 +869,7 @@ router.get(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -906,7 +906,7 @@ router.post(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -958,7 +958,7 @@ router.post(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -966,7 +966,7 @@ router.post(
       const quizResult = { quizId, score, completedAt: new Date(completedAt) };
 
       await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { $push: { quizHistory: quizResult } as any },
       );
 
@@ -996,7 +996,7 @@ router.put(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -1080,7 +1080,7 @@ router.put(
       }
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -1119,7 +1119,7 @@ router.put(
       const { firstName, lastName } = req.body;
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
@@ -1160,7 +1160,7 @@ router.delete(
       const { userId } = req.params;
 
       const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid userId.' });
       }
 
