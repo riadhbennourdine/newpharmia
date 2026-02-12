@@ -41,7 +41,7 @@ router.get('/:id', async (req, res) => {
     }
     const resourcePagesCollection = await getCollection();
     const resourcePage = await resourcePagesCollection.findOne({
-      new ObjectId(id as string)
+      _id: new ObjectId(id as string)
     });
     if (!resourcePage) {
       return res
@@ -78,7 +78,7 @@ router.post(
         subtitle,
         coverImageUrl,
         resources,
-        new ObjectId(eventId as string) : undefined,
+        eventId: eventId ? new ObjectId(eventId as string) : undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -125,7 +125,7 @@ router.put(
       const { title, subtitle, coverImageUrl, resources, eventId } = req.body;
 
       const oldResourcePage = await resourcePagesCollection.findOne({
-        new ObjectId(id as string)
+        _id: new ObjectId(id as string)
       });
 
       const updateData: Partial<ResourcePage> = {
@@ -133,7 +133,7 @@ router.put(
         subtitle,
         coverImageUrl,
         resources,
-        new ObjectId(eventId as string) : undefined,
+        eventId: eventId ? new ObjectId(eventId as string) : undefined,
         updatedAt: new Date(),
       };
 
@@ -192,11 +192,11 @@ router.delete(
       }
       const resourcePagesCollection = await getCollection();
       const resourcePageToDelete = await resourcePagesCollection.findOne({
-        new ObjectId(id as string)
+        _id: new ObjectId(id as string)
       });
 
       const result = await resourcePagesCollection.deleteOne({
-        new ObjectId(id as string)
+        _id: new ObjectId(id as string)
       });
 
       if (result.deletedCount === 0) {

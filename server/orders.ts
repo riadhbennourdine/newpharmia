@@ -343,8 +343,20 @@ router.get(
   authenticateToken,
   async (req: AuthenticatedRequest, res) => {
     const { orderId } = req.params;
+    const userId = req.user?._id;
+    const userRole = req.user?.role;
+
+    if (!ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: 'Invalid order ID.' });
+    }
+
+    try {
+      const client = await clientPromise;
+      const db = client.db('pharmia');
+      const ordersCollection = db.collection<Order>('orders');
+
       const order = await ordersCollection.findOne({
-        _id: new ObjectId(orderId as string),
+        _id: new ObjectId(orderId),
       });
 
       if (!order) {

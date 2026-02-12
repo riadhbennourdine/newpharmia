@@ -235,12 +235,16 @@ router.get(
   async (req, res) => {
     try {
       const { pharmacistId } = req.params;
-!ObjectId.isValid(pharmacistId as string)
+      if (!ObjectId.isValid(pharmacistId as string)) {
         return res.status(400).json({ message: 'Invalid pharmacistId.' });
       }
 
       const { usersCollection } = await getCollections();
-            pharmacistId: new ObjectId(pharmacistId as string),          },
+      const preparators = await usersCollection
+        .find(
+          {
+            pharmacistId: new ObjectId(pharmacistId as string),
+          },
           { projection: { passwordHash: 0 } },
         )
         .toArray();
