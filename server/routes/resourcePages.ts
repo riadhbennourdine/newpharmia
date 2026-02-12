@@ -34,14 +34,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id as string)) {
       return res
         .status(400)
         .json({ message: 'ID de page de ressource invalide.' });
     }
     const resourcePagesCollection = await getCollection();
     const resourcePage = await resourcePagesCollection.findOne({
-      _id: new ObjectId(id),
+      new ObjectId(id as string)
     });
     if (!resourcePage) {
       return res
@@ -78,7 +78,7 @@ router.post(
         subtitle,
         coverImageUrl,
         resources,
-        eventId: eventId ? new ObjectId(eventId) : undefined,
+        new ObjectId(eventId as string) : undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -115,7 +115,7 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res
           .status(400)
           .json({ message: 'ID de page de ressource invalide.' });
@@ -125,7 +125,7 @@ router.put(
       const { title, subtitle, coverImageUrl, resources, eventId } = req.body;
 
       const oldResourcePage = await resourcePagesCollection.findOne({
-        _id: new ObjectId(id),
+        new ObjectId(id as string)
       });
 
       const updateData: Partial<ResourcePage> = {
@@ -133,7 +133,7 @@ router.put(
         subtitle,
         coverImageUrl,
         resources,
-        eventId: eventId ? new ObjectId(eventId) : undefined,
+        new ObjectId(eventId as string) : undefined,
         updatedAt: new Date(),
       };
 
@@ -162,7 +162,7 @@ router.put(
         if (eventId) {
           await webinarsCollection.updateOne(
             { _id: new ObjectId(eventId) },
-            { $set: { resourcePageId: new ObjectId(id) } },
+            { $set: { resourcePageId: new ObjectId(id as string) } },
           );
         }
       }
@@ -185,18 +185,18 @@ router.delete(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res
           .status(400)
           .json({ message: 'ID de page de ressource invalide.' });
       }
       const resourcePagesCollection = await getCollection();
       const resourcePageToDelete = await resourcePagesCollection.findOne({
-        _id: new ObjectId(id),
+        new ObjectId(id as string)
       });
 
       const result = await resourcePagesCollection.deleteOne({
-        _id: new ObjectId(id),
+        new ObjectId(id as string)
       });
 
       if (result.deletedCount === 0) {

@@ -80,7 +80,7 @@ router.delete(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid theme ID' });
       }
 
@@ -89,7 +89,7 @@ router.delete(
       const imageThemesCollection = db.collection<ImageTheme>('imagethemes');
 
       const result = await imageThemesCollection.deleteOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
 
       if (result.deletedCount === 0) {

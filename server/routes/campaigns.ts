@@ -78,7 +78,7 @@ router.put(
 
       const collection = await getCampaignsCollection();
       const result = await collection.findOneAndUpdate(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updates },
         { returnDocument: 'after' },
       );
@@ -104,7 +104,7 @@ router.delete(
     try {
       const { id } = req.params;
       const collection = await getCampaignsCollection();
-      const result = await collection.deleteOne({ _id: new ObjectId(id) });
+      const result = await collection.deleteOne({ _id: new ObjectId(id as string) });
 
       if (result.deletedCount === 0) {
         return res.status(404).json({ message: 'Campaign not found' });
@@ -132,7 +132,7 @@ router.post('/:id/track', async (req, res) => {
     const collection = await getCampaignsCollection();
 
     await collection.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(id as string) },
       { $inc: { [updateField]: 1 } },
     );
 

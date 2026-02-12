@@ -279,18 +279,17 @@ router.get(
 router.get('/:id', softAuthenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id as string)) {
       return res.status(400).json({ message: 'Invalid webinar ID.' });
     }
 
     const client = await clientPromise;
     const db = client.db('pharmia');
     const webinarsCollection = db.collection<Webinar>('webinars');
-    const webinar = await webinarsCollection.findOne(
-      { _id: new ObjectId(id) },
-      { readPreference: 'primary' },
-    );
-
+          const webinar = await webinarsCollection.findOne(
+            { _id: new ObjectId(id as string) },
+            { readPreference: 'primary' },
+          );
     console.log(
       `[DEBUG] Fetched webinar ${id} from DB:`,
       JSON.stringify(webinar, null, 2),
@@ -456,7 +455,7 @@ router.get(
       const db = client.db('pharmia');
       const webinarsCollection = db.collection<Webinar>('webinars');
 
-      const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+      const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id as string) });
 
       if (!webinar) {
         return res.status(404).json({ message: 'Webinaire non trouvé.' });
@@ -624,9 +623,7 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const updates = req.body;
-
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID.' });
       }
 
@@ -657,7 +654,7 @@ router.put(
       const webinarsCollection = db.collection<Webinar>('webinars');
 
       const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updates },
       );
 
@@ -684,7 +681,7 @@ router.delete(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID' });
       }
 
@@ -693,7 +690,7 @@ router.delete(
       const webinarsCollection = db.collection('webinars');
 
       const result = await webinarsCollection.deleteOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
 
       if (result.deletedCount === 0) {
@@ -742,7 +739,7 @@ router.post(
       const usersCollection = db.collection('users');
 
       const webinar = await webinarsCollection.findOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { readPreference: 'primary' },
       );
 
@@ -845,7 +842,7 @@ router.post(
       }
 
       const newAttendee = {
-        userId: new ObjectId(userId),
+        userId: new ObjectId(userId as string),
         status: status,
         registeredAt: new Date(),
         timeSlots: timeSlots,
@@ -1184,7 +1181,7 @@ router.post(
       const webinarsCollection = db.collection<Webinar>('webinars');
 
       const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(id), 'attendees.userId': new ObjectId(userId) },
+        { _id: new ObjectId(id as string), 'attendees.userId': new ObjectId(userId as string) },
         {
           $set: {
             'attendees.$.proofUrl': proofUrl,
@@ -1221,7 +1218,7 @@ router.post(
 
       const result = await webinarsCollection.updateOne(
         {
-          _id: new ObjectId(webinarId),
+          _id: new ObjectId(webinarId as string),
           attendees: {
             $elemMatch: {
               userId: new ObjectId(userId),

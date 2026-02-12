@@ -343,20 +343,8 @@ router.get(
   authenticateToken,
   async (req: AuthenticatedRequest, res) => {
     const { orderId } = req.params;
-    const userId = req.user?._id;
-    const userRole = req.user?.role;
-
-    if (!ObjectId.isValid(orderId)) {
-      return res.status(400).json({ message: 'Invalid order ID.' });
-    }
-
-    try {
-      const client = await clientPromise;
-      const db = client.db('pharmia');
-      const ordersCollection = db.collection<Order>('orders');
-
       const order = await ordersCollection.findOne({
-        _id: new ObjectId(orderId),
+        _id: new ObjectId(orderId as string),
       });
 
       if (!order) {
@@ -393,10 +381,7 @@ router.post(
     const { proofUrl } = req.body;
     const userId = req.user?._id;
 
-    if (!userId) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
-    if (!ObjectId.isValid(orderId)) {
+    if (!ObjectId.isValid(orderId as string)) {
       return res.status(400).json({ message: 'Invalid order ID.' });
     }
     if (!proofUrl) {
@@ -433,9 +418,8 @@ router.post(
           .json({ message: `Order is already in status: ${order.status}` });
       }
 
-      // Update the order status and add the proof URL
       await ordersCollection.updateOne(
-        { _id: new ObjectId(orderId) },
+        { _id: new ObjectId(orderId as string) },
         {
           $set: {
             status: OrderStatus.PAYMENT_SUBMITTED,
@@ -574,7 +558,7 @@ router.post(
 
       // 1. Update Order Status
       await ordersCollection.updateOne(
-        { _id: new ObjectId(orderId) },
+        { _id: new ObjectId(orderId as string) },
         { $set: { status: OrderStatus.CONFIRMED, updatedAt: new Date() } },
       );
 
@@ -682,13 +666,13 @@ router.post(
       // 3. Grant Credits to User
       if (masterClassCreditsToAdd > 0) {
         await usersCollection.updateOne(
-          { _id: new ObjectId(order.userId) },
+          { _id: new ObjectId(order.userId as string) },
           { $inc: { masterClassCredits: masterClassCreditsToAdd } },
         );
       }
       if (pharmiaCreditsToAdd > 0) {
         await usersCollection.updateOne(
-          { _id: new ObjectId(order.userId) },
+          { _id: new ObjectId(order.userId as string) },
           { $inc: { pharmiaCredits: pharmiaCreditsToAdd } },
         );
       }
@@ -720,7 +704,7 @@ router.put(
       return res.status(403).json({ message: 'Unauthorized.' });
     }
 
-    if (!ObjectId.isValid(orderId)) {
+    if (!ObjectId.isValid(orderId as string)) {
       return res.status(400).json({ message: 'Invalid order ID.' });
     }
 
@@ -740,7 +724,7 @@ router.put(
       const ordersCollection = db.collection<Order>('orders');
 
       const result = await ordersCollection.updateOne(
-        { _id: new ObjectId(orderId) },
+        { _id: new ObjectId(orderId as string) },
         { $set: { invoiceUrl: invoiceUrl, updatedAt: new Date() } },
       );
 

@@ -249,7 +249,7 @@ router.get(
       });
 
       const fiche = await memofichesCollection.findOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
 
       if (!fiche) {
@@ -459,7 +459,7 @@ router.put(
       // FIX: Remove immutable _id field from update payload
       delete updatedFicheData._id;
       const result = await memofichesCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updatedFicheData },
       );
 
@@ -471,7 +471,7 @@ router.put(
         });
       } else {
         const updatedFiche = await memofichesCollection.findOne({
-          _id: new ObjectId(id),
+          _id: new ObjectId(id as string),
         });
         // Re-index the updated fiche in Algolia
         if (updatedFiche) {
@@ -506,12 +506,12 @@ router.delete(
       const memofichesCollection = db.collection<CaseStudy>('memofiches');
 
       const result = await memofichesCollection.deleteOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
 
       if (result.deletedCount > 0) {
         // Also remove from Algolia index
-        removeMemoFicheFromIndex(id).catch((err) => {
+        removeMemoFicheFromIndex(id as string).catch((err) => {
           console.error(
             `Failed to remove memofiche ${id} from Algolia index:`,
             err,
@@ -551,7 +551,7 @@ router.post('/validate-ids', async (req, res) => {
     const memofichesCollection = db.collection<CaseStudy>('memofiches');
 
     const objectIds = ids
-      .filter((id) => ObjectId.isValid(id))
+      .filter((id) => ObjectId.isValid(id as string))
       .map((id) => new ObjectId(id));
 
     const query = { _id: { $in: objectIds } };

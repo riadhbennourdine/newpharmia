@@ -61,7 +61,7 @@ nonAdminRouter.put(
 
       // 1. Verify Permission
       const group = await groupsCollection.findOne({
-        _id: new ObjectId(groupId),
+        _id: new ObjectId(groupId as string),
       });
       if (!group)
         return res.status(404).json({ message: 'Groupe non trouvé.' });
@@ -102,7 +102,7 @@ nonAdminRouter.put(
 
       // 3. Update Database
       await groupsCollection.updateOne(
-        { _id: new ObjectId(groupId) },
+        { _id: new ObjectId(groupId as string) },
         { $set: updateData },
       );
 
@@ -145,7 +145,7 @@ nonAdminRouter.put('/:id/instruction', async (req, res) => {
     }
 
     const result = await groupsCollection.updateOne(
-      { _id: new ObjectId(req.params.id) },
+      { _id: new ObjectId(req.params.id as string) },
       { $set: updateFields },
     );
 
@@ -368,7 +368,7 @@ adminRouter.get('/:id', async (req, res) => {
   try {
     const { groupsCollection } = await getCollections();
     const group = await groupsCollection.findOne({
-      _id: new ObjectId(req.params.id),
+      _id: new ObjectId(req.params.id as string),
     });
     if (!group) {
       return res.status(404).json({ message: 'Groupe non trouvé.' });
@@ -547,7 +547,7 @@ adminRouter.post('/:id/assign-fiche', async (req, res) => {
     const { groupsCollection } = await getCollections();
 
     const result = await groupsCollection.updateOne(
-      { _id: new ObjectId(req.params.id) },
+      { _id: new ObjectId(req.params.id as string) },
       { $addToSet: { assignedFiches: { ficheId, assignedAt: new Date() } } },
     );
 

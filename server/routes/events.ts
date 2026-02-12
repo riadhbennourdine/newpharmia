@@ -78,11 +78,11 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: "ID d'événement invalide." });
       }
       const eventsCollection = await getCollection();
-      const event = await eventsCollection.findOne({ _id: new ObjectId(id) });
+      const event = await eventsCollection.findOne({ _id: new ObjectId(id as string) });
       if (!event) {
         return res.status(404).json({ message: 'Événement non trouvé.' });
       }
@@ -157,7 +157,7 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: "ID d'événement invalide." });
       }
 
@@ -192,7 +192,7 @@ router.put(
       };
 
       const result = await eventsCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updateData },
       );
       if (result.matchedCount === 0) {
@@ -215,12 +215,12 @@ router.delete(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: "ID d'événement invalide." });
       }
       const eventsCollection = await getCollection();
       const result = await eventsCollection.deleteOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
       if (result.deletedCount === 0) {
         return res.status(404).json({ message: 'Événement non trouvé.' });

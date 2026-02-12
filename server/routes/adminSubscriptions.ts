@@ -97,7 +97,7 @@ router.post(
       const usersCollection = db.collection<User>('users');
 
       // Validate User
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId as string) });
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
@@ -119,7 +119,7 @@ router.post(
       // Prioritize PENDING_PAYMENT or PAYMENT_SUBMITTED orders
       let order = await ordersCollection.findOne(
         {
-          userId: new ObjectId(userId),
+          userId: new ObjectId(userId as string),
           status: {
             $in: [OrderStatus.PENDING_PAYMENT, OrderStatus.PAYMENT_SUBMITTED],
           },
@@ -130,7 +130,7 @@ router.post(
       if (!order) {
         // Fallback: look for ANY order
         order = await ordersCollection.findOne(
-          { userId: new ObjectId(userId) },
+          { userId: new ObjectId(userId as string) },
           { sort: { createdAt: -1 } },
         );
       }
@@ -153,7 +153,7 @@ router.post(
       } else {
         // Create a new "Manual Subscription" order
         const newOrder: any = {
-          userId: new ObjectId(userId),
+          userId: new ObjectId(userId as string),
           items: [{ type: 'SUBSCRIPTION', productId: 'MANUAL_ENTRY' }], // Placeholder item
           totalAmount: 0,
           status: OrderStatus.CONFIRMED,

@@ -93,14 +93,56 @@ router.get(
 router.get(
   '/',
   authenticateToken,
-  checkRole([UserRole.ADMIN]),
+  checkRole([UserRole.ADMIN, UserRole.ADMIN_WEBINAR]),
   async (req, res) => {
     try {
       const { usersCollection } = await getCollections();
+      const {
+        page = '1',
+        limit = '20',
+        search,
+        role,
+      } = req.query as {
+        page?: string;
+        limit?: string;
+        search?: string;
+        role?: string;
+      };
+
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
+      const skip = (pageNum - 1) * limitNum;
+
+      let query: any = {};
+      if (search) {
+        const searchRegex = new RegExp(search, 'i');
+        query.$or = [
+          { firstName: searchRegex },
+          { lastName: searchRegex },
+          { email: searchRegex },
+          { username: searchRegex },
+        ];
+      }
+      if (role) {
+        query.role = role;
+      }
+
       const users = await usersCollection
-        .find({}, { projection: { passwordHash: 0 } })
+        .find(query, { projection: { passwordHash: 0 } })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
         .toArray();
-      res.json(users);
+
+      const totalUsers = await usersCollection.countDocuments(query);
+      const totalPages = Math.ceil(totalUsers / limitNum);
+
+      res.json({
+        users,
+        totalPages,
+        totalUsers,
+        currentPage: pageNum,
+      });
     } catch (error) {
       console.error('Error fetching users:', error);
       res.status(500).json({
@@ -193,19 +235,12 @@ router.get(
   async (req, res) => {
     try {
       const { pharmacistId } = req.params;
-      const { ObjectId } = await import('mongodb');
-
-      if (!ObjectId.isValid(pharmacistId)) {
+!ObjectId.isValid(pharmacistId as string)
         return res.status(400).json({ message: 'Invalid pharmacistId.' });
       }
 
       const { usersCollection } = await getCollections();
-      const preparators = await usersCollection
-        .find(
-          {
-            role: UserRole.PREPARATEUR,
-            pharmacistId: new ObjectId(pharmacistId),
-          },
+            pharmacistId: new ObjectId(pharmacistId as string),          },
           { projection: { passwordHash: 0 } },
         )
         .toArray();
@@ -295,7 +330,7 @@ router.get(
       const { usersCollection } = await getCollections();
       const preparateurs = await usersCollection
         .find(
-          { groupId: new ObjectId(id), role: UserRole.PREPARATEUR },
+          { groupId: new ObjectId(id as string), role: UserRole.PREPARATEUR },
           { projection: { passwordHash: 0 } },
         )
         .toArray();
@@ -421,11 +456,7 @@ router.get(
       const { usersCollection, memofichesCollection } = await getCollections();
       const { ObjectId } = await import('mongodb');
 
-      if (!ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'Invalid userId.' });
-      }
-
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId as string) });
 
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
@@ -611,7 +642,7 @@ router.get(
       }
 
       const { usersCollection } = await getCollections();
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId as string) });
 
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
@@ -649,7 +680,7 @@ router.get(
 
       const { usersCollection } = await getCollections();
       const user = await usersCollection.findOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { projection: { passwordHash: 0 } },
       );
 
@@ -696,7 +727,7 @@ router.put(
       const { usersCollection } = await getCollections();
 
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(preparateurId) },
+        { _id: new ObjectId(preparateurId as string) },
         {
           $set: {
             pharmacistId: effectivePharmacistId
@@ -747,7 +778,7 @@ router.get(
         .find(
           {
             role: UserRole.PREPARATEUR,
-            pharmacistId: new ObjectId(pharmacistId),
+            pharmacistId: new ObjectId(pharmacistId as string),
           },
           { projection: { passwordHash: 0 } },
         )
@@ -839,7 +870,7 @@ router.get(
       }
 
       const { usersCollection } = await getCollections();
-      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId as string) });
 
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
@@ -879,7 +910,7 @@ router.post(
 
       // Only add the fiche to the set if it's not already there
       await usersCollection.updateOne(
-        { _id: new ObjectId(userId), 'readFiches.ficheId': { $ne: ficheId } },
+        { _id: new ObjectId(userId as string), 'readFiches.ficheId': { $ne: ficheId } },
         {
           $push: {
             readFiches: { ficheId: ficheId, readAt: new Date() },
@@ -888,7 +919,7 @@ router.post(
       );
 
       const updatedUser = await usersCollection.findOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { projection: { passwordHash: 0 } },
       );
       res.json(updatedUser);
@@ -968,7 +999,7 @@ router.put(
       const { usersCollection } = await getCollections();
 
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) as any },
+        { _id: new ObjectId(userId as string) },
         { $set: { role: role } },
       );
 
@@ -1026,30 +1057,8 @@ router.get(
   },
 );
 
-router.put(
-  '/:userId/credits',
-  authenticateToken,
-  checkRole([UserRole.ADMIN]),
-  async (req, res) => {
-    try {
-      const { userId } = req.params;
-      const { credits } = req.body;
-
-      if (typeof credits !== 'number' || credits < 0) {
-        return res
-          .status(400)
-          .json({ message: 'Credits must be a non-negative number.' });
-      }
-
-      const { ObjectId } = await import('mongodb');
-      if (!ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'Invalid userId.' });
-      }
-
-      const { usersCollection } = await getCollections();
-
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { $set: { masterClassCredits: credits } },
       );
 
@@ -1091,7 +1100,7 @@ router.put(
       const { usersCollection } = await getCollections();
 
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { $set: { pharmiaCredits: credits } },
       );
 
@@ -1130,7 +1139,7 @@ router.put(
       const { usersCollection } = await getCollections();
 
       const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { $set: { firstName, lastName } },
       );
 
@@ -1139,7 +1148,7 @@ router.put(
       }
 
       const updatedUser = await usersCollection.findOne({
-        _id: new ObjectId(userId),
+        _id: new ObjectId(userId as string),
       });
 
       res.json({
@@ -1171,7 +1180,7 @@ router.delete(
       const { usersCollection } = await getCollections();
 
       const result = await usersCollection.deleteOne({
-        _id: new ObjectId(userId),
+        _id: new ObjectId(userId as string),
       });
 
       if (result.deletedCount === 0) {
