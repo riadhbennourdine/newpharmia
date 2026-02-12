@@ -1373,7 +1373,7 @@ router.put(
       const webinarsCollection = db.collection<Webinar>('webinars');
 
       const webinar = await webinarsCollection.findOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(id as string),
       });
 
       if (!webinar) {
