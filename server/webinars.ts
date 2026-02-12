@@ -1089,7 +1089,7 @@ router.put(
       const { webinarId, userId } = req.params;
       const { proofUrl } = req.body;
 
-      if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(webinarId as string) || !ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid webinar or user ID.' });
       }
       if (!proofUrl || typeof proofUrl !== 'string') {
@@ -1133,7 +1133,7 @@ router.delete(
     try {
       const { webinarId, attendeeUserId } = req.params;
 
-      if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(attendeeUserId)) {
+      if (!ObjectId.isValid(webinarId as string) || !ObjectId.isValid(attendeeUserId as string)) {
         return res
           .status(400)
           .json({ message: 'Invalid webinar ID or attendee user ID.' });
@@ -1172,7 +1172,7 @@ router.post(
       const { webinarId } = req.params;
       const { userId } = req.body;
 
-      if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(webinarId as string) || !ObjectId.isValid(userId as string)) {
         return res
           .status(400)
           .json({ message: 'Invalid webinar ID or user ID.' });
@@ -1297,7 +1297,7 @@ router.put(
           .json({ message: 'Unauthorized to modify these slots.' });
       }
 
-      if (!ObjectId.isValid(webinarId) || !ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(webinarId as string) || !ObjectId.isValid(userId as string)) {
         return res
           .status(400)
           .json({ message: 'Invalid webinar ID or user ID.' });
