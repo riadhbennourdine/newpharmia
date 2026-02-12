@@ -234,7 +234,7 @@ router.get(
       const usersCollection = db.collection<User>('users');
       const groupsCollection = db.collection<Group>('groups');
 
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(404).json({ message: 'ID de mémofiche invalide.' });
       }
 

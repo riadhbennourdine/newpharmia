@@ -356,7 +356,7 @@ router.get(
       const ordersCollection = db.collection<Order>('orders');
 
       const order = await ordersCollection.findOne({
-        _id: new ObjectId(orderId),
+        _id: new ObjectId(orderId as string),
       });
 
       if (!order) {
@@ -410,7 +410,7 @@ router.post(
 
       // First, find the order and verify it belongs to the user
       const order = await ordersCollection.findOne({
-        _id: new ObjectId(orderId),
+        _id: new ObjectId(orderId as string),
       });
       if (!order) {
         return res.status(404).json({ message: 'Order not found.' });
@@ -557,7 +557,7 @@ router.post(
       const webinarsCollection = db.collection<Webinar>('webinars');
 
       const order = await ordersCollection.findOne({
-        _id: new ObjectId(orderId),
+        _id: new ObjectId(orderId as string),
       });
 
       if (!order) {

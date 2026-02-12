@@ -1061,14 +1061,6 @@ router.get(
   },
 );
 
-      const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId as string) },
-        { $set: { masterClassCredits: credits } },
-      );
-
-      if (result.matchedCount === 0) {
-        return res.status(404).json({ message: 'User not found.' });
-      }
 
 
 

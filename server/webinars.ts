@@ -284,7 +284,7 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID.' });
       }
 
@@ -561,13 +561,11 @@ router.post(
           .status(400)
           .json({ message: 'At least one time slot is required.' });
       }
-      const userId = req.user._id;
-
-      if (!ObjectId.isValid(id)) {
+if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID.' });
       }
 
-      if (!ObjectId.isValid(userId)) {
+      if (!ObjectId.isValid(userId as string)) {
         return res.status(400).json({ message: 'Invalid user ID.' });
       }
 
@@ -688,7 +686,7 @@ router.post(
       };
 
       const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $push: { attendees: newAttendee } },
       );
 
@@ -793,7 +791,7 @@ router.post('/:id/public-register', async (req, res) => {
         .status(400)
         .json({ message: 'Au moins un créneau est requis.' });
     }
-    if (!ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id as string)) {
       return res.status(400).json({ message: 'ID de webinaire invalide.' });
     }
 
@@ -802,7 +800,7 @@ router.post('/:id/public-register', async (req, res) => {
     const usersCollection = db.collection('users');
     const webinarsCollection = db.collection<Webinar>('webinars');
 
-    const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id) });
+    const webinar = await webinarsCollection.findOne({ _id: new ObjectId(id as string) });
     if (!webinar) {
       return res.status(404).json({ message: 'Webinaire non trouvé.' });
     }
@@ -856,7 +854,7 @@ router.post('/:id/public-register', async (req, res) => {
       };
 
       await webinarsCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $push: { attendees: newAttendee } },
       );
 
@@ -1365,7 +1363,7 @@ router.put(
       );
       console.log(`[DEBUG] Received kahootUrl:`, kahootUrl);
 
-      if (!ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID.' });
       }
 
@@ -1463,7 +1461,7 @@ router.put(
       );
 
       const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id as string) },
         { $set: updateDoc },
       );
 
