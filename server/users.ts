@@ -1070,16 +1070,7 @@ router.get(
         return res.status(404).json({ message: 'User not found.' });
       }
 
-      res.json({ message: 'User credits updated successfully.', credits });
-    } catch (error) {
-      console.error('Error updating user credits:', error);
-      res.status(500).json({
-        message:
-          'Erreur interne du serveur lors de la mise à jour des crédits.',
-      });
-    }
-  },
-);
+
 
 router.put(
   '/:userId/pharmia-credits',
