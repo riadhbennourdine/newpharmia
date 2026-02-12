@@ -227,6 +227,7 @@ const EditSubscriptionModal: React.FC<{
 const SubscriberManager: React.FC = () => {
   const { token } = useAuth();
   const [subscribers, setSubscribers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -261,7 +262,7 @@ const SubscriberManager: React.FC = () => {
           throw new Error('Failed to fetch users');
         }
         const data = await response.json();
-        setSubscribers(data.users);
+        setSubscribers(data.users || []);
         setTotalPages(data.totalPages);
         setTotalUsers(data.totalUsers);
       } catch (err: any) {
@@ -332,7 +333,7 @@ const SubscriberManager: React.FC = () => {
           throw new Error('Failed to re-fetch users after deletion');
         }
         const dataRefetch = await responseRefetch.json();
-        setSubscribers(dataRefetch.users);
+        setSubscribers(dataRefetch.users || []);
         setTotalPages(dataRefetch.totalPages);
         setTotalUsers(dataRefetch.totalUsers);
       } catch (error) {
