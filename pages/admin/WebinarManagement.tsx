@@ -308,9 +308,308 @@ const AttendeesList: React.FC<{
 
 const WebinarManagement: React.FC = () => {
 
+
+
   const location = useLocation();
 
+
+
+  const { user, token } = useAuth();
+
+
+
+  const navigate = useNavigate();
+
+
+
+  const [webinars, setWebinars] = useState<Webinar[]>([]);
+
+
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+
+
+  const [error, setError] = useState<string | null>(null);
+
+
+
+  const [filterGroup, setFilterGroup] = useState<WebinarGroup | 'ALL'>('ALL');
+
+
+
+  const [currentWebinar, setCurrentWebinar] = useState<Partial<Webinar> | null>(
+
+
+
+    null,
+
+
+
+  );
+
+
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+
+
+  const [isConfirmingPayment, setIsConfirmingPayment] = useState<boolean>(false);
+
+
+
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+
+
+  const [
+
+
+
+    currentWebinarForResources,
+
+
+
+    setCurrentWebinarForResources,
+
+
+
+  ] = useState<Webinar | null>(null);
+
+
+
+  const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
+
+
+
+  const [isMatcherOpen, setIsMatcherOpen] = useState(false);
+
+
+
+  const [currentAttendee, setCurrentAttendee] = useState<any>(null);
+
+
+
+  const [volumeFiles, setVolumeFiles] = useState<string[]>([]);
+
+
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
+
+
+
+
+
+
+
+
+
+
+  const fetchWebinars = useCallback(async () => {
+
+
+
+    if (!token) return;
+
+
+
+    setIsLoading(true);
+
+
+
+    try {
+
+
+
+      const response = await fetch(`/api/webinars?group=${filterGroup}`, {
+
+
+
+        headers: { Authorization: `Bearer ${token}` },
+
+
+
+      });
+
+
+
+      if (!response.ok) {
+
+
+
+        const errData = await response.json();
+
+
+
+        throw new Error(errData.message || 'Failed to fetch webinars');
+
+
+
+      }
+
+
+
+      const data: Webinar[] = await response.json();
+
+
+
+      setWebinars(data);
+
+
+
+      setError(null);
+
+
+
+    } catch (err: any) {
+
+
+
+      setError(err.message);
+
+
+
+    } finally {
+
+
+
+      setIsLoading(false);
+
+
+
+    }
+
+
+
+  }, [token, filterGroup]);
+
+
+
+
+
+
+
   useEffect(() => {
+
+
+
+    fetchWebinars();
+
+
+
+  }, [fetchWebinars]);
+
+
+
+
+
+
+
+  const { soonestWebinar, otherWebinars, pastWebinars } = useMemo(() => {
+
+
+
+    const now = new Date();
+
+
+
+    const upcoming = webinars
+
+
+
+      .filter((w) => new Date(w.date) >= now)
+
+
+
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+
+
+    const past = webinars
+
+
+
+      .filter((w) => new Date(w.date) < now)
+
+
+
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+
+
+
+
+
+
+    return {
+
+
+
+      soonestWebinar: upcoming.length > 0 ? upcoming[0] : null,
+
+
+
+      otherWebinars: upcoming.length > 1 ? upcoming.slice(1) : [],
+
+
+
+      pastWebinars: past,
+
+
+
+    };
+
+
+
+  }, [webinars]);
+
+
+
+  
+
+
+
+    const filteredVolumeFiles = useMemo(() => {
+
+
+
+    if (!searchTerm) return volumeFiles;
+
+
+
+    return volumeFiles.filter((file) =>
+
+
+
+      file.toLowerCase().includes(searchTerm.toLowerCase()),
+
+
+
+    );
+
+
+
+  }, [volumeFiles, searchTerm]);
+
+
+
+
+
+
+
+  useEffect(() => {
+
+
+
     if (location.state?.editWebinarId && !isLoading && !isModalOpen) {
       const webinarToEdit = [
         ...(soonestWebinar ? [soonestWebinar] : []),
