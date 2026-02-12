@@ -839,7 +839,7 @@ router.put(
       }
 
       const updatedUser = await usersCollection.findOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { projection: { passwordHash: 0 } },
       );
       res.json(updatedUser);
@@ -971,7 +971,7 @@ router.post(
       );
 
       const updatedUser = await usersCollection.findOne(
-        { _id: new ObjectId(userId) },
+        { _id: new ObjectId(userId as string) },
         { projection: { passwordHash: 0 } },
       );
       res.json(updatedUser);

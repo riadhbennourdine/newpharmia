@@ -155,13 +155,13 @@ router.put(
       if (oldResourcePage && oldResourcePage.eventId?.toString() !== eventId) {
         if (oldResourcePage.eventId) {
           await webinarsCollection.updateOne(
-            { _id: new ObjectId(oldResourcePage.eventId) },
+            { _id: new ObjectId(oldResourcePage.eventId as string) },
             { $unset: { resourcePageId: '' } },
           );
         }
         if (eventId) {
           await webinarsCollection.updateOne(
-            { _id: new ObjectId(eventId) },
+            { _id: new ObjectId(eventId as string) },
             { $set: { resourcePageId: new ObjectId(id as string) } },
           );
         }

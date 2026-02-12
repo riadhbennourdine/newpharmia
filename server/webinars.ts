@@ -561,6 +561,7 @@ router.post(
           .status(400)
           .json({ message: 'At least one time slot is required.' });
       }
+      const userId = req.user._id;
 if (!ObjectId.isValid(id as string)) {
         return res.status(400).json({ message: 'Invalid webinar ID.' });
       }
@@ -1057,7 +1058,7 @@ router.post(
           _id: new ObjectId(webinarId as string),
           attendees: {
             $elemMatch: {
-              userId: new ObjectId(userId),
+              userId: new ObjectId(userId as string),
               status: 'PAYMENT_SUBMITTED',
             },
           },
@@ -1103,8 +1104,8 @@ router.put(
 
       const result = await webinarsCollection.updateOne(
         {
-          _id: new ObjectId(webinarId),
-          'attendees.userId': new ObjectId(userId),
+          _id: new ObjectId(webinarId as string),
+          'attendees.userId': new ObjectId(userId as string),
         },
         { $set: { 'attendees.$.proofUrl': proofUrl } },
       );
@@ -1143,8 +1144,8 @@ router.delete(
       const webinarsCollection = db.collection<Webinar>('webinars');
 
       const result = await webinarsCollection.updateOne(
-        { _id: new ObjectId(webinarId) },
-        { $pull: { attendees: { userId: new ObjectId(attendeeUserId) } } },
+        { _id: new ObjectId(webinarId as string) },
+        { $pull: { attendees: { userId: new ObjectId(attendeeUserId as string) } } },
       );
 
       if (result.matchedCount === 0) {
@@ -1182,10 +1183,10 @@ router.post(
       const webinarsCollection = db.collection<Webinar>('webinars');
       const usersCollection = db.collection('users');
 
-      const newAttendeeId = new ObjectId(userId);
+      const newAttendeeId = new ObjectId(userId as string);
 
       const primaryWebinar = await webinarsCollection.findOne({
-        _id: new ObjectId(webinarId),
+        _id: new ObjectId(webinarId as string),
       });
 
       if (!primaryWebinar) {
@@ -1314,8 +1315,8 @@ router.put(
 
       const result = await webinarsCollection.updateOne(
         {
-          _id: new ObjectId(webinarId),
-          'attendees.userId': new ObjectId(userId),
+          _id: new ObjectId(webinarId as string),
+          'attendees.userId': new ObjectId(userId as string),
         },
         {
           $set: {
