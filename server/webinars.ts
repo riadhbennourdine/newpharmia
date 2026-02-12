@@ -224,7 +224,7 @@ router.get(
           .toArray();
       } else {
         webinars = await webinarsCollection
-          .find({ 'attendees.userId': new ObjectId(userId) })
+          .find({ 'attendees.userId': new ObjectId(userId as string) })
           .sort({ date: -1 })
           .toArray();
       }
@@ -602,7 +602,7 @@ if (!ObjectId.isValid(id as string)) {
         isFree = true;
         // Validate Phone Number for Free Webinars
         const user = await usersCollection.findOne({
-          _id: new ObjectId(userId),
+          _id: new ObjectId(userId as string),
         });
         if (!user?.phoneNumber) {
           return res.status(400).json({
@@ -619,7 +619,7 @@ if (!ObjectId.isValid(id as string)) {
         if (webinar.group === WebinarGroup.MASTER_CLASS) {
           // Fetch latest user data to check balance
           const user = await usersCollection.findOne({
-            _id: new ObjectId(userId),
+            _id: new ObjectId(userId as string),
           });
           if (
             !user ||
@@ -633,7 +633,7 @@ if (!ObjectId.isValid(id as string)) {
 
           // Deduct credit
           const updateResult = await usersCollection.updateOne(
-            { _id: new ObjectId(userId), masterClassCredits: { $gte: 1 } },
+            { _id: new ObjectId(userId as string), masterClassCredits: { $gte: 1 } },
             { $inc: { masterClassCredits: -1 } },
           );
 
@@ -648,7 +648,7 @@ if (!ObjectId.isValid(id as string)) {
         } else if (webinar.group === WebinarGroup.PHARMIA) {
           // Fetch latest user data to check balance
           const user = await usersCollection.findOne({
-            _id: new ObjectId(userId),
+            _id: new ObjectId(userId as string),
           });
           if (!user || !user.pharmiaCredits || user.pharmiaCredits < 1) {
             return res
@@ -658,7 +658,7 @@ if (!ObjectId.isValid(id as string)) {
 
           // Deduct credit
           const updateResult = await usersCollection.updateOne(
-            { _id: new ObjectId(userId), pharmiaCredits: { $gte: 1 } },
+            { _id: new ObjectId(userId as string), pharmiaCredits: { $gte: 1 } },
             { $inc: { pharmiaCredits: -1 } },
           );
 
@@ -696,12 +696,12 @@ if (!ObjectId.isValid(id as string)) {
         if (usedCredit) {
           if (webinar.group === WebinarGroup.MASTER_CLASS) {
             await usersCollection.updateOne(
-              { _id: new ObjectId(userId) },
+              { _id: new ObjectId(userId as string) },
               { $inc: { masterClassCredits: 1 } },
             );
           } else if (webinar.group === WebinarGroup.PHARMIA) {
             await usersCollection.updateOne(
-              { _id: new ObjectId(userId) },
+              { _id: new ObjectId(userId as string) },
               { $inc: { pharmiaCredits: 1 } },
             );
           }
@@ -714,7 +714,7 @@ if (!ObjectId.isValid(id as string)) {
       // Send Confirmation Email for Free Webinars
       if (isFree && status === 'CONFIRMED') {
         const user = await usersCollection.findOne({
-          _id: new ObjectId(userId),
+          _id: new ObjectId(userId as string),
         });
         if (user && user.email) {
           try {
@@ -958,7 +958,7 @@ router.post('/:id/public-register', async (req, res) => {
     }
 
     const newAttendee = {
-      userId: new ObjectId(userId),
+      userId: new ObjectId(userId as string),
       status: 'PENDING' as const,
       registeredAt: new Date(),
       timeSlots: timeSlots,
