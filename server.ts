@@ -165,10 +165,7 @@ app.post('/api/learning-assistant/ask', async (req, res) => {
 // This maps the public URL path /uploads to the internal volume mount path /app/public/uploads
 app.use('/uploads', express.static('/app/public/uploads'));
 
-// In production, serve static files from the build directory (priority 2)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '..', 'dist')));
-}
+
 
 import multer from 'multer';
 import { sendSingleEmail } from './server/emailService.js';
@@ -1373,12 +1370,21 @@ app.get('/api/newsletter/subscriber-groups', async (req, res) => {
 app.post('/api/subscribe', handleSubscription);
 app.post('/api/unsubscribe', handleUnsubscription);
 
-// Serve React App - This should be after all API routes
+// --- Frontend serving (should be last) ---
+// In production, all other routes should serve the React app
 if (process.env.NODE_ENV === 'production') {
-  app.get(/.*/, (req, res) => {
+  // Serve static files from the build directory
+  app.use(express.static(path.join(__dirname, '..', 'dist')));
+
+  // For any other request that doesn't match a file or API route,
+  // send the index.html file to let React Router handle it.
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
   });
 }
+
+
+
 
 // --- END DEBUG LOGGING ---
 
