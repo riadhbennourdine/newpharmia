@@ -10,6 +10,5 @@ cmds = ["npm run build"]
 [phases.start]
 cmd = "node dist-server/server.js & caddy run --config /app/Caddyfile --adapter caddyfile"
 
-[[providers.assets]]
-path = "./Caddyfile"
+[assets."./Caddyfile"]
 target = "/app/Caddyfile"
