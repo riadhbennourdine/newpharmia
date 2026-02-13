@@ -1,42 +1,39 @@
-# Stage 1: Build the application
+# --- Étape 1: Build (Construction) ---
+# Utilise une image Node.js complète pour installer les dépendances et construire l'application
 FROM node:20 AS builder
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copier package.json et package-lock.json
 COPY package*.json ./
+
+# Installer TOUTES les dépendances (dev et prod) pour construire le projet
 RUN npm ci
 
-# Copy the rest of the application source code
+# Copier le reste du code source
 COPY . .
 
-# Build the server and the client
+# Exécuter le script de build (qui doit compiler le frontend et le backend)
 RUN npm run build
 
 
-# Stage 2: Create the final production image
-FROM node:20-slim
-
-# Install Caddy
-RUN apt-get update && apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl && \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
-    apt-get update && \
-    apt-get install -y caddy
+# --- Étape 2: Production ---
+# Utilise une image Node.js beaucoup plus légère (alpine) pour l'exécution
+FROM node:20
 
 WORKDIR /app
 
-# Copy necessary files from the builder stage
+# Copier package.json et package-lock.json
+COPY package*.json ./
+
+# Installer UNIQUEMENT les dépendances de production
+RUN npm install --production
+
+# Copier les artefacts de build de l'étape précédente
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/dist-server ./dist-server
-COPY --from=builder /app/node_modules ./node_modules
-COPY package.json .
-COPY Caddyfile .
 
-# Expose the port Caddy will listen on (should be provided by env)
-# Dokploy will map this to the public-facing port
-EXPOSE 8080
-
-# The command to run the application
-# It starts the Node.js server in the background and Caddy in the foreground
-CMD ["sh", "-c", "node dist-server/server.js & caddy run --config ./Caddyfile --adapter caddyfile"]
+# La commande pour démarrer le serveur de production.
+# Railway utilise par défaut la commande "start" de votre package.json.
+# Assurez-vous que le script "start" exécute le bon fichier, par exemple : "node dist-server/server.js"
+CMD [ "npm", "start" ]
