@@ -1,4 +1,0 @@
-# We only need to override the default Caddyfile.
-# Nixpacks will handle the rest (install, build, start) automatically.
-[assets."./Caddyfile"]
-target = "/assets/Caddyfile"
