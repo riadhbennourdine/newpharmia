@@ -8,7 +8,7 @@ cmds = ["npm ci"]
 cmds = ["npm run build"]
 
 [phases.start]
-cmd = "node dist-server/server.js"
+cmd = "node dist-server/server.js & caddy run --config /app/Caddyfile --adapter caddyfile"
 
 [assets."./Caddyfile"]
 target = "/app/Caddyfile"
