@@ -1,3 +1,8 @@
+{
+    # Bind to the port provided by the environment
+    http_port {$PORT}
+}
+
 :{$PORT} {
     # Set this path to your site's directory.
     root * /app/dist
