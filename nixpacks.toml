@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["caddy", "nodejs_18", "npm-9_x"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.start]
+cmd = "node dist-server/server.js & caddy run --config /app/Caddyfile --adapter caddyfile"
+
+[[providers.assets]]
+path = "./Caddyfile"
+target = "/app/Caddyfile"

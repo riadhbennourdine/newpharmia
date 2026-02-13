@@ -1,0 +1,23 @@
+{
+    # Bind to the port provided by the environment
+    http_port {$PORT}
+}
+
+:{$PORT} {
+    # Set this path to your site's directory.
+    root * /app/dist
+
+    # Enable the static file server.
+    file_server
+
+    # API proxy
+    # Proxy all requests starting with /api/ to the Node.js server
+    route /api/* {
+        reverse_proxy localhost:8080
+    }
+
+    # Fallback for single-page applications (SPA)
+    # This ensures that any request that doesn't match a static file
+    # is sent to index.html, allowing the React router to handle it.
+    try_files {path} /index.html
+}
