@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "NODE_ENV=production node dist-server/server.js",
+    "start": "NODE_ENV=production node -r dotenv/config dist-server/server.js",
     "dev": "npm run build:server && concurrently \"vite\" \"tsc --watch -p tsconfig.server.json\" \"nodemon --watch dist-server --exec 'node -r dotenv/config' dist-server/server.js\"",
     "build": "npm run build:server && vite build",
     "build:server": "tsc -p tsconfig.server.json",
