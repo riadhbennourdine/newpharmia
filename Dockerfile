@@ -18,8 +18,11 @@ RUN npm run build
 
 
 # --- Étape 2: Production ---
-# Utilise une image Node.js beaucoup plus légère (alpine) pour l'exécution
-FROM node:20
+# Utilise une image Node.js plus légère pour l'exécution et ajoute dumb-init
+FROM node:20-slim
+
+# Install dumb-init
+RUN apt-get update && apt-get install -y dumb-init --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -32,8 +35,10 @@ RUN npm install --production
 # Copier les artefacts de build de l'étape précédente
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/dist-server ./dist-server
+COPY --from=builder /app/node_modules ./node_modules
 
 # La commande pour démarrer le serveur de production.
-# Railway utilise par défaut la commande "start" de votre package.json.
-# Assurez-vous que le script "start" exécute le bon fichier, par exemple : "node dist-server/server.js"
-CMD [ "npm", "start" ]
+# Utilise dumb-init pour gérer le processus principal et les signaux.
+# Le ENTRYPOINT garantit que notre application est le PID 1.
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist-server/server.js"]
