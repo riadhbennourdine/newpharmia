@@ -332,7 +332,7 @@ router.post('/rename', async (req, res) => {
             );
 
             const escapeRegExp = (string: string) =>
-                string.replace(/[.*+?^${}()|[\\\]/g, '\\$&');
+                string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const urlRegex = new RegExp(escapeRegExp(oldUrl), 'g');
 
             const fichesToUpdate = await memofichesCollection
