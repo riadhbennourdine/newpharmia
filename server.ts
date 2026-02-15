@@ -83,7 +83,7 @@ import webinarsRouter from './server/webinars.js';
 import ordersRouter from './server/orders.js';
 import uploadRouter from './server/upload.js';
 import imageThemesRouter from './server/imageThemes.js';
-import ftpRouter from './server/ftp.js';
+import fileStorageRouter from './server/fileStorageService.js';
 import debugRouter from './server/debug.js';
 import profileRoutes from './server/profile.js';
 import simulationRouter from './server/simulation.js';
@@ -121,49 +121,8 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve files from the Railway Volume
-// This maps the public URL path /uploads to the internal volume mount path /data/uploads
-app.use('/uploads', express.static('/data/uploads'));
-
-// app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')));
-
-// import { initializeFileStore, queryLearningAssistant } from './server/learningJourneyService.js';
-
-/*
-app.post('/api/learning-journey/initialize', async (req, res) => {
-    try {
-            // const result = await initializeFileStore();
-        if (result.success) {
-            res.json({ message: result.message });
-        } else {
-            res.status(500).json({ message: result.message });
-        }
-    } catch (error: any) {
-        console.error('Error initializing learning journey:', error);
-        res.status(500).json({ message: `Erreur interne du serveur lors de l'initialisation du parcours d'apprentissage.` });
-    }
-});
-*/
-
-/*
-app.post('/api/learning-assistant/ask', async (req, res) => {
-    try {
-        const { query, history } = req.body;
-        if (!query) {
-            return res.status(400).json({ message: 'Query is required.' });
-        }
-                // const response = await queryLearningAssistant(query, history || []);
-        res.json({ response });
-    } catch (error: any) {
-        console.error('Error in learning assistant ask endpoint:', error);
-        res.status(500).json({ message: `Erreur interne du serveur lors de la requête à l'assistant d'apprentissage: ${error.message}` });
-    }
-});
-*/
-
-// Serve files from the Railway Volume (priority 1)
-// This maps the public URL path /uploads to the internal volume mount path /app/public/uploads
-app.use('/uploads', express.static('/app/public/uploads'));
+// Serve files from the local 'uploads' directory
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 
 
@@ -204,7 +163,7 @@ console.log('Mounting Orders Router at /api/orders'); // DEBUG LOG
 app.use('/api/orders', ordersRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/image-themes', imageThemesRouter);
-app.use('/api/ftp', ftpRouter); // Register the new FTP routes
+app.use('/api/ftp', fileStorageRouter); // Register the new FTP routes
 app.use('/api/debug', debugRouter); // Register the debug routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/simulation', simulationRouter);
