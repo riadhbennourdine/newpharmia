@@ -5,8 +5,34 @@ import fs from 'fs/promises';
 import { authenticateToken, AuthenticatedRequest } from './authMiddleware.js';
 import { UserRole } from '../types.js';
 import clientPromise from './mongo.js';
+import { downloadAllImages } from './downloadService.js';
 
 const router = express.Router();
+
+router.get(
+  '/download-all-images',
+  async (req: AuthenticatedRequest, res) => {
+    
+    console.log('Received request to download all images.');
+    // Do not await this, let it run in the background
+    downloadAllImages()
+      .then((result) => {
+        if (result.success) {
+          console.log(`Successfully created zip file at ${result.path}`);
+        } else {
+          console.error('Failed to create zip file.', result.error);
+        }
+      })
+      .catch((error) => {
+        console.error('An unexpected error occurred during image download.', error);
+      });
+
+    res.status(202).json({
+      message:
+        'Accepted: The process of downloading and zipping images has started in the background. This may take several minutes. The resulting zip file will be in the project root.',
+    });
+  },
+);
 
 const VOLUME_BASE_PATH = '/app/public/uploads';
 
