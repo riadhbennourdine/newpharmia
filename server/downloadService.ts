@@ -1,9 +1,9 @@
+
 import fetch from 'node-fetch';
 import * as fs from 'fs'; // Use * as fs for both promises and stream methods
 import path from 'path';
 import archiver from 'archiver';
 import { getFileStorageClient, releaseFileStorageClient } from './fileStorageService.js';
-import { MakeDirectoryOptions, RmOptions } from 'fs'; // Import types for fs options
 
 // Define the FileStorageClient interface locally to ensure type compatibility
 interface FileStorageClient {
@@ -19,7 +19,7 @@ interface FileStorageClient {
 const OUTPUT_DIR = './downloaded_images';
 const ZIP_FILE_PATH = './pharmia_images.zip';
 
-interface FtpItem { // This interface seems unused after refactor, but kept for context if needed
+interface FtpItem {
   name: string;
   type: 'file' | 'directory';
   size: number;
@@ -31,7 +31,7 @@ async function listDirectory(client: FileStorageClient, remotePath: string): Pro
         const list = await client.list(remotePath);
         return list;
     } catch (error) {
-        console.error(`Failed to list directory ${remotePath}:`, error);
+        console.error(`Failed to list FTP directory ${remotePath}:`, error);
         return [];
     }
 }
@@ -39,7 +39,7 @@ async function listDirectory(client: FileStorageClient, remotePath: string): Pro
 async function downloadFile(client: FileStorageClient, remotePath: string, localPath: string): Promise<void> {
     console.log(`Downloading ${remotePath} to ${localPath}`);
     try {
-        await fs.promises.mkdir(path.dirname(localPath), { recursive: true } as MakeDirectoryOptions);
+        await fs.mkdir(path.dirname(localPath), { recursive: true });
         await client.downloadTo(localPath, remotePath);
     } catch (error) {
         console.error(`Failed to download or save file ${remotePath}:`, error);
@@ -59,10 +59,10 @@ async function traverseAndDownload(client: FileStorageClient, remotePath: string
         const newRemotePath = path.posix.join(remotePath, item.name);
         const newLocalPath = path.join(localPath, item.name);
 
-        if (item.type === 'directory') {
-            await fs.promises.mkdir(newLocalPath, { recursive: true } as MakeDirectoryOptions);
+        if (item.isDirectory) {
+            await fs.mkdir(newLocalPath, { recursive: true });
             await traverseAndDownload(client, newRemotePath, newLocalPath);
-        } else if (item.type === 'file') {
+        } else if (item.isFile) {
             await downloadFile(client, newRemotePath, newLocalPath);
         }
     }
@@ -73,18 +73,18 @@ export async function downloadAllImages() {
     let fileStorageClientInstance; // Renamed from ftpClient
     try {
         // 1. Cleanup previous artifacts
-        await fs.promises.rm(OUTPUT_DIR, { recursive: true, force: true } as RmOptions);
-        await fs.promises.rm(ZIP_FILE_PATH, { force: true } as RmOptions);
+        await fs.promises.rm(OUTPUT_DIR, { recursive: true, force: true });
+        await fs.promises.rm(ZIP_FILE_PATH, { force: true });
         console.log('Cleaned up old files.');
 
         // 2. Ensure output directory exists
-        await fs.promises.mkdir(OUTPUT_DIR, { recursive: true } as MakeDirectoryOptions);
+        await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });
 
         // 3. Connect to File Storage and download
         console.log('Getting File Storage client...');
         fileStorageClientInstance = await getFileStorageClient();
         console.log('File Storage client obtained. Starting traversal...');
-        await traverseAndDownload(fileStorageClientInstance, '/', OUTPUT_DIR); // Corrected client name
+        await traverseAndDownload(ftpClient, '/', OUTPUT_DIR);
         console.log('Image download process finished.');
 
         // 4. Zip the directory
@@ -117,7 +117,7 @@ export async function downloadAllImages() {
             archive.directory(OUTPUT_DIR, false);
             archive.finalize();
         });
-
+        
         console.log('Zip file created successfully.');
         return { success: true, path: ZIP_FILE_PATH };
 
@@ -130,7 +130,7 @@ export async function downloadAllImages() {
             releaseFileStorageClient(fileStorageClientInstance);
         }
         // 5. Cleanup the temporary download directory
-        await fs.promises.rm(OUTPUT_DIR, { recursive: true, force: true } as RmOptions); // Corrected to fs.promises.rm
+        await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
         console.log('Cleaned up temporary download directory.');
     }
 }
